@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Careers | Lexta Ghana</title>
+<meta name="description" content="Current openings at Lexta Ghana across manufacturing, quality, sales, marketing, supply chain and support functions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: #14313d; background: #fff; -webkit-font-smoothing: antialiased; }
+  a { color: #128fb0; text-decoration: none; }
+  a:hover { color: #0b6d88; }
+  input, button, select, textarea { font-family: inherit; }
+  @keyframes lxrise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+</style>
+<link rel="stylesheet" href="./site-responsive.css">
+<script src="./site-mobile-nav.js"></script>
+</helmet>
+
+<div style="width:100%;overflow-x:clip">
+
+  <header style="position:sticky;top:0;z-index:60;background:#fff;box-shadow:0 1px 0 rgba(10,55,70,.08)">
+    <div style="max-width:1240px;margin:0 auto;padding:12px 28px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px">
+      <a href="/" style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
+        <img src="./assets/lexta-logo.png" alt="Lexta" style="height:44px;width:auto;display:block">
+      </a>
+      <nav style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:nowrap;min-width:0">
+        <a href="/" style="font-size:13px;font-weight:500;color:#1d3c48">Home</a>
+        <a href="./about-us.html" style="font-size:13px;font-weight:500;color:#1d3c48">About Us</a>
+        <a href="./our-brands.html" style="font-size:13px;font-weight:500;color:#1d3c48">Brands</a>
+        <a href="./people-and-culture.html" style="font-size:13px;font-weight:500;color:#1d3c48">People &amp; Culture</a>
+        <a href="./corporate-social-responsibility.html" style="font-size:13px;font-weight:500;color:#1d3c48">CSR</a>
+        <a href="./news.html" style="font-size:13px;font-weight:500;color:#1d3c48">News</a>
+        <a href="./careers.html" style="font-size:13px;font-weight:600;color:#12a3c4;box-shadow:0 8px 0 -6px #12a3c4">Careers</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px;flex:0 0 auto;justify-self:end">
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;background:#12a3c4;font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap" style-hover="background:#0d8ba8">Contact Us</a>
+        <a href="./partner-with-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;border:1px solid rgba(18,163,196,.45);font-size:12.5px;font-weight:600;color:#12a3c4;white-space:nowrap" style-hover="background:#f1fbfe">Partner With Us</a>
+      </div>
+    </div>
+  </header>
+
+  <section data-screen-label="Careers hero" style="position:relative;background:#0c303e;overflow:hidden;padding:82px 28px 70px">
+    <div style="position:absolute;inset:0">
+      <img src="./assets/careers-hero.png" alt="Lexta colleagues reviewing work together in the office" style="width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block">
+    </div>
+    <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.95) 0%,rgba(6,32,42,.72) 52%,rgba(6,32,42,.28) 86%);pointer-events:none"></div>
+    <div style="position:relative;max-width:1240px;margin:0 auto">
+      <div style="max-width:700px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Careers at Lexta</div>
+        <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+        <h1 style="margin:20px 0 0;font-size:clamp(32px,6.2vw,54px);line-height:1.06;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Build something people <span style="color:#3fc0dd">use every day</span></h1>
+        <p style="margin:18px 0 0;font-size:15px;line-height:1.8;color:rgba(255,255,255,.92);max-width:600px;text-wrap:pretty">From the production floor in Accra to sales routes across Ghana and into Liberia, our teams make and move products that hundreds of thousands of households depend on. Here is where we are hiring right now.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:30px">
+          <a href="#openings" style="display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:12px 12px 12px 20px;border-radius:7px">Browse open roles
+            <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+          </a>
+          <a href="#general" style="display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.55);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:7px">Send a general application</a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:18px;margin-top:52px;max-width:900px">
+        <div style="border-top:3px solid #3fc0dd;padding-top:14px">
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em">{{ openCount }}</div>
+          <div style="margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">Roles open today</div>
+        </div>
+        <div style="border-top:3px solid rgba(255,255,255,.28);padding-top:14px">
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em">6</div>
+          <div style="margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">Departments hiring</div>
+        </div>
+        <div style="border-top:3px solid rgba(255,255,255,.28);padding-top:14px">
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em">2 wks</div>
+          <div style="margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">Typical time to first reply</div>
+        </div>
+        <div style="border-top:3px solid rgba(255,255,255,.28);padding-top:14px">
+          <div style="font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em">4</div>
+          <div style="margin-top:4px;font-size:12px;font-weight:600;color:rgba(255,255,255,.75)">Locations across Ghana</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="openings" data-screen-label="Open roles" style="background:#fff;padding:66px 28px 78px">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+        <div style="max-width:620px">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Current openings</div>
+          <h2 style="margin:12px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Find your role</h2>
+          <p style="margin:14px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Filter by department, location or engagement type. Open a role to see the full brief before you apply.</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:1 1 260px;max-width:360px;border:1px solid rgba(18,163,196,.35);border-radius:9px;padding:12px 15px;background:#f7fcfe">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="flex:0 0 auto;color:#5d7883"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.8"></circle><path d="M12.5 12.5L17 17" stroke="currentColor" stroke-width="1.8"></path></svg>
+          <input type="search" aria-label="Search roles" placeholder="Search roles, e.g. quality, sales" onInput="{{ onSearch }}" style="flex:1;min-width:0;border:0;background:transparent;outline:none;font-size:13px;color:#12313d">
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:34px;padding:22px 24px;border:1px solid rgba(18,163,196,.18);border-radius:14px;background:#f7fcfe">
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5d7883;min-width:96px">Department</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ depts }}" as="d" hint-placeholder-count="7">
+              <button type="button" onClick="{{ d.select }}" style="border:1px solid {{ d.border }};background:{{ d.bg }};color:{{ d.fg }};font-size:12px;font-weight:600;padding:8px 14px;border-radius:20px;cursor:pointer">{{ d.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="height:1px;background:rgba(18,163,196,.14)"></div>
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5d7883;min-width:96px">Location</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ locs }}" as="l" hint-placeholder-count="5">
+              <button type="button" onClick="{{ l.select }}" style="border:1px solid {{ l.border }};background:{{ l.bg }};color:{{ l.fg }};font-size:12px;font-weight:600;padding:8px 14px;border-radius:20px;cursor:pointer">{{ l.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="height:1px;background:rgba(18,163,196,.14)"></div>
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#5d7883;min-width:96px">Type</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ types }}" as="t" hint-placeholder-count="5">
+              <button type="button" onClick="{{ t.select }}" style="border:1px solid {{ t.border }};background:{{ t.bg }};color:{{ t.fg }};font-size:12px;font-weight:600;padding:8px 14px;border-radius:20px;cursor:pointer">{{ t.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:26px">
+        <div style="font-size:13px;font-weight:600;color:#5d7883">{{ resultLabel }}</div>
+        <button type="button" onClick="{{ clearAll }}" style="border:0;background:transparent;color:#12a3c4;font-size:12px;font-weight:600;cursor:pointer;padding:4px">Clear all filters</button>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">
+        <sc-for list="{{ jobs }}" as="j" hint-placeholder-count="6">
+          <div style="border:1px solid rgba(18,163,196,.2);border-radius:14px;background:#fff;box-shadow:0 12px 28px rgba(11,60,78,.07);overflow:hidden">
+            <button type="button" onClick="{{ j.toggle }}" style="width:100%;text-align:left;border:0;background:transparent;cursor:pointer;padding:24px 26px;display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+              <div style="flex:1 1 320px;min-width:0">
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                  <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">{{ j.dept }}</span>
+                  <span style="width:3px;height:3px;border-radius:50%;background:#b7cdd6"></span>
+                  <span style="font-size:11px;font-weight:600;color:#8fa8b2">Posted {{ j.posted }}</span>
+                  <sc-if value="{{ j.urgent }}" hint-placeholder-val="{{ false }}">
+                    <span style="background:rgba(18,163,196,.12);color:#0b6d88;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:5px">Closing soon</span>
+                  </sc-if>
+                </div>
+                <div style="margin-top:9px;font-size:19px;font-weight:700;letter-spacing:-.02em;color:#12313d;text-wrap:pretty">{{ j.title }}</div>
+                <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap;font-size:12px;font-weight:600;color:#5d7883">
+                  <span>{{ j.location }}</span>
+                  <span>{{ j.type }}</span>
+                  <span>{{ j.level }}</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;margin-left:auto">
+                <span style="font-size:12px;font-weight:600;color:#12a3c4">{{ j.cta }}</span>
+                <span style="width:30px;height:30px;border-radius:50%;background:#f0f9fc;color:#0b6d88;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ j.chev }}</span>
+              </div>
+            </button>
+            <sc-if value="{{ j.open }}" hint-placeholder-val="{{ false }}">
+              <div style="border-top:1px solid rgba(18,163,196,.16);background:#fbfeff;padding:28px 26px 30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:34px">
+                <div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">The role</div>
+                  <p style="margin:12px 0 0;font-size:13px;line-height:1.9;color:#5d7883;text-wrap:pretty">{{ j.summary }}</p>
+                  <div style="margin-top:22px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">What you will do</div>
+                  <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+                    <sc-for list="{{ j.duties }}" as="duty" hint-placeholder-count="3">
+                      <div style="display:flex;gap:10px;font-size:13px;line-height:1.75;color:#5d7883">
+                        <span style="flex:0 0 auto;margin-top:7px;width:5px;height:5px;border-radius:50%;background:#12a3c4"></span>
+                        <span>{{ duty }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">What we are looking for</div>
+                  <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+                    <sc-for list="{{ j.reqs }}" as="req" hint-placeholder-count="3">
+                      <div style="display:flex;gap:10px;font-size:13px;line-height:1.75;color:#5d7883">
+                        <span style="flex:0 0 auto;margin-top:7px;width:5px;height:5px;border-radius:50%;background:#12a3c4"></span>
+                        <span>{{ req }}</span>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:26px">
+                    <a href="#general" style="display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:12px 12px 12px 20px;border-radius:7px">Apply for this role
+                      <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+                    </a>
+                    <a href="mailto:support@lextagh.com" style="display:inline-flex;align-items:center;border:1px solid rgba(18,163,196,.45);background:#fff;color:#0b6d88;font-size:13px;font-weight:600;padding:12px 20px;border-radius:7px">Ask a question</a>
+                  </div>
+                  <div style="margin-top:14px;font-size:11px;color:#8fa8b2">Applications close {{ j.closes }}. Reference {{ j.ref }}.</div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:20px;border:1px dashed rgba(18,163,196,.35);border-radius:14px;padding:44px 26px;text-align:center;background:#f7fcfe">
+          <div style="font-size:17px;font-weight:700;color:#12313d">No roles match those filters</div>
+          <p style="margin:10px auto 0;font-size:13px;line-height:1.8;color:#5d7883;max-width:420px">Try widening your search, or send us a general application and we will keep you in mind when something opens.</p>
+          <a href="#general" style="margin-top:20px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#12a3c4">Send a general application <span style="font-size:14px">→</span></a>
+        </div>
+      </sc-if>
+    </div>
+  </section>
+
+  <section data-reveal="1" data-screen-label="Benefits" style="background:#0b2f3d;padding:80px 28px">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="max-width:640px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">What you get</div>
+        <h2 style="margin:14px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.03em;color:#fff;text-wrap:pretty">The terms behind the job title</h2>
+        <p style="margin:16px 0 0;font-size:14px;line-height:1.9;color:rgba(255,255,255,.82)">Details vary by role and level, and we set them out plainly in the offer rather than after you sign.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:24px;margin-top:44px">
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Health cover</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">Medical cover for you, extended to dependants for permanent staff, plus on-site first aid and periodic screening.</p>
+        </div>
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Pension and statutory benefits</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">SSNIT tier one and tier two contributions handled properly and on time, with clear payslips every month.</p>
+        </div>
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Training budget</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">Technical certification, safety and compliance training and professional development, funded rather than encouraged.</p>
+        </div>
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Performance bonus</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">Annual review with a bonus tied to targets you can see and influence, not a number decided in a closed room.</p>
+        </div>
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Staff product allocation</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">A monthly allocation of Yazz, Linzzy, Crox and Softcare products for your household.</p>
+        </div>
+        <div style="border-top:3px solid #3fc0dd;padding-top:18px">
+          <div style="font-size:17px;font-weight:700;color:#fff;letter-spacing:-.01em">Internal mobility</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:rgba(255,255,255,.8)">Open roles are advertised internally first, and we back moves between functions where the fit is right.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="1" data-screen-label="Hiring process" style="background:#f7fcfe;padding:76px 28px;border-bottom:1px solid rgba(18,163,196,.14)">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="max-width:620px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">How we hire</div>
+        <h2 style="margin:14px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Four steps, and we tell you where you stand</h2>
+        <p style="margin:16px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Most processes close within three to four weeks of the advert coming down.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:20px;margin-top:42px">
+        <div style="background:#fff;border-radius:14px;padding:26px 24px 28px;box-shadow:0 16px 34px rgba(11,60,78,.09)">
+          <div style="width:32px;height:32px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">1</div>
+          <div style="margin-top:16px;font-size:15px;font-weight:700;color:#12313d">Application</div>
+          <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">Send your CV and a short note on why the role fits. You get a confirmation, not silence.</p>
+        </div>
+        <div style="background:#fff;border-radius:14px;padding:26px 24px 28px;box-shadow:0 16px 34px rgba(11,60,78,.09)">
+          <div style="width:32px;height:32px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">2</div>
+          <div style="margin-top:16px;font-size:15px;font-weight:700;color:#12313d">Conversation</div>
+          <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">A call with HR, then an interview with the hiring manager and the team you would work with.</p>
+        </div>
+        <div style="background:#fff;border-radius:14px;padding:26px 24px 28px;box-shadow:0 16px 34px rgba(11,60,78,.09)">
+          <div style="width:32px;height:32px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">3</div>
+          <div style="margin-top:16px;font-size:15px;font-weight:700;color:#12313d">Practical exercise</div>
+          <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">For technical and commercial roles, a task drawn from the actual job. Nothing artificial.</p>
+        </div>
+        <div style="background:#fff;border-radius:14px;padding:26px 24px 28px;box-shadow:0 16px 34px rgba(11,60,78,.09)">
+          <div style="width:32px;height:32px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">4</div>
+          <div style="margin-top:16px;font-size:15px;font-weight:700;color:#12313d">Offer and onboarding</div>
+          <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">References, a written offer with the terms spelled out, and a structured first few weeks.</p>
+        </div>
+      </div>
+      <a href="./people-and-culture.html" style="margin-top:32px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#12a3c4">Read about life at Lexta <span style="font-size:14px">→</span></a>
+    </div>
+  </section>
+
+  <section id="general" data-reveal="1" data-screen-label="General application" style="background:#fff;padding:76px 28px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:48px;align-items:stretch">
+      <div style="display:flex;flex-direction:column">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Apply</div>
+        <h2 style="margin:14px 0 0;font-size:32px;line-height:1.18;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Nothing open that fits? Tell us anyway</h2>
+        <p style="margin:18px 0 0;font-size:14px;line-height:1.9;color:#5d7883">We keep general applications on file and go back to them first when a role opens. Send us the function you are interested in and where you are based.</p>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+          <div style="font-size:14px;font-weight:600;color:#12313d">support@lextagh.com</div>
+          <div style="font-size:14px;font-weight:600;color:#12313d">+233 (0) 501 619 588</div>
+          <div style="font-size:13px;line-height:1.8;color:#5d7883;max-width:320px">Lexta Square, Olusegu Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
+        </div>
+        <div style="margin-top:26px;border-radius:12px;overflow:hidden;flex:1 1 auto;min-height:240px;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+          <image-slot id="careers-apply" shape="rect" fit="cover" placeholder="Recruitment team photo"></image-slot>
+        </div>
+      </div>
+      <div style="background:#f7fcfe;border:1px solid rgba(18,163,196,.2);border-radius:14px;padding:32px 30px 34px;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+        <div style="font-size:19px;font-weight:700;color:#12313d;letter-spacing:-.015em">General application</div>
+        <p style="margin:10px 0 0;font-size:13px;line-height:1.8;color:#5d7883">Takes about two minutes. We read every one.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:22px">
+          <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600;color:#12313d">Full name
+            <input type="text" placeholder="Your name" style="border:1px solid rgba(18,163,196,.35);border-radius:7px;padding:12px 14px;font-size:13px;color:#12313d;background:#fff;min-width:0">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600;color:#12313d">Email
+            <input type="email" placeholder="you@example.com" style="border:1px solid rgba(18,163,196,.35);border-radius:7px;padding:12px 14px;font-size:13px;color:#12313d;background:#fff;min-width:0">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600;color:#12313d">Phone
+            <input type="tel" placeholder="+233" style="border:1px solid rgba(18,163,196,.35);border-radius:7px;padding:12px 14px;font-size:13px;color:#12313d;background:#fff;min-width:0">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600;color:#12313d">Area of interest
+            <select style="border:1px solid rgba(18,163,196,.35);border-radius:7px;padding:12px 14px;font-size:13px;color:#12313d;background:#fff;min-width:0">
+              <option>Manufacturing and production</option>
+              <option>Quality assurance</option>
+              <option>Sales and distribution</option>
+              <option>Marketing and brand</option>
+              <option>Supply chain and logistics</option>
+              <option>Finance, HR and administration</option>
+            </select>
+          </label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:600;color:#12313d;margin-top:14px">Tell us briefly why Lexta
+          <textarea rows="4" placeholder="A few sentences on your experience and what you are looking for." style="border:1px solid rgba(18,163,196,.35);border-radius:7px;padding:12px 14px;font-size:13px;line-height:1.7;color:#12313d;background:#fff;resize:vertical"></textarea>
+        </label>
+        <div style="margin-top:16px;border:1px dashed rgba(18,163,196,.45);border-radius:9px;padding:18px;text-align:center;background:#fff">
+          <div style="font-size:13px;font-weight:600;color:#12313d">Attach your CV</div>
+          <div style="margin-top:5px;font-size:11px;color:#8fa8b2">PDF or Word, up to 5 MB</div>
+        </div>
+        <button type="button" onClick="{{ submit }}" style="margin-top:20px;width:100%;border:0;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:14px 20px;border-radius:7px;cursor:pointer">{{ submitLabel }}</button>
+        <div style="margin-top:12px;font-size:11px;line-height:1.7;color:#8fa8b2">Lexta Ghana is an equal opportunity employer. We consider every application on merit, regardless of gender, background or physical ability.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:#0b2f3d;padding:60px 28px 34px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:38px">
+      <div>
+        <a href="/" style="display:inline-flex;align-items:center;gap:8px">
+          <img src="./assets/lexta-logo-white.png" alt="Lexta" style="height:40px;width:auto;display:block">
+        </a>
+        <p style="margin:16px 0 0;font-size:12px;line-height:1.8;color:rgba(255,255,255,.65);max-width:210px">Caring for you every day through quality products, innovation and community impact.</p>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <a href="https://www.facebook.com/lextagh" target="_blank" rel="noopener" aria-label="Facebook" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">f</a>
+          <a href="https://www.instagram.com/lextagh" target="_blank" rel="noopener" aria-label="Instagram" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">ig</a>
+          <a href="https://www.linkedin.com/company/lextagh" target="_blank" rel="noopener" aria-label="LinkedIn" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">in</a>
+          <a href="https://www.tiktok.com/@lextagh" target="_blank" rel="noopener" aria-label="TikTok" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">tk</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Quick Links</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="./about-us.html" style="font-size:12px;color:rgba(255,255,255,.7)">About Us</a>
+          <a href="./our-brands.html" style="font-size:12px;color:rgba(255,255,255,.7)">Our Brands</a>
+          <a href="./corporate-social-responsibility.html" style="font-size:12px;color:rgba(255,255,255,.7)">CSR</a>
+          <a href="./news.html" style="font-size:12px;color:rgba(255,255,255,.7)">News</a>
+          <a href="./careers.html" style="font-size:12px;color:rgba(255,255,255,.7)">Careers</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="./contact-us.html" style="font-size:12px;color:rgba(255,255,255,.7)">Contact Us</a>
+          <a href="./faqs.html" style="font-size:12px;color:rgba(255,255,255,.7)">FAQs</a>
+          <a href="./privacy-policy.html" style="font-size:12px;color:rgba(255,255,255,.7)">Privacy Policy</a>
+          <a href="./terms-and-conditions.html" style="font-size:12px;color:rgba(255,255,255,.7)">Terms &amp; Conditions</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Contact Us</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><circle cx="7" cy="6" r="2.4" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></circle><path d="M7 13c3-4 5-6 5-8a5 5 0 10-10 0c0 2 2 4 5 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>Lexta Square, Olusegu Obasanjo Highway, Dzorwulu, Accra, Ghana.</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><path d="M2 3c0 5 4 9 9 9l1.5-2.5-3-1.5-1.5 1.5C6.5 8.5 5.5 7.5 4.5 5.5L6 4 4.5 1 2 3z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>+233 (0) 501 619 588<br>+233 (0) 302 235 296</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><rect x="1" y="3" width="12" height="9" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></rect><path d="M1 3.5l6 4.5 6-4.5" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>support@lextagh.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1240px;margin:32px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="font-size:11px;color:rgba(255,255,255,.55)">© 2026. Lexta Ghana LTD. All Rights Reserved.</div>
+      <button type="button" data-totop="1" aria-label="Back to top" style="width:30px;height:30px;border-radius:6px;border:0;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;font-size:12px">▲</button>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;defaultDepartment&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;All&quot;,&quot;Manufacturing&quot;,&quot;Quality&quot;,&quot;Sales&quot;,&quot;Marketing&quot;,&quot;Supply chain&quot;,&quot;Corporate&quot;],&quot;default&quot;:&quot;All&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;expandFirstRole&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const JOBS = [
+  { ref: 'LX-PRD-114', dept: 'Manufacturing', title: 'Production Line Supervisor', location: 'Accra', type: 'Full time', level: 'Mid level', posted: '2 September 2026', closes: '30 September 2026', urgent: true,
+    summary: 'Own the output, safety and discipline of one converting line across a shift, working with planning, maintenance and QA to hit volume without compromising standards.',
+    duties: ['Run daily shift briefings and allocate operators across the line.', 'Track output, downtime and waste against targets and report on causes.', 'Enforce hygiene, safety and GMP procedures without exception.', 'Work with maintenance to plan changeovers and preventive work.'],
+    reqs: ['HND or degree in engineering, production or a related field.', 'Three or more years on a manufacturing line, at least one supervising a team.', 'Practical understanding of GMP and workplace safety in FMCG.', 'Comfortable with shift work and with holding a team to a standard.'] },
+  { ref: 'LX-PRD-118', dept: 'Manufacturing', title: 'Machine Operator (Tissue Converting)', location: 'Accra', type: 'Full time', level: 'Entry level', posted: '28 August 2026', closes: '26 September 2026', urgent: false,
+    summary: 'Operate and monitor converting machinery, carry out first-line checks and keep the line running to specification through the shift.',
+    duties: ['Set up, run and shut down assigned machinery to standard procedure.', 'Carry out in-process quality checks and log results accurately.', 'Report faults early and support basic maintenance tasks.', 'Keep the work area to hygiene and 5S standards.'],
+    reqs: ['WASSCE or technical certificate; NVTI qualification an advantage.', 'One year or more operating industrial machinery, or strong technical aptitude.', 'Attention to detail and willingness to work rotating shifts.'] },
+  { ref: 'LX-QA-051', dept: 'Quality', title: 'Quality Assurance Officer', location: 'Accra', type: 'Full time', level: 'Mid level', posted: '1 September 2026', closes: '29 September 2026', urgent: false,
+    summary: 'Decide whether a batch leaves the building. You will run the sampling, testing and documentation that keeps our brands where their reputation is.',
+    duties: ['Sample and test raw materials, in-process product and finished goods.', 'Maintain batch records and support FDA and standards audits.', 'Investigate deviations and drive corrective action with production.', 'Train line staff on quality checkpoints and specifications.'],
+    reqs: ['Degree in chemistry, biochemistry, food science or a related discipline.', 'Two or more years in QA or QC within manufacturing.', 'Working knowledge of Ghana Standards Authority and FDA requirements.', 'The confidence to hold a decision under pressure.'] },
+  { ref: 'LX-SLS-207', dept: 'Sales', title: 'Area Sales Manager, Northern Sector', location: 'Tamale', type: 'Full time', level: 'Senior', posted: '25 August 2026', closes: '24 September 2026', urgent: true,
+    summary: 'Take ownership of distribution, coverage and revenue across the northern sector, building the wholesaler and retailer base for all three brands.',
+    duties: ['Deliver monthly volume and value targets across the assigned territory.', 'Recruit, develop and manage distributors and field representatives.', 'Drive numeric distribution and shelf presence in general trade.', 'Report on market conditions, pricing and competitor activity.'],
+    reqs: ['Degree in marketing, business or a related field.', 'Five or more years in FMCG sales, with team management experience.', 'Proven route-to-market experience in the northern regions.', 'Valid driving licence and willingness to travel extensively.'] },
+  { ref: 'LX-SLS-212', dept: 'Sales', title: 'Field Sales Representative', location: 'Kumasi', type: 'Full time', level: 'Entry level', posted: '30 August 2026', closes: '28 September 2026', urgent: false,
+    summary: 'Work a defined route, keep our brands on the shelf and grow the outlets you own. The most direct way to learn how this business really works.',
+    duties: ['Visit outlets on a fixed journey plan and take orders.', 'Merchandise product and execute point-of-sale activations.', 'Open new outlets and recover dormant ones.', 'Report daily sales and stock positions accurately.'],
+    reqs: ['HND or degree in any discipline.', 'One year or more in field sales, ideally FMCG.', 'Strong local knowledge of the Ashanti region trade.'] },
+  { ref: 'LX-MKT-088', dept: 'Marketing', title: 'Brand Manager, Femcare', location: 'Accra', type: 'Full time', level: 'Senior', posted: '20 August 2026', closes: '19 September 2026', urgent: false,
+    summary: 'Lead the Yazz and Linzzy portfolios end to end, from pricing and pack architecture to the national outreach campaigns that carry them.',
+    duties: ['Own the brand plan, budget and performance for the femcare portfolio.', 'Develop campaigns across ATL, trade and digital with agency partners.', 'Lead consumer research and turn it into product and pack decisions.', 'Work with the CSR team on menstrual health education programmes.'],
+    reqs: ['Degree in marketing or a related field; postgraduate qualification an advantage.', 'Five or more years in brand management, preferably FMCG.', 'Track record of launching or relaunching a consumer brand.', 'Genuine interest in women\u2019s health advocacy.'] },
+  { ref: 'LX-MKT-093', dept: 'Marketing', title: 'Digital Marketing Executive', location: 'Accra', type: 'Full time', level: 'Mid level', posted: '3 September 2026', closes: '3 October 2026', urgent: false,
+    summary: 'Run the day-to-day digital presence of three brands: content calendars, paid social, community management and reporting that someone actually reads.',
+    duties: ['Plan and publish content across brand social channels.', 'Run and optimise paid campaigns on Meta, Google and TikTok.', 'Manage community engagement and escalate consumer issues.', 'Report on reach, engagement and conversion monthly.'],
+    reqs: ['Degree or professional certification in marketing or communications.', 'Two or more years running social and paid digital for a brand or agency.', 'Hands-on with Meta Business Suite and Google Ads.', 'A portfolio of work you can walk us through.'] },
+  { ref: 'LX-SCM-039', dept: 'Supply chain', title: 'Warehouse and Inventory Officer', location: 'Tema', type: 'Full time', level: 'Mid level', posted: '27 August 2026', closes: '25 September 2026', urgent: false,
+    summary: 'Keep stock accurate and product available. You will run receipts, storage, picking and dispatch, and be the reason the numbers reconcile.',
+    duties: ['Manage inward receipt, storage and dispatch of finished goods.', 'Run cycle counts and reconcile physical stock to system records.', 'Coordinate with transport on loading and delivery schedules.', 'Maintain warehouse safety and housekeeping standards.'],
+    reqs: ['HND or degree in supply chain, logistics or accounting.', 'Two or more years in warehouse or inventory management.', 'Strong ERP or inventory system experience and confident with spreadsheets.'] },
+  { ref: 'LX-SCM-044', dept: 'Supply chain', title: 'Procurement Officer', location: 'Accra', type: 'Contract', level: 'Mid level', posted: '18 August 2026', closes: '17 September 2026', urgent: false,
+    summary: 'Source raw materials and packaging on time, on spec and on cost, and build supplier relationships that hold up when the schedule tightens.',
+    duties: ['Raise and track purchase orders against production plans.', 'Evaluate suppliers on price, quality, lead time and reliability.', 'Negotiate terms and maintain the approved supplier list.', 'Support import documentation and clearing where required.'],
+    reqs: ['Degree in procurement, supply chain or business administration.', 'Three or more years in procurement, ideally manufacturing inputs.', 'Familiarity with import processes and Ghanaian clearing requirements.'] },
+  { ref: 'LX-FIN-072', dept: 'Corporate', title: 'Management Accountant', location: 'Accra', type: 'Full time', level: 'Senior', posted: '22 August 2026', closes: '21 September 2026', urgent: false,
+    summary: 'Turn factory and sales data into decisions: product costing, variance analysis, budgets and the monthly numbers leadership runs the business on.',
+    duties: ['Prepare monthly management accounts and variance commentary.', 'Own product costing and margin analysis by brand and SKU.', 'Lead the annual budget and quarterly reforecast process.', 'Support statutory audit and tax compliance.'],
+    reqs: ['Degree in accounting or finance; ICAG or ACCA qualified or finalist.', 'Four or more years in a manufacturing finance role.', 'Strong costing experience and advanced spreadsheet skills.'] },
+  { ref: 'LX-HR-021', dept: 'Corporate', title: 'HR Officer, Learning and Development', location: 'Accra', type: 'Full time', level: 'Mid level', posted: '4 September 2026', closes: '4 October 2026', urgent: false,
+    summary: 'Build the training and onboarding that make our growth-from-within promise real, from technical certification to first-week induction.',
+    duties: ['Design and run the annual training calendar across functions.', 'Manage onboarding for new joiners end to end.', 'Coordinate mentorship pairings and track development plans.', 'Maintain training records and measure programme impact.'],
+    reqs: ['Degree in human resources, psychology or a related field.', 'Two or more years in L&D or generalist HR, ideally in manufacturing.', 'Confident facilitating a room of mixed seniority.'] },
+  { ref: 'LX-GRD-006', dept: 'Corporate', title: 'Graduate Trainee Programme 2027', location: 'Accra', type: 'Internship', level: 'Graduate', posted: '1 September 2026', closes: '31 October 2026', urgent: false,
+    summary: 'An eighteen-month rotation across production, quality, sales and marketing, with a permanent role at the end for those who earn it.',
+    duties: ['Complete four supervised rotations with real deliverables in each.', 'Run an improvement project in your final rotation and present it to leadership.', 'Work alongside an assigned mentor throughout.'],
+    reqs: ['First degree completed within the last two years, second class upper or better.', 'National service completed or in progress.', 'Evidence of initiative outside the classroom.', 'Open to being placed in any function based on fit.'] }
+];
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { dept: props.defaultDepartment || 'All', loc: 'All', type: 'All', q: '', open: props.expandFirstRole ? 0 : null, sent: false };
+  }
+  componentDidMount() {
+    const root = this.el || document;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = '';
+            e.target.style.animation = 'lxrise .7s cubic-bezier(.2,.7,.2,1) both';
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      root.querySelectorAll('[data-reveal]').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.9) return;
+        el.style.opacity = '0';
+        io.observe(el);
+        setTimeout(() => { el.style.opacity = ''; }, 4000);
+      });
+      this._io = io;
+    }
+    const top = root.querySelector('[data-totop]');
+    if (top) top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); }
+  chipRow(names, key) {
+    const active = this.state[key];
+    return names.map((label) => {
+      const on = label === active;
+      return {
+        label,
+        bg: on ? '#12313d' : '#fff',
+        fg: on ? '#fff' : '#3f5f6b',
+        border: on ? '#12313d' : 'rgba(18,163,196,.3)',
+        select: () => this.setState({ [key]: label, open: null })
+      };
+    });
+  }
+  renderVals() {
+    const q = this.state.q.trim().toLowerCase();
+    const filtered = JOBS.filter((j) =>
+      (this.state.dept === 'All' || j.dept === this.state.dept) &&
+      (this.state.loc === 'All' || j.location === this.state.loc) &&
+      (this.state.type === 'All' || j.type === this.state.type) &&
+      (!q || (j.title + ' ' + j.dept + ' ' + j.summary + ' ' + j.location).toLowerCase().includes(q))
+    );
+    const n = filtered.length;
+    return {
+      openCount: JOBS.length,
+      depts: this.chipRow(['All', 'Manufacturing', 'Quality', 'Sales', 'Marketing', 'Supply chain', 'Corporate'], 'dept'),
+      locs: this.chipRow(['All', 'Accra', 'Tema', 'Kumasi', 'Tamale'], 'loc'),
+      types: this.chipRow(['All', 'Full time', 'Contract', 'Internship'], 'type'),
+      resultLabel: n === 1 ? '1 role matches' : n + ' roles match',
+      isEmpty: n === 0,
+      onSearch: (e) => this.setState({ q: e.target.value, open: null }),
+      clearAll: () => this.setState({ dept: 'All', loc: 'All', type: 'All', q: '', open: null }),
+      jobs: filtered.map((j, i) => ({
+        ...j,
+        open: this.state.open === i,
+        chev: this.state.open === i ? '\u2212' : '+',
+        cta: this.state.open === i ? 'Close' : 'View role',
+        toggle: () => this.setState((s) => ({ open: s.open === i ? null : i }))
+      })),
+      submitLabel: this.state.sent ? 'Application sent \u2713' : 'Submit application',
+      submit: () => this.setState({ sent: true })
+    };
+  }
+}
+</script>
+</body>
+</html>

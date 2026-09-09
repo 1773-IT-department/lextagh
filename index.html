@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: #14313d; background: #fff; -webkit-font-smoothing: antialiased; }
+  a { color: #128fb0; text-decoration: none; }
+  a:hover { color: #0b6d88; }
+  input, button { font-family: inherit; }
+  @keyframes lxrise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+</style>
+<link rel="stylesheet" href="./site-responsive.css">
+<script src="./site-mobile-nav.js"></script>
+</helmet>
+
+<div style="width:100%;overflow-x:hidden">
+
+  <header data-nav="1" style="position:sticky;top:0;z-index:60;background:#fff;box-shadow:0 1px 0 rgba(10,55,70,.08)">
+    <div style="max-width:1240px;margin:0 auto;padding:12px 28px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px">
+      <div style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
+        <img src="./assets/lexta-logo.png" alt="Lexta" style="height:44px;width:auto;display:block">
+      </div>
+      <nav style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:nowrap;min-width:0">
+        <a href="/" style="font-size:13px;font-weight:600;color:#12a3c4;box-shadow:0 8px 0 -6px #12a3c4">Home</a>
+        <a href="./about-us.html" style="font-size:13px;font-weight:500;color:#1d3c48">About Us</a>
+        <a href="./our-brands.html" style="font-size:13px;font-weight:500;color:#1d3c48">Brands</a>
+        <a href="./people-and-culture.html" style="font-size:13px;font-weight:500;color:#1d3c48">People &amp; Culture</a>
+        <a href="./corporate-social-responsibility.html" style="font-size:13px;font-weight:500;color:#1d3c48">CSR</a>
+        <a href="./news.html" style="font-size:13px;font-weight:500;color:#1d3c48">News</a>
+        <a href="./careers.html" style="font-size:13px;font-weight:500;color:#1d3c48">Careers</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px;flex:0 0 auto;justify-self:end">
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;background:#12a3c4;font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap" style-hover="background:#0d8ba8">Contact Us</a>
+        <a href="./partner-with-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;border:1px solid rgba(18,163,196,.45);font-size:12.5px;font-weight:600;color:#12a3c4;white-space:nowrap" style-hover="background:#f1fbfe">Partner With Us</a>
+      </div>
+    </div>
+  </header>
+
+  <section data-screen-label="Hero" data-hero="1" style="position:relative;background:#0c303e;overflow:hidden">
+    <div style="height:660px"></div>
+
+    <div data-slide="0" style="position:absolute;inset:0;transform:translateX(0);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-family-products.png" alt="Ghanaian family at home with Lexta and Yazz products" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Lexta Ghana Limited</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:58px;line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Caring for your <span style="color:#3fc0dd">everyday</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:460px">Home care, personal care and food products made in Ghana for families across Africa.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./our-brands.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Explore our brands
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="1" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-25-years.png" alt="25 years of quality products in homes across Ghana and beyond" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:75% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Proudly Ghanaian since 2002</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:58px;line-height:1.05;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Two decades on <span style="color:#3fc0dd">Ghana's shelves</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:470px">Founded in Accra and built here. What began as a home care supplier now serves millions of homes across the sub-region.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./about-us.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Our story
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="2" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-family-brands.png" alt="Ghanaian family with Hooch Corn Flakes, Yazz and Linzzy products" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:78% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.96) 0%,rgba(6,32,42,.88) 45%,rgba(6,32,42,.42) 80%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Three brands, one standard</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:54px;line-height:1.08;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Yazz. Hooch. <span style="color:#3fc0dd">Linzzy.</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:470px">From sanitary care and detergents to breakfast cereals and tissue, our brands cover the essentials families reach for every day.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./our-brands.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">See the range
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="3" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-factory.png" alt="Lexta production line in Ghana packing Yazz and Corn Flakes" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:78% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Made under our own roof</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:56px;line-height:1.06;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">What is care without <span style="color:#3fc0dd">quality?</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:470px">Our production lines run to international hygiene and regulatory standards, with every batch checked before it leaves us.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./about-us.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Inside our operation
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="4" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-quality-value.png" alt="Family with Hooch Corn Flakes, Yazz and Linzzy products in a Ghanaian kitchen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:80% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Quality within reach</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:56px;line-height:1.06;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Care shouldn't cost <span style="color:#3fc0dd">the earth</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:470px">We build our products to a standard, then price them for the households that need them. No trade-off.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./our-brands.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Find our products
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="5" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-west-africa.png" alt="Lexta distribution from Ghana across West Africa" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:80% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Ghana. Liberia. Next.</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:56px;line-height:1.06;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Built to <span style="color:#3fc0dd">reach further</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:470px">A distribution network spanning Ghana, a wholly owned subsidiary in Monrovia, and an expanding footprint across West Africa.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./contact-us.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Contact us
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+              <a href="./contact-us.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.45);color:#fff;font-size:14px;font-weight:600;padding:13px 22px;border-radius:8px">Bulk and institutional orders</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-slide="6" style="position:absolute;inset:0;transform:translateX(100%);transition:transform .85s cubic-bezier(.3,.7,.2,1)">
+      <img src="./assets/hero-cervical-screening.png" alt="Lexta and MWAG cervical cancer awareness and screening outreach" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:78% center;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.9) 0%,rgba(6,32,42,.62) 45%,rgba(6,32,42,.16) 78%);pointer-events:none"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;pointer-events:none">
+        <div style="width:100%;max-width:1240px;margin:0 auto;padding:0 76px 70px">
+          <div data-slide-text="1" style="max-width:620px">
+            <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">Beyond the product</div>
+            <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+            <h1 style="margin:20px 0 0;font-size:56px;line-height:1.06;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">Care that <span style="color:#3fc0dd">leaves the shelf</span></h1>
+            <p style="margin:20px 0 0;font-size:15px;line-height:1.75;color:rgba(255,255,255,.9);max-width:490px">Free cervical cancer screening with the Medical Women Association of Ghana. Menstrual health education in schools nationwide. Ongoing work against period poverty.</p>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;pointer-events:auto">
+              <a href="./corporate-social-responsibility.html" style="display:inline-flex;align-items:center;gap:14px;background:#12a3c4;color:#fff;font-size:14px;font-weight:600;padding:13px 13px 13px 24px;border-radius:8px;box-shadow:0 12px 26px rgba(4,30,40,.35)">Our CSR work
+                <span style="width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" data-hero-prev="1" aria-label="Previous slide" style="position:absolute;left:18px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(8,42,55,.35);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:8">‹</button>
+    <button type="button" data-hero-next="1" aria-label="Next slide" style="position:absolute;right:18px;top:50%;transform:translateY(-50%);width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(8,42,55,.35);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:8">›</button>
+
+    <div data-hero-dots="1" style="position:absolute;left:0;right:0;bottom:132px;display:flex;justify-content:center;gap:9px;z-index:8">
+      <button type="button" data-dot="0" aria-label="Slide 1" style="width:26px;height:5px;border-radius:3px;border:0;background:#12a3c4;cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="1" aria-label="Slide 2" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="2" aria-label="Slide 3" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="3" aria-label="Slide 4" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="4" aria-label="Slide 5" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="5" aria-label="Slide 6" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+      <button type="button" data-dot="6" aria-label="Slide 7" style="width:26px;height:5px;border-radius:3px;border:0;background:rgba(255,255,255,.4);cursor:pointer;padding:0"></button>
+    </div>
+  </section>
+
+  <div style="background:linear-gradient(180deg,#eaf6fb,#f4fbfd);padding:0 28px">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));background:#fff;border-radius:16px;box-shadow:0 24px 50px rgba(11,60,78,.12);margin-top:-96px;position:relative;z-index:5">
+        <div style="padding:26px 24px;display:flex;gap:16px;align-items:flex-start;border-right:1px solid #e6f1f5">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="flex:0 0 auto" aria-hidden="true"><circle cx="15" cy="12" r="5" stroke="#12a3c4" stroke-width="1.7"></circle><path d="M5 25c2-5 6-7 10-7s8 2 10 7" stroke="#12a3c4" stroke-width="1.7"></path></svg>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#12313d">Quality You Can Trust</div>
+            <p style="margin:7px 0 0;font-size:12px;line-height:1.65;color:#5d7883">High-quality products made with care and integrity.</p>
+          </div>
+        </div>
+        <div style="padding:26px 24px;display:flex;gap:16px;align-items:flex-start;border-right:1px solid #e6f1f5">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="flex:0 0 auto" aria-hidden="true"><circle cx="15" cy="12" r="6.5" stroke="#12a3c4" stroke-width="1.7"></circle><path d="M12 22h6M13 26h4" stroke="#12a3c4" stroke-width="1.7"></path></svg>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#12313d">Innovation</div>
+            <p style="margin:7px 0 0;font-size:12px;line-height:1.65;color:#5d7883">Continuously improving our products to make life better.</p>
+          </div>
+        </div>
+        <div style="padding:26px 24px;display:flex;gap:16px;align-items:flex-start;border-right:1px solid #e6f1f5">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="flex:0 0 auto" aria-hidden="true"><circle cx="10" cy="11" r="4" stroke="#12a3c4" stroke-width="1.7"></circle><circle cx="21" cy="13" r="3.2" stroke="#12a3c4" stroke-width="1.7"></circle><path d="M3 24c1.5-4 4-5.5 7-5.5s5.5 1.5 7 5.5" stroke="#12a3c4" stroke-width="1.7"></path><path d="M19 24c1-2.6 2.4-4 4-4s2.6.9 3.4 2.6" stroke="#12a3c4" stroke-width="1.7"></path></svg>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#12313d">Community Focused</div>
+            <p style="margin:7px 0 0;font-size:12px;line-height:1.65;color:#5d7883">We care about people and the communities we serve.</p>
+          </div>
+        </div>
+        <div style="padding:26px 24px;display:flex;gap:16px;align-items:flex-start">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" style="flex:0 0 auto" aria-hidden="true"><rect x="4" y="18" width="5" height="8" stroke="#12a3c4" stroke-width="1.7"></rect><rect x="12.5" y="13" width="5" height="13" stroke="#12a3c4" stroke-width="1.7"></rect><rect x="21" y="7" width="5" height="19" stroke="#12a3c4" stroke-width="1.7"></rect></svg>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#12313d">Sustainable Growth</div>
+            <p style="margin:7px 0 0;font-size:12px;line-height:1.65;color:#5d7883">Delivering long-term value for all our stakeholders.</p>
+          </div>
+        </div>
+      </div>
+
+      <section data-screen-label="Activities" data-reveal="1" style="display:grid;grid-template-columns:minmax(240px,1fr) minmax(0,2.1fr);gap:40px;padding:76px 0 90px;align-items:center">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.16em;color:#12a3c4;text-transform:uppercase">What We Do</div>
+          <h2 style="margin:14px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.02em;color:#12313d;text-wrap:pretty">Latest Activities &amp; Campaigns</h2>
+          <p style="margin:16px 0 0;font-size:14px;line-height:1.8;color:#5d7883;max-width:330px">We are committed to creating positive impact in communities through meaningful initiatives and partnerships.</p>
+          <a href="./news.html" style="margin-top:26px;display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:10px 10px 10px 20px;border-radius:7px">More Stories
+            <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+          </a>
+        </div>
+        <div data-acar="1" style="position:relative">
+          <div style="overflow:hidden;border-radius:12px">
+            <div data-acar-track="1" style="display:flex;gap:22px;transition:transform .7s cubic-bezier(.3,.7,.2,1);will-change:transform">
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://yazzproducts.com/wp-content/uploads/2024/02/WhatsApp-Image-2024-01-16-at-21.50.17-1021x1024.jpeg" alt="Cervical Cancer Awareness Launch 2024, Tamale" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Awareness Launch 2024, Tamale</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">The national launch, hosted in the north for the first time.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://yazzproducts.com/wp-content/uploads/2025/03/WE6A0601-1024x683.jpg" alt="Tuesday Market Park, Mamprobi, 2025" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Tuesday Market Park, Mamprobi</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">Screening and education taken into the market.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://yazzproducts.com/wp-content/uploads/2025/04/130202594139-vaqdtgfssn-health-cervical-cancer1.jpg" alt="Ghanaian women doctors encourage screening" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Doctors Urge Early Detection</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">MWAG's awareness month launch in Ablekuma South.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://yazzproducts.com/wp-content/uploads/2026/02/yazz-crvical-cancer-awareness-2026.png" alt="SOFPOG, MWAG, Yazz and Korle Bu Polyclinic free screening" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Free Screening at Korle Bu</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">With SOFPOG, MWAG and the Family Medicine Department.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://yazzproducts.com/wp-content/uploads/2026/05/WhatsApp-Image-2020-01-19-at-8.42.06-AM-1080x675-1-1024x640.jpeg" alt="Free cervical cancer screening in Kumasi" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Free Screening in Kumasi</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">Education and screening ahead of the Accra edition.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-Visits-Mawuko-girls-SHS-Ho.jpeg" alt="Lexta Ghana visits Mawuko Girls SHS, Ho" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Mawuko Girls SHS, Ho</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">Health education and pad donations with MWAG.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+          <article style="flex:0 0 calc(50% - 11px);position:relative;height:290px;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)">
+            <img src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-spent-time-with-the-girls-of-Unity-high-JHS-in-Kotobabi-in-commemoration-of-the-internal-womens-day.jpg" alt="Unity High JHS, Kotobabi on International Women's Day" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+            <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82));pointer-events:none"></div>
+            <div style="position:absolute;left:20px;right:70px;bottom:20px;pointer-events:none">
+              <h3 style="margin:0;font-size:16px;font-weight:700;color:#fff">Unity High JHS, Kotobabi</h3>
+              <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.85)">International Women's Day with the Domite Foundation.</p>
+            </div>
+            <a href="./news.html" aria-label="Read story" style="position:absolute;right:18px;bottom:22px;width:34px;height:34px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px">→</a>
+          </article>
+            </div>
+          </div>
+          <button type="button" data-acar-prev="1" aria-label="Previous stories" style="position:absolute;left:-12px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#12a3c4;font-size:18px;cursor:pointer;box-shadow:0 8px 20px rgba(11,60,78,.22);display:flex;align-items:center;justify-content:center;z-index:4">‹</button>
+          <button type="button" data-acar-next="1" aria-label="Next stories" style="position:absolute;right:-12px;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:#fff;color:#12a3c4;font-size:18px;cursor:pointer;box-shadow:0 8px 20px rgba(11,60,78,.22);display:flex;align-items:center;justify-content:center;z-index:4">›</button>
+          <div data-acar-dots="1" style="display:flex;justify-content:center;gap:8px;margin-top:18px">
+            <button type="button" data-acar-dot="0" aria-label="Stories 1" style="width:22px;height:4px;border-radius:2px;border:0;background:#12a3c4;cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="1" aria-label="Stories 2" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="2" aria-label="Stories 3" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="3" aria-label="Stories 4" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="4" aria-label="Stories 5" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="5" aria-label="Stories 6" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+            <button type="button" data-acar-dot="6" aria-label="Stories 7" style="width:22px;height:4px;border-radius:2px;border:0;background:rgba(18,163,196,.28);cursor:pointer;padding:0"></button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section id="brands" data-screen-label="Brands" data-reveal="1" style="background:#fff;padding:74px 28px 20px">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="text-align:center">
+        <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.02em;color:#12313d">Our Brands</h2>
+        <div style="width:56px;height:3px;background:#12a3c4;border-radius:2px;margin:12px auto 0"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:30px;margin-top:42px;max-width:1000px;margin-left:auto;margin-right:auto">
+        <article style="border-radius:10px;overflow:hidden;box-shadow:0 14px 32px rgba(11,60,78,.12);background:#fff">
+          <div style="height:212px;background:#f4f0f6"><img src="./assets/brand-yazz.png" alt="Yazz oral care" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <a href="./our-brands.html#yazz" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#0f5fa8;color:#fff;font-size:12px;font-weight:600;padding:12px">Explore Brand <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px">→</span></a>
+        </article>
+        <article style="border-radius:10px;overflow:hidden;box-shadow:0 14px 32px rgba(11,60,78,.12);background:#fff">
+          <div style="height:212px;background:#f6f2ea;display:flex;align-items:center;justify-content:center;padding:14px"><img src="./assets/brand-hooch.png" alt="Hooch Frosted Flakes" style="max-width:100%;max-height:100%;object-fit:contain;display:block"></div>
+          <a href="./our-brands.html#hooch" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#c0272d;color:#fff;font-size:12px;font-weight:600;padding:12px">Explore Brand <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px">→</span></a>
+        </article>
+        <article style="border-radius:10px;overflow:hidden;box-shadow:0 14px 32px rgba(11,60,78,.12);background:#fff">
+          <div style="height:212px;background:#eef2fa"><img src="./assets/brand-linzzy.png" alt="Linzzy baby wipes" style="width:100%;height:100%;object-fit:cover;display:block"></div>
+          <a href="./our-brands.html#linzzy" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#6a2b8f;color:#fff;font-size:12px;font-weight:600;padding:12px">Explore Brand <span style="width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:11px">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Impact" data-reveal="1" style="background:#fff;padding:56px 28px">
+    <div style="max-width:1240px;margin:0 auto;background:linear-gradient(100deg,#0e7f97,#18a9c6);border-radius:14px;box-shadow:0 22px 46px rgba(11,90,110,.28);padding:38px 40px;display:grid;grid-template-columns:minmax(240px,1fr) minmax(0,1.7fr);gap:34px;align-items:center">
+      <div>
+        <h2 style="margin:0;font-size:27px;font-weight:700;letter-spacing:-.02em;color:#fff">Our Impact in Numbers</h2>
+        <p style="margin:12px 0 0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.88);max-width:320px">Every number represents a life touched, a community empowered, and a commitment we continue to uphold.</p>
+        <a href="./corporate-social-responsibility.html" style="margin-top:22px;display:inline-flex;align-items:center;gap:10px;background:#fff;color:#0e7f97;font-size:12px;font-weight:600;padding:9px 9px 9px 18px;border-radius:6px">See Our Impact
+          <span style="width:20px;height:20px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px">→</span>
+        </a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:16px">
+        <div style="border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:20px 12px;text-align:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></circle><path d="M12 7v5l4 2" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></path></svg>
+          <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-.02em" data-count="25" data-suffix="+">0+</div>
+          <div style="font-size:12px;line-height:1.4;color:rgba(255,255,255,.85);margin-top:4px">Years of<br>Excellence</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:20px 12px;text-align:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px" aria-hidden="true"><circle cx="9" cy="9" r="3.4" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></circle><circle cx="17" cy="10.5" r="2.6" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></circle><path d="M3 20c1.2-3.2 3.3-4.6 6-4.6s4.8 1.4 6 4.6" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></path></svg>
+          <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-.02em" data-count="500" data-suffix="+">0+</div>
+          <div style="font-size:12px;line-height:1.4;color:rgba(255,255,255,.85);margin-top:4px">Dedicated<br>Employees</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:20px 12px;text-align:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px" aria-hidden="true"><circle cx="12" cy="12" r="7.5" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></circle><circle cx="12" cy="12" r="3" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></circle></svg>
+          <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-.02em" data-count="10" data-suffix="M+">0M+</div>
+          <div style="font-size:12px;line-height:1.4;color:rgba(255,255,255,.85);margin-top:4px">Lives<br>Impacted</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.4);border-radius:10px;padding:20px 12px;text-align:center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="margin-bottom:8px" aria-hidden="true"><rect x="4" y="4" width="7" height="7" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></rect><rect x="13" y="4" width="7" height="7" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></rect><rect x="4" y="13" width="7" height="7" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></rect><rect x="13" y="13" width="7" height="7" stroke="rgba(255,255,255,.85)" stroke-width="1.6"></rect></svg>
+          <div style="font-size:30px;font-weight:800;color:#fff;letter-spacing:-.02em" data-count="4" data-suffix="+">0+</div>
+          <div style="font-size:12px;line-height:1.4;color:rgba(255,255,255,.85);margin-top:4px">Trusted<br>Brands</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Videos" data-reveal="1" style="background:#fff;padding:56px 28px 80px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(240px,1fr) minmax(0,1.9fr);gap:44px;align-items:center">
+      <div>
+        <h2 style="margin:0;font-size:30px;font-weight:700;letter-spacing:-.02em;color:#12313d">Lexta Videos</h2>
+        <div style="width:52px;height:3px;background:#12a3c4;border-radius:2px;margin-top:12px"></div>
+        <p style="margin:26px 0 0;font-size:14px;line-height:1.8;color:#5d7883;max-width:300px">Watch stories of impact, care and innovation that drive everything we do.</p>
+        <a href="./news.html" style="margin-top:24px;display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:10px 10px 10px 20px;border-radius:7px">More Videos
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+        </a>
+      </div>
+      <div style="position:relative;height:340px;border-radius:12px;overflow:hidden;box-shadow:0 20px 44px rgba(11,60,78,.2)">
+        <img src="https://lextagh.com/wp-content/uploads/2026/06/KAKEL-1897-scaled.jpg" alt="Lexta outreach team with students" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
+        <button type="button" aria-label="Play video" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:56px;height:56px;border-radius:50%;border:0;background:#12a3c4;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(4,40,52,.4)">▶</button>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Careers" data-reveal="1" style="position:relative;background:#0b2f3d;padding:0">
+    <div style="position:absolute;inset:0"><image-slot id="lx-careers" shape="rect" fit="cover" placeholder="Team celebration photo"></image-slot></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,42,55,.94),rgba(8,42,55,.72));pointer-events:none"></div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:70px 28px 120px;display:grid;grid-template-columns:minmax(260px,1.1fr) minmax(0,1fr);gap:50px;align-items:center">
+      <div>
+        <div style="font-size:14px;font-weight:600;color:#3fc0dd">Join Our Mission</div>
+        <h2 style="margin:12px 0 0;font-size:34px;font-weight:700;letter-spacing:-.02em;color:#fff">Current Opportunities</h2>
+        <p style="margin:16px 0 0;font-size:14px;line-height:1.8;color:rgba(255,255,255,.85);max-width:380px">Ready to make your mark? Explore our flexible career paths and be part of a team that is building a better tomorrow.</p>
+        <a href="./careers.html#openings" style="margin-top:26px;display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:11px 11px 11px 20px;border-radius:7px">View Openings
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+        </a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:18px;text-align:center">
+        <div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="#fff" aria-hidden="true"><path d="M8 3h13l7 7v23H8z" opacity=".95"></path><path d="M21 3l7 7h-7z" fill="#0b2f3d" opacity=".35"></path><rect x="12" y="15" width="12" height="2.2" fill="#0b2f3d"></rect><rect x="12" y="20" width="12" height="2.2" fill="#0b2f3d"></rect><rect x="12" y="25" width="7" height="2.2" fill="#0b2f3d"></rect></svg>
+          <div style="margin-top:10px;font-size:13px;font-weight:600;line-height:1.4;color:#fff">Growth<br>Opportunities</div>
+        </div>
+        <div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="#fff" aria-hidden="true"><circle cx="18" cy="11" r="5"></circle><path d="M9 30c0-5 4-8.5 9-8.5S27 25 27 30z"></path><circle cx="6" cy="14" r="3.6"></circle><path d="M0 28c0-3.6 2.7-6 6-6 1 0 2 .2 2.8.6C6.6 24.4 5.2 26 5 28z"></path><circle cx="30" cy="14" r="3.6"></circle><path d="M36 28c0-3.6-2.7-6-6-6-1 0-2 .2-2.8.6 2.2 1.8 3.6 3.4 3.8 5.4z"></path></svg>
+          <div style="margin-top:10px;font-size:13px;font-weight:600;line-height:1.4;color:#fff">Diverse &amp; Inclusive<br>Environment</div>
+        </div>
+        <div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="#fff" aria-hidden="true"><circle cx="18" cy="9" r="5"></circle><path d="M9 26c0-5 4-9 9-9s9 4 9 9z"></path><rect x="4" y="29" width="28" height="3.4" rx="1.7"></rect></svg>
+          <div style="margin-top:10px;font-size:13px;font-weight:600;line-height:1.4;color:#fff">Make a Positive<br>Impact</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div style="background:#0b2f3d;padding:0 28px">
+    <div style="max-width:1240px;margin:0 auto;position:relative;top:-52px">
+      <div style="background:linear-gradient(100deg,#14a0be,#2cbcd6);border-radius:12px;padding:26px 32px;display:grid;grid-template-columns:minmax(260px,1.2fr) minmax(0,1fr);gap:28px;align-items:center;box-shadow:0 18px 40px rgba(4,40,52,.35)">
+        <div style="display:flex;gap:20px;align-items:center">
+          <svg width="52" height="42" viewBox="0 0 52 42" fill="none" style="flex:0 0 auto" aria-hidden="true"><rect x="2" y="4" width="48" height="34" stroke="#fff" stroke-width="2"></rect><path d="M2 6l24 18L50 6" stroke="#fff" stroke-width="2"></path></svg>
+          <div>
+            <div style="font-size:17px;font-weight:700;color:#fff">Stay Connected</div>
+            <p style="margin:6px 0 0;font-size:12px;line-height:1.6;color:rgba(255,255,255,.9)">Subscribe to get the latest updates on our brands, initiatives and opportunities.</p>
+          </div>
+        </div>
+        <form data-subscribe="1" style="display:flex;gap:0;align-items:stretch">
+          <input type="email" placeholder="Enter your email address" aria-label="Email address" style="flex:1;min-width:0;border:0;border-radius:5px 0 0 5px;padding:11px 14px;font-size:13px;color:#12313d;outline:none">
+          <button type="submit" style="border:0;background:#0b2f3d;color:#fff;font-size:13px;font-weight:600;padding:0 22px;border-radius:0 5px 5px 0;cursor:pointer">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer style="background:#0b2f3d;padding:10px 28px 34px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:38px">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <img src="./assets/lexta-logo-white.png" alt="Lexta" style="height:40px;width:auto;display:block">
+        </div>
+        <p style="margin:16px 0 0;font-size:12px;line-height:1.8;color:rgba(255,255,255,.65);max-width:210px">Caring for you every day through quality products, innovation and community impact.</p>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <a href="https://www.facebook.com/lextagh" target="_blank" rel="noopener" aria-label="Facebook" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">f</a>
+          <a href="https://www.instagram.com/lextagh" target="_blank" rel="noopener" aria-label="Instagram" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">ig</a>
+          <a href="https://www.linkedin.com/company/lextagh" target="_blank" rel="noopener" aria-label="LinkedIn" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">in</a>
+          <a href="https://www.tiktok.com/@lextagh" target="_blank" rel="noopener" aria-label="TikTok" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">tk</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Quick Links</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="./about-us.html" style="font-size:12px;color:rgba(255,255,255,.7)">About Us</a>
+          <a href="./our-brands.html" style="font-size:12px;color:rgba(255,255,255,.7)">Our Brands</a>
+          <a href="./corporate-social-responsibility.html" style="font-size:12px;color:rgba(255,255,255,.7)">CSR</a>
+          <a href="./news.html" style="font-size:12px;color:rgba(255,255,255,.7)">News</a>
+          <a href="./careers.html" style="font-size:12px;color:rgba(255,255,255,.7)">Careers</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="./contact-us.html" style="font-size:12px;color:rgba(255,255,255,.7)">Contact Us</a>
+          <a href="./faqs.html" style="font-size:12px;color:rgba(255,255,255,.7)">FAQs</a>
+          <a href="./privacy-policy.html" style="font-size:12px;color:rgba(255,255,255,.7)">Privacy Policy</a>
+          <a href="./terms-and-conditions.html" style="font-size:12px;color:rgba(255,255,255,.7)">Terms &amp; Conditions</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Contact Us</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><circle cx="7" cy="6" r="2.4" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></circle><path d="M7 13c3-4 5-6 5-8a5 5 0 10-10 0c0 2 2 4 5 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>Lexta Square, Olusegu Obasanjo Highway, Dzorwulu, Accra, Ghana.</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><path d="M2 3c0 5 4 9 9 9l1.5-2.5-3-1.5-1.5 1.5C6.5 8.5 5.5 7.5 4.5 5.5L6 4 4.5 1 2 3z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>+233 (0) 501 619 588<br>+233 (0) 302 235 296</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><rect x="1" y="3" width="12" height="9" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></rect><path d="M1 3.5l6 4.5 6-4.5" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>support@lextagh.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1240px;margin:32px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="font-size:11px;color:rgba(255,255,255,.55)">© 2026. Lexta Ghana LTD. All Rights Reserved.</div>
+      <button type="button" data-totop="1" aria-label="Back to top" style="width:30px;height:30px;border-radius:6px;border:0;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;font-size:12px">▲</button>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stickyNav&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;revealOnScroll&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;heroInterval&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:6500,&quot;min&quot;:3000,&quot;max&quot;:12000,&quot;step&quot;:500,&quot;unit&quot;:&quot;ms&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Hero slider&quot;}}">
+class Component extends DCLogic {
+  componentDidMount() {
+    const root = this.el || document;
+    const nav = root.querySelector('[data-nav]');
+    if (nav && this.props.stickyNav === false) nav.style.position = 'static';
+
+    if (this.props.revealOnScroll !== false && 'IntersectionObserver' in window) {
+      const els = root.querySelectorAll('[data-reveal]');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.style.animation = 'lxrise .7s cubic-bezier(.2,.7,.2,1) both';
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      const show = (el) => { el.style.opacity = ''; el.style.animation = ''; };
+      els.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.9) return;
+        el.style.opacity = '0';
+        io.observe(el);
+        setTimeout(() => show(el), 4000);
+      });
+      this._io = io;
+    }
+
+    const hero = root.querySelector('[data-hero]');
+    if (hero) {
+      const slides = Array.from(hero.querySelectorAll('[data-slide]'));
+      const dots = Array.from(hero.querySelectorAll('[data-dot]'));
+      let i = 0;
+      const go = (n, dir) => {
+        const from = i;
+        i = (n + slides.length) % slides.length;
+        const d = dir === undefined ? (i === (from + 1) % slides.length ? 1 : -1) : dir;
+        slides.forEach((s, k) => {
+          if (k === i) {
+            if (k !== from) {
+              s.style.transition = 'none';
+              s.style.transform = 'translateX(' + (d > 0 ? '100%' : '-100%') + ')';
+              void s.offsetWidth;
+              s.style.transition = 'transform .85s cubic-bezier(.3,.7,.2,1)';
+            }
+            s.style.transform = 'translateX(0)';
+            s.style.pointerEvents = '';
+            s.style.zIndex = '3';
+            const t = s.querySelector('[data-slide-text]');
+            if (t) { t.style.animation = 'none'; void t.offsetWidth; t.style.animation = 'lxrise .8s cubic-bezier(.2,.7,.2,1) both'; }
+          } else if (k === from) {
+            s.style.transition = 'transform .85s cubic-bezier(.3,.7,.2,1)';
+            s.style.transform = 'translateX(' + (d > 0 ? '-100%' : '100%') + ')';
+            s.style.pointerEvents = 'none';
+            s.style.zIndex = '2';
+          } else {
+            s.style.transition = 'none';
+            s.style.transform = 'translateX(100%)';
+            s.style.pointerEvents = 'none';
+            s.style.zIndex = '1';
+          }
+        });
+        dots.forEach((d, k) => { d.style.background = k === i ? '#12a3c4' : 'rgba(255,255,255,.4)'; d.style.width = k === i ? '26px' : '26px'; });
+      };
+      const delay = Math.max(2500, (this.props.heroInterval || 4000));
+      let timer = setInterval(() => go(i + 1, 1), delay);
+      const reset = () => { clearInterval(timer); timer = setInterval(() => go(i + 1, 1), delay); };
+      dots.forEach((d, k) => d.addEventListener('click', () => { go(k, k > i ? 1 : -1); reset(); }));
+      const prev = hero.querySelector('[data-hero-prev]');
+      const next = hero.querySelector('[data-hero-next]');
+      if (prev) prev.addEventListener('click', () => { go(i - 1, -1); reset(); });
+      if (next) next.addEventListener('click', () => { go(i + 1, 1); reset(); });
+      this._heroStop = () => clearInterval(timer);
+      go(0);
+    }
+
+    const acar = root.querySelector('[data-acar]');
+    if (acar) {
+      const track = acar.querySelector('[data-acar-track]');
+      const cards = Array.from(track.children);
+      const dots = Array.from(acar.querySelectorAll('[data-acar-dot]'));
+      let a = 0;
+      const maxIdx = Math.max(0, cards.length - 2);
+      const go = (n) => {
+        a = n > maxIdx ? 0 : (n < 0 ? maxIdx : n);
+        const step = cards[0].getBoundingClientRect().width + 22;
+        track.style.transform = 'translateX(' + (-a * step) + 'px)';
+        dots.forEach((d, k) => { d.style.background = k === a ? '#12a3c4' : 'rgba(18,163,196,.28)'; });
+      };
+      let at = setInterval(() => go(a + 1), 4000);
+      const areset = () => { clearInterval(at); at = setInterval(() => go(a + 1), 4000); };
+      acar.querySelector('[data-acar-prev]').addEventListener('click', () => { go(a - 1); areset(); });
+      acar.querySelector('[data-acar-next]').addEventListener('click', () => { go(a + 1); areset(); });
+      dots.forEach((d, k) => d.addEventListener('click', () => { go(k); areset(); }));
+      window.addEventListener('resize', () => go(a));
+      this._acarStop = () => clearInterval(at);
+      go(0, 1);
+    }
+
+    const counters = Array.from(root.querySelectorAll('[data-count]'));
+    if (counters.length) {
+      const run = (el) => {
+        const target = parseFloat(el.getAttribute('data-count')) || 0;
+        const suffix = el.getAttribute('data-suffix') || '';
+        const dur = 1500, t0 = performance.now();
+        const tick = (now) => {
+          const p = Math.min(1, (now - t0) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(target * eased) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+      if ('IntersectionObserver' in window) {
+        const cio = new IntersectionObserver((entries) => {
+          entries.forEach((e) => { if (e.isIntersecting) { run(e.target); cio.unobserve(e.target); } });
+        }, { threshold: 0.4 });
+        counters.forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) run(el); else cio.observe(el);
+        });
+        this._cio = cio;
+        setTimeout(() => counters.forEach((el) => { if (el.textContent.trim().charAt(0) === '0') run(el); }), 4000);
+      } else counters.forEach(run);
+    }
+
+    const form = root.querySelector('[data-subscribe]');
+    if (form) form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const btn = form.querySelector('button');
+      const input = form.querySelector('input');
+      if (btn) { btn.textContent = 'Subscribed'; }
+      if (input) { input.value = ''; input.placeholder = 'Thanks for subscribing!'; }
+    });
+
+    const top = root.querySelector('[data-totop]');
+    if (top) top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._heroStop) this._heroStop(); if (this._acarStop) this._acarStop(); if (this._cio) this._cio.disconnect(); }
+  renderVals() { return {}; }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: #14313d; background: #fff; -webkit-font-smoothing: antialiased; }
+  a { color: #128fb0; text-decoration: none; }
+  a:hover { color: #0b6d88; }
+  input, button { font-family: inherit; }
+  @keyframes lxrise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+</style>
+<link rel="stylesheet" href="./site-responsive.css">
+<script src="./site-mobile-nav.js"></script>
+</helmet>
+
+<div style="width:100%;overflow-x:clip">
+
+  <header data-nav="1" style="position:sticky;top:0;z-index:60;background:#fff;box-shadow:0 1px 0 rgba(10,55,70,.08)">
+    <div style="max-width:1240px;margin:0 auto;padding:12px 28px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:24px">
+      <a href="/" style="display:flex;align-items:center;gap:8px;flex:0 0 auto">
+        <img src="./assets/lexta-logo.png" alt="Lexta" style="height:44px;width:auto;display:block">
+      </a>
+      <nav style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:nowrap;min-width:0">
+        <a href="/" style="font-size:13px;font-weight:500;color:#1d3c48">Home</a>
+        <a href="./about-us.html" style="font-size:13px;font-weight:600;color:#12a3c4;box-shadow:0 8px 0 -6px #12a3c4">About Us</a>
+        <a href="./our-brands.html" style="font-size:13px;font-weight:500;color:#1d3c48">Brands</a>
+        <a href="./people-and-culture.html" style="font-size:13px;font-weight:500;color:#1d3c48">People &amp; Culture</a>
+        <a href="./corporate-social-responsibility.html" style="font-size:13px;font-weight:500;color:#1d3c48">CSR</a>
+        <a href="./news.html" style="font-size:13px;font-weight:500;color:#1d3c48">News</a>
+        <a href="./careers.html" style="font-size:13px;font-weight:500;color:#1d3c48">Careers</a>
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px;flex:0 0 auto;justify-self:end">
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;background:#12a3c4;font-size:12.5px;font-weight:700;color:#fff;white-space:nowrap" style-hover="background:#0d8ba8">Contact Us</a>
+        <a href="./partner-with-us.html" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border-radius:9px;border:1px solid rgba(18,163,196,.45);font-size:12.5px;font-weight:600;color:#12a3c4;white-space:nowrap" style-hover="background:#f1fbfe">Partner With Us</a>
+      </div>
+    </div>
+  </header>
+
+  <section data-screen-label="About hero" style="position:relative;background:#0c303e;overflow:hidden;min-height:460px;display:flex;align-items:center;padding:92px 28px">
+    <div style="position:absolute;inset:0">
+      <image-slot id="ab-hero" shape="rect" fit="cover" placeholder="Lexta team / factory photo" src="./assets/about-hero.png"></image-slot>
+    </div>
+    <div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,32,42,.92) 0%,rgba(6,32,42,.66) 48%,rgba(6,32,42,.2) 80%);pointer-events:none"></div>
+    <div style="position:relative;width:100%;max-width:1240px;margin:0 auto">
+      <div style="max-width:660px">
+        <div style="font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">About Lexta Ghana</div>
+        <div style="width:46px;height:4px;background:#12a3c4;border-radius:2px;margin-top:18px"></div>
+        <h1 style="margin:20px 0 0;font-size:clamp(30px,6vw,52px);line-height:1.08;font-weight:800;letter-spacing:-.03em;color:#fff;text-wrap:pretty">We make what we sell, <span style="color:#3fc0dd">under our own roof</span></h1>
+        <p style="margin:18px 0 0;font-size:15px;line-height:1.8;color:rgba(255,255,255,.92);max-width:600px;text-wrap:pretty">Lexta Ghana Limited is a Ghanaian manufacturer of home care, personal care and food products. Founded in Accra in 2002, we make and distribute the everyday essentials that families across Ghana and the wider West African sub-region reach for without thinking twice.</p>
+      </div>
+    </div>
+  </section>
+
+
+  <section data-reveal="1" style="background:#fff;padding:60px 28px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:52px;align-items:stretch">
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Welcome from the Founder</div>
+        <h2 style="margin:14px 0 0;font-size:32px;line-height:1.18;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Welcome to Lexta Ghana Limited</h2>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-top:20px">
+          <p style="margin:0;font-size:14px;line-height:1.9;color:#5d7883">At Lexta, we believe that great brands and quality products have the power to transform lives, create opportunities and inspire communities. Since our inception, our commitment has been to deliver excellence, innovation and value across every product and service we offer.</p>
+          <p style="margin:0;font-size:14px;line-height:1.9;color:#5d7883">As a proudly Ghanaian company, we are driven by a passion for growth, customer satisfaction and meaningful impact. Every step we take is guided by integrity, quality and a desire to exceed expectations.</p>
+          <p style="margin:0;font-size:14px;line-height:1.9;color:#5d7883">Whether you are a customer, partner, distributor or visitor, thank you for taking the time to learn more about us. We are excited to have you on this journey and look forward to building lasting relationships that create shared success.</p>
+          <p style="margin:0;font-size:15px;line-height:1.8;color:#12313d;font-weight:600">Welcome to the Lexta family.</p>
+        </div>
+        <div style="margin-top:26px;padding-top:20px;border-top:1px solid rgba(18,163,196,.25)">
+          <div style="font-size:14px;font-weight:700;color:#12313d">Martin Osei Kwaku Brobbey</div>
+          <div style="margin-top:3px;font-size:12px;color:#5d7883">Founder and Managing Director, Lexta Ghana Limited</div>
+        </div>
+      </div><div style="border-radius:14px;overflow:hidden;min-height:420px;box-shadow:0 20px 44px rgba(11,60,78,.18);align-self:stretch;display:flex"><image-slot id="ab-founder" shape="rect" fit="cover" placeholder="Martin Brobbey portrait" style="display:block;width:100%;height:100%" src="./pasted-1788862581207-0-mtsildjv-3sh7.png"></image-slot></div>
+      
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#fff;padding:60px 28px 30px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:54px;align-items:center">
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:170px 170px;gap:16px">
+        <div style="grid-row:span 2;border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)"><image-slot id="ab-story-1" shape="rect" fit="cover" placeholder="Production line photo" src="./pasted-1788862892966-0-mtsis246-yfed.png"></image-slot></div>
+        <div style="border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)"><image-slot id="ab-story-2" shape="rect" fit="cover" placeholder="Team at work" src="./pasted-1788863146762-0-mtsixhy1-fej8.png"></image-slot></div>
+        <div style="border-radius:12px;overflow:hidden;box-shadow:0 18px 38px rgba(11,60,78,.16)"><image-slot id="ab-story-3" shape="rect" fit="cover" placeholder="Product shelf photo" src="./pasted-1788863589556-0-mtsj6zlp-gm1a.png"></image-slot></div>
+      </div><div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Our Story</div>
+        <h2 style="margin:14px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">A return home, and a clear ambition</h2>
+        <p style="margin:18px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Lexta Ghana Limited was established in 2002 by Martin Brobbey, following more than ten years in the United Kingdom and a return home with a clear ambition: to improve everyday living through quality consumer products that ordinary Ghanaian households could actually afford.</p>
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.9;color:#5d7883">The company began as a supplier of home care products. It has since grown into one of Ghana's established consumer goods manufacturers, expanding across home care, personal care and food, and building a distribution network that reaches supermarkets, pharmacies, market traders and neighbourhood shops nationwide.</p>
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Today our portfolio carries three brands: Yazz, Hooch and Linzzy. Each was developed to serve a specific need in the Ghanaian home, and each holds to the same standard of quality, safety and value.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:18px;margin-top:30px">
+          <div style="border-left:3px solid #12a3c4;padding-left:14px">
+            <div style="font-size:26px;font-weight:800;color:#12313d;letter-spacing:-.02em">2002</div>
+            <div style="font-size:12px;color:#5d7883;margin-top:2px">Founded in Accra</div>
+          </div>
+          <div style="border-left:3px solid #12a3c4;padding-left:14px">
+            <div style="font-size:26px;font-weight:800;color:#12313d;letter-spacing:-.02em">4</div>
+            <div style="font-size:12px;color:#5d7883;margin-top:2px">Brands in the portfolio</div>
+          </div>
+          <div style="border-left:3px solid #12a3c4;padding-left:14px">
+            <div style="font-size:26px;font-weight:800;color:#12313d;letter-spacing:-.02em">2</div>
+            <div style="font-size:12px;color:#5d7883;margin-top:2px">Countries of operation</div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <section data-journey="1" data-screen-label="Journey" style="background:#f7fcfe;border-top:1px solid rgba(18,163,196,.14);border-bottom:1px solid rgba(18,163,196,.14)">
+    <div style="max-width:760px;margin:0 auto;padding:74px 28px 0;text-align:center">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Our Journey</div>
+      <h2 style="margin:14px 0 0;font-size:34px;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Two decades, step by step</h2>
+      <p style="margin:16px auto 0;max-width:520px;font-size:14px;line-height:1.8;color:#5d7883">Scroll through the milestones that took Lexta from a single home care category to three brands made under one roof.</p>
+    </div>
+
+    <div data-journey-bar="1" style="position:sticky;top:74px;z-index:20;background:rgba(247,252,254,.94);backdrop-filter:blur(8px);border-bottom:1px solid rgba(18,163,196,.16);margin-top:44px">
+      <div style="max-width:1000px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:22px">
+        <div data-year-big="1" style="font-size:34px;line-height:1;font-weight:800;letter-spacing:-.03em;color:#12a3c4;min-width:110px;transition:opacity .3s ease,transform .4s cubic-bezier(.2,.7,.2,1)">1990s</div>
+        <div style="flex:1;display:flex;align-items:center;gap:8px;min-width:0">
+          <div data-dot="0" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <span style="width:7px;height:7px;border-radius:50%;background:#12a3c4;transition:background .3s ease,transform .3s ease;flex:0 0 auto"></span>
+            <span style="font-size:12px;font-weight:600;color:#12313d;transition:color .3s ease">Before Lexta</span>
+          </div>
+          <span style="flex:1;min-width:14px;height:1px;background:rgba(18,163,196,.28)"></span>
+          <div data-dot="1" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(18,163,196,.3);transition:background .3s ease,transform .3s ease;flex:0 0 auto"></span>
+            <span style="font-size:12px;font-weight:600;color:#93a9b1;transition:color .3s ease">2002</span>
+          </div>
+          <span style="flex:1;min-width:14px;height:1px;background:rgba(18,163,196,.28)"></span>
+          <div data-dot="2" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(18,163,196,.3);transition:background .3s ease,transform .3s ease;flex:0 0 auto"></span>
+            <span style="font-size:12px;font-weight:600;color:#93a9b1;transition:color .3s ease">2010</span>
+          </div>
+          <span style="flex:1;min-width:14px;height:1px;background:rgba(18,163,196,.28)"></span>
+          <div data-dot="3" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <span style="width:7px;height:7px;border-radius:50%;background:rgba(18,163,196,.3);transition:background .3s ease,transform .3s ease;flex:0 0 auto"></span>
+            <span style="font-size:12px;font-weight:600;color:#93a9b1;transition:color .3s ease">Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="max-width:1000px;margin:0 auto;padding:0 28px 60px;display:flex;flex-direction:column">
+      <div data-mile="1" data-year="1990s" style="min-height:60vh;display:flex;align-items:center">
+        <div data-mile-inner="1" style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:44px;align-items:center;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">Before Lexta: the UK years</div>
+            <h3 style="margin:14px 0 0;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">More than ten years abroad, and a reason to come back</h3>
+            <p style="margin:16px 0 0;font-size:15px;line-height:1.9;color:#5d7883">Martin Brobbey spent over a decade in the United Kingdom before returning to Ghana. He came home with one ambition: a cleaner, more hygienic Africa, served by quality consumer products that ordinary households could actually afford. That conviction is the reason Lexta exists.</p>
+          </div>
+          <div style="border-radius:14px;overflow:hidden;height:320px;box-shadow:0 20px 44px rgba(11,60,78,.16);"><image-slot id="ab-mile-1" shape="rect" fit="cover" placeholder="Founder / early days photo" style="display:block;width:100%;height:100%" src="./pasted-1788863343139-0-mtsj1pgq-1xnf.png"></image-slot></div>
+        </div>
+      </div>
+      <div data-mile="1" data-year="2002" style="min-height:60vh;display:flex;align-items:center">
+        <div data-mile-inner="1" style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:44px;align-items:center;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">2002: The beginning</div>
+            <h3 style="margin:14px 0 0;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Founded in Accra as a home care supplier</h3>
+            <p style="margin:16px 0 0;font-size:15px;line-height:1.9;color:#5d7883">Lexta Ghana Limited was established in Accra in 2002, starting out as a supplier of home care products. The early years were spent learning the market shop by shop, what families buy, at what price, and how often. That groundwork still shapes how we build products today.</p>
+          </div>
+          <div style="border-radius:14px;overflow:hidden;height:320px;box-shadow:0 20px 44px rgba(11,60,78,.16);order:-1"><image-slot id="ab-mile-2" shape="rect" fit="cover" placeholder="First home care products photo" style="display:block;width:100%;height:100%" src="./pasted-1788863387410-0-mtsj2nmh-7baf.png"></image-slot></div>
+        </div>
+      </div>
+      <div data-mile="1" data-year="2010" style="min-height:60vh;display:flex;align-items:center">
+        <div data-mile-inner="1" style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:44px;align-items:center;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">2010: Across the border</div>
+            <h3 style="margin:14px 0 0;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Our first border crossing, into Monrovia</h3>
+            <p style="margin:16px 0 0;font-size:15px;line-height:1.9;color:#5d7883">Our wholly owned subsidiary in Monrovia, Liberia, has operated successfully since 2010. It proved the model travels: the same products, the same standard, served through people who know their own market. It remains the foundation of our wider ambitions for the sub-region.</p>
+          </div>
+          <div style="border-radius:14px;overflow:hidden;height:320px;box-shadow:0 20px 44px rgba(11,60,78,.16);"><image-slot id="ab-mile-3" shape="rect" fit="cover" placeholder="Monrovia / Liberia operation photo" style="display:block;width:100%;height:100%" src="./pasted-1788863416272-0-mtsj39w5-y1jr.png"></image-slot></div>
+        </div>
+      </div>
+      <div data-mile="1" data-year="Today" style="min-height:60vh;display:flex;align-items:center">
+        <div data-mile-inner="1" style="width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:44px;align-items:center;transition:opacity .5s ease,transform .6s cubic-bezier(.2,.7,.2,1)">
+          <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">Today: Three brands</div>
+            <h3 style="margin:14px 0 0;font-size:30px;line-height:1.2;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Yazz, Hooch and Linzzy  made to one standard</h3>
+            <p style="margin:16px 0 0;font-size:15px;line-height:1.9;color:#5d7883">Our portfolio now carries three brands across home care, personal care and food, each developed for a specific need in the Ghanaian home. Manufacturing sits under our own roof, so quality, safety and value are ours to guarantee, not a supplier’s promise.</p>
+            <a href="./our-brands.html" style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#12a3c4">Explore the brands <span style="font-size:14px">→</span></a>
+          </div>
+          <div style="border-radius:14px;overflow:hidden;height:320px;box-shadow:0 20px 44px rgba(11,60,78,.16);order:-1"><image-slot id="ab-mile-4" shape="rect" fit="cover" placeholder="Three brands lineup photo" style="display:block;width:100%;height:100%" src="./pasted-1788863699695-0-mtsj9cl9-7qaa.png"></image-slot></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="1" style="position:relative;background:#0b2f3d;overflow:hidden">
+    <div style="position:absolute;inset:0"><image-slot id="ab-quality" shape="rect" fit="cover" placeholder="Quality lab / QC photo" src="./pasted-1788862892966-0-mtsis246-yfed.png"></image-slot></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(95deg,rgba(8,42,55,.95),rgba(8,42,55,.7));pointer-events:none"></div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:80px 28px">
+      <div style="max-width:660px">
+        <h2 style="margin:0;font-size:36px;line-height:1.15;font-weight:700;letter-spacing:-.03em;color:#fff;text-wrap:pretty">What is care without quality?</h2>
+        <p style="margin:20px 0 0;font-size:15px;line-height:1.9;color:rgba(255,255,255,.92)">Our operational philosophy rests on a single conviction: real care requires uncompromising standards.</p>
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.9;color:rgba(255,255,255,.82)">We have grown from a local supplier into a competitive pan-African enterprise by investing where it matters. Rigorous quality control. Manufacturing infrastructure that can move at the pace the market demands. Distribution networks that carry our promises intact from our factory floor to a shelf in a village shop.</p>
+        <div style="margin-top:26px;font-size:18px;font-weight:700;color:#3fc0dd">Affordable, accessible, and made with care.</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#fff;padding:24px 28px 0">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px">
+      <div style="border-radius:12px;overflow:hidden;height:230px"><image-slot id="ab-strip-1" shape="rect" fit="cover" placeholder="Factory floor" src="./assets/about-hero.png"></image-slot></div>
+      <div style="border-radius:12px;overflow:hidden;height:230px"><image-slot id="ab-strip-2" shape="rect" fit="cover" placeholder="Packing / filling line" src="./pasted-1788863665969-0-mtsj8mkd-3thf.png"></image-slot></div>
+      <div style="border-radius:12px;overflow:hidden;height:230px"><image-slot id="ab-strip-3" shape="rect" fit="cover" placeholder="Retail shelf" src="./pasted-1788863569187-0-mtsj6jyu-9jac.png"></image-slot></div>
+      <div style="border-radius:12px;overflow:hidden;height:230px"><image-slot id="ab-strip-4" shape="rect" fit="cover" placeholder="Delivery fleet" src="./pasted-1788863699695-0-mtsj9cl9-7qaa.png"></image-slot></div>
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#fff;padding:76px 28px">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="max-width:620px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Corporate Pillars</div>
+        <h2 style="margin:14px 0 0;font-size:32px;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Three things we invest in, without exception</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:40px">
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:200px"><image-slot id="ab-pillar-1" shape="rect" fit="cover" placeholder="Production line photo" src="./assets/about-hero.png"></image-slot></div>
+          <div style="padding:26px 28px 30px">
+          <div style="font-size:15px;font-weight:700;color:#12313d">Manufacturing excellence</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.8;color:#5d7883">Our production operates under stringent international hygiene and regulatory benchmarks. Every batch meets defined safety criteria before it leaves our facility.</p>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:200px"><image-slot id="ab-pillar-2" shape="rect" fit="cover" placeholder="Warehouse / logistics photo" src="./pasted-1788863146762-0-mtsixhy1-fej8.png"></image-slot></div>
+          <div style="padding:26px 28px 30px">
+          <div style="font-size:15px;font-weight:700;color:#12313d">Sub-regional logistics</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.8;color:#5d7883">Headquartered in Accra, our supply chain is built for high-volume delivery across the domestic market and into West Africa, including our Liberian operation.</p>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:200px"><image-slot id="ab-pillar-3" shape="rect" fit="cover" placeholder="Product testing photo" src="./pasted-1788863665969-0-mtsj8mkd-3thf.png"></image-slot></div>
+          <div style="padding:26px 28px 30px">
+          <div style="font-size:15px;font-weight:700;color:#12313d">Consumer-centred R&amp;D</div>
+          <p style="margin:10px 0 0;font-size:13px;line-height:1.8;color:#5d7883">We refine our products against how Ghanaian families actually use them. Quality, safety, freshness and value are measured against real households, not laboratory assumptions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#fff;padding:76px 28px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:52px;align-items:stretch">
+      <div style="border-radius:14px;overflow:hidden;min-height:440px;display:flex;box-shadow:0 20px 44px rgba(11,60,78,.18)"><image-slot id="ab-values" shape="rect" fit="cover" placeholder="Staff / team culture photo" style="display:block;width:100%;height:100%" src="./pasted-1788864443586-0-mtsjpakl-bqdh.png"></image-slot></div>
+      <div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Our Core Values</div>
+        <h2 style="margin:14px 0 0;font-size:32px;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Four words we hold each other to</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-top:34px">
+          <div style="background:#f4fafc;border:1px solid #dceef3;border-radius:14px;padding:24px 22px 26px;transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px);box-shadow:0 18px 36px rgba(11,60,78,.14)">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#12a3c4">01</div>
+            <div style="margin-top:14px;font-size:17px;font-weight:700;color:#12313d">Committed</div>
+            <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">To building sustainable brands.</p>
+          </div>
+          <div style="background:#0b2f3d;border:1px solid #0b2f3d;border-radius:14px;padding:24px 22px 26px;margin-top:26px;transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px);box-shadow:0 18px 36px rgba(11,60,78,.24)">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#3fc0dd">02</div>
+            <div style="margin-top:14px;font-size:17px;font-weight:700;color:#fff">Aspiring</div>
+            <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.82)">To become better versions of ourselves.</p>
+          </div>
+          <div style="background:#0b2f3d;border:1px solid #0b2f3d;border-radius:14px;padding:24px 22px 26px;transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px);box-shadow:0 18px 36px rgba(11,60,78,.24)">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#3fc0dd">03</div>
+            <div style="margin-top:14px;font-size:17px;font-weight:700;color:#fff">Respect</div>
+            <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:rgba(255,255,255,.82)">For each other, our business partners, our consumers and our community.</p>
+          </div>
+          <div style="background:#f4fafc;border:1px solid #dceef3;border-radius:14px;padding:24px 22px 26px;margin-top:26px;transition:transform .25s ease,box-shadow .25s ease" style-hover="transform:translateY(-4px);box-shadow:0 18px 36px rgba(11,60,78,.14)">
+            <div style="font-size:11px;font-weight:700;letter-spacing:.18em;color:#12a3c4">04</div>
+            <div style="margin-top:14px;font-size:17px;font-weight:700;color:#12313d">Care</div>
+            <p style="margin:8px 0 0;font-size:13px;line-height:1.8;color:#5d7883">It is what truly makes the world go round.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#0b2f3d;padding:82px 28px">
+    <div style="max-width:1080px;margin:0 auto">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd">At Lexta, we ask</div>
+      <div style="margin-top:26px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 44px;padding:30px 0;border-top:1px solid rgba(255,255,255,.14)">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#3fc0dd;padding-top:8px">01</div>
+          <div style="grid-column:span 2">
+            <div style="font-size:clamp(19px,2.2vw,24px);line-height:1.45;font-weight:600;letter-spacing:-.02em;color:#fff;text-wrap:pretty">What is care if it is not of the utmost quality?</div>
+            <p style="margin:10px 0 0;font-size:14px;line-height:1.85;color:rgba(255,255,255,.78);max-width:560px">So we make the best products we can, using premium materials, for you.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 44px;padding:30px 0;border-top:1px solid rgba(255,255,255,.14)">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#3fc0dd;padding-top:8px">02</div>
+          <div style="grid-column:span 2">
+            <div style="font-size:clamp(19px,2.2vw,24px);line-height:1.45;font-weight:600;letter-spacing:-.02em;color:#fff;text-wrap:pretty">What is care if the people we create it for cannot share in it?</div>
+            <p style="margin:10px 0 0;font-size:14px;line-height:1.85;color:rgba(255,255,255,.78);max-width:560px">So we make our products affordable, without compromising quality.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 44px;padding:30px 0;border-top:1px solid rgba(255,255,255,.14)">
+          <div style="font-size:12px;font-weight:700;letter-spacing:.18em;color:#3fc0dd;padding-top:8px">03</div>
+          <div style="grid-column:span 2">
+            <div style="font-size:clamp(19px,2.2vw,24px);line-height:1.45;font-weight:600;letter-spacing:-.02em;color:#fff;text-wrap:pretty">How do we make sure that affordable quality becomes the standard, enjoyed by far more people?</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:44px;padding-top:34px;border-top:2px solid #3fc0dd;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px 44px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#3fc0dd;padding-top:8px">Our Pledge</div>
+        <p style="grid-column:span 2;margin:0;font-size:clamp(22px,2.9vw,30px);line-height:1.45;font-weight:700;letter-spacing:-.025em;color:#fff;text-wrap:pretty">We pledge to be true to our purpose and to bring quality, affordable care to all of Africa, every day.</p>
+      </div>
+    </div>
+  </section>
+  <section id="leadership" data-reveal="1" style="background:#f7fcfe;padding:78px 28px;border-bottom:1px solid rgba(18,163,196,.14)">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="max-width:760px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Leadership</div>
+        <h2 style="margin:14px 0 0;font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Guided by vision, driven by excellence</h2>
+        <p style="margin:18px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Our strategic direction and operational integrity are anchored by an experienced leadership team. We combine seasoned industry veterans with forward-thinking professionals who share a single commitment: delivering exceptional value to our consumers while driving sustainable growth for our stakeholders.</p>
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.9;color:#5d7883">Our governance structure ensures that we operate with transparency, uphold our core values, and maintain our position as a trusted manufacturer in the West African consumer goods sector.</p>
+      </div>
+
+      <div style="margin-top:52px;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#12a3c4">Board of Directors</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:24px">
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-1" shape="rect" fit="cover" placeholder="Rev. Albert Ocran portrait" src="./pasted-1788862404857-0-mtsihlh8-zqob.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Rev. Albert Ocran</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Chairman</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Rev. Albert Ocran is an international motivational speaker, minister and executive coach. He is Lead Consultant of Legacy &amp; Legacy, Executive Director of the Springboard Road Show Foundation, and Executive Pastor at ICGC Christ Temple.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">As a corporate trainer and executive coach, his client list spans the mining, banking, telecommunications, insurance, petrochemical and not-for-profit sectors. He was voted by his peers as Ghana's 7th Most Respected CEO in 2009, received the Millennium Excellence Award in 2010, and has been named four consecutive years among the 100 most influential Ghanaians by viewers of ETV Ghana.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">He is a fellow of the Africa Leadership Initiative and the Aspen Global Leaders Network. Together with his wife Comfort, he has published 21 bestselling books, including the leadership work “The Lord, Madiba and The Eagle.” The couple travel across Ghana annually with the Springboard Road Show.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-2" shape="rect" fit="cover" placeholder="Mr. Martin Brobbey portrait" src="./pasted-1788862416064-0-mtsihu4k-1tx9.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mr. Martin Brobbey</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Founder and Managing Director</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Martin Brobbey established Lexta Ghana Limited in 2002 on his return to Ghana after more than ten years in the United Kingdom, driven by a desire to see a cleaner, more hygienic Africa. His leadership and interpersonal skills have taken Lexta from a single-category supplier to a leader in home and personal care both locally and beyond.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">A product of Opoku Ware School, he holds a Bachelor of Business Administration in Business, Management and Marketing from the Ghana Institute of Management and Public Administration. His passion lies in marketing and new product development.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-3" shape="rect" fit="cover" placeholder="Mrs. Mary Asare-Yeboah portrait" src="./pasted-1788862424012-0-mtsii09b-wwea.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mrs. Mary Asare-Yeboah</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Member</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Mrs. Asare-Yeboah is an accomplished banker with more than 19 years of senior management experience at HFC Bank Ghana Limited, where she served in roles from Senior Finance Officer to Head of Banking Operations until her retirement in 2013.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Before banking, she worked with Texaco Ghana Limited and Shell Ghana Limited as Management Secretary and Administrative Manager respectively, and earlier in her career at GETZ Jewellers in the United States.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">She holds an MBA in Finance and a BSc in Banking and Finance, and is an Associate member of the Chartered Institute of Bankers. She serves on the board of the Accra Symphony Orchestra and previously served on the board of Central Aid, Ghana.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-4" shape="rect" fit="cover" placeholder="Mr. Kojo Ohene-Kyei portrait" src="./pasted-1788862429966-0-mtsii4ur-kj1t.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mr. Kojo Ohene-Kyei</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Member</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Mr. Ohene-Kyei is Chief Executive Officer of IFS Financial Services Limited, a leading non-bank financial institution founded in Ghana in 2006.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">An astute finance professional, he brings over 30 years of experience spanning corporate banking, risk management, corporate governance and business transformation. His leadership roles include Deputy Risk Management Director, Business Banking Director and Country Credit Director, all at Barclays Bank Ghana.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">He is a Fellow of the Chartered Institute of Bankers in Ghana and an Associate of the Chartered Institute of Bankers in the United Kingdom, and holds an MBA from Henley Management College. He is currently Chief Executive Officer of IFS Capital Management and a Non-Executive Director of the Council for Scientific and Industrial Research, Plant Genetic Resources Research Institute.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-5" shape="rect" fit="cover" placeholder="Mr. Ebo Hammond portrait" src="./pasted-1788862437111-0-mtsiiad5-0a2z.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mr. Ebo Hammond</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Member</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Mr. Hammond holds a BSc in Business Administration from the University of Ghana Business School and an MBA from the University of Edinburgh Business School. He also holds a Postgraduate Diploma in Marketing from the Chartered Institute of Marketing in the United Kingdom, and is a third-year PhD candidate at the University of Ghana Business School.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">His professional qualifications include certificates in Vehicle Fleet Management (United Kingdom), Physical Distribution (Japan), World Bank Procurement of Goods (Ghana), Logistics and Supply Chain Management (South Africa) and Logistics and Distribution Management (Singapore).</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">He is a Chartered Fellow of the Chartered Institute of Logistics and Transport and a part-time university lecturer in logistics, supply chain and strategy. He currently serves as Executive Secretary of CILT Ghana and Deputy Director in charge of Transportation Management at the Ghana Health Service.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-6" shape="rect" fit="cover" placeholder="Mrs. Yvonne Brobbey portrait" src="./pasted-1788862442898-0-mtsiietz-z88y.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mrs. Yvonne Brobbey</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Member</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Mrs. Brobbey is an accomplished entrepreneur with deep experience in marketing and customer service, gained in part during her time with NatWest in the United Kingdom.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">She was instrumental in building the Yazz brand, leading marketing campaigns across the country in Lexta's early years. She currently owns and manages Ivie Collections, a high-end fashion boutique stocking local and international labels, and was the founder of Fresherz Eatery in East Legon, Accra.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1);display:flex;flex-direction:column">
+          <div style="height:250px"><image-slot id="ab-dir-7" shape="rect" fit="cover" placeholder="Mr. Samuel Hagan portrait" src="./pasted-1788862450734-0-mtsiikvm-6oo6.png"></image-slot></div>
+          <div style="padding:22px;display:flex;flex-direction:column;flex:1">
+            <div style="font-size:15px;font-weight:700;color:#12313d">Mr. Samuel Hagan</div>
+            <div style="margin-top:4px;font-size:12px;font-weight:600;color:#12a3c4">Board Member</div>
+            <div data-bio="1" style="display:none;margin-top:14px;flex-direction:column;gap:10px">
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">Mr. Hagan brings over 26 years of experience in administration and logistics management, gained across the public service and with an international organisation.</p>
+              <p style="margin:0;font-size:13px;line-height:1.85;color:#5d7883">He holds an MBA in Corporate Governance from the Australian Institute of Business, a Bachelor of Arts, and an Advanced Diploma in Logistics and Transport from CILT in the United Kingdom. He also serves as a Director on the board of Capital and More Savings and Loans Limited.</p>
+            </div>
+            <button type="button" data-bio-btn="1" style="margin-top:16px;align-self:flex-start;border:0;background:transparent;padding:0;cursor:pointer;font-size:12px;font-weight:600;color:#12a3c4">Read bio +</button>
+          </div>
+        </div>
+      </div>
+
+      
+    </div>
+  </section>
+
+  <section data-reveal="1" style="background:#f7fcfe;padding:76px 28px;border-top:1px solid rgba(18,163,196,.14)">
+    <div style="max-width:1240px;margin:0 auto">
+      <div style="max-width:620px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#12a3c4">Our Reach</div>
+        <h2 style="margin:14px 0 0;font-size:32px;font-weight:700;letter-spacing:-.025em;color:#12313d;text-wrap:pretty">Accra, Monrovia, and the sub-region next</h2>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;margin-top:40px">
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:210px"><image-slot id="ab-reach-gh" shape="rect" fit="cover" placeholder="Lexta Square, Accra photo" src="./pasted-1788863146762-0-mtsixhy1-fej8.png"></image-slot></div>
+          <div style="padding:24px 26px 28px;border-top:3px solid #12a3c4">
+            <div style="font-size:17px;font-weight:700;color:#12313d">Ghana</div>
+            <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:#5d7883">Headquartered at Lexta Square in Dzorwulu, Accra, with distribution reaching supermarkets, pharmacies, market traders and neighbourhood shops nationwide.</p>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:210px"><image-slot id="ab-reach-lr" shape="rect" fit="cover" placeholder="Monrovia operation photo" src="./pasted-1788863416272-0-mtsj39w5-y1jr.png"></image-slot></div>
+          <div style="padding:24px 26px 28px;border-top:3px solid #12a3c4">
+            <div style="font-size:17px;font-weight:700;color:#12313d">Liberia</div>
+            <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:#5d7883">A wholly owned subsidiary in Monrovia, operating since 2010 and serving as the base for our regional growth.</p>
+          </div>
+        </div>
+        <div style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(11,60,78,.1)">
+          <div style="height:210px"><image-slot id="ab-reach-wa" shape="rect" fit="cover" placeholder="Regional distribution photo" src="./pasted-1788863589556-0-mtsj6zlp-gm1a.png"></image-slot></div>
+          <div style="padding:24px 26px 28px;border-top:3px solid #12a3c4">
+            <div style="font-size:17px;font-weight:700;color:#12313d">West Africa and beyond</div>
+            <p style="margin:10px 0 0;font-size:13px;line-height:1.85;color:#5d7883">Active expansion plans into additional markets across the sub-region, built on the same standards that established us at home.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="csr" data-reveal="1" style="position:relative;background:#0b2f3d;overflow:hidden">
+    <div style="position:absolute;inset:0"><image-slot id="ab-csr" shape="rect" fit="cover" placeholder="CSR / screening photo" src="./pasted-1788863665969-0-mtsj8mkd-3thf.png"></image-slot></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,42,55,.94),rgba(8,42,55,.72));pointer-events:none"></div>
+    <div style="position:relative;max-width:1240px;margin:0 auto;padding:74px 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:44px;align-items:center">
+      <div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#3fc0dd">Beyond the product</div>
+        <h2 style="margin:12px 0 0;font-size:32px;font-weight:700;letter-spacing:-.025em;color:#fff">Care that leaves the shelf</h2>
+        <p style="margin:16px 0 0;font-size:14px;line-height:1.9;color:rgba(255,255,255,.88);max-width:440px">Free cervical cancer screening with the Medical Women Association of Ghana. Menstrual health education in schools nationwide. Ongoing work against period poverty.</p>
+        <a href="./corporate-social-responsibility.html" style="margin-top:26px;display:inline-flex;align-items:center;gap:12px;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:11px 11px 11px 20px;border-radius:7px">Our CSR work
+          <span style="width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.28);display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+        </a>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:16px">
+        <div style="border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:22px 16px">
+          <div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em">10M+</div>
+          <div style="margin-top:6px;font-size:12px;line-height:1.5;color:rgba(255,255,255,.82)">Lives touched by our products</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:22px 16px">
+          <div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em">100+</div>
+          <div style="margin-top:6px;font-size:12px;line-height:1.5;color:rgba(255,255,255,.82)">Schools reached with health education</div>
+        </div>
+        <div style="border:1px solid rgba(255,255,255,.35);border-radius:12px;padding:22px 16px">
+          <div style="font-size:26px;font-weight:800;color:#fff;letter-spacing:-.02em">Free</div>
+          <div style="margin-top:6px;font-size:12px;line-height:1.5;color:rgba(255,255,255,.82)">Screening clinics with MWAG</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" data-reveal="1" style="background:#fff;padding:70px 28px">
+    <div style="max-width:1240px;margin:0 auto;background:linear-gradient(100deg,#0e7f97,#18a9c6);border-radius:14px;padding:42px;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:32px;align-items:center;box-shadow:0 22px 46px rgba(11,90,110,.26)">
+      <div>
+        <h2 style="margin:0;font-size:30px;font-weight:700;letter-spacing:-.025em;color:#fff">Work with us</h2>
+        <p style="margin:14px 0 0;font-size:14px;line-height:1.85;color:rgba(255,255,255,.92);max-width:440px">Whether you want to distribute our brands, place a bulk order, join our team or simply learn more about what we make, we would like to hear from you.</p>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end">
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;gap:12px;background:#fff;color:#0b6d88;font-size:13px;font-weight:600;padding:12px 12px 12px 20px;border-radius:7px">Contact us
+          <span style="width:22px;height:22px;border-radius:50%;background:#12a3c4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px">→</span>
+        </a>
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.55);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:7px">Request a bulk quote</a>
+        <a href="./people-and-culture.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.55);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:7px">View current openings</a>
+        <a href="./contact-us.html" style="display:inline-flex;align-items:center;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.55);color:#fff;font-size:13px;font-weight:600;padding:12px 20px;border-radius:7px">Contact us</a>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background:#0b2f3d;padding:60px 28px 34px">
+    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:38px">
+      <div>
+        <a href="/" style="display:inline-flex;align-items:center;gap:8px">
+          <img src="./assets/lexta-logo-white.png" alt="Lexta" style="height:40px;width:auto;display:block">
+        </a>
+        <p style="margin:16px 0 0;font-size:12px;line-height:1.8;color:rgba(255,255,255,.65);max-width:210px">Caring for you every day through quality products, innovation and community impact.</p>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <a href="https://www.facebook.com/lextagh" target="_blank" rel="noopener" aria-label="Facebook" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">f</a>
+          <a href="https://www.instagram.com/lextagh" target="_blank" rel="noopener" aria-label="Instagram" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">ig</a>
+          <a href="https://www.linkedin.com/company/lextagh" target="_blank" rel="noopener" aria-label="LinkedIn" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">in</a>
+          <a href="https://www.tiktok.com/@lextagh" target="_blank" rel="noopener" aria-label="TikTok" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">tk</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Quick Links</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="./about-us.html" style="font-size:12px;color:rgba(255,255,255,.7)">About Us</a>
+          <a href="./our-brands.html" style="font-size:12px;color:rgba(255,255,255,.7)">Our Brands</a>
+          <a href="#csr" style="font-size:12px;color:rgba(255,255,255,.7)">CSR</a>
+          <a href="./news.html" style="font-size:12px;color:rgba(255,255,255,.7)">News</a>
+          <a href="./careers.html" style="font-size:12px;color:rgba(255,255,255,.7)">Careers</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Support</div>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <a href="#contact" style="font-size:12px;color:rgba(255,255,255,.7)">Contact Us</a>
+          <a href="./faqs.html" style="font-size:12px;color:rgba(255,255,255,.7)">FAQs</a>
+          <a href="./privacy-policy.html" style="font-size:12px;color:rgba(255,255,255,.7)">Privacy Policy</a>
+          <a href="./terms-and-conditions.html" style="font-size:12px;color:rgba(255,255,255,.7)">Terms &amp; Conditions</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:16px">Contact Us</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><circle cx="7" cy="6" r="2.4" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></circle><path d="M7 13c3-4 5-6 5-8a5 5 0 10-10 0c0 2 2 4 5 8z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>Lexta Square, Olusegu Obasanjo Highway, Dzorwulu, Accra, Ghana.</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><path d="M2 3c0 5 4 9 9 9l1.5-2.5-3-1.5-1.5 1.5C6.5 8.5 5.5 7.5 4.5 5.5L6 4 4.5 1 2 3z" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>+233 (0) 501 619 588<br>+233 (0) 302 235 296</span>
+          </div>
+          <div style="display:flex;gap:10px;font-size:12px;line-height:1.7;color:rgba(255,255,255,.7)">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style="flex:0 0 auto;margin-top:4px" aria-hidden="true"><rect x="1" y="3" width="12" height="9" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></rect><path d="M1 3.5l6 4.5 6-4.5" stroke="rgba(255,255,255,.7)" stroke-width="1.4"></path></svg>
+            <span>support@lextagh.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="max-width:1240px;margin:32px auto 0;padding-top:20px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="font-size:11px;color:rgba(255,255,255,.55)">© 2026. Lexta Ghana LTD. All Rights Reserved.</div>
+      <button type="button" data-totop="1" aria-label="Back to top" style="width:30px;height:30px;border-radius:6px;border:0;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;font-size:12px">▲</button>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  componentDidMount() {
+    const root = this.el || document;
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.style.opacity = '';
+            e.target.style.animation = 'lxrise .7s cubic-bezier(.2,.7,.2,1) both';
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      root.querySelectorAll('[data-reveal]').forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < window.innerHeight * 0.9) return;
+        el.style.opacity = '0';
+        io.observe(el);
+        setTimeout(() => { el.style.opacity = ''; }, 4000);
+      });
+      this._io = io;
+    }
+    this.initJourney();
+    root.querySelectorAll('[data-bio-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const bio = btn.parentElement.querySelector('[data-bio]');
+        if (!bio) return;
+        const open = bio.style.display === 'flex';
+        bio.style.display = open ? 'none' : 'flex';
+        btn.textContent = open ? 'Read bio +' : 'Hide bio −';
+      });
+    });
+    const top = root.querySelector('[data-totop]');
+    if (top) top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+  initJourney() {
+    const root = document;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scrollTop = () => window.scrollY || (document.scrollingElement || document.documentElement).scrollTop || 0;
+    const wired = new WeakSet();
+
+    const apply = () => {
+      const miles = Array.from(root.querySelectorAll('[data-mile]'));
+      if (!miles.length) return;
+      const dots = Array.from(root.querySelectorAll('[data-dot]'));
+      const big = root.querySelector('[data-year-big]');
+      dots.forEach((d, i) => {
+        if (wired.has(d)) return;
+        wired.add(d);
+        d.addEventListener('click', () => {
+          const list = Array.from(root.querySelectorAll('[data-mile]'));
+          if (!list[i]) return;
+          window.scrollTo({ top: scrollTop() + list[i].getBoundingClientRect().top - 150, behavior: 'smooth' });
+        });
+      });
+
+      const mid = window.innerHeight / 2;
+      let best = 0, bestD = Infinity;
+      const rects = miles.map((m) => m.getBoundingClientRect());
+      rects.forEach((r, i) => {
+        const d = Math.abs(r.top + r.height / 2 - mid);
+        if (d < bestD) { bestD = d; best = i; }
+      });
+      miles.forEach((m, i) => {
+        const inner = m.querySelector('[data-mile-inner]');
+        if (!inner) return;
+        if (reduce) { inner.style.opacity = ''; inner.style.transform = ''; return; }
+        const r = rects[i];
+        const seen = r.top < window.innerHeight * 0.95 && r.bottom > 0;
+        inner.style.opacity = i === best ? '1' : (seen ? '.55' : '0');
+        inner.style.transform = i === best || seen ? 'none' : 'translateY(24px)';
+      });
+      if (best !== this._active) {
+        this._active = best;
+        const yr = miles[best].dataset.year;
+        if (big && big.textContent !== yr) {
+          big.style.opacity = '0';
+          big.style.transform = 'translateY(8px)';
+          clearTimeout(this._yt);
+          this._yt = setTimeout(() => { big.textContent = yr; big.style.opacity = ''; big.style.transform = ''; }, 170);
+        }
+        dots.forEach((d, k) => {
+          const on = k === best, sp = d.firstElementChild, t = d.lastElementChild;
+          if (sp) { sp.style.background = on ? '#12a3c4' : 'rgba(18,163,196,.3)'; sp.style.transform = on ? 'scale(1.5)' : 'none'; }
+          if (t) t.style.color = on ? '#12313d' : '#93a9b1';
+        });
+      }
+    };
+
+    let last = null, lastH = null;
+    const tick = () => {
+      this._raf = requestAnimationFrame(tick);
+      const y = Math.round(scrollTop()), h = window.innerHeight;
+      if (y === last && h === lastH) return;
+      last = y; lastH = h;
+      apply();
+    };
+    this._active = -1;
+    tick();
+  }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._raf) cancelAnimationFrame(this._raf); }
+  renderVals() { return {}; }
+}
+
+</script>
+</body>
+</html>
