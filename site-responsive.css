@@ -1,0 +1,49 @@
+/* Lexta Ghana — shared responsive layer. Uses !important to override inline styles. */
+
+/* ---------- Tablet: keep the header, tighten it ---------- */
+@media (max-width: 1024px) and (min-width: 901px) {
+  header > div { padding: 10px 20px !important; gap: 12px !important; }
+  header nav { gap: 10px !important; justify-content: flex-end !important; }
+  header nav a { font-size: 12px !important; }
+  header a[href*="Partner"] { display: none !important; }
+}
+
+/* ---------- Mobile: hide desktop header, show the fixed bar ---------- */
+@media (max-width: 900px) {
+  header { display: none !important; }
+  body { padding-top: 58px !important; }
+  [data-lxm-bar] { display: flex !important; }
+  [data-journey-bar] { top: 58px !important; }
+}
+
+/* ---------- Layout collapse ---------- */
+@media (max-width: 900px) {
+  [style*="grid-template-columns"]:not([style*="auto-fit"]):not([style*="auto-fill"]):not(header > *) { grid-template-columns: minmax(0, 1fr) !important; }
+  [style*="grid-column:span"] { grid-column: auto !important; }
+  [style*="grid-row:span"] { grid-row: auto !important; }
+  [style*="grid-template-rows:170px"] { grid-template-rows: auto !important; }
+  [style*="grid-template-rows:170px"] > * { min-height: 190px; }
+
+  [data-hero] [style*="height:660px"] { height: 540px !important; }
+  [data-hero] [style*="padding:0 76px 70px"] { padding: 0 22px 34px !important; }
+  [data-hero] h1 { font-size: clamp(28px, 7.4vw, 40px) !important; }
+  [data-hero] p { font-size: 14px !important; }
+  [data-hero-prev], [data-hero-next] { width: 34px !important; height: 34px !important; }
+
+  [data-acar-track] > * { flex: 0 0 100% !important; }
+  [data-acar-prev] { left: 6px !important; }
+  [data-acar-next] { right: 6px !important; }
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 640px) {
+  h1 { font-size: clamp(27px, 8vw, 34px) !important; }
+  h2 { font-size: clamp(22px, 6.4vw, 27px) !important; }
+  [style*="padding:38px 40px"], [style*="padding:26px 32px"] { padding: 24px 20px !important; }
+  [style*="padding:80px 28px"], [style*="padding:82px 28px"], [style*="padding:78px 28px"], [style*="padding:76px 28px"] { padding-top: 52px !important; padding-bottom: 52px !important; }
+  [style*="padding:0 76px"] { padding-left: 20px !important; padding-right: 20px !important; }
+  [data-subscribe] { flex-direction: column !important; gap: 8px !important; }
+  [data-subscribe] input { border-radius: 6px !important; }
+  [data-subscribe] button { border-radius: 6px !important; padding: 12px !important; }
+  img[src*="lexta-logo"] { height: 36px !important; }
+}
