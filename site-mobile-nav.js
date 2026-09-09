@@ -4,18 +4,26 @@
   window.__lxMobileNav = true;
 
   var LINKS = [
-    ['Home', './Lexta%20Ghana%20Home.dc.html'],
-    ['About Us', './About%20Us.dc.html'],
-    ['Our Brands', './Our%20Brands.dc.html'],
-    ['People & Culture', './People%20&%20Culture.dc.html'],
-    ['CSR', './Corporate%20Social%20Responsibility.dc.html'],
-    ['News', './News.dc.html'],
-    ['Careers', './Careers.dc.html'],
-    ['FAQs', './FAQs.dc.html']
+    ['Home', '/'],
+    ['About Us', './about-us.html'],
+    ['Our Brands', './our-brands.html'],
+    ['People & Culture', './people-and-culture.html'],
+    ['CSR', './corporate-social-responsibility.html'],
+    ['News', './news.html'],
+    ['Careers', './careers.html'],
+    ['FAQs', './faqs.html']
   ];
 
-  var here = '';
-  try { here = decodeURIComponent(location.pathname.split('/').pop() || ''); } catch (e) {}
+  function norm(p) {
+    try { p = decodeURIComponent(p); } catch (e) {}
+    p = p.split('?')[0].split('#')[0].replace(/\/+$/, '');
+    p = p.replace(/^.*\//, '');
+    p = p.replace(/\.html$/i, '');
+    if (p === 'index') p = '';
+    return p.toLowerCase();
+  }
+
+  var here = norm(location.pathname);
 
   function el(tag, style, html) {
     var n = document.createElement(tag);
@@ -31,7 +39,7 @@
     bar.setAttribute('data-lxm-bar', '1');
 
     var home = el('a', 'display:flex;align-items:center');
-    home.href = './Lexta%20Ghana%20Home.dc.html';
+    home.href = '/';
     var logo = el('img', 'height:36px;width:auto;display:block');
     logo.src = './assets/lexta-logo.png';
     logo.alt = 'Lexta';
@@ -65,18 +73,34 @@
 
     var list = el('nav', 'display:flex;flex-direction:column;padding:8px 18px 4px');
     LINKS.forEach(function (l) {
-      var current = here && decodeURIComponent(l[1].replace('./', '')) === here;
-      var a = el('a', 'font-size:15px;font-weight:' + (current ? '700' : '500') + ';color:' + (current ? '#12a3c4' : '#1d3c48') + ';padding:15px 2px;border-bottom:1px solid #eef5f8;min-height:48px;display:flex;align-items:center', l[0]);
+      var current = norm(l[1]) === here;
+      var base = 'font-size:15px;border-bottom:1px solid #eef5f8;min-height:48px;display:flex;align-items:center;';
+      var style = current
+        ? base + 'font-weight:700;color:#12a3c4;background:rgba(18,163,196,.08);border-left:3px solid #12a3c4;margin:0 -18px;padding:15px 18px 15px 17px'
+        : base + 'font-weight:500;color:#1d3c48;padding:15px 2px';
+      var a = el('a', style, l[0]);
       a.href = l[1];
+      if (current) a.setAttribute('aria-current', 'page');
       list.appendChild(a);
     });
     panel.appendChild(list);
 
     var ctas = el('div', 'display:flex;flex-direction:column;gap:10px;padding:20px 18px 26px');
     var c1 = el('a', 'display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:9px;background:#12a3c4;color:#fff;font-size:14px;font-weight:700', 'Contact Us');
-    c1.href = './Contact%20Us.dc.html';
+    c1.href = './contact-us.html';
     var c2 = el('a', 'display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:9px;border:1px solid rgba(18,163,196,.45);color:#12a3c4;font-size:14px;font-weight:600', 'Partner With Us');
-    c2.href = './Partner%20With%20Us.dc.html';
+    c2.href = './partner-with-us.html';
+    if (here === 'contact-us') {
+      c1.setAttribute('aria-current', 'page');
+      c1.style.background = '#0d8ba8';
+    }
+    if (here === 'partner-with-us') {
+      c2.setAttribute('aria-current', 'page');
+      c2.style.background = 'rgba(18,163,196,.1)';
+      c2.style.borderColor = '#12a3c4';
+      c2.style.fontWeight = '700';
+    }
+
     ctas.appendChild(c1);
     ctas.appendChild(c2);
 
