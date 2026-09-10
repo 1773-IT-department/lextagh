@@ -613,26 +613,6 @@
     </div>
   </section>
 
-  <section data-screen-label="Contact" data-reveal="1" style="background:#fff;padding:74px 28px 84px">
-    <div style="max-width:1240px;margin:0 auto;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:48px;align-items:start">
-      <div>
-        <div style="font-size:11px;font-weight:700;letter-spacing:.16em;color:#12a3c4;text-transform:uppercase">Get in touch</div>
-        <h2 style="margin:14px 0 0;font-size:31px;line-height:1.2;font-weight:700;letter-spacing:-.02em;color:#12313d">Send us a message</h2>
-        <p style="margin:18px 0 0;font-size:14px;line-height:1.85;color:#4d6a75;max-width:330px">Trade enquiries, product questions, partnerships or press. Tell us what you need and the right team will come back to you.</p>
-      </div>
-      <form data-contactform="1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
-        <input type="text" required="" placeholder="Full name" aria-label="Full name" style="height:46px;border:1px solid #dceaef;border-radius:8px;padding:0 14px;font-size:13px;color:#12313d;background:#fbfeff;outline:none">
-        <input type="email" required="" placeholder="Email address" aria-label="Email address" style="height:46px;border:1px solid #dceaef;border-radius:8px;padding:0 14px;font-size:13px;color:#12313d;background:#fbfeff;outline:none">
-        <input type="text" placeholder="Company or organisation (optional)" aria-label="Company or organisation" style="height:46px;border:1px solid #dceaef;border-radius:8px;padding:0 14px;font-size:13px;color:#12313d;background:#fbfeff;outline:none;grid-column:1/-1">
-        <textarea required="" rows="5" placeholder="How can we help?" aria-label="Message" style="border:1px solid #dceaef;border-radius:8px;padding:12px 14px;font-size:13px;line-height:1.7;color:#12313d;background:#fbfeff;outline:none;resize:vertical;grid-column:1/-1;font-family:inherit"></textarea>
-        <div style="grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-          <button type="submit" style="border:0;background:#12a3c4;color:#fff;font-size:13px;font-weight:600;padding:12px 24px;border-radius:7px;cursor:pointer">Send message</button>
-          <span data-contact-note="1" style="font-size:12px;color:#8aa4ae">We reply within two working days.</span>
-        </div>
-      </form>
-    </div>
-  </section>
-
   <section data-screen-label="Careers" data-reveal="1" style="position:relative;background:#0b2f3d;padding:0">
     <div style="position:absolute;inset:0"><image-slot id="lx-careers" shape="rect" fit="cover" placeholder="Team celebration photo"></image-slot></div>
     <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,42,55,.94),rgba(8,42,55,.72));pointer-events:none"></div>
@@ -906,15 +886,6 @@ class Component extends DCLogic {
       document.addEventListener('click', this._ddClose);
       set(false);
     }
-
-    const cform = root.querySelector('[data-contactform]');
-    if (cform) cform.addEventListener('submit', (ev) => {
-      ev.preventDefault();
-      const note = cform.querySelector('[data-contact-note]');
-      const btn = cform.querySelector('button');
-      if (btn) btn.textContent = 'Message sent';
-      if (note) { note.textContent = 'Thank you. We will be in touch shortly.'; note.style.color = '#12a3c4'; }
-    });
 
     const top = root.querySelector('[data-totop]');
     if (top) top.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
