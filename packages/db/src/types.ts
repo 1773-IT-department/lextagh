@@ -1,6 +1,8 @@
-// Hand written from supabase/migrations/0001_foundations.sql, 0003_products.sql and 0005_stockists.sql because the Supabase project
+// Hand written from supabase/migrations/0001_foundations.sql, 0003_products.sql, 0005_stockists.sql and 0006_crm.sql because the Supabase project
 // was not reachable from the build shift. Replace with `generate_typescript_types` output
 // once the migration is applied.
+
+import type { CrmActivity, CrmContact, CrmLead, CrmOrganisation, CrmOrganisationBrand, CrmStaff } from "./crm";
 
 export type AppRole =
   | "admin"
@@ -212,6 +214,52 @@ export type Database = {
           { foreignKeyName: "stockist_notes_stockist_id_fkey"; columns: ["stockist_id"]; isOneToOne: true; referencedRelation: "stockists"; referencedColumns: ["id"] },
         ];
       };
+      crm_organisations: {
+        Row: CrmOrganisation;
+        Insert: Partial<Omit<CrmOrganisation, "id" | "created_at" | "updated_at" | "created_by" | "updated_by">> & Pick<CrmOrganisation, "name">;
+        Update: Partial<Omit<CrmOrganisation, "id" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
+        Relationships: [
+          { foreignKeyName: "crm_organisations_region_id_fkey"; columns: ["region_id"]; isOneToOne: false; referencedRelation: "regions"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_organisations_stockist_id_fkey"; columns: ["stockist_id"]; isOneToOne: false; referencedRelation: "stockists"; referencedColumns: ["id"] },
+        ];
+      };
+      crm_organisation_brands: {
+        Row: CrmOrganisationBrand;
+        Insert: Pick<CrmOrganisationBrand, "organisation_id" | "brand_id">;
+        Update: never;
+        Relationships: [
+          { foreignKeyName: "crm_organisation_brands_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_organisation_brands_brand_id_fkey"; columns: ["brand_id"]; isOneToOne: false; referencedRelation: "brands"; referencedColumns: ["id"] },
+        ];
+      };
+      crm_contacts: {
+        Row: CrmContact;
+        Insert: Partial<Omit<CrmContact, "id" | "phone_key" | "consent_at" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
+        Update: Partial<Omit<CrmContact, "id" | "phone_key" | "consent_at" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
+        Relationships: [
+          { foreignKeyName: "crm_contacts_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
+        ];
+      };
+      crm_leads: {
+        Row: CrmLead;
+        Insert: Partial<Omit<CrmLead, "id" | "intake_reference" | "submitted_organisation_name" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">> & Pick<CrmLead, "title" | "source">;
+        Update: Partial<Omit<CrmLead, "id" | "intake_reference" | "submitted_organisation_name" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
+        Relationships: [
+          { foreignKeyName: "crm_leads_contact_id_fkey"; columns: ["contact_id"]; isOneToOne: false; referencedRelation: "crm_contacts"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_leads_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_leads_brand_id_fkey"; columns: ["brand_id"]; isOneToOne: false; referencedRelation: "brands"; referencedColumns: ["id"] },
+        ];
+      };
+      crm_activities: {
+        Row: CrmActivity;
+        Insert: Pick<CrmActivity, "type" | "body"> & Partial<Pick<CrmActivity, "lead_id" | "contact_id" | "organisation_id" | "occurred_at">>;
+        Update: never;
+        Relationships: [
+          { foreignKeyName: "crm_activities_lead_id_fkey"; columns: ["lead_id"]; isOneToOne: false; referencedRelation: "crm_leads"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_activities_contact_id_fkey"; columns: ["contact_id"]; isOneToOne: false; referencedRelation: "crm_contacts"; referencedColumns: ["id"] },
+          { foreignKeyName: "crm_activities_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -234,6 +282,19 @@ export type Database = {
       delete_stockist: { Args: { target_id: string }; Returns: undefined };
       stockist_authors: { Args: { target_ids: string[] }; Returns: { stockist_id: string; created_by: string | null; updated_by: string | null }[] };
       update_my_profile: { Args: { new_full_name: string; new_phone: string }; Returns: undefined };
+      crm_staff: { Args: Record<string, never>; Returns: CrmStaff[] };
+      crm_can_see_org: { Args: { target_org: string }; Returns: boolean };
+      crm_can_see_lead_id: { Args: { target_lead: string }; Returns: boolean };
+      crm_can_edit_org: { Args: { target_org: string }; Returns: boolean };
+      crm_can_note_org: { Args: { target_org: string }; Returns: boolean };
+      crm_is_staff: { Args: { target_profile: string }; Returns: boolean };
+      save_crm_organisation: { Args: { target_id: string | null; details: Record<string, unknown> | null; brand_ids: string[] | null }; Returns: string };
+      save_crm_contact: { Args: { target_id: string | null; details: Record<string, unknown> }; Returns: string };
+      save_crm_lead: { Args: { target_id: string | null; details: Record<string, unknown> }; Returns: string };
+      set_crm_lead_stage: { Args: { target_id: string; new_stage: string; reason: string | null }; Returns: undefined };
+      set_crm_owner: { Args: { kind: "lead" | "contact" | "organisation"; target_id: string; new_owner: string | null }; Returns: undefined };
+      delete_crm_record: { Args: { kind: "lead" | "contact" | "organisation"; target_id: string }; Returns: undefined };
+      submit_website_enquiry: { Args: { form: "contact" | "partner" | "newsletter"; payload: Record<string, unknown> }; Returns: string };
     };
     Enums: { app_role: AppRole };
     CompositeTypes: Record<string, never>;
