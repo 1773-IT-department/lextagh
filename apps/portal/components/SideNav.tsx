@@ -8,7 +8,7 @@ export default function SideNav({ items }: { items: { href: string; label: strin
   return (
     <nav aria-label="Systems">
       {items.map((i) => (
-        <Link key={i.href} href={i.href} aria-current={pathname === i.href ? "page" : undefined}>{i.label}</Link>
+        <Link key={i.href} href={i.href} aria-current={pathname === i.href || (i.href !== "/" && pathname.startsWith(`${i.href}/`)) ? "page" : undefined}>{i.label}</Link>
       ))}
     </nav>
   );
