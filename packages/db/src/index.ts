@@ -3,3 +3,4 @@ export * from "./types";
 export * from "./products";
 export * from "./stockists";
 export * from "./crm";
+export * from "./complaints";

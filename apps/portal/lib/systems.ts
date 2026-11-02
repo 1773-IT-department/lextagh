@@ -14,7 +14,7 @@ export const SYSTEMS: SystemDef[] = [
   { slug: "orders", name: "Distributor ordering", summary: "Distributors place and track orders.", roles: ["admin", "management", "sales_rep", "customer_care", "distributor"] },
   { slug: "field-sales", name: "Field sales", summary: "Shop visits on the phone, with photo and location.", roles: ["admin", "management", "sales_rep"] },
   { slug: "crm", name: "CRM", summary: "Leads, distributors, institutions and partners.", roles: ["admin", "management", "sales_rep", "customer_care", "marketing"] },
-  { slug: "complaints", name: "Complaints", summary: "Case number, owner, status and closure.", roles: ["admin", "management", "customer_care"] },
+  { slug: "complaints", name: "Complaints", summary: "Case number, owner, status and closure.", roles: ["admin", "management", "customer_care", "sales_rep", "marketing"] },
   { slug: "products", name: "Product management", summary: "Edit a product once and all four websites update.", roles: ["admin", "management", "marketing"] },
   { slug: "stockists", name: "Stockists (Where to Buy)", summary: "Shops, regions and brands carried, shown on Where to Buy.", roles: ["admin", "management", "sales_rep", "marketing", "customer_care"] },
   { slug: "csr", name: "CSR activities", summary: "Track CSR projects and outreach.", roles: ["admin", "management", "marketing"] },
