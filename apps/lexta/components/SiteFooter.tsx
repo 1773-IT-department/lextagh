@@ -37,7 +37,7 @@ export default function SiteFooter() {
     <footer style={{ background: "#0b2f3d", padding: `${topPad}px 28px 34px` }}>
       <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 38 }}>
         <div>
-          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, width: "fit-content" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/lexta-logo-white.png" alt="Lexta" style={{ height: 40, width: "auto", display: "block" }} />
           </Link>
