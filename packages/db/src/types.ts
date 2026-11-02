@@ -120,6 +120,9 @@ export type Stockist = Timestamps & {
   updated_by: string | null;
 };
 
+/** The stockist columns every role may read. created_by and updated_by are staff only (stockist_authors). */
+export type StockistPublic = Omit<Stockist, "created_by" | "updated_by">;
+
 export type StockistBrand = Timestamps & {
   id: string;
   stockist_id: string;
@@ -226,6 +229,10 @@ export type Database = {
       can_edit_stockist: { Args: { target_stockist: string }; Returns: boolean };
       save_stockist: { Args: { target_id: string | null; details: Record<string, unknown> | null; brand_ids: string[] }; Returns: string };
       import_stockists: { Args: { items: unknown[] }; Returns: number };
+      can_add_stockist_brand: { Args: { target_stockist: string; target_brand: string }; Returns: boolean };
+      set_stockist_active: { Args: { target_id: string; active: boolean }; Returns: undefined };
+      delete_stockist: { Args: { target_id: string }; Returns: undefined };
+      stockist_authors: { Args: { target_ids: string[] }; Returns: { stockist_id: string; created_by: string | null; updated_by: string | null }[] };
       update_my_profile: { Args: { new_full_name: string; new_phone: string }; Returns: undefined };
     };
     Enums: { app_role: AppRole };

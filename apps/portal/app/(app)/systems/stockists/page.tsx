@@ -16,7 +16,6 @@ type Row = {
   address: string | null;
   latitude: number | null;
   is_active: boolean;
-  created_by: string | null;
   updated_at: string;
   region: { name: string } | { name: string }[] | null;
   links: { brand_id: string }[];
@@ -50,7 +49,7 @@ export default async function StockistsPage({ searchParams }: { searchParams: Pr
 
   const supabase = await createClient();
   // "links" lists every brand the shop carries; "match" (inner join) only narrows the rows to one brand.
-  const select = `id, name, outlet_type, town, address, latitude, is_active, created_by, updated_at, region:regions(name), links:stockist_brands(brand_id)${brand ? ", match:stockist_brands!inner(brand_id)" : ""}`;
+  const select = `id, name, outlet_type, town, address, latitude, is_active, updated_at, region:regions(name), links:stockist_brands(brand_id)${brand ? ", match:stockist_brands!inner(brand_id)" : ""}`;
   let query = supabase.from("stockists").select(select, { count: "exact" });
   if (brand) query = query.eq("match.brand_id", brand);
   if (region) query = query.eq("region_id", region);
@@ -62,6 +61,14 @@ export default async function StockistsPage({ searchParams }: { searchParams: Pr
   const { data, error, count } = await query.order("name").order("town").order("id").range(from, from + PAGE_SIZE - 1);
   if (error) console.error("[stockists] list failed", error);
   const rows = (data ?? []) as unknown as Row[];
+
+  // Who created a stockist is staff only (stockist_authors); it only matters for shops with no brands yet.
+  const creators = new Map<string, string | null>();
+  const unbranded = rows.filter((r) => r.links.length === 0).map((r) => r.id);
+  if (access.canCreate && unbranded.length) {
+    const { data: authors } = await supabase.rpc("stockist_authors", { target_ids: unbranded });
+    for (const a of (authors ?? []) as { stockist_id: string; created_by: string | null }[]) creators.set(a.stockist_id, a.created_by);
+  }
   const total = count ?? rows.length;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -170,7 +177,7 @@ export default async function StockistsPage({ searchParams }: { searchParams: Pr
                 {rows.map((s) => {
                   const reg = Array.isArray(s.region) ? s.region[0] : s.region;
                   const brandIds = s.links.map((l) => l.brand_id);
-                  const editable = canEditStockist(access, { created_by: s.created_by, brandIds });
+                  const editable = canEditStockist(access, { created_by: creators.get(s.id) ?? null, brandIds });
                   return (
                     <tr key={s.id}>
                       <td>

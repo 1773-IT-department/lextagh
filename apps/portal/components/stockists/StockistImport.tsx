@@ -110,7 +110,7 @@ export default function StockistImport() {
         </div>
       )}
       {stale && last && <p className="small">The list changed. Press Check rows again before importing.</p>}
-      <p className="small">Row 1 is the header, so row 2 is the first shop.</p>
+      <p className="small">Row numbers are the line numbers of your file: row 1 is the header.</p>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { outletTypeLabel, type Stockist } from "@lexta/db";
+import { outletTypeLabel, type StockistPublic } from "@lexta/db";
 import ConfirmButton from "@/components/products/ConfirmButton";
 import ActiveButton from "@/components/stockists/ActiveButton";
 import StockistForm from "@/components/stockists/StockistForm";
@@ -33,7 +33,12 @@ export default async function EditStockistPage({
   }
 
   const supabase = await createClient();
-  const { data: stockist, error } = await supabase.from("stockists").select("*").eq("id", id).maybeSingle<Stockist>();
+  // Explicit columns: who created or changed a stockist is not readable from the table (see 0005_stockists.sql).
+  const { data: stockist, error } = await supabase
+    .from("stockists")
+    .select("id, name, outlet_type, region_id, town, address, phone, latitude, longitude, opening_hours, is_active, created_at, updated_at")
+    .eq("id", id)
+    .maybeSingle<StockistPublic>();
   if (error) throw new Error("Could not load the stockist");
   if (!stockist) notFound();
 
@@ -45,7 +50,8 @@ export default async function EditStockistPage({
   if (linksRes.error || notesRes.error) throw new Error("Could not load the stockist");
   const carried = (linksRes.data ?? []).map((l) => l.brand_id as string);
   const canEdit = editRes.data === true;
-  const mode = canEdit ? "full" : access.canCreate && access.myBrands.length > 0 ? "brands" : "view";
+  // A shop with no brands yet belongs to its creator and admins (they get the full form); nobody else may brand it.
+  const mode = canEdit ? "full" : access.canCreate && access.myBrands.length > 0 && carried.length > 0 ? "brands" : "view";
   const region = access.regions.find((r) => r.id === stockist.region_id);
 
   return (
@@ -73,7 +79,15 @@ export default async function EditStockistPage({
           This stockist also carries brands you do not work on, so you can only add or remove your own brands here. Ask an administrator to change its details.
         </div>
       )}
-      {mode === "view" && <div className="alert info" role="note">You are viewing this stockist. Your role cannot change it.</div>}
+      {mode === "view" && (
+        <div className="alert info" role="note">
+          {!access.canCreate
+            ? "You are viewing this stockist. Your role cannot change it."
+            : carried.length === 0
+              ? "This stockist does not carry any brand yet. Only the person who added it or an administrator can change it."
+              : "You are viewing this stockist. It carries brands you do not work on, so you cannot change it."}
+        </div>
+      )}
 
       <StockistForm
         mode={mode}

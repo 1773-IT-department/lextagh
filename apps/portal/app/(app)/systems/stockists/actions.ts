@@ -12,7 +12,7 @@ export type ActionResult = { error?: string };
 export type ImportState = ImportReport & { imported?: number; checked?: boolean };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const NO_PERMISSION = "You do not have permission to change this stockist. It carries a brand you do not work on.";
+const NO_PERMISSION = "You do not have permission to change this stockist. It carries a brand you do not work on, or it has no brands yet and someone else added it.";
 const READ_ONLY = "Your role can view stockists but not change them.";
 
 const text = (form: FormData, key: string) => String(form.get(key) ?? "");
@@ -99,10 +99,12 @@ export async function setStockistActive(_prev: ActionResult, form: FormData): Pr
   const active = form.get("active") === "true";
   if (!UUID.test(id)) return { error: "This stockist could not be found." };
   const supabase = await createClient();
-  const { data, error } = await supabase.from("stockists").update({ is_active: active }).eq("id", id).select("id");
-  if (error || !data?.length) {
-    if (error) console.error("[stockists] activate failed", error);
-    return { error: !error ? NO_PERMISSION : active ? "The stockist could not be reactivated. Please try again." : "The stockist could not be deactivated. Please try again." };
+  // set_stockist_active raises when no row changed, so a refused change always reaches the person.
+  const { error } = await supabase.rpc("set_stockist_active", { target_id: id, active });
+  if (error) {
+    if (error.code === "42501") return { error: NO_PERMISSION };
+    console.error("[stockists] activate failed", error);
+    return { error: active ? "The stockist could not be reactivated. Please try again." : "The stockist could not be deactivated. Please try again." };
   }
   await afterChange(active ? "stockist reactivated" : "stockist deactivated", id);
   return {};
@@ -113,9 +115,10 @@ export async function deleteStockist(stockistId: string): Promise<void> {
   if (!access.canCreate || !UUID.test(stockistId)) redirect(`/systems/stockists/${stockistId}?error=delete`);
   const supabase = await createClient();
   // Brand links and notes are removed with it by the database (on delete cascade), so nothing is left behind.
-  const { data, error } = await supabase.from("stockists").delete().eq("id", stockistId).select("id");
-  if (error || !data?.length) {
-    if (error) console.error("[stockists] delete failed", error);
+  // delete_stockist raises when no row was deleted.
+  const { error } = await supabase.rpc("delete_stockist", { target_id: stockistId });
+  if (error) {
+    if (error.code !== "42501") console.error("[stockists] delete failed", error);
     redirect(`/systems/stockists/${stockistId}?error=delete`);
   }
   await afterChange("stockist deleted");

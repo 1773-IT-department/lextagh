@@ -11,12 +11,16 @@
 --   customer_care
 --   admin                                        create, edit, deactivate and delete any stockist; manage regions
 --   sales_rep, marketing                         create stockists; edit, deactivate and delete a stockist only
---                                                when every brand it carries is one of their brands (a stockist
---                                                carrying no brands yet: only the person who created it);
---                                                add or remove links for their own brands on any stockist,
---                                                so a rep can add their brand to a shop another brand listed
+--                                                when every brand it carries is one of their brands;
+--                                                add or remove links for their own brands on any stockist that
+--                                                already carries a brand, so a rep can add their brand to a shop
+--                                                another brand listed
+--   a stockist carrying no brands yet            only its creator or an admin may edit it, add brands to it,
+--                                                deactivate it or delete it (nobody can take it over)
 --   management, customer_care                    read only
--- Brand links never point at the corporate Lexta brand. created_by and updated_by always come from the session.
+-- Brand links never point at the corporate Lexta brand. created_by and updated_by always come from the session
+-- and are readable by staff only, through public.stockist_authors(); every other role, signed in or not, only
+-- gets the public columns of stockists.
 
 -- Regions ---------------------------------------------------------------------------
 create table public.regions (
@@ -191,6 +195,27 @@ as $$
   select public.can_create_stockists() and public.has_brand_access(target_brand);
 $$;
 
+-- May this person add this brand to this stockist? A stockist with no brands yet belongs to its creator
+-- (and admins) until it carries one, so nobody else can take it over by adding their brand first.
+create or replace function public.can_add_stockist_brand(target_stockist uuid, target_brand uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.can_link_stockist_brand(target_brand)
+     and exists (select 1 from public.stockists s where s.id = target_stockist)
+     and (
+       public.is_admin()
+       or exists (select 1 from public.stockist_brands sb where sb.stockist_id = target_stockist)
+       or exists (
+         select 1 from public.stockists s
+         where s.id = target_stockist and s.created_by = (select auth.uid())
+       )
+     );
+$$;
+
 -- May this person change this stockist's details, deactivate it or delete it?
 create or replace function public.can_edit_stockist(target_stockist uuid)
 returns boolean
@@ -224,6 +249,8 @@ revoke all on function public.can_view_stockists() from public, anon;
 revoke all on function public.can_create_stockists() from public, anon;
 revoke all on function public.can_link_stockist_brand(uuid) from public, anon;
 revoke all on function public.can_edit_stockist(uuid) from public, anon;
+revoke all on function public.can_add_stockist_brand(uuid, uuid) from public, anon;
+grant execute on function public.can_add_stockist_brand(uuid, uuid) to authenticated;
 grant execute on function public.can_view_stockists() to authenticated;
 grant execute on function public.can_create_stockists() to authenticated;
 grant execute on function public.can_link_stockist_brand(uuid) to authenticated;
@@ -231,12 +258,34 @@ grant execute on function public.can_edit_stockist(uuid) to authenticated;
 
 -- Table privileges ------------------------------------------------------------------
 -- Website visitors only ever read; they get the public columns of stockists and nothing of the notes.
--- (Supabase grants everything to anon by default; Row Level Security below still applies on top.)
+-- Signed in people also only read the public columns: who created or changed a stockist is staff only and
+-- comes from public.stockist_authors(). Writes for signed in people stay governed by Row Level Security.
+-- (Supabase grants everything to anon and authenticated by default; Row Level Security still applies on top.)
 revoke all on public.regions, public.stockists, public.stockist_brands, public.stockist_notes from anon;
 grant select on public.regions, public.stockist_brands to anon;
 grant select (
   id, name, outlet_type, region_id, town, address, phone, latitude, longitude, opening_hours, is_active, created_at, updated_at
 ) on public.stockists to anon;
+revoke select on public.stockists from authenticated;
+grant select (
+  id, name, outlet_type, region_id, town, address, phone, latitude, longitude, opening_hours, is_active, created_at, updated_at
+) on public.stockists to authenticated;
+
+-- Who created and last changed stockists, for staff with a stockist role only (empty for everyone else).
+create or replace function public.stockist_authors(target_ids uuid[])
+returns table (stockist_id uuid, created_by uuid, updated_by uuid)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select s.id, s.created_by, s.updated_by
+  from public.stockists s
+  where public.can_view_stockists() and s.id = any (target_ids);
+$$;
+
+revoke all on function public.stockist_authors(uuid[]) from public, anon;
+grant execute on function public.stockist_authors(uuid[]) to authenticated;
 
 -- Row Level Security ----------------------------------------------------------------
 alter table public.regions enable row level security;
@@ -306,7 +355,7 @@ create policy "signed in read brands of visible stockists"
 create policy "editors link their own brands"
   on public.stockist_brands for insert to authenticated
   with check (
-    (select public.can_link_stockist_brand(brand_id))
+    (select public.can_add_stockist_brand(stockist_id, brand_id))
     and exists (select 1 from public.stockists s where s.id = stockist_id)
   );
 
@@ -449,6 +498,48 @@ begin
   return added;
 end;
 $$;
+
+-- Deactivate or reactivate, and delete. They raise instead of quietly changing nothing, so the portal can
+-- always tell the person when a change did not go through. Security invoker: Row Level Security decides.
+create or replace function public.set_stockist_active(target_id uuid, active boolean)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  changed integer;
+begin
+  update public.stockists set is_active = active where id = target_id;
+  get diagnostics changed = row_count;
+  if changed = 0 then
+    raise exception 'not allowed to change this stockist' using errcode = '42501';
+  end if;
+end;
+$$;
+
+-- Brand links and staff notes go with the stockist (on delete cascade), so nothing is left behind.
+create or replace function public.delete_stockist(target_id uuid)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  changed integer;
+begin
+  delete from public.stockists where id = target_id;
+  get diagnostics changed = row_count;
+  if changed = 0 then
+    raise exception 'not allowed to delete this stockist' using errcode = '42501';
+  end if;
+end;
+$$;
+
+revoke all on function public.set_stockist_active(uuid, boolean) from public, anon;
+revoke all on function public.delete_stockist(uuid) from public, anon;
+grant execute on function public.set_stockist_active(uuid, boolean) to authenticated;
+grant execute on function public.delete_stockist(uuid) to authenticated;
 
 revoke all on function public.save_stockist(uuid, jsonb, uuid[]) from public, anon;
 revoke all on function public.import_stockists(jsonb) from public, anon;

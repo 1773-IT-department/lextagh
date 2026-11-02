@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useActionState, useState } from "react";
-import { OUTLET_TYPES, type Region, type Stockist } from "@lexta/db";
+import { OUTLET_TYPES, type Region, type StockistPublic } from "@lexta/db";
 import { saveStockist, type StockistFormState } from "@/app/(app)/systems/stockists/actions";
 
 type BrandOption = { id: string; name: string };
@@ -25,7 +25,7 @@ export default function StockistForm({
   carried,
 }: {
   mode: Mode;
-  stockist?: Stockist;
+  stockist?: StockistPublic;
   notes?: string;
   regions: Pick<Region, "id" | "name" | "is_in_ghana">[];
   allBrands: BrandOption[];

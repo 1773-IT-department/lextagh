@@ -149,33 +149,52 @@ export function duplicateKey(d: { name: string; region_id: string; town: string;
   return [d.name.trim().toLowerCase(), d.region_id, d.town.trim().toLowerCase(), (d.address ?? "").trim().toLowerCase()].join("|");
 }
 
-/** Reads CSV text (commas, double quotes, "" inside quotes, CRLF or LF). */
-export function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
+export type CsvRecord = { cells: string[]; line: number };
+export type CsvParse = { records: CsvRecord[]; unclosedQuoteLine?: number };
+
+/**
+ * Reads CSV text (commas, double quotes, "" inside quotes, CRLF or LF).
+ * Each record keeps the line of the file it starts on (line 1 is the header), so messages match what people
+ * see in a text editor or spreadsheet even after blank lines or quoted text that spans lines.
+ * A quote that is never closed is reported with the line it was opened on, instead of swallowing the rest.
+ */
+export function parseCsv(text: string): CsvParse {
+  const records: CsvRecord[] = [];
   let row: string[] = [];
   let field = "";
   let quoted = false;
-  const src = text.replace(/^﻿/, "");
+  let quoteLine = 0;
+  let line = 1;
+  let rowLine = 1;
+  const src = text.replace(/^\uFEFF/, "");
   for (let i = 0; i < src.length; i++) {
     const c = src[i];
     if (quoted) {
       if (c === '"') {
         if (src[i + 1] === '"') { field += '"'; i++; }
         else quoted = false;
-      } else field += c;
+      } else {
+        if (c === "\n" || (c === "\r" && src[i + 1] !== "\n")) line++;
+        field += c;
+      }
     } else if (c === '"' && field.trim() === "") {
       quoted = true;
+      quoteLine = line;
       field = "";
     } else if (c === ",") {
       row.push(field); field = "";
     } else if (c === "\n" || c === "\r") {
       if (c === "\r" && src[i + 1] === "\n") i++;
       row.push(field); field = "";
-      rows.push(row); row = [];
+      records.push({ cells: row, line: rowLine });
+      row = [];
+      line++;
+      rowLine = line;
     } else field += c;
   }
-  if (field !== "" || row.length) { row.push(field); rows.push(row); }
-  return rows;
+  if (quoted) return { records, unclosedQuoteLine: quoteLine };
+  if (field !== "" || row.length) { row.push(field); records.push({ cells: row, line: rowLine }); }
+  return { records };
 }
 
 export type ImportRow = {
@@ -205,9 +224,13 @@ export function checkCsv(
   if (!text.trim()) return { ...empty, error: "Paste the CSV text or choose a CSV file first." };
   if (new TextEncoder().encode(text).length > MAX_IMPORT_BYTES) return { ...empty, error: "The file is larger than 1 MB. Split it into smaller files." };
 
-  const table = parseCsv(text).filter((r) => r.some((c) => c.trim() !== ""));
+  const parsed = parseCsv(text);
+  if (parsed.unclosedQuoteLine !== undefined) {
+    return { ...empty, error: `Row ${parsed.unclosedQuoteLine}: a quote is not closed. Every double quote that starts a field needs a closing double quote.` };
+  }
+  const table = parsed.records.filter((r) => r.cells.some((c) => c.trim() !== ""));
   if (!table.length) return { ...empty, error: "The CSV has no rows." };
-  const header = table[0].map((h) => h.trim().toLowerCase().replace(/\s+/g, "_"));
+  const header = table[0].cells.map((h) => h.trim().toLowerCase().replace(/\s+/g, "_"));
   const missing = CSV_HEADER.filter((h) => !header.includes(h));
   if (missing.length) {
     return { ...empty, error: `The first line must be the header ${CSV_HEADER.join(",")}. Missing: ${missing.join(", ")}.` };
@@ -220,9 +243,8 @@ export function checkCsv(
   const linkable = new Set(ctx.linkable.map((b) => b.id));
   const seen = new Map<string, number>();
 
-  // Row numbers count the header as row 1, like a spreadsheet; blank lines are skipped in the count.
-  const rows: ImportRow[] = body.map((r, index) => {
-    const line = index + 2;
+  // Row numbers are the line of the file each shop starts on (the header is row 1), blank lines included.
+  const rows: ImportRow[] = body.map(({ cells: r, line }) => {
     const errors: string[] = [];
     if (r.length > header.length) errors.push(`Has ${r.length} columns but the header has ${header.length}. Put text that contains commas in double quotes.`);
     const { details, errors: fieldErrors } = checkStockist(

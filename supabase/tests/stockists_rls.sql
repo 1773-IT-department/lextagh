@@ -159,6 +159,11 @@ begin
     raise exception 'FAIL: anon called import_stockists';
   exception when insufficient_privilege then null;
   end;
+  begin
+    perform * from public.stockist_authors(array['00000000-0000-0000-0000-000000000501'::uuid]);
+    raise exception 'FAIL: anon called stockist_authors';
+  exception when insufficient_privilege then null;
+  end;
   raise notice 'PASS: anon cannot write stockists, links or regions, nor call the save functions';
 end $$;
 
@@ -186,6 +191,52 @@ begin
   exception when insufficient_privilege then null;
   end;
   raise notice 'PASS: distributor reads like a visitor and cannot write';
+end $$;
+reset role;
+
+-- Signed in people without a stockist role cannot read who created or changed a stockist.
+do $$
+declare who uuid;
+begin
+  for who in select id from outsiders loop
+    perform set_config('request.jwt.claim.sub', who::text, true);
+    set local role authenticated;
+    begin
+      perform created_by from public.stockists;
+      raise exception 'FAIL: % read created_by', who;
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      perform updated_by from public.stockists;
+      raise exception 'FAIL: % read updated_by', who;
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      perform s.* from public.stockists s;
+      raise exception 'FAIL: % read every column with select *', who;
+    exception when insufficient_privilege then null;
+    end;
+    if exists (select 1 from public.stockist_authors(array['00000000-0000-0000-0000-000000000501'::uuid])) then
+      raise exception 'FAIL: % got stockist authors', who;
+    end if;
+    reset role;
+  end loop;
+  raise notice 'PASS: distributor, HR and no role cannot read created_by or updated_by';
+end $$;
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005a2';
+do $$
+begin
+  if not exists (select 1 from public.stockist_authors(array['00000000-0000-0000-0000-000000000501'::uuid])) then
+    raise exception 'FAIL: management cannot read stockist authors';
+  end if;
+  begin
+    perform created_by from public.stockists;
+    raise exception 'FAIL: created_by is readable from the table by staff (should only come from stockist_authors)';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'PASS: staff read authors through stockist_authors only';
 end $$;
 reset role;
 
@@ -292,10 +343,10 @@ begin
   update public.stockists
      set updated_by = '00000000-0000-0000-0000-0000000005a1', created_by = '00000000-0000-0000-0000-0000000005a1'
    where id = '00000000-0000-0000-0000-000000000501';
-  if (select updated_by from public.stockists where id = '00000000-0000-0000-0000-000000000501') is distinct from '00000000-0000-0000-0000-0000000005a3' then
+  if (select a.updated_by from public.stockist_authors(array['00000000-0000-0000-0000-000000000501'::uuid]) a) is distinct from '00000000-0000-0000-0000-0000000005a3' then
     raise exception 'FAIL: updated_by was spoofed';
   end if;
-  if (select created_by from public.stockists where id = '00000000-0000-0000-0000-000000000501') is not null then
+  if (select a.created_by from public.stockist_authors(array['00000000-0000-0000-0000-000000000501'::uuid]) a) is not null then
     raise exception 'FAIL: created_by was changed by an update';
   end if;
 
@@ -333,7 +384,7 @@ begin
                        'latitude', '5.68', 'longitude', '-0.165', 'notes', 'Met the owner on Monday', 'created_by', '00000000-0000-0000-0000-0000000005a1'),
     array[(select yazz from ids)]
   );
-  if (select created_by from public.stockists where id = new_id) is distinct from '00000000-0000-0000-0000-0000000005a3' then
+  if (select a.created_by from public.stockist_authors(array[new_id]) a) is distinct from '00000000-0000-0000-0000-0000000005a3' then
     raise exception 'FAIL: created_by not taken from the session';
   end if;
   if (select notes from public.stockist_notes where stockist_id = new_id) <> 'Met the owner on Monday' then
@@ -424,6 +475,59 @@ begin
   exception when insufficient_privilege then null;
   end;
   raise notice 'PASS: reps cannot edit unbranded stockists they did not create, nor link brands they lack';
+end $$;
+reset role;
+
+-- A stockist with no brands belongs to its creator (and admins): nobody else can take it over -------
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005a4';
+do $$
+declare target uuid;
+begin
+  select id into target from public.stockists where name = 'Rep unbranded';
+  begin
+    insert into public.stockist_brands (stockist_id, brand_id) values (target, (select hooch from ids));
+    raise exception 'FAIL: marketing (Hooch) added Hooch to an unbranded stockist made by someone else';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform public.save_stockist(target, null, array[(select hooch from ids)]);
+    raise exception 'FAIL: marketing (Hooch) took over an unbranded stockist through save_stockist';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform public.set_stockist_active(target, false);
+    raise exception 'FAIL: marketing (Hooch) deactivated an unbranded stockist made by someone else';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform public.delete_stockist(target);
+    raise exception 'FAIL: marketing (Hooch) deleted an unbranded stockist made by someone else';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'PASS: an unbranded stockist cannot be taken over, deactivated or deleted by another editor';
+end $$;
+reset role;
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000005a3';
+do $$
+declare target uuid;
+begin
+  begin
+    insert into public.stockist_brands (stockist_id, brand_id) values ('00000000-0000-0000-0000-000000000504', (select yazz from ids));
+    raise exception 'FAIL: sales rep (Yazz) added Yazz to an unbranded stockist made by someone else';
+  exception when insufficient_privilege then null;
+  end;
+  -- The creator may brand it, deactivate it and reactivate it.
+  select id into target from public.stockists where name = 'Rep unbranded';
+  perform public.save_stockist(target, null, array[(select yazz from ids)]);
+  perform public.set_stockist_active(target, false);
+  perform public.set_stockist_active(target, true);
+  if not exists (select 1 from public.stockist_brands where stockist_id = target and brand_id = (select yazz from ids)) then
+    raise exception 'FAIL: the creator could not add a brand to their unbranded stockist';
+  end if;
+  raise notice 'PASS: the creator can brand, deactivate and reactivate their unbranded stockist';
 end $$;
 reset role;
 
@@ -555,6 +659,10 @@ begin
      or has_function_privilege('anon', 'public.can_view_stockists()', 'execute')
      or has_function_privilege('anon', 'public.can_link_stockist_brand(uuid)', 'execute')
      or has_function_privilege('anon', 'public.save_stockist(uuid, jsonb, uuid[])', 'execute')
+     or has_function_privilege('anon', 'public.can_add_stockist_brand(uuid, uuid)', 'execute')
+     or has_function_privilege('anon', 'public.set_stockist_active(uuid, boolean)', 'execute')
+     or has_function_privilege('anon', 'public.delete_stockist(uuid)', 'execute')
+     or has_function_privilege('anon', 'public.stockist_authors(uuid[])', 'execute')
      or has_function_privilege('authenticated', 'public.check_stockist_brand()', 'execute')
      or has_function_privilege('authenticated', 'public.set_stockist_authors()', 'execute') then
     raise exception 'FAIL: a stockist helper function is callable by anon or a trigger function by authenticated';
