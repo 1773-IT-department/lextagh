@@ -75,9 +75,9 @@ export function staffName(access: ComplaintAccess, id: string | null | undefined
   return access.staff.find((s) => s.id === id)?.display_name ?? "Former team member";
 }
 
-/** Same rule as public.crm_phone_key: digits only, then drop a leading 00, 233 and 0. */
+/** Same rule as public.crm_phone_key: digits only, drop every leading zero, then a leading 233, then leading zeros again. */
 export function phoneKey(value: string): string {
-  return value.replace(/[^0-9]/g, "").replace(/^00/, "").replace(/^233/, "").replace(/^0/, "");
+  return value.replace(/[^0-9]/g, "").replace(/^0+/, "").replace(/^233/, "").replace(/^0+/, "");
 }
 
 export const CASE_NUMBER = /^LX-?\d{4}(-\d{0,6})?$/i;

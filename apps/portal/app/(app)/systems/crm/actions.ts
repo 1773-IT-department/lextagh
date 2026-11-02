@@ -246,7 +246,9 @@ export async function deleteRecord(kind: Kind, id: string): Promise<void> {
   const { error } = await supabase.rpc("delete_crm_record", { kind, target_id: id });
   if (error) {
     if (error.code !== "42501" && error.code !== "23503") console.error("[crm] delete failed", error);
-    redirect(`${PATHS[kind]}/${id}?error=${error.code === "23503" ? "linked" : "delete"}`);
+    // Complaints keep their customer and organisation, so say so when they are what blocks the delete.
+    const reason = error.code !== "23503" ? "delete" : /on table "complaints"/.test(error.message ?? "") ? "complaints" : "linked";
+    redirect(`${PATHS[kind]}/${id}?error=${reason}`);
   }
   afterChange(kind);
   redirect(`${PATHS[kind]}?deleted=1`);

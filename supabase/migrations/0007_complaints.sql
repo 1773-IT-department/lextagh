@@ -17,19 +17,55 @@
 --   website visitors (anon)        nothing at all; they can only call public.submit_complaint()
 -- Owners are active admin or customer care people (the people who work cases).
 -- Database set, never typed: case_number, response_due_at, resolution_due_at, first_response_at, resolved_at,
--- closed_at, created_at, updated_at, created_by, updated_by. A health or safety concern is always at least high
--- severity. Resolving needs a resolution summary and the root cause; closing needs a resolution summary; reopening
--- needs a reason and clears resolved_at and closed_at. Status and owner changes are written to the timeline by the
+-- closed_at, created_at, updated_at, created_by, updated_by and the snapshots (product_name_snapshot,
+-- sku_code_snapshot, pack_size_snapshot, stockist_name_snapshot). A health or safety concern or a foreign object is
+-- always at least high severity. Resolving needs a resolution summary and the root cause; closing needs a resolution summary; reopening
+-- needs a reason and clears resolved_at, closed_at, the resolution summary and the root cause (the old ones are kept
+-- in the reopen entry on the timeline), so resolving again needs new ones. Status and owner changes are written to the timeline by the
 -- database only (people write notes, calls and emails; uploads write "attachment added").
 -- Status flow: new, acknowledged, investigating and awaiting customer are open and can move to any other open status
 -- (never back to new), to resolved or to closed. Resolved goes to closed or reopened; closed only to reopened;
--- reopened works like an open status. A closed case cannot be edited until it is reopened.
+-- reopened works like an open status. A closed case is read only until it is reopened: no edits, no owner change, no
+-- new files; notes, calls and emails are still allowed. The one change a closed case accepts is a product, SKU,
+-- stockist or person link going empty because that record was deleted (the snapshots keep what it was, for recalls).
 -- Targets from the time the complaint was received, in calendar hours:
 --   critical: respond in 4 hours, resolve in 2 days     high: 1 day, 5 days
 --   normal:   2 days, 10 days                            low:  3 days, 15 days
 -- The first response is the first move out of New.
 
+-- Phone key (replaces the 0006 version) ------------------------------------------------------
+-- Digits only, every leading zero dropped, then a leading 233, then leading zeros again. So "000233 24 555 6666",
+-- "+0233 24 555 6666", "00233 (0)24 555 6666", "024 555 6666" and "24 555 6666" all give "245556666".
+create or replace function public.crm_phone_key(phone text)
+returns text
+language sql
+immutable
+set search_path = ''
+as $$
+  select nullif(regexp_replace(regexp_replace(regexp_replace(regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'), '^0+', ''), '^233', ''), '^0+', ''), '');
+$$;
+
+revoke all on function public.crm_phone_key(text) from public, anon;
+grant execute on function public.crm_phone_key(text) to authenticated;
+
+-- crm_contacts.phone_key is stored: recompute it with the new rule (the update keeps every other field and author).
+update public.crm_contacts set phone = phone where phone is not null;
+
 -- Helper functions ----------------------------------------------------------------------
+-- Everyone who reads complaints (some brands or all).
+create or replace function public.complaint_staff()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce(public.current_app_role() in ('admin', 'management', 'customer_care', 'sales_rep', 'marketing'), false);
+$$;
+
+revoke all on function public.complaint_staff() from public, anon;
+grant execute on function public.complaint_staff() to authenticated;
+
 -- Reads complaints: admin, management, customer care (all brands), sales and marketing (their brands).
 create or replace function public.complaint_can_see(target_brand uuid)
 returns boolean
@@ -148,11 +184,17 @@ create table public.complaints (
   case_number text not null unique check (case_number ~ '^LX-[0-9]{4}-[0-9]{4,}$'),
   -- A product brand, or the corporate Lexta brand for anything not about one brand.
   brand_id uuid not null references public.brands (id) on delete restrict,
+  -- Links stay empty when the record is deleted; the snapshots below keep what it was (set by the database on every
+  -- save), so a complaint can still be traced for a recall.
   product_id uuid references public.products (id) on delete set null,
   sku_id uuid references public.product_skus (id) on delete set null,
+  product_name_snapshot text,
+  sku_code_snapshot text,
+  pack_size_snapshot text,
   batch_number text check (batch_number is null or length(btrim(batch_number)) between 1 and 60),
   -- Where it was bought: a stockist from Where to Buy, or what the customer said.
   stockist_id uuid references public.stockists (id) on delete set null,
+  stockist_name_snapshot text,
   purchase_place text check (purchase_place is null or length(btrim(purchase_place)) between 1 and 200),
   purchase_date date check (purchase_date is null or purchase_date >= date '2000-01-01'),
   category text not null check (category in (
@@ -181,11 +223,10 @@ create table public.complaints (
   updated_at timestamptz not null default now(),
   created_by uuid references public.profiles (id) on delete set null,
   updated_by uuid references public.profiles (id) on delete set null,
-  check (sku_id is null or product_id is not null),
   check (status not in ('resolved', 'closed') or resolution_summary is not null),
   check (status <> 'resolved' or root_cause is not null),
   check ((status = 'closed') = (closed_at is not null)),
-  check (category <> 'health_safety' or severity in ('high', 'critical'))
+  check (category not in ('health_safety', 'foreign_object') or severity in ('high', 'critical'))
 );
 
 create index complaints_status_idx on public.complaints (status, created_at desc);
@@ -256,13 +297,43 @@ create trigger complaint_events_set_updated_at before update on public.complaint
 create trigger complaint_files_set_updated_at before update on public.complaint_files
   for each row execute function public.set_updated_at();
 
--- Same author rules as the CRM (0006): from the session; the website intake keeps updated_by as it was.
+-- Authors come from the session, like the CRM (0006): the website intake keeps updated_by as it was. Unlike the CRM
+-- version, an author link may go empty when that person is deleted (on delete set null), so deleting a user never
+-- fails because of complaints. Security definer to check whether the person still exists.
+create or replace function public.set_complaint_authors()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  me uuid := (select auth.uid());
+begin
+  if tg_op = 'INSERT' then
+    new.created_by := me;
+    if tg_table_name = 'complaints' then
+      new.updated_by := me;
+    end if;
+    return new;
+  end if;
+  new.created_by := case when old.created_by is not null and exists (select 1 from public.profiles p where p.id = old.created_by)
+                         then old.created_by end;
+  if tg_table_name = 'complaints' then
+    new.updated_by := coalesce(me, case when old.updated_by is not null and exists (select 1 from public.profiles p where p.id = old.updated_by)
+                                        then old.updated_by end);
+  end if;
+  return new;
+end;
+$$;
+
+revoke all on function public.set_complaint_authors() from public, anon, authenticated;
+
 create trigger complaints_set_authors before insert or update on public.complaints
-  for each row execute function public.set_crm_authors();
+  for each row execute function public.set_complaint_authors();
 create trigger complaint_events_set_author before insert or update on public.complaint_events
-  for each row execute function public.set_crm_activity_author();
+  for each row execute function public.set_complaint_authors();
 create trigger complaint_files_set_author before insert or update on public.complaint_files
-  for each row execute function public.set_crm_activity_author();
+  for each row execute function public.set_complaint_authors();
 
 -- Case number, targets and status times --------------------------------------------------------------
 -- Triggers on a table fire in name order: complaints_a_number, complaints_b_check, complaints_c_derive, then the
@@ -304,6 +375,7 @@ declare
   owner_changed boolean := tg_op = 'INSERT' or new.owner_id is distinct from old.owner_id;
   status_changed boolean := tg_op = 'INSERT' or new.status is distinct from old.status;
   others_changed boolean := false;
+  link_columns text[] := array['product_id', 'sku_id', 'stockist_id', 'owner_id', 'created_by', 'updated_by'];
 begin
   if tg_op = 'UPDATE' then
     others_changed := (to_jsonb(new) - array['owner_id', 'updated_at', 'updated_by'])
@@ -327,8 +399,17 @@ begin
       raise exception 'give a reason to reopen the complaint' using errcode = '23514';
     end if;
   end if;
-  if tg_op = 'UPDATE' and old.status = 'closed' and new.status = 'closed' and others_changed then
-    raise exception 'reopen the complaint before changing it' using errcode = '23514';
+  -- Closed is read only. Only a link to a deleted product, SKU, stockist or person may go empty.
+  if tg_op = 'UPDATE' and old.status = 'closed' and new.status = 'closed' then
+    if (to_jsonb(new) - link_columns - 'updated_at') is distinct from (to_jsonb(old) - link_columns - 'updated_at')
+       or (new.product_id is distinct from old.product_id and not (new.product_id is null and public.complaint_link_gone('product', old.product_id)))
+       or (new.sku_id is distinct from old.sku_id and not (new.sku_id is null and public.complaint_link_gone('sku', old.sku_id)))
+       or (new.stockist_id is distinct from old.stockist_id and not (new.stockist_id is null and public.complaint_link_gone('stockist', old.stockist_id)))
+       or (new.owner_id is distinct from old.owner_id and not (new.owner_id is null and public.complaint_link_gone('profile', old.owner_id)))
+       or (new.created_by is distinct from old.created_by and not (new.created_by is null and public.complaint_link_gone('profile', old.created_by)))
+       or (new.updated_by is distinct from old.updated_by and not (new.updated_by is null and public.complaint_link_gone('profile', old.updated_by))) then
+      raise exception 'reopen the complaint before changing it' using errcode = '23514';
+    end if;
   end if;
 
   -- Owners are active admin or customer care people.
@@ -343,7 +424,12 @@ begin
       raise exception 'the product is not one of this brand''s products' using errcode = '23514';
     end if;
   end if;
-  if new.sku_id is not null and (tg_op = 'INSERT' or new.sku_id is distinct from old.sku_id
+  -- A pack size needs its product when a person picks it. When a product is deleted its link empties before its
+  -- SKUs' links do, so the pair is only compared when both are set.
+  if new.sku_id is not null and new.product_id is null and (tg_op = 'INSERT' or new.sku_id is distinct from old.sku_id) then
+    raise exception 'choose the product before the pack size' using errcode = '23514';
+  end if;
+  if new.sku_id is not null and new.product_id is not null and (tg_op = 'INSERT' or new.sku_id is distinct from old.sku_id
                                  or new.product_id is distinct from old.product_id) then
     if not public.complaint_sku_matches(new.sku_id, new.product_id) then
       raise exception 'the SKU is not one of this product''s SKUs' using errcode = '23514';
@@ -395,7 +481,9 @@ stable
 security definer
 set search_path = ''
 as $$
-  select exists (select 1 from public.products p where p.id = target_product and p.brand_id = target_brand);
+  -- Only answers for complaint staff (or database work without a signed in person).
+  select (public.complaint_staff() or (select auth.uid()) is null)
+     and exists (select 1 from public.products p where p.id = target_product and p.brand_id = target_brand);
 $$;
 
 create or replace function public.complaint_sku_matches(target_sku uuid, target_product uuid)
@@ -405,8 +493,31 @@ stable
 security definer
 set search_path = ''
 as $$
-  select exists (select 1 from public.product_skus s where s.id = target_sku and s.product_id = target_product);
+  select (public.complaint_staff() or (select auth.uid()) is null)
+     and exists (select 1 from public.product_skus s where s.id = target_sku and s.product_id = target_product);
 $$;
+
+-- Is the record a link pointed at gone (deleted)? Lets a closed complaint's link go empty when its record is
+-- deleted. Answers false for anyone who does not work with complaints.
+create or replace function public.complaint_link_gone(kind text, target uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select (public.complaint_staff() or (select auth.uid()) is null)
+     and case kind
+       when 'product' then not exists (select 1 from public.products p where p.id = target)
+       when 'sku' then not exists (select 1 from public.product_skus s where s.id = target)
+       when 'stockist' then not exists (select 1 from public.stockists s where s.id = target)
+       when 'profile' then not exists (select 1 from public.profiles p where p.id = target)
+       else false
+     end;
+$$;
+
+revoke all on function public.complaint_link_gone(text, uuid) from public, anon;
+grant execute on function public.complaint_link_gone(text, uuid) to authenticated;
 
 revoke all on function public.complaint_product_matches(uuid, uuid) from public, anon;
 revoke all on function public.complaint_sku_matches(uuid, uuid) from public, anon;
@@ -416,15 +527,57 @@ grant execute on function public.complaint_sku_matches(uuid, uuid) to authentica
 create trigger complaints_b_check before insert or update on public.complaints
   for each row execute function public.check_complaint();
 
--- Severity floor, targets and status times.
+-- Severity floor, targets, snapshots and status times. Security definer so the snapshots can read products that are
+-- not published; people cannot call it.
 create or replace function public.set_complaint_derived()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $$
+declare
+  v_name text;
+  v_code text;
+  v_pack text;
 begin
-  if new.category = 'health_safety' and new.severity in ('low', 'normal') then
+  if new.category in ('health_safety', 'foreign_object') and new.severity in ('low', 'normal') then
     new.severity := 'high';
+  end if;
+
+  -- Snapshots: what the product, pack size and stockist were called at the last save. When a link goes empty because
+  -- its record was deleted, the snapshot stays; when a person clears the link, the snapshot goes too.
+  if tg_op = 'UPDATE' then
+    new.product_name_snapshot := old.product_name_snapshot;
+    new.sku_code_snapshot := old.sku_code_snapshot;
+    new.pack_size_snapshot := old.pack_size_snapshot;
+    new.stockist_name_snapshot := old.stockist_name_snapshot;
+  else
+    new.product_name_snapshot := null;
+    new.sku_code_snapshot := null;
+    new.pack_size_snapshot := null;
+    new.stockist_name_snapshot := null;
+  end if;
+  if new.product_id is not null then
+    select p.name into v_name from public.products p where p.id = new.product_id;
+    if found then new.product_name_snapshot := v_name; end if;
+  elsif tg_op = 'UPDATE' and old.product_id is not null and exists (select 1 from public.products p where p.id = old.product_id) then
+    new.product_name_snapshot := null;
+  end if;
+  if new.sku_id is not null then
+    select s.sku_code, s.pack_size_label into v_code, v_pack from public.product_skus s where s.id = new.sku_id;
+    if found then
+      new.sku_code_snapshot := v_code;
+      new.pack_size_snapshot := v_pack;
+    end if;
+  elsif tg_op = 'UPDATE' and old.sku_id is not null and exists (select 1 from public.product_skus s where s.id = old.sku_id) then
+    new.sku_code_snapshot := null;
+    new.pack_size_snapshot := null;
+  end if;
+  if new.stockist_id is not null then
+    select s.name || ', ' || s.town into v_name from public.stockists s where s.id = new.stockist_id;
+    if found then new.stockist_name_snapshot := v_name; end if;
+  elsif tg_op = 'UPDATE' and old.stockist_id is not null and exists (select 1 from public.stockists s where s.id = old.stockist_id) then
+    new.stockist_name_snapshot := null;
   end if;
 
   new.response_due_at := new.created_at + case new.severity
@@ -457,6 +610,8 @@ begin
     elsif new.status = 'reopened' then
       new.resolved_at := null;
       new.closed_at := null;
+      new.resolution_summary := null;
+      new.root_cause := null;
     end if;
   end if;
   return new;
@@ -523,7 +678,10 @@ begin
       || case when new.status = 'resolved' then E'\nResolution: ' || new.resolution_summary || E'\nRoot cause: ' || new.root_cause
               when new.status = 'closed' then E'\nResolution: ' || new.resolution_summary
               else '' end
-      || case when note is not null then E'\n' || case when new.status = 'reopened' then 'Reason: ' else 'Note: ' end || note else '' end,
+      || case when note is not null then E'\n' || case when new.status = 'reopened' then 'Reason: ' else 'Note: ' end || note else '' end
+      -- Reopening clears the resolution and root cause; the timeline keeps them.
+      || case when new.status = 'reopened' then coalesce(E'\nPrevious resolution: ' || old.resolution_summary, '')
+                                                || coalesce(E'\nPrevious root cause: ' || old.root_cause, '') else '' end,
       4000));
     -- The note belongs to this one change.
     perform set_config('lexta.complaint_note', '', true);
@@ -567,8 +725,27 @@ stable
 security definer
 set search_path = ''
 as $$
-  select exists (select 1 from storage.objects o where o.bucket_id = 'complaint-files' and o.name = object_name);
+  select public.complaint_works()
+     and exists (select 1 from storage.objects o where o.bucket_id = 'complaint-files' and o.name = object_name);
 $$;
+
+-- Files are added by admin and customer care, to a complaint they see that is not closed.
+create or replace function public.complaint_can_add_file(target_complaint uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.complaint_works()
+     and exists (
+       select 1 from public.complaints c
+       where c.id = target_complaint and c.status <> 'closed' and public.complaint_can_see(c.brand_id)
+     );
+$$;
+
+revoke all on function public.complaint_can_add_file(uuid) from public, anon;
+grant execute on function public.complaint_can_add_file(uuid) to authenticated;
 
 revoke all on function public.complaint_file_uploaded(text) from public, anon;
 grant execute on function public.complaint_file_uploaded(text) to authenticated;
@@ -635,11 +812,11 @@ create policy "complaint readers read file records of complaints they see"
   on public.complaint_files for select to authenticated
   using ((select public.complaint_can_see_id(complaint_id)));
 
+-- Admin and customer care add files while the complaint is not closed.
 create policy "admin and customer care add files"
   on public.complaint_files for insert to authenticated
   with check (
-    (select public.complaint_works())
-    and (select public.complaint_can_see_id(complaint_id))
+    (select public.complaint_can_add_file(complaint_id))
     and (select public.complaint_file_uploaded(storage_path))
   );
 
@@ -666,8 +843,7 @@ create policy "admin and customer care upload complaint files"
   on storage.objects for insert to authenticated
   with check (
     bucket_id = 'complaint-files'
-    and (select public.complaint_works())
-    and (select public.complaint_can_see_id(public.complaint_id_from_path(name)))
+    and (select public.complaint_can_add_file(public.complaint_id_from_path(name)))
   );
 
 create policy "admins delete complaint files"
@@ -855,7 +1031,8 @@ grant execute on function public.delete_complaint(uuid) to authenticated;
 --   batch_number      up to 60
 --   purchase_place    where it was bought, up to 200 (never linked to a stockist; staff do that)
 --   purchase_date     YYYY-MM-DD, not in the future
--- The complaint is created at status new, severity normal (high for health or safety), channel website, no owner.
+-- The complaint is created at status new, severity normal (high for health or safety and foreign objects), channel
+-- website, no owner.
 -- Contacts are matched the same way as public.submit_website_enquiry (by email, then by phone) and only their empty
 -- fields are filled in; their organisation is never changed and no organisation is ever linked.
 -- Errors: 22023 invalid input (the message names the field), PT429 too many submissions (shared with the other
@@ -1036,5 +1213,48 @@ begin
 end;
 $$;
 
-revoke all on function public.submit_complaint(jsonb) from public;
-grant execute on function public.submit_complaint(jsonb) to anon, authenticated;
+revoke all on function public.submit_complaint(jsonb) from public, authenticated;
+grant execute on function public.submit_complaint(jsonb) to anon;
+
+-- The website forms call as visitors (anon); signed in staff use the portal. 0006 also granted the enquiry intake to
+-- authenticated: take that back.
+revoke all on function public.submit_website_enquiry(text, jsonb) from public, authenticated;
+grant execute on function public.submit_website_enquiry(text, jsonb) to anon;
+
+-- Product images of a deleted product ---------------------------------------------------------------
+-- 0003 only lets editors list and remove a product's files while the product exists, so the portal had to remove
+-- images before deleting the product (a failed delete left the product without images). These let an editor of the
+-- brand list and remove files left in the folder of a product that no longer exists, so the portal deletes the
+-- product first and cleans its folder after.
+create or replace function public.can_clean_product_object(object_name text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce((
+    select public.can_edit_brand_products(b.id)
+    from public.brands b
+    where object_name ~ '^[a-z0-9-]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[^/]+$'
+      and b.slug = split_part(object_name, '/', 1)
+      and not exists (
+        select 1 from public.products p
+        where p.id = case
+          when object_name ~ '^[a-z0-9-]+/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/'
+            then split_part(object_name, '/', 2)::uuid
+        end
+      )
+  ), false);
+$$;
+
+revoke all on function public.can_clean_product_object(text) from public, anon;
+grant execute on function public.can_clean_product_object(text) to authenticated;
+
+create policy "product editors list files of deleted products"
+  on storage.objects for select to authenticated
+  using (bucket_id = 'product-images' and (select public.can_clean_product_object(name)));
+
+create policy "product editors remove files of deleted products"
+  on storage.objects for delete to authenticated
+  using (bucket_id = 'product-images' and (select public.can_clean_product_object(name)));

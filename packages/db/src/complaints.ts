@@ -76,6 +76,9 @@ export const COMPLAINT_TARGET_HOURS: Record<ComplaintSeverity, { response: numbe
   low: { response: 72, resolution: 360 },
 };
 
+/** Categories that are always at least High severity (same as the database). */
+export const HIGH_FLOOR_CATEGORIES: readonly ComplaintCategory[] = ["health_safety", "foreign_object"];
+
 /** Which statuses a complaint may move to next (same rules as check_complaint in 0007_complaints.sql). */
 export function nextComplaintStatuses(status: ComplaintStatus): ComplaintStatus[] {
   if (status === "closed") return ["reopened"];
@@ -112,6 +115,12 @@ export type Complaint = Timestamps & Authors & {
   brand_id: string;
   product_id: string | null;
   sku_id: string | null;
+  /** What the product, pack size and stockist were called at the last save, set by the database. They stay when the
+   * linked record is deleted, so a complaint can still be traced for a recall. */
+  product_name_snapshot: string | null;
+  sku_code_snapshot: string | null;
+  pack_size_snapshot: string | null;
+  stockist_name_snapshot: string | null;
   batch_number: string | null;
   stockist_id: string | null;
   purchase_place: string | null;

@@ -22,7 +22,7 @@ export const metadata = { title: "Complaint | Lexta Business System" };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const COLUMNS =
-  "id, case_number, brand_id, product_id, sku_id, batch_number, stockist_id, purchase_place, purchase_date, category, severity, " +
+  "id, case_number, brand_id, product_id, sku_id, product_name_snapshot, sku_code_snapshot, pack_size_snapshot, stockist_name_snapshot, batch_number, stockist_id, purchase_place, purchase_date, category, severity, " +
   "channel, description, contact_id, organisation_id, status, owner_id, response_due_at, resolution_due_at, first_response_at, " +
   "resolution_summary, root_cause, resolved_at, closed_at, created_at, updated_at, created_by, updated_by";
 
@@ -47,7 +47,9 @@ export default async function ComplaintPage({ params, searchParams }: {
   if (error) throw new Error("Could not load the complaint");
   if (!c) notFound();
 
-  const canEdit = access.works && c.status !== "closed";
+  // Closed is read only (notes, calls and emails still go in); reopen to change anything else.
+  const closed = c.status === "closed";
+  const canEdit = access.works && !closed;
   const [eventsRes, filesRes, contactRes, orgRes, productRes, skuRes, stockistRes, pickers, stockists, organisations] = await Promise.all([
     supabase.from("complaint_events").select("id, type, body, occurred_at, created_by").eq("complaint_id", id).order("occurred_at", { ascending: false }).limit(300),
     supabase.from("complaint_files").select("id, file_name, mime_type, size_bytes, created_at").eq("complaint_id", id).order("created_at"),
@@ -98,8 +100,8 @@ export default async function ComplaintPage({ params, searchParams }: {
           id={c.id}
           ownerId={c.owner_id}
           ownerName={c.owner_id === access.userId ? "You" : staffName(access, c.owner_id)}
-          canAssignToMe={access.takesUnassigned && c.owner_id === null}
-          canReassign={access.reassigns}
+          canAssignToMe={!closed && access.takesUnassigned && c.owner_id === null}
+          canReassign={!closed && access.reassigns}
           staff={staff}
         />
       </div>
@@ -111,7 +113,7 @@ export default async function ComplaintPage({ params, searchParams }: {
           You can read this complaint and add notes. {access.reassigns ? "You can also assign it. " : ""}Customer care changes its status and closes it.
         </div>
       )}
-      {access.works && c.status === "closed" && <div className="alert info" role="note">This complaint is closed. Reopen it to change the details.</div>}
+      {access.works && closed && <div className="alert info" role="note">This complaint is closed and read only. You can still add notes, calls and emails. Reopen it to change details, the owner or files.</div>}
 
       <div className="crm-detail">
         <div>
@@ -126,10 +128,24 @@ export default async function ComplaintPage({ params, searchParams }: {
               </dd>
               {c.organisation_id && (<><dt>Organisation</dt><dd>{org ? <Link href={`/systems/crm/organisations/${org.id}`}>{org.name}</Link> : "An organisation you cannot see"}</dd></>)}
               <dt>Product</dt>
-              <dd>{product ? product.name : c.product_id ? "A product you cannot see" : "Not given"}{sku && <span className="hint">{sku.pack_size_label} ({sku.sku_code})</span>}</dd>
+              <dd>
+                {product ? product.name
+                  : c.product_id ? c.product_name_snapshot ?? "A product you cannot see"
+                  : c.product_name_snapshot ? `${c.product_name_snapshot} (product since removed)` : "Not given"}
+                {sku ? <span className="hint">{sku.pack_size_label} ({sku.sku_code})</span>
+                  : c.sku_code_snapshot && (
+                    <span className="hint">
+                      {c.pack_size_snapshot} ({c.sku_code_snapshot}){!c.sku_id && ", pack size since removed"}
+                    </span>
+                  )}
+              </dd>
               {c.batch_number && (<><dt>Batch or lot</dt><dd className="mono">{c.batch_number}</dd></>)}
               <dt>Bought at</dt>
-              <dd>{[stockist ? `${stockist.name}, ${stockist.town}` : "", c.purchase_place ?? ""].filter(Boolean).join(". ") || "Not given"}
+              <dd>{[
+                  stockist ? `${stockist.name}, ${stockist.town}`
+                    : c.stockist_name_snapshot ? `${c.stockist_name_snapshot}${c.stockist_id ? "" : " (stockist since removed)"}` : "",
+                  c.purchase_place ?? "",
+                ].filter(Boolean).join(". ") || "Not given"}
                 {c.purchase_date && <span className="hint">On {formatDate(c.purchase_date)}</span>}
               </dd>
               <dt>Came in by</dt>
@@ -160,7 +176,7 @@ export default async function ComplaintPage({ params, searchParams }: {
         </div>
 
         <div>
-          <Files complaintId={c.id} files={files} canUpload={access.works} canRemove={access.isAdmin} />
+          <Files complaintId={c.id} files={files} canUpload={access.works && !closed} canRemove={access.isAdmin} />
           {canEdit && (
             <>
               <h2 className="section-title">Edit details</h2>

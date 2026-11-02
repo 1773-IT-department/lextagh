@@ -67,8 +67,9 @@ export default async function EditProductPage({
 
       {flags.created && !flags.sku_error && <div className="alert ok" role="status">Product created. Add images below, then publish when it is ready.</div>}
       {flags.sku_error && <div className="alert error" role="alert">Product created, but SKU {flags.sku_error} could not be saved. Its code may already be used by another product. Check the SKUs below and save again.</div>}
-      {flags.error === "delete" && <div className="alert error" role="alert">The product could not be deleted. Please try again.</div>}
-      {flags.error === "delete_files" && <div className="alert error" role="alert">The product was not deleted because its image files could not be removed. Please try again. If it keeps happening, tell the IT team.</div>}
+      {flags.error === "delete" && <div className="alert error" role="alert">The product could not be deleted. Nothing was changed. Please try again. If it keeps happening, tell the IT team.</div>}
+      {flags.error === "permission" && <div className="alert error" role="alert">The product was not deleted: you do not have permission to delete products of this brand. Nothing was changed.</div>}
+      {flags.error === "linked" && <div className="alert error" role="alert">The product was not deleted because other records still need it. Nothing was changed. Tell the IT team which product it is.</div>}
       {!canEdit && <div className="alert info" role="note">You are viewing this product. Your role cannot change it.</div>}
 
       <div className="edit-grid">

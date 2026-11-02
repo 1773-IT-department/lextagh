@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES, type Complaint } from "@lexta/db";
+import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES, HIGH_FLOOR_CATEGORIES, type Complaint, type ComplaintCategory } from "@lexta/db";
 import { saveComplaint } from "@/app/(app)/systems/complaints/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
 import { useCrmForm } from "@/components/crm/useCrmForm";
@@ -43,7 +43,7 @@ export default function ComplaintForm({
   const [category, setCategory] = useState<string>(c?.category ?? "");
   const brandProducts = products.filter((p) => p.brand_id === brand);
   const productSkus = skus.filter((s) => s.product_id === product);
-  const health = category === "health_safety";
+  const highFloor = HIGH_FLOOR_CATEGORIES.includes(category as ComplaintCategory);
 
   return (
     <form className="pform crm-form" noValidate onSubmit={onSubmit}>
@@ -109,8 +109,8 @@ export default function ComplaintForm({
               {COMPLAINT_SEVERITIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
             <span className="hint">
-              {health
-                ? "A health or safety concern is always at least High."
+              {highFloor
+                ? "A health or safety concern or a foreign object is always at least High."
                 : "Sets the targets: Critical 4 hours to respond and 2 days to resolve, High 1 and 5 days, Normal 2 and 10 days, Low 3 and 15 days."}
             </span>
             {fe.severity && <span className="ferr">{fe.severity}</span>}

@@ -1,4 +1,4 @@
-import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES } from "@lexta/db";
+import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES, HIGH_FLOOR_CATEGORIES, type ComplaintCategory } from "@lexta/db";
 
 /**
  * Checking complaint form data in the portal, with the same limits as supabase/migrations/0007_complaints.sql,
@@ -71,8 +71,8 @@ export function checkComplaint(raw: Raw, opts: { isNew: boolean; brandIds: Set<s
   if (!COMPLAINT_CATEGORIES.some((c) => c.value === category)) errors.category = "Choose what the complaint is about.";
   let severity = raw.severity || "normal";
   if (!COMPLAINT_SEVERITIES.some((s) => s.value === severity)) errors.severity = "Choose a severity.";
-  // Same floor as the database: a health or safety concern is at least high.
-  if (category === "health_safety" && (severity === "low" || severity === "normal")) severity = "high";
+  // Same floor as the database: a health or safety concern or a foreign object is at least high.
+  if (HIGH_FLOOR_CATEGORIES.includes(category as ComplaintCategory) && (severity === "low" || severity === "normal")) severity = "high";
   const channel = raw.channel ?? "";
   if (!COMPLAINT_CHANNELS.some((c) => c.value === channel)) errors.channel = "Choose how the complaint came in.";
   const description = longText(raw.description);

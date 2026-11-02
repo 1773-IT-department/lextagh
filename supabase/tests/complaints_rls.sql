@@ -128,6 +128,9 @@ insert into public.crm_contacts (id, full_name, email, phone, organisation_id, n
   ('00000000-0000-0000-0000-000000000e12', 'Test Yaw', null, '024 777 8888', null, null);
 set local request.jwt.claim.sub = '';
 
+insert into public.stockists (id, name, outlet_type, region_id, town) values
+  ('00000000-0000-0000-0000-000000000d21', 'Test Complaint Mart', 'supermarket', (select id from public.regions where slug = 'greater-accra'), 'Accra');
+
 create temp table ids as select
   (select id from public.brands where slug = 'yazz') as yazz,
   (select id from public.brands where slug = 'hooch') as hooch,
@@ -140,7 +143,7 @@ create temp table ids as select
   '00000000-0000-0000-0000-000000000e01'::uuid as org,
   '00000000-0000-0000-0000-000000000e11'::uuid as abena,
   '00000000-0000-0000-0000-000000000e12'::uuid as yaw,
-  (select id from public.stockists limit 1) as stockist;
+  '00000000-0000-0000-0000-000000000d21'::uuid as stockist;
 grant select on ids to anon, authenticated;
 
 -- Case numbers made during the test, by label.
@@ -352,7 +355,19 @@ begin
   select * into c from public.complaints where id = (select id from cases where label = 'hooch_walkin');
   if c.severity <> 'high' or c.resolution_due_at <> c.created_at + interval '5 days' then raise exception 'FAIL: recategorised complaint not raised to high'; end if;
   update public.complaints set category = 'staff_service', severity = 'low' where id = (select id from cases where label = 'hooch_walkin');
-  raise notice 'PASS: a health or safety concern is always high or critical, and targets follow';
+  -- A foreign object is treated the same way.
+  id1 := public.save_complaint(null, jsonb_build_object('brand_id', (select yazz from ids), 'category', 'foreign_object', 'severity', 'low',
+    'channel', 'walk_in', 'description', 'Stone in the pack', 'contact_id', (select yaw from ids)));
+  if (select severity from public.complaints where id = id1) <> 'high' then raise exception 'FAIL: foreign object complaint not raised to high'; end if;
+  update public.complaints set severity = 'normal' where id = id1;
+  if (select severity from public.complaints where id = id1) <> 'high' then raise exception 'FAIL: foreign object lowered to normal'; end if;
+  update public.complaints set category = 'foreign_object', severity = 'low' where id = (select id from cases where label = 'hooch_walkin');
+  if (select severity from public.complaints where id = (select id from cases where label = 'hooch_walkin')) <> 'high' then
+    raise exception 'FAIL: recategorised foreign object complaint not raised to high';
+  end if;
+  update public.complaints set category = 'staff_service', severity = 'low' where id = (select id from cases where label = 'hooch_walkin');
+  insert into cases values ('yazz_foreign', id1);
+  raise notice 'PASS: a health or safety concern or a foreign object is always high or critical, and targets follow';
 end $$;
 reset role;
 
@@ -373,10 +388,11 @@ begin
     end;
   end loop;
   foreach col in array array['case_number', 'created_by', 'updated_by', 'created_at', 'closed_at', 'resolved_at',
-                             'first_response_at', 'response_due_at', 'resolution_due_at', 'id'] loop
+                             'first_response_at', 'response_due_at', 'resolution_due_at', 'id', 'product_name_snapshot',
+                             'sku_code_snapshot', 'pack_size_snapshot', 'stockist_name_snapshot'] loop
     begin
       execute format('update public.complaints set %I = %s where id = $1', col,
-        case when col = 'case_number' then '''LX-2000-0001''' when col like '%_by' or col = 'id' then 'gen_random_uuid()' else 'now()' end)
+        case when col = 'case_number' or col like '%snapshot' then '''LX-2000-0001''' when col like '%_by' or col = 'id' then 'gen_random_uuid()' else 'now()' end)
         using target;
       raise exception 'FAIL: customer care changed %', col;
     exception when insufficient_privilege then null;
@@ -402,12 +418,12 @@ do $$
 declare c record;
 begin
   insert into public.complaints (brand_id, category, channel, description, contact_id, case_number, response_due_at,
-                                 resolution_due_at, closed_at, first_response_at, created_by)
+                                 resolution_due_at, closed_at, first_response_at, created_by, product_name_snapshot, stockist_name_snapshot)
   values ((select yazz from ids), 'other', 'phone', 'Owner spoof', (select yaw from ids), 'LX-1999-0001', now() + interval '99 days',
-          now() + interval '99 days', null, now(), pg_temp.u('admin'))
+          now() + interval '99 days', null, now(), pg_temp.u('admin'), 'Fake product', 'Fake shop')
   returning * into c;
   if c.case_number = 'LX-1999-0001' or c.response_due_at <> c.created_at + interval '2 days' or c.first_response_at is not null
-     or c.created_by is not null then
+     or c.created_by is not null or c.product_name_snapshot is not null or c.stockist_name_snapshot is not null then
     raise exception 'FAIL: database set columns were taken from the insert';
   end if;
   begin
@@ -525,12 +541,19 @@ begin
   perform public.set_complaint_status(id1, 'reopened', 'Customer says the new tube leaks too', null, null);
   select * into c from public.complaints where id = id1;
   if c.closed_at is not null or c.resolved_at is not null or c.status <> 'reopened' then raise exception 'FAIL: reopening did not clear the close'; end if;
+  if c.resolution_summary is not null or c.root_cause is not null then raise exception 'FAIL: reopening kept the old resolution and root cause'; end if;
   if not exists (select 1 from public.complaint_events where complaint_id = id1 and type = 'status_change'
-                 and body = E'Status changed from Closed to Reopened\nReason: Customer says the new tube leaks too') then
-    raise exception 'FAIL: reopening not on the timeline with its reason';
+                 and body = E'Status changed from Closed to Reopened\nReason: Customer says the new tube leaks too'
+                            || E'\nPrevious resolution: Replaced the tube\nPrevious root cause: Weak seal on batch B123') then
+    raise exception 'FAIL: reopening not on the timeline with its reason and the old resolution';
   end if;
   -- The note does not leak into a later change in the same transaction.
   perform public.set_complaint_status(id1, 'investigating', null, null, null);
+  begin
+    perform public.set_complaint_status(id1, 'resolved', null, null, null);
+    raise exception 'FAIL: resolved again with the old resolution';
+  exception when check_violation then null;
+  end;
   if exists (select 1 from public.complaint_events where complaint_id = id1 and body like 'Status changed from Reopened to Investigating%Reason%') then
     raise exception 'FAIL: the reopen reason leaked into the next change';
   end if;
@@ -548,9 +571,14 @@ begin
     raise exception 'FAIL: setting the same status did not raise';
   exception when insufficient_privilege then null;
   end;
-  -- Owner may change on a closed case.
-  perform public.set_complaint_owner((select id from cases where label = 'hooch_open'), pg_temp.u('care'));
-  raise notice 'PASS: status flow, resolve and close fields, reopen with reason, first response time';
+  -- A closed case is read only: no owner change (not even taking it), no edits; notes, calls and emails still go in.
+  begin
+    perform public.set_complaint_owner((select id from cases where label = 'hooch_open'), pg_temp.u('care'));
+    raise exception 'FAIL: the owner of a closed complaint changed';
+  exception when check_violation then null;
+  end;
+  insert into public.complaint_events (complaint_id, type, body) values ((select id from cases where label = 'hooch_open'), 'call', 'Called after closing');
+  raise notice 'PASS: status flow, resolve and close fields, reopen with reason and old resolution kept on the timeline, closed is read only';
 end $$;
 reset role;
 
@@ -627,6 +655,12 @@ begin
   exception when insufficient_privilege then null;
   end;
   insert into public.complaint_events (complaint_id, type, body) values (id_lexta, 'note', 'Management note');
+  begin
+    perform public.set_complaint_owner((select id from cases where label = 'hooch_open'), pg_temp.u('care2'));
+    raise exception 'FAIL: management reassigned a closed complaint';
+  exception when check_violation then null;
+  end;
+  insert into public.complaint_events (complaint_id, type, body) values ((select id from cases where label = 'hooch_open'), 'note', 'Management note on a closed case');
   if (select count(*) from public.complaints) < 5 then raise exception 'FAIL: management does not read every complaint'; end if;
   raise notice 'PASS: owners are admin or customer care; care takes unassigned cases; management reassigns and notes only';
 end $$;
@@ -765,9 +799,10 @@ set local role authenticated;
 do $$
 declare
   id_yazz uuid := (select id from cases where label = 'yazz_health');
-  id_hooch uuid := (select id from cases where label = 'hooch_open');
+  id_hooch uuid := (select id from cases where label = 'hooch_walkin');
+  id_closed uuid := (select id from cases where label = 'hooch_open');
   p_yazz text := (select id from cases where label = 'yazz_health')::text || '/1700000000-photo.jpg';
-  p_hooch text := (select id from cases where label = 'hooch_open')::text || '/1700000000-receipt.pdf';
+  p_hooch text := (select id from cases where label = 'hooch_walkin')::text || '/1700000000-receipt.pdf';
   n int;
 begin
   -- Sales and marketing cannot upload.
@@ -801,6 +836,11 @@ begin
     raise exception 'FAIL: a file was uploaded into a sub folder';
   exception when insufficient_privilege then null;
   end;
+  begin
+    insert into storage.objects (bucket_id, name) values ('complaint-files', id_closed::text || '/late.jpg');
+    raise exception 'FAIL: a file was uploaded to a closed complaint';
+  exception when insufficient_privilege then null;
+  end;
   update storage.objects set name = p_yazz || '.bak' where name = p_yazz;
   get diagnostics n = row_count;
   if n <> 0 then raise exception 'FAIL: customer care overwrote a complaint file'; end if;
@@ -829,6 +869,19 @@ begin
     raise exception 'FAIL: a file over 10 MB was accepted';
   exception when check_violation then null;
   end;
+  -- A file already in the bucket cannot be recorded on a closed complaint either.
+  reset role;
+  insert into storage.objects (bucket_id, name) values ('complaint-files', id_closed::text || '/sneaked.pdf');
+  set local role authenticated;
+  begin
+    insert into public.complaint_files (complaint_id, storage_path, file_name, mime_type, size_bytes)
+    values (id_closed, id_closed::text || '/sneaked.pdf', 'sneaked.pdf', 'application/pdf', 10);
+    raise exception 'FAIL: a file record was added to a closed complaint';
+  exception when insufficient_privilege then null;
+  end;
+  reset role;
+  delete from storage.objects where name = id_closed::text || '/sneaked.pdf';
+  set local role authenticated;
   delete from storage.objects where bucket_id = 'complaint-files';
   get diagnostics n = row_count;
   if n <> 0 then raise exception 'FAIL: customer care deleted complaint files'; end if;
@@ -889,10 +942,10 @@ begin
   perform public.set_complaint_owner(id_del, pg_temp.u('care2'));
   perform public.delete_complaint(id_del);
   if exists (select 1 from public.complaint_events where complaint_id = id_del) then raise exception 'FAIL: deleting left timeline entries'; end if;
-  delete from storage.objects where bucket_id = 'complaint-files' and name like (select id from cases where label = 'hooch_open')::text || '/%';
+  delete from storage.objects where bucket_id = 'complaint-files' and name like (select id from cases where label = 'hooch_walkin')::text || '/%';
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FAIL: admin could not remove a complaint file'; end if;
-  delete from public.complaint_files where complaint_id = (select id from cases where label = 'hooch_open');
+  delete from public.complaint_files where complaint_id = (select id from cases where label = 'hooch_walkin');
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FAIL: admin could not remove a file record'; end if;
   -- A contact with complaints cannot be deleted from under them.
@@ -939,7 +992,7 @@ declare c record; ct record;
 begin
   select * into c from public.complaints where case_number = (select ref from refs where label = 'new_visitor');
   if c.status <> 'new' or c.channel <> 'website' or c.owner_id is not null or c.created_by is not null or c.updated_by is not null
-     or c.severity <> 'normal' or c.category <> 'foreign_object' or c.brand_id <> (select yazz from ids)
+     or c.severity <> 'high' or c.category <> 'foreign_object' or c.product_name_snapshot <> 'Test paste' or c.sku_code_snapshot <> 'CX-PASTE-100' or c.brand_id <> (select yazz from ids)
      or c.product_id <> (select paste from ids) or c.sku_id <> (select paste_sku from ids) or c.batch_number <> 'L2201'
      or c.purchase_place <> 'Shop near Kaneshie market' or c.stockist_id is not null or c.organisation_id is not null
      or c.purchase_date <> current_date - 10 or c.description <> E'Found a hair in the paste.\nVery upset.' then
@@ -1113,6 +1166,214 @@ begin
   perform set_config('request.jwt.claim.sub', pg_temp.u('care')::text, true);
   if (select count(*) from public.complaints where channel = 'website') < 3 then raise exception 'FAIL: customer care cannot see website complaints'; end if;
   raise notice 'PASS: website complaints follow the brand rules';
+end $$;
+reset role;
+
+-- Snapshots and deleting linked records ------------------------------------------------------------
+do $$
+declare c record;
+begin
+  select * into c from public.complaints where id = (select id from cases where label = 'yazz_phone');
+  if c.product_name_snapshot <> 'Test paste' or c.sku_code_snapshot <> 'CX-PASTE-100' or c.pack_size_snapshot <> '100 g'
+     or c.stockist_name_snapshot <> 'Test Complaint Mart, Accra' then
+    raise exception 'FAIL: snapshots not taken at creation: %', to_jsonb(c);
+  end if;
+  if (select product_name_snapshot from public.complaints where id = (select id from cases where label = 'hooch_open')) <> 'Test oil' then
+    raise exception 'FAIL: Hooch snapshot missing';
+  end if;
+end $$;
+
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000c03';
+do $$
+declare id_snap uuid; c record;
+begin
+  -- Saving again picks up a renamed product; clearing a link by hand clears its snapshot.
+  reset role;
+  update public.products set name = 'Test paste renamed' where id = (select paste from ids);
+  set local role authenticated;
+  id_snap := (select id from cases where label = 'yazz_health');
+  perform public.save_complaint(id_snap, jsonb_build_object('brand_id', (select yazz from ids), 'product_id', (select paste from ids),
+    'sku_id', (select paste_sku from ids), 'stockist_id', (select stockist from ids), 'category', 'health_safety', 'severity', 'critical',
+    'channel', 'phone', 'description', 'Rash after use'));
+  select * into c from public.complaints where id = id_snap;
+  if c.product_name_snapshot <> 'Test paste renamed' or c.sku_code_snapshot <> 'CX-PASTE-100' or c.stockist_name_snapshot <> 'Test Complaint Mart, Accra' then
+    raise exception 'FAIL: snapshots not refreshed on save';
+  end if;
+  perform public.save_complaint(id_snap, jsonb_build_object('brand_id', (select yazz from ids), 'category', 'health_safety', 'severity', 'critical',
+    'channel', 'phone', 'description', 'Rash after use'));
+  select * into c from public.complaints where id = id_snap;
+  if c.product_name_snapshot is not null or c.sku_code_snapshot is not null or c.pack_size_snapshot is not null or c.stockist_name_snapshot is not null then
+    raise exception 'FAIL: clearing a link by hand kept its snapshot';
+  end if;
+  begin
+    perform public.save_complaint(id_snap, jsonb_build_object('brand_id', (select yazz from ids), 'sku_id', (select paste_sku from ids),
+      'category', 'health_safety', 'severity', 'critical', 'channel', 'phone', 'description', 'Rash after use'));
+    raise exception 'FAIL: a pack size without a product was accepted';
+  exception when check_violation then null;
+  end;
+
+  -- A closed Yazz case with product, pack size and stockist, for the delete tests below.
+  id_snap := public.save_complaint(null, jsonb_build_object('brand_id', (select yazz from ids), 'product_id', (select paste from ids),
+    'sku_id', (select paste_sku from ids), 'stockist_id', (select stockist from ids), 'batch_number', 'RECALL-1', 'category', 'packaging',
+    'channel', 'phone', 'description', 'Recall trace', 'contact_id', (select yaw from ids)));
+  perform public.set_complaint_status(id_snap, 'closed', null, 'Refunded', null);
+  insert into cases values ('yazz_closed_trace', id_snap);
+  raise notice 'PASS: snapshots are refreshed on every save and cleared with a link a person removes';
+end $$;
+reset role;
+
+-- A user who owned and logged a closed case.
+insert into auth.users (id, email, raw_app_meta_data, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-000000000c0c', 'cx.care3@test.local', '{"role":"customer_care"}', '{"full_name":"Test Care Three"}');
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-000000000c0c';
+do $$
+declare id1 uuid;
+begin
+  id1 := public.save_complaint(null, jsonb_build_object('brand_id', (select hooch from ids), 'category', 'delivery', 'channel', 'phone',
+    'description', 'Leaver case', 'contact_id', (select yaw from ids), 'owner_id', '00000000-0000-0000-0000-000000000c0c'));
+  perform public.set_complaint_status(id1, 'closed', null, 'Delivered late, apologised', null);
+  insert into cases values ('leaver_closed', id1);
+end $$;
+reset role;
+
+-- Deleting products, SKUs, stockists and people works when complaints (open or closed) point at them, and the
+-- closed cases keep what they were.
+set local role authenticated;
+do $$
+declare c record; n int;
+begin
+  -- Admin deletes the Yazz product: its SKUs go with it, while open and closed complaints name both.
+  perform set_config('request.jwt.claim.sub', pg_temp.u('admin')::text, true);
+  delete from public.products where id = (select paste from ids);
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FAIL: a product named by complaints could not be deleted'; end if;
+  -- Hooch marketing deletes the Hooch product named by a closed case.
+  perform set_config('request.jwt.claim.sub', pg_temp.u('mkt_hooch')::text, true);
+  delete from public.products where id = (select oil from ids);
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FAIL: marketing could not delete a product named by a closed complaint'; end if;
+  perform set_config('request.jwt.claim.sub', pg_temp.u('admin')::text, true);
+  perform public.delete_stockist((select stockist from ids));
+
+  select * into c from public.complaints where id = (select id from cases where label = 'yazz_closed_trace');
+  if c.status <> 'closed' or c.product_id is not null or c.sku_id is not null or c.stockist_id is not null then
+    raise exception 'FAIL: links of a closed case were not emptied';
+  end if;
+  if c.product_name_snapshot <> 'Test paste renamed' or c.sku_code_snapshot <> 'CX-PASTE-100' or c.pack_size_snapshot <> '100 g'
+     or c.stockist_name_snapshot <> 'Test Complaint Mart, Accra' or c.batch_number <> 'RECALL-1' or c.resolution_summary <> 'Refunded' then
+    raise exception 'FAIL: a closed case lost its recall trace: %', to_jsonb(c);
+  end if;
+  select * into c from public.complaints where id = (select id from cases where label = 'yazz_phone');
+  if c.product_id is not null or c.sku_id is not null or c.product_name_snapshot <> 'Test paste' then
+    raise exception 'FAIL: open case links or snapshot wrong after the product was deleted';
+  end if;
+  if (select product_name_snapshot from public.complaints where id = (select id from cases where label = 'hooch_open')) <> 'Test oil' then
+    raise exception 'FAIL: closed Hooch case lost its product snapshot';
+  end if;
+  -- After the delete, a closed case is still read only.
+  begin
+    perform public.save_complaint((select id from cases where label = 'yazz_closed_trace'), jsonb_build_object('brand_id', (select yazz from ids),
+      'category', 'packaging', 'channel', 'phone', 'description', 'Edited after the delete'));
+    raise exception 'FAIL: a closed case was edited after a delete';
+  exception when check_violation then null;
+  end;
+  raise notice 'PASS: products, SKUs and stockists named by complaints can be deleted; closed cases keep their snapshots';
+end $$;
+reset role;
+
+do $$
+declare c record;
+begin
+  -- Deleting a person (as Supabase does when a user is removed) empties owner and author links on closed cases.
+  delete from auth.users where id = '00000000-0000-0000-0000-000000000c0c';
+  select * into c from public.complaints where id = (select id from cases where label = 'leaver_closed');
+  if c.status <> 'closed' or c.owner_id is not null or c.created_by is not null then raise exception 'FAIL: a deleted person still linked'; end if;
+  -- Emptying a link to a record that still exists is not allowed on a closed case, even for the database owner.
+  begin
+    update public.complaints set created_by = null where id = (select id from cases where label = 'yazz_closed_trace');
+    raise exception 'FAIL: a closed case lost its author while the author still exists';
+  exception when check_violation then null;
+  end;
+  raise notice 'PASS: deleting a person empties their links on closed cases; nothing else changes a closed case';
+end $$;
+
+-- Phone keys: extra zeros or country codes do not get past matching or the rate limit -------------------
+do $$
+declare v text;
+begin
+  foreach v in array array['+233 (0)24 555 6666', '024 555 6666', '24 555 6666', '233245556666', '+233245556666', '0245556666',
+                           '00233 24 555 6666', '00233245556666', '000233 24 555 6666', '+0233 24 555 6666', '0000245556666',
+                           '00233 0 24 555 6666', '+233 00 24 555 6666'] loop
+    if public.crm_phone_key(v) is distinct from '245556666' then raise exception 'FAIL: phone key of % is %', v, public.crm_phone_key(v); end if;
+  end loop;
+  if public.crm_phone_key('call me') is not null or public.crm_phone_key('000') is not null then raise exception 'FAIL: empty phone keys'; end if;
+  if exists (select 1 from public.crm_contacts where phone is not null and phone_key is distinct from public.crm_phone_key(phone)) then
+    raise exception 'FAIL: stored phone keys do not follow the new rule';
+  end if;
+  raise notice 'PASS: phone keys ignore extra leading zeros and the country code';
+end $$;
+
+set local role anon;
+do $$
+declare i int;
+begin
+  for i in 1..5 loop
+    perform public.submit_complaint(jsonb_build_object('name', 'Zero flood', 'phone', '+233 26 555 0000', 'email', 'z' || i || '@flood.test',
+      'category', 'other', 'message', 'm'));
+  end loop;
+  begin
+    perform public.submit_complaint(jsonb_build_object('name', 'Zero flood', 'phone', '000233 26 555 0000', 'email', 'z9@flood.test', 'category', 'other', 'message', 'm'));
+    raise exception 'FAIL: extra zeros got past the rate limit';
+  exception when sqlstate 'PT429' then null;
+  end;
+  begin
+    perform public.submit_complaint(jsonb_build_object('name', 'Zero flood', 'phone', '+0233 26 555 0000', 'email', 'z10@flood.test', 'category', 'other', 'message', 'm'));
+    raise exception 'FAIL: +0233 got past the rate limit';
+  exception when sqlstate 'PT429' then null;
+  end;
+  raise notice 'PASS: the rate limit sees through extra zeros';
+end $$;
+reset role;
+
+-- The intake functions are for website visitors only; helpers answer nothing to outsiders ----------------
+do $$
+begin
+  if has_function_privilege('authenticated', 'public.submit_complaint(jsonb)', 'execute') then raise exception 'FAIL: signed in people can call submit_complaint'; end if;
+  if has_function_privilege('authenticated', 'public.submit_website_enquiry(text, jsonb)', 'execute') then raise exception 'FAIL: signed in people can call submit_website_enquiry'; end if;
+  if not has_function_privilege('anon', 'public.submit_complaint(jsonb)', 'execute') or not has_function_privilege('anon', 'public.submit_website_enquiry(text, jsonb)', 'execute') then
+    raise exception 'FAIL: website visitors lost the intake functions';
+  end if;
+end $$;
+set local role authenticated;
+do $$
+declare who text;
+begin
+  perform set_config('request.jwt.claim.sub', pg_temp.u('care')::text, true);
+  begin
+    perform public.submit_complaint(jsonb_build_object('name', 'Staff', 'email', 's@test.local', 'category', 'other', 'message', 'm'));
+    raise exception 'FAIL: signed in staff called submit_complaint';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Staff', 'email', 's@test.local', 'message', 'm'));
+    raise exception 'FAIL: signed in staff called submit_website_enquiry';
+  exception when insufficient_privilege then null;
+  end;
+  foreach who in array array['dist', 'hr', 'norole'] loop
+    perform set_config('request.jwt.claim.sub', pg_temp.u(who)::text, true);
+    if public.complaint_sku_matches((select paste_sku from ids), (select paste from ids)) or public.complaint_link_gone('product', gen_random_uuid())
+       or public.complaint_file_uploaded('x/y') or public.complaint_can_add_file((select id from cases where label = 'yazz_phone'))
+       or public.complaint_product_matches((select id from public.products limit 1), (select brand_id from public.products limit 1)) then
+      raise exception 'FAIL: a complaints helper answered %', who;
+    end if;
+  end loop;
+  perform set_config('request.jwt.claim.sub', pg_temp.u('rep_yazz')::text, true);
+  if public.complaint_file_uploaded('x/y') or public.complaint_can_add_file((select id from cases where label = 'yazz_phone')) then
+    raise exception 'FAIL: file helpers answered a sales rep';
+  end if;
+  raise notice 'PASS: only website visitors call the intake functions; complaint helpers answer nothing to outsiders';
 end $$;
 reset role;
 

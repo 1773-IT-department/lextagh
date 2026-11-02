@@ -36,6 +36,7 @@ function dbError(error: { code?: string; message: string }, context: string): st
     if (msg.includes("reopen the complaint")) return "This complaint is closed. Reopen it before changing it.";
     if (msg.includes("product is not one")) return "That product belongs to another brand. Pick one of this brand's products.";
     if (msg.includes("SKU is not one")) return "That pack size belongs to another product.";
+    if (msg.includes("product before the pack size")) return "Choose the product before the pack size.";
     if (msg.includes("purchase date")) return "The purchase date cannot be in the future.";
     return "One of the fields is too long, missing or in the wrong format. Please check and try again.";
   }

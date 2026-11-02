@@ -16,7 +16,7 @@ type Row = {
   product_images: Pick<ProductImage, "storage_path" | "external_url" | "alt_text" | "is_primary" | "sort_order">[];
 };
 
-type Search = { brand?: string; q?: string; status?: string; deleted?: string };
+type Search = { brand?: string; q?: string; status?: string; deleted?: string; files?: string };
 
 function NoAccess() {
   return (
@@ -74,6 +74,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       </div>
 
       {params.deleted && <div className="alert ok" role="status">The product was deleted.</div>}
+      {params.deleted && params.files === "left" && <div className="alert info" role="note">Some of its image files could not be cleaned up. They are no longer shown anywhere; tell the IT team if this keeps happening.</div>}
 
       {access.brands.length === 0 ? (
         <div className="tile empty">
