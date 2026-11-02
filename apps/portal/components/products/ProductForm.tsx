@@ -56,10 +56,23 @@ export default function ProductForm({
   const [rows, setRows] = useState<SkuRow[]>(() => (skus.length ? skus.map(toRow) : product ? [] : [blankSku()]));
   const isNew = !product;
 
-  // After every save, show the SKUs exactly as stored, so new rows carry their ids into the next save.
+  // After a successful save, show the SKUs exactly as stored, so new rows carry their ids into the next save.
+  // After a failed save, keep what the person typed and only pick up ids for the rows that did save.
   useEffect(() => {
-    if (state.skus) setRows(state.skus.map(toRow));
-  }, [state.skus]);
+    const stored = state.skus;
+    if (!stored) return;
+    if (!state.error) {
+      setRows(stored.map(toRow));
+      return;
+    }
+    setRows((current) =>
+      current.map((row) => {
+        if (row.id) return row;
+        const match = stored.find((s) => s.sku_code.toUpperCase() === row.sku_code.trim().toUpperCase());
+        return match ? { ...row, id: match.id } : row;
+      }),
+    );
+  }, [state.skus, state.error]);
   const fe = state.fieldErrors ?? {};
 
   const update = (key: string, patch: Partial<SkuRow>) => setRows((r) => r.map((row) => (row.key === key ? { ...row, ...patch } : row)));
