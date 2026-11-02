@@ -14,6 +14,13 @@ import { deleteRecord } from "../../actions";
 
 export const metadata = { title: "Contact | Lexta Business System" };
 
+/** WhatsApp wants the full international number: Ghana numbers written locally get 233 in front. */
+function waNumber(phone: string): string {
+  const digits = phone.replace(/[^0-9]/g, "").replace(/^00/, "");
+  if (phone.trim().startsWith("+") || phone.trim().startsWith("00")) return digits.replace(/^2330/, "233");
+  return `233${digits.replace(/^0/, "")}`;
+}
+
 const COLUMNS = "id, full_name, organisation_id, job_title, phone, phone_key, email, preferred_channel, consent_marketing, consent_at, consent_source, " +
   "notes, owner_id, created_at, updated_at, created_by, updated_by";
 
@@ -42,6 +49,8 @@ export default async function ContactPage({ params, searchParams }: {
   const leads = (leadsRes.data ?? []) as { id: string; title: string; stage: CrmStage; next_action_date: string | null }[];
   const nameOf = (who: string | null) => (who ? (who === access.userId ? "you" : staffName(access, who)) : "the website");
   const org = organisations.find((o) => o.id === contact.organisation_id);
+  // Linked to an organisation this person cannot see: the form keeps that link unless they pick another.
+  const hiddenOrganisation = !!contact.organisation_id && !org;
 
   return (
     <>
@@ -50,12 +59,12 @@ export default async function ContactPage({ params, searchParams }: {
         <div>
           <h1>{crmContactName(contact)}</h1>
           <p className="small">
-            {[contact.job_title, org?.label].filter(Boolean).join(", ") || "No organisation"}
+            {[contact.job_title, org?.label ?? (hiddenOrganisation ? "an organisation you cannot see" : null)].filter(Boolean).join(", ") || "No organisation"}
             {contact.consent_marketing && <>{" "}<span className="badge on">Marketing consent</span></>}
           </p>
           <div className="quick-actions">
             {contact.phone && <a className="btn small light" href={`tel:${contact.phone.replace(/[^+0-9]/g, "")}`}>Call</a>}
-            {contact.phone && <a className="btn small light" href={`https://wa.me/${(contact.phone_key ?? "").replace(/^0/, "233")}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
+            {contact.phone && <a className="btn small light" href={`https://wa.me/${waNumber(contact.phone)}`} target="_blank" rel="noopener noreferrer">WhatsApp</a>}
             {contact.email && <a className="btn small light" href={`mailto:${contact.email}`}>Email</a>}
           </div>
         </div>
@@ -102,7 +111,7 @@ export default async function ContactPage({ params, searchParams }: {
         </div>
         <div>
           <h2 className="section-title">{access.canEdit ? "Edit contact" : "Contact details"}</h2>
-          <ContactForm mode={access.canEdit ? "edit" : "view"} contact={contact} organisations={organisations} />
+          <ContactForm mode={access.canEdit ? "edit" : "view"} contact={contact} organisations={organisations} hiddenOrganisation={hiddenOrganisation} />
           {access.isAdmin && (
             <section className="panel danger-zone">
               <h2>Delete contact</h2>

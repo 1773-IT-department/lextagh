@@ -17,7 +17,7 @@ export const metadata = { title: "Lead | Lexta Business System" };
 
 const LEAD_COLUMNS =
   "id, title, description, contact_id, organisation_id, brand_id, source, stage, lost_reason, owner_id, next_action, next_action_date, " +
-  "estimated_monthly_volume, intake_reference, closed_at, created_at, updated_at, created_by, updated_by";
+  "estimated_monthly_volume, intake_reference, submitted_organisation_name, closed_at, created_at, updated_at, created_by, updated_by";
 
 export default async function LeadPage({ params, searchParams }: {
   params: Promise<{ id: string }>;
@@ -46,6 +46,9 @@ export default async function LeadPage({ params, searchParams }: {
   const org = orgRes.data as { id: string; name: string; town: string | null } | null;
 
   const perm = leadPermissions(access, lead);
+  // A linked record missing from this person's lists is kept as it is when they save (see save_crm_lead).
+  const hiddenContact = !!lead.contact_id && !contacts.some((c) => c.id === lead.contact_id);
+  const hiddenOrganisation = !!lead.organisation_id && !organisations.some((o) => o.id === lead.organisation_id);
   const brandName = access.allBrands.find((b) => b.id === lead.brand_id)?.name;
   const brands = leadBrandChoices(access).map((b) => ({ id: b.id, label: b.name }));
   if (lead.brand_id && brandName && !brands.some((b) => b.id === lead.brand_id)) brands.unshift({ id: lead.brand_id, label: brandName });
@@ -90,7 +93,12 @@ export default async function LeadPage({ params, searchParams }: {
                 {contact?.email && <span className="hint"><a href={`mailto:${contact.email}`}>{contact.email}</a></span>}
               </dd>
               <dt>Organisation</dt>
-              <dd>{org ? <Link href={`/systems/crm/organisations/${org.id}`}>{org.name}</Link> : "None"}</dd>
+              <dd>
+                {org ? <Link href={`/systems/crm/organisations/${org.id}`}>{org.name}</Link> : lead.organisation_id ? "An organisation you cannot see" : "None"}
+                {!lead.organisation_id && lead.submitted_organisation_name && (
+                  <span className="hint">Named on the website form: {lead.submitted_organisation_name}. Not linked yet.</span>
+                )}
+              </dd>
               <dt>Next action</dt>
               <dd>{lead.next_action || lead.next_action_date ? `${lead.next_action ?? "Follow up"}${lead.next_action_date ? `, by ${formatDate(lead.next_action_date)}` : ""}` : "Not set"}</dd>
               {lead.estimated_monthly_volume && (<><dt>Estimated volume</dt><dd>{lead.estimated_monthly_volume}</dd></>)}
@@ -125,6 +133,8 @@ export default async function LeadPage({ params, searchParams }: {
             organisations={organisations}
             brands={brands}
             canChangeBrand={perm.canChangeBrand}
+            hiddenContact={hiddenContact}
+            hiddenOrganisation={hiddenOrganisation}
           />
           {perm.canDelete && (
             <section className="panel danger-zone">

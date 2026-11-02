@@ -7,21 +7,25 @@
 -- Who can do what (CRM roles are admin, management, sales_rep, marketing and customer_care):
 --   admin                          read and change everything; reassign owners; the only role that deletes
 --   management                     read everything; create and edit everything; reassign owners; no delete
---   sales_rep, marketing           read and work (create, edit, change stage, add activities) the leads and
---                                  organisations of the brands they have access to, anything unbranded, and
---                                  anything they own. Contacts carry no brand, so every CRM role reads them.
---                                  They cannot reassign, except that they may take an unowned lead they can see
---                                  ("Assign to me"). On a lead they do not own they may work the stage and next
---                                  action but not change its brand (claim it first), so nobody can hide an
---                                  unowned lead from another brand's team. They add a brand to an organisation
---                                  only if it already has a brand, or they own it (or added it and nobody owns it),
---                                  and remove only brands they work on. They can only link records they can see.
---   customer_care                  read everything; create contacts, leads and activities (owner empty or
---                                  themselves); no edits, no reassigning, no deletes
+--   sales_rep, marketing           read the leads and organisations of the brands they have access to, anything
+--                                  unbranded, and anything they own; an organisation is also readable (read only)
+--                                  when a lead they can see points at it. Contacts carry no brand, so every CRM
+--                                  role reads them. They work (edit, change stage, add activities) the leads they
+--                                  see. They edit an organisation (details and brands) they own, one carrying a
+--                                  brand they work on, or an unbranded one they added; they add or remove only
+--                                  brands they work on. They cannot reassign, except that they may take an unowned
+--                                  lead they can see ("Assign to me"). On a lead they do not own they may work the
+--                                  stage and next action but not change its brand (claim it first), so nobody can
+--                                  hide an unowned lead from another brand's team. They only link records they can
+--                                  see, and never drop a link to an organisation they cannot see.
+--   customer_care                  read everything; create contacts, leads (stage New, owner empty or themselves)
+--                                  and activities; no edits, no stage changes, no reassigning, no deletes. All of
+--                                  customer care's edit rights hang on public.crm_care_may_edit() (false today).
 --   distributor, hr, no role       nothing at all
 --   website visitors (anon)        nothing at all; they can only call public.submit_website_enquiry(), which
 --                                  returns a reference string and nothing else
--- created_by and updated_by always come from the session. closed_at is set by the database when a lead is won
+-- created_by and updated_by always come from the session (website intake, which has none, keeps updated_by as it
+-- was). The website intake never changes an existing organisation or an existing contact's organisation. closed_at is set by the database when a lead is won
 -- or lost. A stage change writes a 'status_change' activity automatically; people cannot write that type.
 
 -- Helper functions ----------------------------------------------------------------------
@@ -77,20 +81,15 @@ grant execute on function public.crm_reads_all() to authenticated;
 grant execute on function public.crm_manages() to authenticated;
 grant execute on function public.crm_works() to authenticated;
 
--- Phone numbers are matched on their digits, with +233 and 00233 written as a leading 0, so
--- "+233 20 123 4567" and "020 123 4567" are the same number.
+-- Phone numbers are matched on their digits: everything but digits goes, then a leading 233, then a leading 0.
+-- So "+233 (0)24 555 6666", "024 555 6666", "24 555 6666" and "233245556666" all give "245556666".
 create or replace function public.crm_phone_key(phone text)
 returns text
 language sql
 immutable
 set search_path = ''
 as $$
-  select case
-    when d = '' then null
-    when d ~ '^233[0-9]{9}$' then '0' || substr(d, 4)
-    else d
-  end
-  from (select regexp_replace(regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'), '^00', '') as d) x;
+  select nullif(regexp_replace(regexp_replace(regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'), '^233', ''), '^0', ''), '');
 $$;
 
 revoke all on function public.crm_phone_key(text) from public, anon;
@@ -189,6 +188,9 @@ create table public.crm_leads (
   -- Free text, never a price: for example "about 200 cartons a month".
   estimated_monthly_volume text check (estimated_monthly_volume is null or length(btrim(estimated_monthly_volume)) between 1 and 200),
   intake_reference text unique,
+  -- The organisation name a website visitor typed. Intake never links a lead to an existing organisation (anyone
+  -- could type any name); staff read this and link the lead themselves.
+  submitted_organisation_name text check (submitted_organisation_name is null or length(btrim(submitted_organisation_name)) between 1 and 160),
   closed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -356,9 +358,49 @@ as $$
   end;
 $$;
 
--- May this person add this brand to this organisation? Never on an unbranded organisation someone else owns
--- (or added), because that would hide it from every other brand's team.
-create or replace function public.crm_can_add_org_brand(target_org uuid, target_brand uuid)
+-- May this person change this organisation (details and brands)? Seeing an organisation only through a lead is
+-- read only. Sales and marketing edit an organisation they own, one carrying a brand they work on, or an
+-- unbranded one they added. Nobody can take over an unbranded organisation someone else added by branding it.
+create or replace function public.crm_can_edit_org_row(target_org uuid, target_owner uuid, target_creator uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.crm_manages()
+      or (
+        public.crm_works()
+        and (
+          target_owner = (select auth.uid())
+          or exists (
+            select 1 from public.crm_organisation_brands ob
+            where ob.organisation_id = target_org and public.has_brand_access(ob.brand_id)
+          )
+          or (
+            target_creator = (select auth.uid())
+            and not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
+          )
+        )
+      );
+$$;
+
+create or replace function public.crm_can_edit_org(target_org uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce(
+    (select public.crm_can_edit_org_row(o.id, o.owner_id, o.created_by) from public.crm_organisations o where o.id = target_org),
+    false
+  );
+$$;
+
+-- May this person log activities on this organisation? Customer care and managers on any; sales and marketing on
+-- one they see directly (not only through a lead).
+create or replace function public.crm_can_note_org(target_org uuid)
 returns boolean
 language sql
 stable
@@ -367,21 +409,30 @@ set search_path = ''
 as $$
   select exists (select 1 from public.crm_organisations o where o.id = target_org)
      and (
-       public.crm_manages()
+       public.crm_reads_all()
        or (
          public.crm_works()
-         and public.has_brand_access(target_brand)
-         and public.crm_can_see_org(target_org)
          and (
-           exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
+           exists (select 1 from public.crm_organisations o where o.id = target_org and o.owner_id = (select auth.uid()))
+           or not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
            or exists (
-             select 1 from public.crm_organisations o
-             where o.id = target_org
-               and (o.owner_id = (select auth.uid()) or (o.owner_id is null and o.created_by = (select auth.uid())))
+             select 1 from public.crm_organisation_brands ob
+             where ob.organisation_id = target_org and public.has_brand_access(ob.brand_id)
            )
          )
        )
      );
+$$;
+
+create or replace function public.crm_can_add_org_brand(target_org uuid, target_brand uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select public.crm_manages()
+      or (public.crm_works() and public.has_brand_access(target_brand) and public.crm_can_edit_org(target_org));
 $$;
 
 create or replace function public.crm_can_remove_org_brand(target_org uuid, target_brand uuid)
@@ -392,7 +443,41 @@ security definer
 set search_path = ''
 as $$
   select public.crm_manages()
-      or (public.crm_works() and public.has_brand_access(target_brand) and public.crm_can_see_org(target_org));
+      or (public.crm_works() and public.has_brand_access(target_brand) and public.crm_can_edit_org(target_org));
+$$;
+
+-- Customer care's edit rights in one place. Today: create only (no edits, no stage changes). Switching this to true
+-- lets customer care edit leads, change stages and next actions (pending decision, see the access rule above).
+create or replace function public.crm_care_may_edit()
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  select false;
+$$;
+
+create or replace function public.crm_is_care()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select coalesce(public.current_app_role() = 'customer_care', false);
+$$;
+
+create or replace function public.crm_can_add_activity(target_lead uuid, target_contact uuid, target_org uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select case
+    when target_org is not null then public.crm_can_note_org(target_org)
+    else public.crm_can_see_activity(target_lead, target_contact, target_org)
+  end;
 $$;
 
 -- An owner must be an active person with a CRM role.
@@ -403,11 +488,13 @@ stable
 security definer
 set search_path = ''
 as $$
-  select exists (
-    select 1 from public.profiles p
-    where p.id = target_profile and p.is_active
-      and p.role in ('admin', 'management', 'sales_rep', 'marketing', 'customer_care')
-  );
+  -- Only answers for CRM staff (or database work without a signed in person); everyone else gets false.
+  select (public.crm_role() or (select auth.uid()) is null)
+     and exists (
+       select 1 from public.profiles p
+       where p.id = target_profile and p.is_active
+         and p.role in ('admin', 'management', 'sales_rep', 'marketing', 'customer_care')
+     );
 $$;
 
 -- People who can own CRM records, for owner names and the assign list. Empty for everyone without a CRM role.
@@ -432,6 +519,12 @@ revoke all on function public.crm_can_see_org_row(uuid, uuid) from public, anon;
 revoke all on function public.crm_can_see_contact(uuid) from public, anon;
 revoke all on function public.crm_can_see_activity(uuid, uuid, uuid) from public, anon;
 revoke all on function public.crm_can_add_org_brand(uuid, uuid) from public, anon;
+revoke all on function public.crm_can_edit_org_row(uuid, uuid, uuid) from public, anon;
+revoke all on function public.crm_can_edit_org(uuid) from public, anon;
+revoke all on function public.crm_can_note_org(uuid) from public, anon;
+revoke all on function public.crm_can_add_activity(uuid, uuid, uuid) from public, anon;
+revoke all on function public.crm_care_may_edit() from public, anon;
+revoke all on function public.crm_is_care() from public, anon;
 revoke all on function public.crm_can_remove_org_brand(uuid, uuid) from public, anon;
 revoke all on function public.crm_is_staff(uuid) from public, anon;
 revoke all on function public.crm_staff() from public, anon;
@@ -442,6 +535,12 @@ grant execute on function public.crm_can_see_org_row(uuid, uuid) to authenticate
 grant execute on function public.crm_can_see_contact(uuid) to authenticated;
 grant execute on function public.crm_can_see_activity(uuid, uuid, uuid) to authenticated;
 grant execute on function public.crm_can_add_org_brand(uuid, uuid) to authenticated;
+grant execute on function public.crm_can_edit_org_row(uuid, uuid, uuid) to authenticated;
+grant execute on function public.crm_can_edit_org(uuid) to authenticated;
+grant execute on function public.crm_can_note_org(uuid) to authenticated;
+grant execute on function public.crm_can_add_activity(uuid, uuid, uuid) to authenticated;
+grant execute on function public.crm_care_may_edit() to authenticated;
+grant execute on function public.crm_is_care() to authenticated;
 grant execute on function public.crm_can_remove_org_brand(uuid, uuid) to authenticated;
 grant execute on function public.crm_is_staff(uuid) to authenticated;
 grant execute on function public.crm_staff() to authenticated;
@@ -459,7 +558,8 @@ begin
   else
     new.created_by = old.created_by;
   end if;
-  new.updated_by = (select auth.uid());
+  -- Website intake runs without a session: it keeps the last staff editor rather than blanking it.
+  new.updated_by = coalesce((select auth.uid()), case when tg_op = 'UPDATE' then old.updated_by end);
   return new;
 end;
 $$;
@@ -552,6 +652,16 @@ begin
   elsif tg_table_name = 'crm_contacts' then
     if org_changed and new.organisation_id is not null and not public.crm_can_see_org(new.organisation_id) then
       raise exception 'organisation not found' using errcode = '42501';
+    end if;
+  end if;
+
+  -- A link to an organisation this person cannot see is kept: they may replace it with one they can see, never
+  -- just remove it (they would not know what they were dropping).
+  if tg_op = 'UPDATE' and tg_table_name in ('crm_leads', 'crm_contacts') and org_changed then
+    if old.organisation_id is not null and new.organisation_id is null then
+      if not public.crm_can_see_org(old.organisation_id) then
+        raise exception 'cannot remove a link to an organisation you cannot see' using errcode = '42501';
+      end if;
     end if;
   end if;
   return new;
@@ -707,10 +817,10 @@ create policy "managers, sales and marketing create organisations"
   on public.crm_organisations for insert to authenticated
   with check ((select public.crm_manages()) or (select public.crm_works()));
 
-create policy "managers edit all, sales and marketing edit visible orgs"
+create policy "managers edit all, sales and marketing edit their orgs"
   on public.crm_organisations for update to authenticated
-  using ((select public.crm_manages()) or ((select public.crm_works()) and (select public.crm_can_see_org_row(id, owner_id))))
-  with check ((select public.crm_manages()) or ((select public.crm_works()) and (select public.crm_can_see_org_row(id, owner_id))));
+  using ((select public.crm_can_edit_org_row(id, owner_id, created_by)))
+  with check ((select public.crm_can_edit_org_row(id, owner_id, created_by)));
 
 create policy "admins delete organisations"
   on public.crm_organisations for delete to authenticated
@@ -756,14 +866,24 @@ create policy "crm roles read leads they may see"
 create policy "crm roles create leads"
   on public.crm_leads for insert to authenticated
   with check (
-    (select public.crm_reads_all())
+    (select public.crm_manages())
+    -- Customer care adds new leads only (no closed or advanced stage) unless crm_care_may_edit() says otherwise.
+    or ((select public.crm_is_care()) and (stage = 'new' or (select public.crm_care_may_edit())))
     or ((select public.crm_works()) and (brand_id is null or (select public.has_brand_access(brand_id))))
   );
 
 create policy "managers edit all, sales and marketing edit leads they see"
   on public.crm_leads for update to authenticated
-  using ((select public.crm_manages()) or ((select public.crm_works()) and (select public.crm_can_see_lead(brand_id, owner_id))))
-  with check ((select public.crm_manages()) or ((select public.crm_works()) and (select public.crm_can_see_lead(brand_id, owner_id))));
+  using (
+    (select public.crm_manages())
+    or ((select public.crm_is_care()) and (select public.crm_care_may_edit()))
+    or ((select public.crm_works()) and (select public.crm_can_see_lead(brand_id, owner_id)))
+  )
+  with check (
+    (select public.crm_manages())
+    or ((select public.crm_is_care()) and (select public.crm_care_may_edit()))
+    or ((select public.crm_works()) and (select public.crm_can_see_lead(brand_id, owner_id)))
+  );
 
 create policy "admins delete leads"
   on public.crm_leads for delete to authenticated
@@ -779,7 +899,7 @@ create policy "crm roles add activities to records they see"
   with check (
     type <> 'status_change'
     and (select public.crm_role())
-    and (select public.crm_can_see_activity(lead_id, contact_id, organisation_id))
+    and (select public.crm_can_add_activity(lead_id, contact_id, organisation_id))
   );
 
 create policy "admins delete activities"
@@ -897,7 +1017,9 @@ begin
   else
     update public.crm_contacts set
       full_name = nullif(btrim(coalesce(details ->> 'full_name', '')), ''),
-      organisation_id = nullif(details ->> 'organisation_id', '')::uuid,
+      -- 'keep' leaves the link as it is (the portal sends it when the linked organisation is hidden from the editor).
+      organisation_id = case when details ->> 'organisation_id' = 'keep' then organisation_id
+                             else nullif(details ->> 'organisation_id', '')::uuid end,
       job_title = nullif(btrim(coalesce(details ->> 'job_title', '')), ''),
       phone = nullif(btrim(coalesce(details ->> 'phone', '')), ''),
       email = lower(nullif(btrim(coalesce(details ->> 'email', '')), '')),
@@ -951,8 +1073,10 @@ begin
     update public.crm_leads set
       title = btrim(details ->> 'title'),
       description = nullif(btrim(coalesce(details ->> 'description', '')), ''),
-      contact_id = nullif(details ->> 'contact_id', '')::uuid,
-      organisation_id = nullif(details ->> 'organisation_id', '')::uuid,
+      -- 'keep' leaves a link as it is (sent when the linked record is not in the editor's list).
+      contact_id = case when details ->> 'contact_id' = 'keep' then contact_id else nullif(details ->> 'contact_id', '')::uuid end,
+      organisation_id = case when details ->> 'organisation_id' = 'keep' then organisation_id
+                             else nullif(details ->> 'organisation_id', '')::uuid end,
       brand_id = nullif(details ->> 'brand_id', '')::uuid,
       source = details ->> 'source',
       next_action = nullif(btrim(coalesce(details ->> 'next_action', '')), ''),
@@ -1103,8 +1227,9 @@ revoke all on function public.crm_intake_text(jsonb, text, integer) from public,
 --                partner_type (distributor, retail, institutional, private_label, csr, supplier), location,
 --                region (slug), years_trading, estimated_monthly_volume, job_title, organisation_website, message
 --   newsletter   email (required), name, consent_marketing (must be true)
--- Existing contacts and organisations are matched (contact by email, then by phone; organisation by name) and
--- only their empty fields are filled in: nothing staff typed is ever overwritten.
+-- Existing contacts are matched (by email, then by phone) and only their empty fields are filled in: nothing staff
+-- typed is ever overwritten, and their organisation link is never changed. An organisation name that already
+-- exists is never touched or linked; it is kept on the lead (submitted_organisation_name) for staff to link.
 -- Errors: 22023 invalid input (the message names the field), PT429 too many submissions (5 per email or phone
 -- per hour; PostgREST answers HTTP 429).
 create or replace function public.submit_website_enquiry(form text, payload jsonb)
@@ -1255,6 +1380,14 @@ begin
   -- Abuse guard: at most 5 submissions per email or phone number in an hour.
   v_email_key := v_email;
   v_phone_key := public.crm_phone_key(v_phone);
+  -- Serialise submissions for the same email or phone so parallel requests cannot slip past the count.
+  -- Email locks are always taken before phone locks (separate lock spaces 61 and 62), so two requests cannot deadlock.
+  if v_email_key is not null then
+    perform pg_advisory_xact_lock(61, hashtext(v_email_key));
+  end if;
+  if v_phone_key is not null then
+    perform pg_advisory_xact_lock(62, hashtext(v_phone_key));
+  end if;
   select count(*) into recent from public.crm_intake_log il
    where il.created_at > now() - interval '1 hour'
      and ((v_email_key is not null and il.email_key = v_email_key) or (v_phone_key is not null and il.phone_key = v_phone_key));
@@ -1272,37 +1405,28 @@ begin
     else 'Website newsletter'
   end || coalesce(' (' || v_brand_name || ')', '');
 
-  -- Organisation (partner form, or a contact form that names one): matched by name, else created unowned.
+  -- Organisation (partner form, or a contact form that names one). Anyone can type any name, so an existing
+  -- organisation is never touched or linked: the typed name is kept on the lead for staff to link. Only when no
+  -- organisation has that name is a new, unowned one created, and only that new one gets the form's brand.
   if v_org_name is not null and form <> 'newsletter' then
-    select o.id into v_org from public.crm_organisations o
-     where lower(btrim(o.name)) = lower(v_org_name)
-     order by o.created_at, o.id limit 1;
-    v_kind := case v_partner_type
-      when 'distributor' then 'distributor'
-      when 'retail' then 'retailer'
-      when 'institutional' then 'institution'
-      when 'private_label' then 'partner'
-      when 'csr' then 'partner'
-      when 'supplier' then 'supplier'
-      else case when v_reason = 'media' then 'media' when v_reason = 'distribution' then 'distributor' else 'other' end
-    end;
-    if v_org is null then
+    if not exists (select 1 from public.crm_organisations o where lower(btrim(o.name)) = lower(v_org_name)) then
+      v_kind := case v_partner_type
+        when 'distributor' then 'distributor'
+        when 'retail' then 'retailer'
+        when 'institutional' then 'institution'
+        when 'private_label' then 'partner'
+        when 'csr' then 'partner'
+        when 'supplier' then 'supplier'
+        else case when v_reason = 'media' then 'media' when v_reason = 'distribution' then 'distributor' else 'other' end
+      end;
       insert into public.crm_organisations (name, kind, region_id, town, website)
       values (v_org_name, v_kind, v_region, v_location, v_org_website)
       returning id into v_org;
-    else
-      update public.crm_organisations o set
-        region_id = coalesce(o.region_id, v_region),
-        town = coalesce(o.town, v_location),
-        website = coalesce(o.website, v_org_website)
-      where o.id = v_org
-        and ((o.region_id is null and v_region is not null) or (o.town is null and v_location is not null)
-             or (o.website is null and v_org_website is not null));
-    end if;
-    if v_brand is not null and v_brand_slug <> 'lexta' then
-      insert into public.crm_organisation_brands (organisation_id, brand_id)
-      select v_org, v_brand where exists (select 1 from public.brands b where b.id = v_brand and not b.is_corporate)
-      on conflict (organisation_id, brand_id) do nothing;
+      if v_brand is not null then
+        insert into public.crm_organisation_brands (organisation_id, brand_id)
+        select v_org, v_brand where exists (select 1 from public.brands b where b.id = v_brand and not b.is_corporate)
+        on conflict (organisation_id, brand_id) do nothing;
+      end if;
     end if;
   end if;
 
@@ -1323,9 +1447,9 @@ begin
     values (v_name, v_org, v_job, v_phone, v_email, v_consent, case when v_consent then v_source_label end)
     returning id into v_contact;
   else
+    -- An existing contact's organisation link is never changed from a website form.
     update public.crm_contacts c set
       full_name = coalesce(c.full_name, v_name),
-      organisation_id = coalesce(c.organisation_id, v_org),
       job_title = coalesce(c.job_title, v_job),
       phone = coalesce(c.phone, v_phone),
       email = coalesce(c.email, v_email),
@@ -1333,14 +1457,14 @@ begin
       consent_marketing = c.consent_marketing or v_consent,
       consent_source = case when not c.consent_marketing and v_consent then v_source_label else c.consent_source end
     where c.id = v_contact
-      and ((c.full_name is null and v_name is not null) or (c.organisation_id is null and v_org is not null)
+      and ((c.full_name is null and v_name is not null)
            or (c.job_title is null and v_job is not null) or (c.phone is null and v_phone is not null)
            or (c.email is null and v_email is not null) or (not c.consent_marketing and v_consent));
   end if;
 
   if form <> 'newsletter' then
     v_title := case form
-      when 'partner' then 'Partner enquiry: ' || coalesce((select o.name from public.crm_organisations o where o.id = v_org), v_org_name)
+      when 'partner' then 'Partner enquiry: ' || v_org_name
       else 'Website enquiry from ' || coalesce(v_name, 'a visitor')
     end;
     v_desc := concat_ws(E'\n',
@@ -1368,7 +1492,7 @@ begin
       case when v_message is not null then E'\n' || v_message end
     );
     insert into public.crm_leads (title, description, contact_id, organisation_id, brand_id, source, stage,
-                                  estimated_monthly_volume, intake_reference)
+                                  estimated_monthly_volume, intake_reference, submitted_organisation_name)
     values (
       left(v_title, 160),
       nullif(left(v_desc, 5000), ''),
@@ -1378,7 +1502,8 @@ begin
       case form when 'partner' then 'website_partner_form' else 'website_contact_form' end,
       'new',
       v_volume,
-      v_ref
+      v_ref,
+      v_org_name
     );
   end if;
 

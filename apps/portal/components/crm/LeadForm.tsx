@@ -21,6 +21,9 @@ export default function LeadForm({
   canChangeBrand,
   ownerOptions,
   defaults = {},
+  hiddenContact = false,
+  hiddenOrganisation = false,
+  canPickStage = true,
 }: {
   mode: "new" | "edit" | "view";
   lead?: CrmLead;
@@ -31,6 +34,11 @@ export default function LeadForm({
   /** Only for a new lead: who may own it. */
   ownerOptions?: Option[];
   defaults?: { contact_id?: string; organisation_id?: string; owner?: string };
+  /** The lead links a record this person cannot see or pick: keep it unless they pick another. */
+  hiddenContact?: boolean;
+  hiddenOrganisation?: boolean;
+  /** Customer care adds leads at New only. */
+  canPickStage?: boolean;
 }) {
   const { state, pending, onSubmit, fe } = useCrmForm(saveLead);
   const [stage, setStage] = useState("new");
@@ -55,18 +63,23 @@ export default function LeadForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="contact_id">Contact</label>
-              <select id="contact_id" name="contact_id" defaultValue={lead?.contact_id ?? defaults.contact_id ?? ""} aria-invalid={!!fe.contact_id}>
-                <option value="">No contact</option>
+              <select id="contact_id" name="contact_id" defaultValue={hiddenContact ? "keep" : lead?.contact_id ?? defaults.contact_id ?? ""} aria-invalid={!!fe.contact_id}>
+                {hiddenContact ? <option value="keep">Keep the current contact</option> : <option value="">No contact</option>}
                 {contacts.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
+              {hiddenContact && <span className="hint">Linked to a contact you cannot see. It stays linked unless you pick another one.</span>}
               {fe.contact_id && <span className="ferr">{fe.contact_id}</span>}
             </div>
             <div className="field">
               <label htmlFor="organisation_id">Organisation</label>
-              <select id="organisation_id" name="organisation_id" defaultValue={lead?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
-                <option value="">No organisation</option>
+              <select id="organisation_id" name="organisation_id" defaultValue={hiddenOrganisation ? "keep" : lead?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
+                {hiddenOrganisation ? <option value="keep">Keep the current organisation</option> : <option value="">No organisation</option>}
                 {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
               </select>
+              {hiddenOrganisation && <span className="hint">Linked to an organisation you cannot see. It stays linked unless you pick another one.</span>}
+              {!lead?.organisation_id && lead?.submitted_organisation_name && (
+                <span className="hint">The website form named &ldquo;{lead.submitted_organisation_name}&rdquo;. Check it and link the right organisation.</span>
+              )}
               {fe.organisation_id && <span className="ferr">{fe.organisation_id}</span>}
             </div>
           </div>
@@ -119,15 +132,23 @@ export default function LeadForm({
 
         {isNew && (
           <section className="panel">
-            <h2>Stage and owner</h2>
+            <h2>{canPickStage ? "Stage and owner" : "Owner"}</h2>
             <div className="row2">
-              <div className="field">
-                <label htmlFor="stage">Stage</label>
-                <select id="stage" name="stage" value={stage} onChange={(e) => setStage(e.target.value)} aria-invalid={!!fe.stage}>
-                  {CRM_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
-                {fe.stage && <span className="ferr">{fe.stage}</span>}
-              </div>
+              {canPickStage ? (
+                <div className="field">
+                  <label htmlFor="stage">Stage</label>
+                  <select id="stage" name="stage" value={stage} onChange={(e) => setStage(e.target.value)} aria-invalid={!!fe.stage}>
+                    {CRM_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
+                  {fe.stage && <span className="ferr">{fe.stage}</span>}
+                </div>
+              ) : (
+                <div className="field">
+                  <span className="label-like">Stage</span>
+                  <p className="small">New. The sales team moves it on from here.</p>
+                  <input type="hidden" name="stage" value="new" />
+                </div>
+              )}
               <div className="field">
                 <label htmlFor="owner_id">Owner</label>
                 <select id="owner_id" name="owner_id" defaultValue={defaults.owner ?? "me"} aria-invalid={!!fe.owner_id}>

@@ -31,13 +31,18 @@ export default async function OrganisationPage({ params, searchParams }: {
   if (error) throw new Error("Could not load the organisation");
   if (!org) notFound();
 
-  const [linksRes, contactsRes, leadsRes, activitiesRes, stockists] = await Promise.all([
+  const [linksRes, contactsRes, leadsRes, activitiesRes, stockists, editRes, noteRes] = await Promise.all([
     supabase.from("crm_organisation_brands").select("brand_id").eq("organisation_id", id),
     supabase.from("crm_contacts").select("id, full_name, email, phone, job_title").eq("organisation_id", id).order("full_name").limit(200),
     supabase.from("crm_leads").select("id, title, stage, next_action_date").eq("organisation_id", id).order("created_at", { ascending: false }).limit(100),
     supabase.from("crm_activities").select("id, type, body, occurred_at, created_by").eq("organisation_id", id).order("occurred_at", { ascending: false }).limit(200),
     stockistOptions(supabase, org.stockist_id),
+    // Seeing an organisation only through a lead is read only: the database decides who edits and who logs notes.
+    access.canEdit ? supabase.rpc("crm_can_edit_org", { target_org: id }) : Promise.resolve({ data: false, error: null }),
+    supabase.rpc("crm_can_note_org", { target_org: id }),
   ]);
+  const canEdit = editRes.data === true;
+  const canNote = noteRes.data === true;
   if (linksRes.error || contactsRes.error || leadsRes.error || activitiesRes.error) throw new Error("Could not load the organisation");
   const linked = (linksRes.data ?? []).map((l) => l.brand_id as string);
   const contacts = (contactsRes.data ?? []) as { id: string; full_name: string | null; email: string | null; phone: string | null; job_title: string | null }[];
@@ -75,7 +80,15 @@ export default async function OrganisationPage({ params, searchParams }: {
       {flags.created && <div className="alert ok" role="status">Organisation added.</div>}
       {flags.error === "delete" && <div className="alert error" role="alert">The organisation could not be deleted. You may not have permission, or it was already removed. Please reload and try again.</div>}
       {flags.error === "linked" && <div className="alert error" role="alert">This organisation still has leads. Move or delete those leads first.</div>}
-      {!access.canEdit && <div className="alert info" role="note">You can read this organisation, add to its timeline and create contacts and leads for it. Your role cannot change it.</div>}
+      {!canEdit && (
+        <div className="alert info" role="note">
+          {!access.canEdit
+            ? "You can read this organisation, add to its timeline and create contacts and leads for it. Your role cannot change it."
+            : canNote
+              ? "You can read this organisation and add to its timeline. To change it, you need to own it or work on one of its brands. Ask its owner or a manager."
+              : "You can see this organisation because of a lead you can see. It is read only for you."}
+        </div>
+      )}
 
       <div className="crm-detail">
         <div>
@@ -115,19 +128,19 @@ export default async function OrganisationPage({ params, searchParams }: {
           </section>
           <section className="panel">
             <h2>Timeline</h2>
-            <ActivityForm kind="organisation" id={org.id} />
+            {canNote && <ActivityForm kind="organisation" id={org.id} />}
             <Timeline items={(activitiesRes.data ?? []) as CrmActivity[]} nameOf={nameOf} formatWhen={formatDateTime} />
           </section>
         </div>
         <div>
-          <h2 className="section-title">{access.canEdit ? "Edit organisation" : "Organisation details"}</h2>
+          <h2 className="section-title">{canEdit ? "Edit organisation" : "Organisation details"}</h2>
           <OrganisationForm
-            mode={access.canEdit ? "edit" : "view"}
+            mode={canEdit ? "edit" : "view"}
             organisation={org}
             regions={access.regions}
             stockists={stockists}
             productBrands={productBrands.map((b) => ({ id: b.id, label: b.name }))}
-            myBrandIds={access.canEdit ? productBrands.filter((b) => access.myBrandIds.has(b.id)).map((b) => b.id) : []}
+            myBrandIds={canEdit ? productBrands.filter((b) => access.myBrandIds.has(b.id)).map((b) => b.id) : []}
             linked={linked}
           />
           {access.isAdmin && (

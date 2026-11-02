@@ -242,8 +242,8 @@ export type Database = {
       };
       crm_leads: {
         Row: CrmLead;
-        Insert: Partial<Omit<CrmLead, "id" | "intake_reference" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">> & Pick<CrmLead, "title" | "source">;
-        Update: Partial<Omit<CrmLead, "id" | "intake_reference" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
+        Insert: Partial<Omit<CrmLead, "id" | "intake_reference" | "submitted_organisation_name" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">> & Pick<CrmLead, "title" | "source">;
+        Update: Partial<Omit<CrmLead, "id" | "intake_reference" | "submitted_organisation_name" | "closed_at" | "created_at" | "updated_at" | "created_by" | "updated_by">>;
         Relationships: [
           { foreignKeyName: "crm_leads_contact_id_fkey"; columns: ["contact_id"]; isOneToOne: false; referencedRelation: "crm_contacts"; referencedColumns: ["id"] },
           { foreignKeyName: "crm_leads_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
@@ -285,6 +285,9 @@ export type Database = {
       crm_staff: { Args: Record<string, never>; Returns: CrmStaff[] };
       crm_can_see_org: { Args: { target_org: string }; Returns: boolean };
       crm_can_see_lead_id: { Args: { target_lead: string }; Returns: boolean };
+      crm_can_edit_org: { Args: { target_org: string }; Returns: boolean };
+      crm_can_note_org: { Args: { target_org: string }; Returns: boolean };
+      crm_is_staff: { Args: { target_profile: string }; Returns: boolean };
       save_crm_organisation: { Args: { target_id: string | null; details: Record<string, unknown> | null; brand_ids: string[] | null }; Returns: string };
       save_crm_contact: { Args: { target_id: string | null; details: Record<string, unknown> }; Returns: string };
       save_crm_lead: { Args: { target_id: string | null; details: Record<string, unknown> }; Returns: string };

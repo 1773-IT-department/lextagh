@@ -249,3 +249,5 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 }
 .crm-detail .edit-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
 .brand-checks + .small { margin: 10px 0 0; }
+.label-like { font-size: 13px; font-weight: 600; }
+.field .label-like + .small { margin: 0; }

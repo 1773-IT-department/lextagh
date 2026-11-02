@@ -5,6 +5,8 @@ import { CRM_ACTIVITY_TYPES, CRM_CHANNELS, CRM_ORG_KINDS, CRM_SOURCES, CRM_STAGE
  * so people get a clear message instead of a database error.
  */
 
+/** Sent instead of an id to keep a link the editor cannot see or pick. */
+export const KEEP = "keep";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const PHONE = /^\+?[0-9][0-9 ()-]{5,22}$/;
 const EMAIL = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
@@ -53,8 +55,10 @@ export function checkLead(raw: Raw, opts: { isNew: boolean; brandIds: Set<string
   maxLen(errors, "description", description, 5000, "The description");
   const contact = raw.contact_id || "";
   const org = raw.organisation_id || "";
-  if (contact && !UUID.test(contact)) errors.contact_id = "Choose a contact from the list.";
-  if (org && !UUID.test(org)) errors.organisation_id = "Choose an organisation from the list.";
+  // "keep" leaves an existing link as it is (the linked record is not in this person's list).
+  if (contact && contact !== KEEP && !UUID.test(contact)) errors.contact_id = "Choose a contact from the list.";
+  if (org && org !== KEEP && !UUID.test(org)) errors.organisation_id = "Choose an organisation from the list.";
+  if (opts.isNew && (contact === KEEP || org === KEEP)) errors.contact_id = "Choose a contact from the list.";
   if (!contact && !org) errors.contact_id = "Choose a contact, an organisation, or both.";
   const brand = raw.brand_id || "";
   if (brand && !opts.brandIds.has(brand)) errors.brand_id = "Choose one of your brands, or no brand.";
@@ -112,7 +116,7 @@ export function checkContact(raw: Raw): Checked<ContactDetails> {
   if (phone && !PHONE.test(phone)) errors.phone = "Enter a phone number with digits only, for example +233 20 123 4567.";
   if (!fullName && !email && !phone) errors.full_name = "Enter at least a name, a phone number or an email address.";
   const org = raw.organisation_id || "";
-  if (org && !UUID.test(org)) errors.organisation_id = "Choose an organisation from the list.";
+  if (org && org !== KEEP && !UUID.test(org)) errors.organisation_id = "Choose an organisation from the list.";
   const jobTitle = opt(raw.job_title);
   maxLen(errors, "job_title", jobTitle, 120, "The job title");
   const channel = raw.preferred_channel || "";

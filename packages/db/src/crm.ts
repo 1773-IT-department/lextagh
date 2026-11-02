@@ -133,6 +133,8 @@ export type CrmLead = Timestamps & Authors & {
   estimated_monthly_volume: string | null;
   /** Reference the website gave the visitor, for leads that came in through submit_website_enquiry. */
   intake_reference: string | null;
+  /** Organisation name a website visitor typed. The intake never links an existing organisation; staff do. */
+  submitted_organisation_name: string | null;
   closed_at: string | null;
 };
 

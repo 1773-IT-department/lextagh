@@ -1,7 +1,7 @@
 import Link from "next/link";
 import CrmTabs from "@/components/crm/CrmTabs";
 import LeadForm from "@/components/crm/LeadForm";
-import { getCrmAccess, leadBrandChoices, NO_CRM_ACCESS, UUID } from "@/lib/crm";
+import { canPickNewLeadStage, getCrmAccess, leadBrandChoices, NO_CRM_ACCESS, UUID } from "@/lib/crm";
 import { contactOptions, organisationOptions, ownerChoices } from "@/lib/crm-data";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,6 +31,7 @@ export default async function NewLeadPage({ searchParams }: { searchParams: Prom
         brands={leadBrandChoices(access).map((b) => ({ id: b.id, label: b.name }))}
         canChangeBrand
         ownerOptions={ownerChoices(access)}
+        canPickStage={canPickNewLeadStage(access)}
         defaults={{ contact_id: contact, organisation_id: organisation }}
       />
     </>

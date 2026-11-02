@@ -29,7 +29,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
     .select("id, full_name, email, phone, job_title, preferred_channel, consent_marketing, owner_id, organisation:crm_organisations!crm_contacts_organisation_id_fkey(name)", { count: "exact" });
   if (q) {
     const digits = q.replace(/[^0-9]/g, "");
-    query = query.or([`full_name.ilike.*${q}*`, `email.ilike.*${q}*`, `phone.ilike.*${q}*`, ...(digits.length >= 4 ? [`phone_key.ilike.*${digits.replace(/^233/, "")}*`] : [])].join(","));
+    query = query.or([`full_name.ilike.*${q}*`, `email.ilike.*${q}*`, `phone.ilike.*${q}*`, ...(digits.length >= 4 ? [`phone_key.ilike.*${digits.replace(/^233/, "").replace(/^0/, "")}*`] : [])].join(","));
   }
   if (consent) query = query.eq("consent_marketing", consent === "yes");
   if (owner === "mine") query = query.eq("owner_id", access.userId);

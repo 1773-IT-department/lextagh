@@ -57,7 +57,8 @@ insert into public.crm_organisation_brands (organisation_id, brand_id) values
 
 insert into public.crm_contacts (id, full_name, organisation_id, job_title, phone, email, notes) values
   ('00000000-0000-0000-0000-000000000611', 'Test Ama Staff Typed', '00000000-0000-0000-0000-000000000601', 'Buyer', '+233 20 111 2222', 'ama@test.local', 'Staff typed note'),
-  ('00000000-0000-0000-0000-000000000612', 'Test Kofi', null, null, '024 555 6666', null, null);
+  ('00000000-0000-0000-0000-000000000612', 'Test Kofi', null, null, '024 555 6666', null, null),
+  ('00000000-0000-0000-0000-000000000613', 'Test Hooch buyer', '00000000-0000-0000-0000-000000000602', null, null, 'hooch.buyer@test.local', null);
 
 -- l1 Yazz unowned, l2 Hooch unowned, l3 unbranded unowned, l4 Hooch owned by the Yazz rep, l5 Linzzy owned by the
 -- Hooch rep, l6 corporate Lexta unowned, l7 unbranded unowned (takeover tests).
@@ -160,6 +161,7 @@ begin
       if n <> 0 then raise exception 'FAIL: % sees % rows of %', who.label, n, t; end if;
     end loop;
     if exists (select 1 from public.crm_staff()) then raise exception 'FAIL: % got the CRM staff list', who.label; end if;
+    if public.crm_is_staff('00000000-0000-0000-0000-0000000006a3') then raise exception 'FAIL: % can probe who is CRM staff', who.label; end if;
     begin
       perform public.save_crm_contact(null, '{"full_name":"Outsider contact"}'::jsonb);
       raise exception 'FAIL: % created a contact', who.label;
@@ -296,7 +298,7 @@ begin
     raise exception 'FAIL: Yazz rep sees brands of a hidden organisation';
   end if;
   -- Contacts carry no brand: every CRM role reads them.
-  if (select count(*) from public.crm_contacts where full_name like 'Test %') <> 2 then raise exception 'FAIL: Yazz rep cannot read contacts'; end if;
+  if (select count(*) from public.crm_contacts where full_name like 'Test %') <> 3 then raise exception 'FAIL: Yazz rep cannot read contacts'; end if;
   -- Activities of hidden records stay hidden.
   if exists (select 1 from public.crm_activities where id in ('00000000-0000-0000-0000-000000000631', '00000000-0000-0000-0000-000000000632')) then
     raise exception 'FAIL: Yazz rep sees activities of Hooch records';
@@ -487,6 +489,34 @@ begin
     raise exception 'FAIL: save_crm_organisation changed a hidden organisation';
   exception when insufficient_privilege then null;
   end;
+  -- Contact linked to an organisation the rep cannot see: the link is kept ('keep'), cannot be dropped, may be
+  -- replaced by one they can see.
+  perform public.save_crm_contact('00000000-0000-0000-0000-000000000613', jsonb_build_object('full_name', 'Test Hooch buyer',
+                                  'email', 'hooch.buyer@test.local', 'job_title', 'Buyer', 'organisation_id', 'keep'));
+  if (select organisation_id from public.crm_contacts where id = '00000000-0000-0000-0000-000000000613') is distinct from '00000000-0000-0000-0000-000000000602'
+     or (select job_title from public.crm_contacts where id = '00000000-0000-0000-0000-000000000613') <> 'Buyer' then
+    raise exception 'FAIL: keep marker lost the hidden organisation link or did not save the edit';
+  end if;
+  begin
+    perform public.save_crm_contact('00000000-0000-0000-0000-000000000613', jsonb_build_object('full_name', 'Test Hooch buyer', 'organisation_id', ''));
+    raise exception 'FAIL: Yazz rep dropped a link to an organisation they cannot see';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    update public.crm_contacts set organisation_id = null where id = '00000000-0000-0000-0000-000000000613';
+    raise exception 'FAIL: Yazz rep dropped a hidden organisation link with a plain update';
+  exception when insufficient_privilege then null;
+  end;
+  -- Leads: 'keep' leaves contact and organisation links alone.
+  perform public.save_crm_lead('00000000-0000-0000-0000-000000000624', jsonb_build_object('title', 'Test owned Hooch', 'source', 'referral',
+                               'contact_id', 'keep', 'organisation_id', 'keep', 'brand_id', (select hooch from ids)));
+  if (select organisation_id from public.crm_leads where id = '00000000-0000-0000-0000-000000000624') is distinct from '00000000-0000-0000-0000-000000000604' then
+    raise exception 'FAIL: keep marker changed a lead organisation link';
+  end if;
+  -- Unbranded organisation someone else added: visible, but not editable (no takeover).
+  update public.crm_organisations set notes = 'Hacked' where id = '00000000-0000-0000-0000-000000000603';
+  get diagnostics n = row_count;
+  if n <> 0 then raise exception 'FAIL: Yazz rep edited an unbranded organisation someone else added'; end if;
   -- Visible organisation details can be edited.
   perform public.save_crm_organisation('00000000-0000-0000-0000-000000000601', jsonb_build_object('name', 'Test Yazz org', 'kind', 'retailer',
                                        'region_id', (select accra from ids), 'town', 'Accra', 'notes', 'Staff note on Yazz org', 'phone', '+233 30 222 3333'), null);
@@ -640,6 +670,7 @@ reset role;
 set local role authenticated;
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a9';
 do $$
+declare n int;
 begin
   if not exists (select 1 from public.crm_leads where id = '00000000-0000-0000-0000-000000000625') then raise exception 'FAIL: Hooch rep cannot see the Linzzy lead they own'; end if;
   if not exists (select 1 from public.crm_leads where title = 'Mgmt lead') then raise exception 'FAIL: Hooch rep cannot see the Linzzy lead management gave them'; end if;
@@ -648,7 +679,26 @@ begin
     raise exception 'FAIL: Hooch rep cannot see the organisation of a lead they own';
   end if;
   perform public.set_crm_lead_stage('00000000-0000-0000-0000-000000000625', 'proposal', null);
-  raise notice 'PASS: ownership gives access to leads of other brands and their organisation';
+  -- ...read only: no edits, no brands, no notes.
+  update public.crm_organisations set notes = 'Hacked' where id = '00000000-0000-0000-0000-000000000605';
+  get diagnostics n = row_count;
+  if n <> 0 then raise exception 'FAIL: Hooch rep edited an organisation seen only through a lead'; end if;
+  begin
+    perform public.save_crm_organisation('00000000-0000-0000-0000-000000000605', jsonb_build_object('name', 'Hacked'), null);
+    raise exception 'FAIL: save_crm_organisation edited an organisation seen only through a lead';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into public.crm_organisation_brands (organisation_id, brand_id) values ('00000000-0000-0000-0000-000000000605', (select hooch from ids));
+    raise exception 'FAIL: Hooch rep added a brand to an organisation seen only through a lead';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into public.crm_activities (organisation_id, type, body) values ('00000000-0000-0000-0000-000000000605', 'note', 'x');
+    raise exception 'FAIL: Hooch rep logged an activity on an organisation seen only through a lead';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'PASS: ownership gives access to leads of other brands; their organisation is read only';
 end $$;
 reset role;
 
@@ -661,6 +711,17 @@ begin
   if (select count(*) from public.crm_leads where title like 'Test %') <> 7 then raise exception 'FAIL: customer care should see all 7 test leads'; end if;
   if (select count(*) from public.crm_organisations where name like 'Test %') <> 5 then raise exception 'FAIL: customer care should see all test organisations'; end if;
   new_contact := public.save_crm_contact(null, jsonb_build_object('full_name', 'Care contact', 'email', 'care.contact@test.local'));
+  -- Customer care only adds new leads: never straight into a later or closed stage.
+  if public.crm_care_may_edit() then raise exception 'FAIL: crm_care_may_edit() should be false until Desmond decides'; end if;
+  foreach n in array array[1, 2, 3] loop
+    begin
+      perform public.save_crm_lead(null, jsonb_build_object('title', 'Care closed lead', 'source', 'phone', 'contact_id', new_contact,
+                                   'stage', (array['won', 'lost', 'qualified'])[n], 'lost_reason', 'x'));
+      raise exception 'FAIL: customer care created a lead at a later or closed stage';
+    exception when insufficient_privilege then null;
+    end;
+  end loop;
+  if not public.crm_is_staff('00000000-0000-0000-0000-0000000006a3') then raise exception 'FAIL: crm_is_staff refuses CRM staff'; end if;
   new_lead := public.save_crm_lead(null, jsonb_build_object('title', 'Escalated complaint', 'source', 'complaint_escalation',
                                    'contact_id', new_contact, 'brand_id', (select hooch from ids), 'owner_id', '00000000-0000-0000-0000-0000000006a5'));
   insert into public.crm_activities (lead_id, type, body) values (new_lead, 'call', 'Customer called about a damaged pack');
@@ -730,6 +791,14 @@ end $$;
 reset role;
 
 -- Website intake ---------------------------------------------------------------------------------------
+create temp table before_intake as select
+  (select to_jsonb(o) from public.crm_organisations o where o.id = '00000000-0000-0000-0000-000000000601') as yazz_org,
+  (select array_agg(brand_id order by brand_id) from public.crm_organisation_brands where organisation_id = '00000000-0000-0000-0000-000000000601') as yazz_org_brands,
+  (select updated_by from public.crm_contacts where id = '00000000-0000-0000-0000-000000000612') as kofi_updated_by;
+do $$
+begin
+  if (select kofi_updated_by from before_intake) is null then raise exception 'FAIL: fixture: Kofi should have a staff updated_by before intake'; end if;
+end $$;
 create temp table refs (label text, ref text);
 grant all on refs to anon, authenticated;
 
@@ -750,16 +819,18 @@ begin
 
   -- An existing staff contact: only blanks are filled.
   r := public.submit_website_enquiry('contact', jsonb_build_object('name', 'Hacker Name', 'email', 'AMA@test.local', 'phone', '020 999 9999',
-                                     'message', 'Please call me', 'reason', 'general'));
+                                     'message', 'Please call me', 'reason', 'general', 'organisation_name', 'Ama New Venture'));
   insert into refs values ('ama', r);
 
   -- Matched by phone (written differently) when that contact has no email: the email is filled in.
-  r := public.submit_website_enquiry('contact', jsonb_build_object('name', 'Kofi Again', 'email', 'kofi@test.local', 'phone', '+233 24 555 6666', 'message', 'Hi'));
+  r := public.submit_website_enquiry('contact', jsonb_build_object('name', 'Kofi Again', 'email', 'kofi@test.local', 'phone', '+233 (0)24 555 6666', 'message', 'Hi',
+                                     'organisation_name', 'Kofi Shop'));
   insert into refs values ('kofi', r);
 
   r := public.submit_website_enquiry('partner', jsonb_build_object(
     'name', 'Yaw Partner', 'organisation_name', 'test yazz org', 'email', 'yaw@partner.test', 'partner_type', 'distributor',
-    'location', 'Kumasi', 'years_trading', '6', 'estimated_monthly_volume', '200 cartons a month', 'message', 'We cover Ashanti', 'brand', 'yazz'));
+    'location', 'Kumasi', 'years_trading', '6', 'estimated_monthly_volume', '200 cartons a month', 'message', 'We cover Ashanti', 'brand', 'hooch',
+    'organisation_website', 'https://attacker.example'));
   if r !~ '^PTN-[0-9A-F]{10}$' then raise exception 'FAIL: partner form reference looks wrong: %', r; end if;
   insert into refs values ('partner_existing_org', r);
 
@@ -904,11 +975,38 @@ begin
     raise exception 'FAIL: a sixth submission from the same phone in an hour was accepted';
   exception when sqlstate 'PT429' then null;
   end;
+  -- Every way of writing the same Ghana number counts together.
+  begin
+    perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Phone flood', 'phone', '233271230000', 'email', 'p10@flood.test', 'message', 'm'));
+    raise exception 'FAIL: 233... form of a rate limited number was accepted';
+  exception when sqlstate 'PT429' then null;
+  end;
+  begin
+    perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Phone flood', 'phone', '27 123 0000', 'email', 'p11@flood.test', 'message', 'm'));
+    raise exception 'FAIL: short form of a rate limited number was accepted';
+  exception when sqlstate 'PT429' then null;
+  end;
   -- Someone else is not affected.
   perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Other', 'email', 'other@test.local', 'message', 'm'));
   raise notice 'PASS: at most 5 submissions per email or phone per hour';
 end $$;
 reset role;
+
+-- Phone keys and the rate limit lock.
+do $$
+declare v text;
+begin
+  foreach v in array array['+233 (0)24 555 6666', '024 555 6666', '24 555 6666', '233245556666', '+233245556666', '0245556666'] loop
+    if public.crm_phone_key(v) is distinct from '245556666' then raise exception 'FAIL: phone key of % is %', v, public.crm_phone_key(v); end if;
+  end loop;
+  if public.crm_phone_key('call me') is not null then raise exception 'FAIL: phone key of text should be empty'; end if;
+  -- Submissions take a transaction advisory lock per email (space 61) and phone (space 62) before counting.
+  if not exists (select 1 from pg_locks where locktype = 'advisory' and pid = pg_backend_pid() and classid = 61)
+     or not exists (select 1 from pg_locks where locktype = 'advisory' and pid = pg_backend_pid() and classid = 62) then
+    raise exception 'FAIL: the intake did not lock the email and phone before counting';
+  end if;
+  raise notice 'PASS: phone numbers match however they are written; the rate limit count is serialised by advisory locks';
+end $$;
 
 -- What the intake saved (checked as the database owner).
 do $$
@@ -920,7 +1018,7 @@ begin
   select count(*) into n from public.crm_contacts where lower(email) = 'esi.visitor@example.com';
   if n <> 1 then raise exception 'FAIL: Esi was saved % times (duplicates not matched)', n; end if;
   select * into c from public.crm_contacts where lower(email) = 'esi.visitor@example.com';
-  if c.full_name <> 'Esi Visitor' or c.email <> 'esi.visitor@example.com' or c.phone_key <> '0260001111' then
+  if c.full_name <> 'Esi Visitor' or c.email <> 'esi.visitor@example.com' or c.phone_key <> '260001111' then
     raise exception 'FAIL: Esi contact saved wrongly: % % %', c.full_name, c.email, c.phone_key;
   end if;
   if c.created_by is not null or c.owner_id is not null or c.consent_marketing then raise exception 'FAIL: intake contact has an author, owner or consent'; end if;
@@ -952,19 +1050,36 @@ begin
   end if;
   if (select count(*) from public.crm_contacts where lower(email) = 'ama@test.local') <> 1 then raise exception 'FAIL: Ama duplicated'; end if;
 
-  -- Kofi matched by phone; email filled in, name kept.
+  -- Ama's new organisation was created for the lead, but her own organisation link did not move.
+  select * into l from public.crm_leads where intake_reference = (select ref from refs where label = 'ama');
+  if (select name from public.crm_organisations where id = l.organisation_id) <> 'Ama New Venture' then raise exception 'FAIL: new organisation not linked to the lead'; end if;
+
+  -- Kofi matched by phone written as +233 (0)24...; email filled in, name kept, organisation link untouched
+  -- (still none, although the form named a new organisation), updated_by kept.
   select * into c from public.crm_contacts where id = '00000000-0000-0000-0000-000000000612';
   if c.email <> 'kofi@test.local' or c.full_name <> 'Test Kofi' then raise exception 'FAIL: phone match did not fill only the blanks'; end if;
+  if c.organisation_id is not null then raise exception 'FAIL: intake linked an existing contact to an organisation'; end if;
+  if c.updated_by is distinct from (select kofi_updated_by from before_intake) then raise exception 'FAIL: intake blanked updated_by (now %)', c.updated_by; end if;
 
-  -- Partner form, existing organisation (name matched case-insensitively): no new organisation, blanks filled only.
+  -- Partner form naming an existing organisation (any case): the organisation is not touched, not branded and not
+  -- linked; the typed name waits on the lead for staff.
   select * into l from public.crm_leads where intake_reference = (select ref from refs where label = 'partner_existing_org');
-  if l.source <> 'website_partner_form' or l.organisation_id <> '00000000-0000-0000-0000-000000000601' or l.estimated_monthly_volume <> '200 cartons a month' then
-    raise exception 'FAIL: partner lead saved wrongly';
+  if l.source <> 'website_partner_form' or l.organisation_id is not null or l.estimated_monthly_volume <> '200 cartons a month'
+     or l.submitted_organisation_name <> 'test yazz org' then
+    raise exception 'FAIL: partner lead for an existing organisation saved wrongly';
   end if;
-  if l.title <> 'Partner enquiry: Test Yazz org' then raise exception 'FAIL: partner lead title is %', l.title; end if;
+  if l.title <> 'Partner enquiry: test yazz org' then raise exception 'FAIL: partner lead title is %', l.title; end if;
   if (select count(*) from public.crm_organisations where lower(name) = 'test yazz org') <> 1 then raise exception 'FAIL: partner form duplicated an organisation'; end if;
-  select * into o from public.crm_organisations where id = '00000000-0000-0000-0000-000000000601';
-  if o.town <> 'Accra' or o.kind <> 'retailer' or o.notes <> 'Staff note on Yazz org' then raise exception 'FAIL: partner form overwrote organisation fields'; end if;
+  if (select to_jsonb(x) from public.crm_organisations x where x.id = '00000000-0000-0000-0000-000000000601') <> (select yazz_org from before_intake) then
+    raise exception 'FAIL: intake changed an existing organisation';
+  end if;
+  if (select array_agg(brand_id order by brand_id) from public.crm_organisation_brands where organisation_id = '00000000-0000-0000-0000-000000000601')
+     <> (select yazz_org_brands from before_intake) then
+    raise exception 'FAIL: intake changed the brands of an existing organisation';
+  end if;
+  if (select organisation_id from public.crm_contacts where email = 'yaw@partner.test') is not null then
+    raise exception 'FAIL: a new contact was linked to an existing organisation by the website';
+  end if;
 
   -- Partner form, new organisation: created with kind, region, town, website, brand; contact linked and consent kept.
   select * into l from public.crm_leads where intake_reference = (select ref from refs where label = 'partner_new_org');

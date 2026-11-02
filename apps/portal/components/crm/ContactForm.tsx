@@ -8,13 +8,15 @@ import type { Option } from "./LeadForm";
 import { useCrmForm } from "./useCrmForm";
 
 export default function ContactForm({
-  mode, contact, organisations, ownerOptions, defaults = {},
+  mode, contact, organisations, ownerOptions, defaults = {}, hiddenOrganisation = false,
 }: {
   mode: "new" | "edit" | "view";
   contact?: CrmContact;
   organisations: Option[];
   ownerOptions?: Option[];
   defaults?: { organisation_id?: string };
+  /** The contact is linked to an organisation this person cannot see: keep it unless they pick another. */
+  hiddenOrganisation?: boolean;
 }) {
   const { state, pending, onSubmit, fe } = useCrmForm(saveContact);
   const [consent, setConsent] = useState(contact?.consent_marketing ?? false);
@@ -48,10 +50,20 @@ export default function ContactForm({
               <div className="row2">
                 <div className="field">
                   <label htmlFor="organisation_id">Organisation (optional)</label>
-                  <select id="organisation_id" name="organisation_id" defaultValue={contact?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
-                    <option value="">No organisation</option>
-                    {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  {hiddenOrganisation ? (
+                    <>
+                      <select id="organisation_id" name="organisation_id" defaultValue="keep" aria-invalid={!!fe.organisation_id} aria-describedby="org-hidden">
+                        <option value="keep">Keep the current organisation</option>
+                        {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                      </select>
+                      <span className="hint" id="org-hidden">Linked to an organisation you cannot see. It stays linked unless you pick another one.</span>
+                    </>
+                  ) : (
+                    <select id="organisation_id" name="organisation_id" defaultValue={contact?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
+                      <option value="">No organisation</option>
+                      {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                    </select>
+                  )}
                   {fe.organisation_id && <span className="ferr">{fe.organisation_id}</span>}
                 </div>
                 <div className="field">

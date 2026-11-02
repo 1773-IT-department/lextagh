@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { checkActivity, checkContact, checkLead, checkOrganisation } from "@/lib/crm-input";
-import { getCrmAccess, leadBrandChoices, UUID } from "@/lib/crm";
+import { canPickNewLeadStage, getCrmAccess, leadBrandChoices, UUID } from "@/lib/crm";
 import { createClient } from "@/lib/supabase/server";
 
 export type CrmFormState = { error?: string; message?: string; fieldErrors?: Record<string, string> };
@@ -30,8 +30,9 @@ function dbError(error: { code?: string; message: string }, kind: Kind, context:
     if (msg.includes("organisation not found")) return "That organisation is not available to you. Pick another one.";
     if (msg.includes("contact not found")) return "That contact is not available to you. Pick another one.";
     if (msg.includes("remove a brand")) return "You can only remove brands you work on.";
+    if (msg.includes("cannot remove a link")) return "This record is linked to an organisation you cannot see. You can keep that link or pick another organisation, but not remove it.";
     if (msg.includes("row-level security") && kind === "organisation") {
-      return "You cannot add a brand to this organisation. It has no brand yet and someone else looks after it, so ask them or a manager.";
+      return "You cannot change the brands of this organisation. Ask its owner or a manager.";
     }
     return `You do not have permission to change this ${NOUN[kind]}. It may have been reassigned or removed. Reload the page.`;
   }
@@ -83,6 +84,11 @@ export async function saveLead(_prev: CrmFormState, form: FormData): Promise<Crm
     const owner = ownerFrom(raw.owner_id ?? "", access.userId, access.manages);
     if (owner === "invalid") return { error: "Only admin and management can assign leads to other people.", fieldErrors: { owner_id: "Choose yourself or nobody." } };
     details.owner_id = owner;
+    // Customer care adds new leads only; the database refuses any other stage from them too.
+    if (!canPickNewLeadStage(access)) {
+      details.stage = "new";
+      details.lost_reason = null;
+    }
   }
 
   const supabase = await createClient();
@@ -118,8 +124,15 @@ export async function setOwner(_prev: CrmFormState, form: FormData): Promise<Crm
   const kind = String(form.get("kind") ?? "") as Kind;
   const id = String(form.get("id") ?? "");
   if (!access.canView || !(kind in PATHS) || !UUID.test(id)) return { error: "This record could not be found." };
+  // Who may change owners, checked here as well as in the database, so each person gets the right message.
+  if (access.role === "customer_care") return { error: "Customer care cannot assign or reassign records. Ask a manager." };
+  if (!access.manages && !access.works) return { error: "Your role cannot assign records." };
   const owner = ownerFrom(String(form.get("owner") ?? ""), access.userId, access.manages);
   if (owner === "invalid") return { error: "Only admin and management can assign records to other people." };
+  if (!access.manages) {
+    if (kind !== "lead") return { error: "Only admin and management can change who owns contacts and organisations." };
+    if (owner !== access.userId) return { error: "Only admin and management can reassign or unassign a lead." };
+  }
   const supabase = await createClient();
   // set_crm_owner raises when nothing changed hands, so a refused change always reaches the person.
   const { error } = await supabase.rpc("set_crm_owner", { kind, target_id: id, new_owner: owner });

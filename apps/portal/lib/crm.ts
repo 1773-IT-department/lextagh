@@ -5,6 +5,13 @@ import { createClient } from "./supabase/server";
 
 export const CRM_ROLES: AppRole[] = ["admin", "management", "sales_rep", "marketing", "customer_care"];
 
+/**
+ * Customer care's edit rights, in one place (pending decision for Desmond). false: customer care only creates
+ * contacts, leads (stage New) and activities. To switch, set this to true AND make public.crm_care_may_edit()
+ * return true in the database (0006_crm.sql); the policies already use that function.
+ */
+export const CUSTOMER_CARE_MAY_EDIT = false;
+
 type BrandOption = Pick<Brand, "id" | "slug" | "name" | "is_corporate">;
 
 export type CrmAccess = {
@@ -38,9 +45,10 @@ export async function getCrmAccess(): Promise<CrmAccess> {
   const canView = !!role && CRM_ROLES.includes(role);
   const manages = role === "admin" || role === "management";
   const works = role === "sales_rep" || role === "marketing";
+  const careEdits = role === "customer_care" && CUSTOMER_CARE_MAY_EDIT;
   const base = {
     userId: user.id, role, canView, manages, works, isAdmin: role === "admin",
-    canEdit: manages || works, canCreateOrg: manages || works,
+    canEdit: manages || works || careEdits, canCreateOrg: manages || works,
   };
   if (!canView) return { ...base, canEdit: false, canCreateOrg: false, allBrands: [], myBrandIds: new Set(), staff: [], regions: [] };
 
@@ -68,12 +76,15 @@ export async function getCrmAccess(): Promise<CrmAccess> {
   };
 }
 
+/** May pick a stage when creating a lead. */
+export const canPickNewLeadStage = (access: CrmAccess) => access.manages || access.works || access.canEdit;
+
 export const NO_CRM_ACCESS = "Your role does not include the CRM. Ask your Lexta administrator if you need it.";
 
 /** Same rules as the lead policies and check_crm_record in 0006_crm.sql, for showing the right controls. */
 export function leadPermissions(access: CrmAccess, lead: { owner_id: string | null; brand_id: string | null }) {
   const own = lead.owner_id === access.userId;
-  const canEdit = access.manages || access.works;
+  const canEdit = access.canEdit;
   return {
     canEdit,
     canChangeStage: canEdit,
