@@ -135,6 +135,7 @@ export type Database = {
       can_view_brand_products: { Args: { target_brand: string }; Returns: boolean };
       can_edit_brand_products: { Args: { target_brand: string }; Returns: boolean };
       can_manage_product_object: { Args: { object_name: string }; Returns: boolean };
+      set_primary_product_image: { Args: { target_image: string }; Returns: undefined };
       update_my_profile: { Args: { new_full_name: string; new_phone: string }; Returns: undefined };
     };
     Enums: { app_role: AppRole };

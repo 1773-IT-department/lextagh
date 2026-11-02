@@ -123,7 +123,11 @@ create table public.product_images (
 );
 
 create index product_images_product_idx on public.product_images (product_id, sort_order);
-create unique index product_images_one_primary_idx on public.product_images (product_id) where is_primary;
+-- At most one main image per product. Deferrable, so the main image can be switched in one statement.
+alter table public.product_images
+  add constraint product_images_one_primary
+  exclude using btree (product_id with =) where (is_primary)
+  deferrable initially deferred;
 
 create trigger product_images_set_updated_at
   before update on public.product_images
@@ -214,7 +218,20 @@ create policy "signed in read images of visible products"
 create policy "admin and marketing insert images"
   on public.product_images for insert to authenticated
   with check (
-    exists (select 1 from public.products p where p.id = product_id and (select public.can_edit_brand_products(p.brand_id)))
+    exists (
+      select 1 from public.products p
+      join public.brands b on b.id = p.brand_id
+      where p.id = product_id
+        and (select public.can_edit_brand_products(p.brand_id))
+        -- Uploaded files must sit in this product's own folder: <brand_slug>/<product_id>/<file>.
+        and (
+          product_images.storage_path is null
+          or (
+            split_part(product_images.storage_path, '/', 1) = b.slug
+            and split_part(product_images.storage_path, '/', 2) = p.id::text
+          )
+        )
+    )
   );
 
 create policy "admin and marketing update images"
@@ -223,7 +240,20 @@ create policy "admin and marketing update images"
     exists (select 1 from public.products p where p.id = product_id and (select public.can_edit_brand_products(p.brand_id)))
   )
   with check (
-    exists (select 1 from public.products p where p.id = product_id and (select public.can_edit_brand_products(p.brand_id)))
+    exists (
+      select 1 from public.products p
+      join public.brands b on b.id = p.brand_id
+      where p.id = product_id
+        and (select public.can_edit_brand_products(p.brand_id))
+        -- Uploaded files must sit in this product's own folder: <brand_slug>/<product_id>/<file>.
+        and (
+          product_images.storage_path is null
+          or (
+            split_part(product_images.storage_path, '/', 1) = b.slug
+            and split_part(product_images.storage_path, '/', 2) = p.id::text
+          )
+        )
+    )
   );
 
 create policy "admin and marketing delete images"
@@ -231,6 +261,34 @@ create policy "admin and marketing delete images"
   using (
     exists (select 1 from public.products p where p.id = product_id and (select public.can_edit_brand_products(p.brand_id)))
   );
+
+-- Switch a product's main image in one statement. Security invoker: Row Level Security decides
+-- whether the caller may change this product's images.
+create or replace function public.set_primary_product_image(target_image uuid)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  target_product uuid;
+begin
+  select i.product_id into target_product from public.product_images i where i.id = target_image;
+  if target_product is null then
+    raise exception 'image not found' using errcode = 'P0002';
+  end if;
+  update public.product_images
+     set is_primary = (id = target_image)
+   where product_id = target_product
+     and (is_primary or id = target_image);
+  if not exists (select 1 from public.product_images where id = target_image and is_primary) then
+    raise exception 'not allowed to change images of this product' using errcode = '42501';
+  end if;
+end;
+$$;
+
+revoke all on function public.set_primary_product_image(uuid) from public, anon;
+grant execute on function public.set_primary_product_image(uuid) to authenticated;
 
 -- Storage: product-images bucket ----------------------------------------------
 -- Public bucket: files are served to everyone through their public URL without any select policy.

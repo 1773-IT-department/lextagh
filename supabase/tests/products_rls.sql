@@ -31,7 +31,8 @@ insert into public.product_skus (product_id, sku_code, pack_size_label, is_activ
   ((select id from public.products where slug = 'toothpaste'), 'TEST-INACTIVE-1', '1 tube', false);
 
 insert into public.product_images (product_id, external_url, alt_text) values
-  ('00000000-0000-0000-0000-000000000101', 'https://example.com/draft.png', 'Draft image');
+  ('00000000-0000-0000-0000-000000000101', 'https://example.com/draft.png', 'Draft image'),
+  ((select id from public.products where slug = 'choco-flakes'), 'https://example.com/hooch-second.png', 'Hooch second image');
 
 insert into storage.objects (bucket_id, name) values
   ('product-images', 'hooch/00000000-0000-0000-0000-000000000102/existing.png');
@@ -310,12 +311,96 @@ begin
 end $$;
 reset role;
 
+-- Image paths, main image switching and delete order (as marketing with Yazz access) ---------
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+
+do $$
+declare n int;
+begin
+  -- Image rows must point into the product's own folder.
+  begin
+    insert into public.product_images (product_id, storage_path, alt_text)
+      values ('00000000-0000-0000-0000-000000000101', 'hooch/00000000-0000-0000-0000-000000000102/x.png', 'Wrong folder');
+    raise exception 'FAIL: image row accepted a path in a Hooch product folder';
+  exception when insufficient_privilege then null;
+  end;
+  begin
+    insert into public.product_images (product_id, storage_path, alt_text)
+      values ('00000000-0000-0000-0000-000000000101', 'yazz/' || (select id from public.products where slug = 'toothpaste') || '/x.png', 'Other Yazz product');
+    raise exception 'FAIL: image row accepted a path in another product folder';
+  exception when insufficient_privilege then null;
+  end;
+  insert into public.product_images (product_id, external_url, alt_text)
+    values ('00000000-0000-0000-0000-000000000101', 'https://example.com/linked.png', 'Linked image');
+  begin
+    update public.product_images set storage_path = 'yazz/00000000-0000-0000-0000-000000000102/x.png'
+     where product_id = '00000000-0000-0000-0000-000000000101' and storage_path is not null;
+    raise exception 'FAIL: image row path moved to another product folder';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'PASS: image rows only accept files in the product''s own folder; links still work';
+end $$;
+
+do $$
+declare first_img uuid; second_img uuid;
+begin
+  select id into first_img from public.product_images where product_id = '00000000-0000-0000-0000-000000000101' and external_url = 'https://example.com/draft.png';
+  select id into second_img from public.product_images where product_id = '00000000-0000-0000-0000-000000000101' and external_url = 'https://example.com/linked.png';
+  perform public.set_primary_product_image(first_img);
+  perform public.set_primary_product_image(second_img);
+  set constraints all immediate;
+  if (select count(*) from public.product_images where product_id = '00000000-0000-0000-0000-000000000101' and is_primary) <> 1
+     or not (select is_primary from public.product_images where id = second_img) then
+    raise exception 'FAIL: main image switch left the wrong number of main images';
+  end if;
+  begin
+    perform public.set_primary_product_image((select id from public.product_images where external_url = 'https://example.com/hooch-second.png'));
+    raise exception 'FAIL: marketing (Yazz) switched the main image of a Hooch product';
+  exception when insufficient_privilege then null;
+  end;
+  raise notice 'PASS: main image switches in one call and only for own brand';
+end $$;
+
+do $$
+declare n int;
+begin
+  -- Deleting a product: files have to go first, while the product still exists.
+  insert into storage.objects (bucket_id, name) values
+    ('product-images', 'yazz/00000000-0000-0000-0000-000000000101/one.png'),
+    ('product-images', 'yazz/00000000-0000-0000-0000-000000000101/two.png');
+  delete from storage.objects where bucket_id = 'product-images' and name like 'yazz/00000000-0000-0000-0000-000000000101/%';
+  get diagnostics n = row_count;
+  if n <> 2 then raise exception 'FAIL: editor could not remove product files before deleting the product (removed %)', n; end if;
+  delete from public.products where id = '00000000-0000-0000-0000-000000000101';
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FAIL: editor could not delete the product'; end if;
+  raise notice 'PASS: files removed first, then the product';
+end $$;
+
+reset role;
+
+-- Why the order matters: once the product row is gone the files can no longer be removed by staff.
+insert into storage.objects (bucket_id, name) values ('product-images', 'yazz/00000000-0000-0000-0000-000000000199/orphan.png');
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
+do $$
+declare n int;
+begin
+  delete from storage.objects where name = 'yazz/00000000-0000-0000-0000-000000000199/orphan.png';
+  get diagnostics n = row_count;
+  if n <> 0 then raise exception 'FAIL: expected files of a deleted product to be locked'; end if;
+  raise notice 'PASS: files of a deleted product cannot be removed by staff (so the portal deletes files first)';
+end $$;
+reset role;
+
 -- Helper functions are not callable by anon --------------------------------------------------
 do $$
 begin
   if has_function_privilege('anon', 'public.can_edit_brand_products(uuid)', 'execute')
      or has_function_privilege('anon', 'public.can_view_brand_products(uuid)', 'execute')
-     or has_function_privilege('anon', 'public.can_manage_product_object(text)', 'execute') then
+     or has_function_privilege('anon', 'public.can_manage_product_object(text)', 'execute')
+     or has_function_privilege('anon', 'public.set_primary_product_image(uuid)', 'execute') then
     raise exception 'FAIL: anon can execute product helper functions';
   end if;
   raise notice 'PASS: product helper functions are closed to anon';

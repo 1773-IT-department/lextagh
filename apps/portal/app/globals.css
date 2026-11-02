@@ -123,6 +123,8 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .seg button { border: 0; background: #fff; padding: 8px 14px; font-size: 13px; cursor: pointer; color: var(--ink); }
 .seg button[aria-pressed="true"] { background: var(--navy); color: #fff; }
 .danger-zone h2 { color: var(--danger); }
+.publish-form { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; max-width: 320px; }
+.publish-form .alert { margin: 0; }
 
 @media (max-width: 1100px) {
   .edit-grid { grid-template-columns: minmax(0, 1fr); }

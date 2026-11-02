@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { productImageUrl, type Product, type ProductImage, type ProductSku } from "@lexta/db";
 import ConfirmButton from "@/components/products/ConfirmButton";
 import ImageManager from "@/components/products/ImageManager";
+import PublishButton from "@/components/products/PublishButton";
 import ProductForm from "@/components/products/ProductForm";
 import { getProductAccess } from "@/lib/products";
 import { createClient } from "@/lib/supabase/server";
-import { deleteProduct, setPublished } from "../actions";
+import { deleteProduct } from "../actions";
 
 export const metadata = { title: "Edit product | Lexta Business System" };
 
@@ -59,9 +60,7 @@ export default async function EditProductPage({
         </div>
         {canEdit && (
           <div className="head-actions">
-            <form action={setPublished.bind(null, product.id, !product.is_published)}>
-              <button className={`btn ${product.is_published ? "light" : ""}`} type="submit">{product.is_published ? "Unpublish" : "Publish"}</button>
-            </form>
+            <PublishButton productId={product.id} isPublished={product.is_published} />
           </div>
         )}
       </div>
@@ -69,6 +68,7 @@ export default async function EditProductPage({
       {flags.created && !flags.sku_error && <div className="alert ok" role="status">Product created. Add images below, then publish when it is ready.</div>}
       {flags.sku_error && <div className="alert error" role="alert">Product created, but SKU {flags.sku_error} could not be saved. Its code may already be used by another product. Check the SKUs below and save again.</div>}
       {flags.error === "delete" && <div className="alert error" role="alert">The product could not be deleted. Please try again.</div>}
+      {flags.error === "delete_files" && <div className="alert error" role="alert">The product was not deleted because its image files could not be removed. Please try again. If it keeps happening, tell the IT team.</div>}
       {!canEdit && <div className="alert info" role="note">You are viewing this product. Your role cannot change it.</div>}
 
       <div className="edit-grid">

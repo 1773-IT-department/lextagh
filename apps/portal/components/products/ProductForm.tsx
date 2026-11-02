@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import type { Product, ProductSku } from "@lexta/db";
 import { saveProduct, type ProductFormState } from "@/app/(app)/systems/products/actions";
 
@@ -55,6 +55,11 @@ export default function ProductForm({
   const [state, action, pending] = useActionState(saveProduct, empty);
   const [rows, setRows] = useState<SkuRow[]>(() => (skus.length ? skus.map(toRow) : product ? [] : [blankSku()]));
   const isNew = !product;
+
+  // After every save, show the SKUs exactly as stored, so new rows carry their ids into the next save.
+  useEffect(() => {
+    if (state.skus) setRows(state.skus.map(toRow));
+  }, [state.skus]);
   const fe = state.fieldErrors ?? {};
 
   const update = (key: string, patch: Partial<SkuRow>) => setRows((r) => r.map((row) => (row.key === key ? { ...row, ...patch } : row)));

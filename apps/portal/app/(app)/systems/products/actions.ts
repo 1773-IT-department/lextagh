@@ -2,12 +2,18 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { PRODUCT_IMAGES_BUCKET } from "@lexta/db";
+import { PRODUCT_IMAGES_BUCKET, type ProductSku } from "@lexta/db";
 import { getProductAccess, slugify } from "@/lib/products";
 import { notifySites } from "@/lib/revalidate-sites";
 import { createClient } from "@/lib/supabase/server";
 
-export type ProductFormState = { error?: string; message?: string; fieldErrors?: Record<string, string> };
+export type ProductFormState = {
+  error?: string;
+  message?: string;
+  fieldErrors?: Record<string, string>;
+  /** The SKUs as now stored, so the form picks up new ids after a save. */
+  skus?: ProductSku[];
+};
 export type ActionResult = { error?: string };
 
 type SkuInput = {
@@ -141,37 +147,63 @@ export async function saveProduct(_prev: ProductFormState, form: FormData): Prom
   }
 
   // SKUs: remove the ones taken out, update the ones kept, add the new ones.
+  const skuProblem = await saveSkus(supabase, productId, skus);
+  if (skuProblem && isNew) {
+    // The product exists now; continue on its edit page so a second save does not create it twice.
+    await afterChange(productId, "product created");
+    redirect(`/systems/products/${productId}?created=1&sku_error=${encodeURIComponent(skuProblem.code)}`);
+  }
+  await afterChange(productId, isNew ? "product created" : "product updated");
+  if (isNew) redirect(`/systems/products/${productId}?created=1`);
+
+  const saved = await loadSkus(supabase, productId);
+  if (skuProblem) return { error: skuProblem.message, skus: saved };
+  return {
+    message: fields.is_published ? "Saved. The websites will show the change shortly." : "Saved as a draft. It is not on the websites.",
+    skus: saved,
+  };
+}
+
+type Supabase = Awaited<ReturnType<typeof createClient>>;
+
+async function loadSkus(supabase: Supabase, productId: string): Promise<ProductSku[] | undefined> {
+  const { data, error } = await supabase.from("product_skus").select("*").eq("product_id", productId).order("sort_order");
+  return error ? undefined : (data as ProductSku[]);
+}
+
+/** Applies the submitted SKU list. Returns the first problem, or null when every SKU was saved. */
+async function saveSkus(supabase: Supabase, productId: string, skus: SkuInput[]): Promise<{ code: string; message: string } | null> {
   const { data: existing, error: loadError } = await supabase.from("product_skus").select("id").eq("product_id", productId);
-  if (loadError) return { error: "The product was saved, but its SKUs could not be loaded. Please try again." };
+  if (loadError) return { code: "", message: "The product was saved, but its SKUs could not be loaded. Please try again." };
+  const existingIds = new Set((existing ?? []).map((s) => s.id as string));
   const keep = new Set(skus.filter((s) => s.id).map((s) => s.id));
-  const removeIds = (existing ?? []).map((s) => s.id as string).filter((sid) => !keep.has(sid));
+  const removeIds = [...existingIds].filter((sid) => !keep.has(sid));
   if (removeIds.length) {
-    const { error } = await supabase.from("product_skus").delete().in("id", removeIds);
-    if (error) return { error: "The product was saved, but removed SKUs could not be deleted. Please try again." };
+    const { data, error } = await supabase.from("product_skus").delete().in("id", removeIds).eq("product_id", productId).select("id");
+    if (error || (data?.length ?? 0) !== removeIds.length) {
+      return { code: "", message: "The product was saved, but removed SKUs could not be deleted. Please try again." };
+    }
   }
   for (const [index, sku] of skus.entries()) {
     const { id: skuId, ...row } = sku;
     const values = { ...row, sort_order: (index + 1) * 10 };
-    const { error } = skuId
-      ? await supabase.from("product_skus").update(values).eq("id", skuId).eq("product_id", productId)
-      : await supabase.from("product_skus").insert({ ...values, product_id: productId });
+    if (skuId && !existingIds.has(skuId)) {
+      return { code: sku.sku_code, message: `SKU ${sku.sku_code} was changed or removed elsewhere. The form now shows the saved SKUs; check them and save again.` };
+    }
+    const { data, error } = skuId
+      ? await supabase.from("product_skus").update(values).eq("id", skuId).eq("product_id", productId).select("id")
+      : await supabase.from("product_skus").insert({ ...values, product_id: productId }).select("id");
     if (error) {
-      if (isNew) {
-        // The product exists now; continue on its edit page so a second save does not create it twice.
-        await afterChange(productId, "product created");
-        redirect(`/systems/products/${productId}?created=1&sku_error=${encodeURIComponent(sku.sku_code)}`);
-      }
       return {
-        error: error.code === "23505"
+        code: sku.sku_code,
+        message: error.code === "23505"
           ? `The product was saved, but SKU code ${sku.sku_code} is already used by another product.`
           : `The product was saved, but SKU ${sku.sku_code} could not be saved. Please try again.`,
       };
     }
+    if (!data?.length) return { code: sku.sku_code, message: `The product was saved, but SKU ${sku.sku_code} could not be saved. ${NO_PERMISSION}` };
   }
-
-  await afterChange(productId, isNew ? "product created" : "product updated");
-  if (isNew) redirect(`/systems/products/${productId}?created=1`);
-  return { message: fields.is_published ? "Saved. The websites will show the change shortly." : "Saved as a draft. It is not on the websites." };
+  return null;
 }
 
 function productError(error: { code?: string; message: string }): ProductFormState {
@@ -182,28 +214,51 @@ function productError(error: { code?: string; message: string }): ProductFormSta
   return { error: "We could not save the product. Please try again." };
 }
 
-/** Publish or unpublish. Bound in the form: setPublished.bind(null, id, true). */
-export async function setPublished(productId: string, publish: boolean): Promise<void> {
+/** Publish or unpublish, from the button on the edit page. */
+export async function togglePublished(_prev: ActionResult, form: FormData): Promise<ActionResult> {
   const { error: roleError } = await requireEditor();
-  if (roleError || !UUID.test(productId)) return;
+  if (roleError) return { error: roleError };
+  const productId = String(form.get("id") ?? "");
+  const publish = form.get("publish") === "true";
+  if (!UUID.test(productId)) return { error: "This product could not be found." };
   const supabase = await createClient();
-  const { error } = await supabase.from("products").update({ is_published: publish }).eq("id", productId);
-  if (error) console.error("[products] publish failed", error);
+  const { data, error } = await supabase.from("products").update({ is_published: publish }).eq("id", productId).select("id");
+  if (error || !data?.length) {
+    if (error) console.error("[products] publish failed", error);
+    return { error: publish ? "The product could not be published. Please try again." : "The product could not be unpublished. Please try again." };
+  }
   await afterChange(productId, publish ? "product published" : "product unpublished");
+  return {};
 }
 
 export async function deleteProduct(productId: string): Promise<void> {
   const { error: roleError } = await requireEditor();
-  if (roleError || !UUID.test(productId)) return;
-  const supabase = await createClient();
-  const { data: images } = await supabase.from("product_images").select("storage_path").eq("product_id", productId);
-  const paths = (images ?? []).map((i) => i.storage_path as string | null).filter((p): p is string => !!p);
+  if (roleError || !UUID.test(productId)) redirect(`/systems/products/${productId}?error=delete`);
+  const { supabase, product, brandSlug } = await loadProductForImages(productId);
+  if (!product || !brandSlug) redirect(`/systems/products/${productId}?error=delete`);
+
+  // Files first: the storage rules only let staff remove files while the product still exists.
+  const folder = `${brandSlug}/${productId}`;
+  const bucket = supabase.storage.from(PRODUCT_IMAGES_BUCKET);
+  for (;;) {
+    const { data: files, error: listError } = await bucket.list(folder, { limit: 100 });
+    if (listError) {
+      console.error("[products] listing files failed", listError);
+      redirect(`/systems/products/${productId}?error=delete_files`);
+    }
+    if (!files?.length) break;
+    const { data: removed, error: removeError } = await bucket.remove(files.map((f) => `${folder}/${f.name}`));
+    if (removeError || (removed?.length ?? 0) === 0) {
+      console.error("[products] removing files failed", removeError);
+      redirect(`/systems/products/${productId}?error=delete_files`);
+    }
+  }
+
   const { data, error } = await supabase.from("products").delete().eq("id", productId).select("id");
   if (error || !data?.length) {
     console.error("[products] delete failed", error);
     redirect(`/systems/products/${productId}?error=delete`);
   }
-  if (paths.length) await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove(paths);
   await afterChange(productId, "product deleted");
   redirect("/systems/products?deleted=1");
 }
@@ -288,10 +343,11 @@ export async function setPrimaryImage(productId: string, imageId: string): Promi
   const { error: roleError } = await requireEditor();
   if (roleError) return { error: roleError };
   const supabase = await createClient();
-  const { error: clearError } = await supabase.from("product_images").update({ is_primary: false }).eq("product_id", productId).eq("is_primary", true);
-  if (clearError) return { error: "The main image could not be changed." };
-  const { data, error } = await supabase.from("product_images").update({ is_primary: true }).eq("id", imageId).eq("product_id", productId).select("id");
-  if (error || !data?.length) return { error: "The main image could not be changed." };
+  // Check the image belongs to this product, then switch in one database call (set_primary_product_image).
+  const { data: image } = await supabase.from("product_images").select("id").eq("id", imageId).eq("product_id", productId).maybeSingle();
+  if (!image) return { error: "This image could not be found on the product." };
+  const { error } = await supabase.rpc("set_primary_product_image", { target_image: imageId });
+  if (error) return { error: error.code === "42501" ? NO_PERMISSION : "The main image could not be changed." };
   await afterChange(productId, "main image changed");
   return {};
 }
@@ -318,19 +374,26 @@ export async function removeImage(productId: string, imageId: string): Promise<A
   const { error: roleError } = await requireEditor();
   if (roleError) return { error: roleError };
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data: image } = await supabase
     .from("product_images")
-    .delete()
+    .select("id, storage_path, is_primary")
     .eq("id", imageId)
     .eq("product_id", productId)
-    .select("storage_path, is_primary");
+    .maybeSingle();
+  if (!image) return { error: "This image could not be found on the product." };
+
+  // File first, so a failed row delete never leaves a row pointing at nothing.
+  if (image.storage_path) {
+    const { error: fileError } = await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove([image.storage_path as string]);
+    if (fileError) return { error: "The image file could not be removed. Please try again." };
+  }
+  const { data, error } = await supabase.from("product_images").delete().eq("id", imageId).eq("product_id", productId).select("id");
   if (error || !data?.length) return { error: "The image could not be removed." };
-  const removed = data[0];
-  if (removed.storage_path) await supabase.storage.from(PRODUCT_IMAGES_BUCKET).remove([removed.storage_path as string]);
-  if (removed.is_primary) {
+
+  if (image.is_primary) {
     // Keep a main image: promote the first remaining one.
     const { data: first } = await supabase.from("product_images").select("id").eq("product_id", productId).order("sort_order").limit(1);
-    if (first?.[0]) await supabase.from("product_images").update({ is_primary: true }).eq("id", first[0].id);
+    if (first?.[0]) await supabase.rpc("set_primary_product_image", { target_image: first[0].id });
   }
   await afterChange(productId, "image removed");
   return {};
