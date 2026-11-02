@@ -10,11 +10,11 @@ import type { NextConfig } from "next";
  */
 const legacyPages = [
   "careers", "contact-us", "corporate-social-responsibility", "faqs", "news",
-  "our-brands", "partner-with-us", "people-and-culture", "privacy-policy", "terms-and-conditions",
+  "partner-with-us", "people-and-culture", "privacy-policy", "terms-and-conditions",
 ];
 
 /** Pages already converted to Next.js routes. Their old .html links still redirect to the clean URL. */
-const convertedPages = ["about-us"];
+const convertedPages = ["about-us", "our-brands"];
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lexta/db"],
