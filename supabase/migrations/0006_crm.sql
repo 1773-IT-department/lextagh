@@ -11,9 +11,10 @@
 --                                  unbranded, and anything they own; an organisation is also readable (read only)
 --                                  when a lead they can see points at it. Contacts carry no brand, so every CRM
 --                                  role reads them. They work (edit, change stage, add activities) the leads they
---                                  see. They edit an organisation (details and brands) they own, one carrying a
---                                  brand they work on, or an unbranded one they added; they add or remove only
---                                  brands they work on. They cannot reassign, except that they may take an unowned
+--                                  see. They edit the details of an organisation they own, one carrying a brand
+--                                  they work on, or any unbranded one. They add or remove only brands they work
+--                                  on; a brand goes on an unbranded organisation only by its owner or creator (or
+--                                  by anyone in sales or marketing when it has neither, i.e. the website made it). They cannot reassign, except that they may take an unowned
 --                                  lead they can see ("Assign to me"). On a lead they do not own they may work the
 --                                  stage and next action but not change its brand (claim it first), so nobody can
 --                                  hide an unowned lead from another brand's team. They only link records they can
@@ -81,15 +82,16 @@ grant execute on function public.crm_reads_all() to authenticated;
 grant execute on function public.crm_manages() to authenticated;
 grant execute on function public.crm_works() to authenticated;
 
--- Phone numbers are matched on their digits: everything but digits goes, then a leading 233, then a leading 0.
--- So "+233 (0)24 555 6666", "024 555 6666", "24 555 6666" and "233245556666" all give "245556666".
+-- Phone numbers are matched on their digits: everything but digits goes, then a leading 00, then a leading 233,
+-- then a leading 0. So "00233 24 555 6666", "+233 (0)24 555 6666", "024 555 6666" and "24 555 6666" all give
+-- "245556666".
 create or replace function public.crm_phone_key(phone text)
 returns text
 language sql
 immutable
 set search_path = ''
 as $$
-  select nullif(regexp_replace(regexp_replace(regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'), '^233', ''), '^0', ''), '');
+  select nullif(regexp_replace(regexp_replace(regexp_replace(regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'), '^00', ''), '^233', ''), '^0', ''), '');
 $$;
 
 revoke all on function public.crm_phone_key(text) from public, anon;
@@ -358,10 +360,10 @@ as $$
   end;
 $$;
 
--- May this person change this organisation (details and brands)? Seeing an organisation only through a lead is
--- read only. Sales and marketing edit an organisation they own, one carrying a brand they work on, or an
--- unbranded one they added. Nobody can take over an unbranded organisation someone else added by branding it.
-create or replace function public.crm_can_edit_org_row(target_org uuid, target_owner uuid, target_creator uuid)
+-- May this person change this organisation's details? Sales and marketing edit one they own, one carrying a brand
+-- they work on, or any unbranded one. Seeing an organisation only through a lead is read only. Adding a brand has
+-- its own, stricter rule (crm_can_add_org_brand).
+create or replace function public.crm_can_edit_org_row(target_org uuid, target_owner uuid)
 returns boolean
 language sql
 stable
@@ -373,13 +375,10 @@ as $$
         public.crm_works()
         and (
           target_owner = (select auth.uid())
+          or not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
           or exists (
             select 1 from public.crm_organisation_brands ob
             where ob.organisation_id = target_org and public.has_brand_access(ob.brand_id)
-          )
-          or (
-            target_creator = (select auth.uid())
-            and not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
           )
         )
       );
@@ -393,7 +392,7 @@ security definer
 set search_path = ''
 as $$
   select coalesce(
-    (select public.crm_can_edit_org_row(o.id, o.owner_id, o.created_by) from public.crm_organisations o where o.id = target_org),
+    (select public.crm_can_edit_org_row(o.id, o.owner_id) from public.crm_organisations o where o.id = target_org),
     false
   );
 $$;
@@ -431,8 +430,28 @@ stable
 security definer
 set search_path = ''
 as $$
+  -- Adding a brand hides an unbranded organisation from every other team, so on an unbranded organisation only its
+  -- owner or creator may (or anyone in sales or marketing when it has neither: created by the website intake).
   select public.crm_manages()
-      or (public.crm_works() and public.has_brand_access(target_brand) and public.crm_can_edit_org(target_org));
+      or (
+        public.crm_works()
+        and public.has_brand_access(target_brand)
+        and exists (
+          select 1 from public.crm_organisations o
+          where o.id = target_org
+            and (
+              o.owner_id = (select auth.uid())
+              or exists (
+                select 1 from public.crm_organisation_brands ob
+                where ob.organisation_id = target_org and public.has_brand_access(ob.brand_id)
+              )
+              or (
+                not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = target_org)
+                and (o.created_by = (select auth.uid()) or (o.owner_id is null and o.created_by is null))
+              )
+            )
+        )
+      );
 $$;
 
 create or replace function public.crm_can_remove_org_brand(target_org uuid, target_brand uuid)
@@ -519,7 +538,7 @@ revoke all on function public.crm_can_see_org_row(uuid, uuid) from public, anon;
 revoke all on function public.crm_can_see_contact(uuid) from public, anon;
 revoke all on function public.crm_can_see_activity(uuid, uuid, uuid) from public, anon;
 revoke all on function public.crm_can_add_org_brand(uuid, uuid) from public, anon;
-revoke all on function public.crm_can_edit_org_row(uuid, uuid, uuid) from public, anon;
+revoke all on function public.crm_can_edit_org_row(uuid, uuid) from public, anon;
 revoke all on function public.crm_can_edit_org(uuid) from public, anon;
 revoke all on function public.crm_can_note_org(uuid) from public, anon;
 revoke all on function public.crm_can_add_activity(uuid, uuid, uuid) from public, anon;
@@ -535,7 +554,7 @@ grant execute on function public.crm_can_see_org_row(uuid, uuid) to authenticate
 grant execute on function public.crm_can_see_contact(uuid) to authenticated;
 grant execute on function public.crm_can_see_activity(uuid, uuid, uuid) to authenticated;
 grant execute on function public.crm_can_add_org_brand(uuid, uuid) to authenticated;
-grant execute on function public.crm_can_edit_org_row(uuid, uuid, uuid) to authenticated;
+grant execute on function public.crm_can_edit_org_row(uuid, uuid) to authenticated;
 grant execute on function public.crm_can_edit_org(uuid) to authenticated;
 grant execute on function public.crm_can_note_org(uuid) to authenticated;
 grant execute on function public.crm_can_add_activity(uuid, uuid, uuid) to authenticated;
@@ -819,8 +838,8 @@ create policy "managers, sales and marketing create organisations"
 
 create policy "managers edit all, sales and marketing edit their orgs"
   on public.crm_organisations for update to authenticated
-  using ((select public.crm_can_edit_org_row(id, owner_id, created_by)))
-  with check ((select public.crm_can_edit_org_row(id, owner_id, created_by)));
+  using ((select public.crm_can_edit_org_row(id, owner_id)))
+  with check ((select public.crm_can_edit_org_row(id, owner_id)));
 
 create policy "admins delete organisations"
   on public.crm_organisations for delete to authenticated
@@ -968,6 +987,12 @@ begin
   end if;
 
   if brand_ids is not null then
+    -- New brands first, then the old ones go: moving an organisation from one of your brands to another in one save
+    -- works, because while adding it still carries your old brand.
+    insert into public.crm_organisation_brands (organisation_id, brand_id)
+    select saved_id, b from unnest(wanted) as b
+    where not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = saved_id and ob.brand_id = b)
+    on conflict (organisation_id, brand_id) do nothing;
     select count(*) into expected from public.crm_organisation_brands ob
      where ob.organisation_id = saved_id and ob.brand_id <> all (wanted);
     delete from public.crm_organisation_brands ob where ob.organisation_id = saved_id and ob.brand_id <> all (wanted);
@@ -975,10 +1000,6 @@ begin
     if changed <> expected then
       raise exception 'not allowed to remove a brand from this organisation' using errcode = '42501';
     end if;
-    insert into public.crm_organisation_brands (organisation_id, brand_id)
-    select saved_id, b from unnest(wanted) as b
-    where not exists (select 1 from public.crm_organisation_brands ob where ob.organisation_id = saved_id and ob.brand_id = b)
-    on conflict (organisation_id, brand_id) do nothing;
   end if;
 
   return saved_id;

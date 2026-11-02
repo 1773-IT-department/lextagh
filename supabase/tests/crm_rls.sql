@@ -24,7 +24,8 @@ insert into auth.users (id, email, raw_app_meta_data) values
   ('00000000-0000-0000-0000-0000000006a6', 'crm.dist@test.local',      '{"role":"distributor"}'),
   ('00000000-0000-0000-0000-0000000006a7', 'crm.norole@test.local',    '{}'),
   ('00000000-0000-0000-0000-0000000006a8', 'crm.hr@test.local',        '{"role":"hr"}'),
-  ('00000000-0000-0000-0000-0000000006a9', 'crm.rep.hooch@test.local', '{"role":"sales_rep"}');
+  ('00000000-0000-0000-0000-0000000006a9', 'crm.rep.hooch@test.local', '{"role":"sales_rep"}'),
+  ('00000000-0000-0000-0000-0000000006b0', 'crm.rep.yl@test.local',    '{"role":"sales_rep"}');
 
 insert into public.profile_brands (profile_id, brand_id)
 select '00000000-0000-0000-0000-0000000006a3', id from public.brands where slug = 'yazz';
@@ -32,6 +33,8 @@ insert into public.profile_brands (profile_id, brand_id)
 select '00000000-0000-0000-0000-0000000006a4', id from public.brands where slug = 'hooch';
 insert into public.profile_brands (profile_id, brand_id)
 select '00000000-0000-0000-0000-0000000006a9', id from public.brands where slug = 'hooch';
+insert into public.profile_brands (profile_id, brand_id)
+select '00000000-0000-0000-0000-0000000006b0', id from public.brands where slug in ('yazz', 'linzzy');
 
 create temp table ids as select
   (select id from public.brands where slug = 'yazz') as yazz,
@@ -46,9 +49,13 @@ grant select on ids to anon, authenticated;
 insert into public.crm_organisations (id, name, kind, region_id, town, notes, owner_id) values
   ('00000000-0000-0000-0000-000000000601', 'Test Yazz org',      'retailer',    (select accra from ids), 'Accra', 'Staff note on Yazz org', null),
   ('00000000-0000-0000-0000-000000000602', 'Test Hooch org',     'distributor', (select accra from ids), null,    null, null),
-  ('00000000-0000-0000-0000-000000000603', 'Test unbranded org', 'institution', null, null, null, null),
   ('00000000-0000-0000-0000-000000000604', 'Test owned Hooch',   'pharmacy',    null, null, null, '00000000-0000-0000-0000-0000000006a3'),
   ('00000000-0000-0000-0000-000000000605', 'Test Linzzy org',    'supermarket_chain', null, null, null, null);
+-- o3: unbranded, unowned, added by management. o6: unbranded, no owner and no creator (as the website makes them).
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000006a2', true);
+insert into public.crm_organisations (id, name, kind) values ('00000000-0000-0000-0000-000000000603', 'Test unbranded org', 'institution');
+select set_config('request.jwt.claim.sub', '', true);
+insert into public.crm_organisations (id, name, kind) values ('00000000-0000-0000-0000-000000000606', 'Test website org', 'other');
 insert into public.crm_organisation_brands (organisation_id, brand_id) values
   ('00000000-0000-0000-0000-000000000601', (select yazz from ids)),
   ('00000000-0000-0000-0000-000000000602', (select hooch from ids)),
@@ -207,7 +214,7 @@ do $$
 declare n int;
 begin
   if (select count(*) from public.crm_leads where title like 'Test %') <> 7 then raise exception 'FAIL: admin should see all 7 test leads'; end if;
-  if (select count(*) from public.crm_organisations where name like 'Test %') <> 5 then raise exception 'FAIL: admin should see all 5 test organisations'; end if;
+  if (select count(*) from public.crm_organisations where name like 'Test %') <> 6 then raise exception 'FAIL: admin should see all 6 test organisations'; end if;
   if (select count(*) from public.crm_activities) < 2 then raise exception 'FAIL: admin should see every activity'; end if;
   if (select count(*) from public.crm_staff() s where s.role = 'sales_rep') < 2 then raise exception 'FAIL: admin cannot list CRM staff'; end if;
   if exists (select 1 from public.crm_staff() s where s.role in ('distributor', 'hr') or s.role is null) then
@@ -224,7 +231,7 @@ do $$
 declare n int; new_id uuid;
 begin
   if (select count(*) from public.crm_leads where title like 'Test %') <> 7 then raise exception 'FAIL: management should see all 7 test leads'; end if;
-  if (select count(*) from public.crm_organisations where name like 'Test %') <> 5 then raise exception 'FAIL: management should see all 5 test organisations'; end if;
+  if (select count(*) from public.crm_organisations where name like 'Test %') <> 6 then raise exception 'FAIL: management should see all 6 test organisations'; end if;
 
   perform public.set_crm_owner('lead', '00000000-0000-0000-0000-000000000622', '00000000-0000-0000-0000-0000000006a4');
   if (select owner_id from public.crm_leads where id = '00000000-0000-0000-0000-000000000622') <> '00000000-0000-0000-0000-0000000006a4' then
@@ -513,10 +520,27 @@ begin
   if (select organisation_id from public.crm_leads where id = '00000000-0000-0000-0000-000000000624') is distinct from '00000000-0000-0000-0000-000000000604' then
     raise exception 'FAIL: keep marker changed a lead organisation link';
   end if;
-  -- Unbranded organisation someone else added: visible, but not editable (no takeover).
-  update public.crm_organisations set notes = 'Hacked' where id = '00000000-0000-0000-0000-000000000603';
+  -- Unbranded organisation someone else added: details are editable (unbranded records are shared work)...
+  update public.crm_organisations set town = 'Tamale' where id = '00000000-0000-0000-0000-000000000603';
   get diagnostics n = row_count;
-  if n <> 0 then raise exception 'FAIL: Yazz rep edited an unbranded organisation someone else added'; end if;
+  if n <> 1 then raise exception 'FAIL: Yazz rep could not edit the details of an unbranded organisation'; end if;
+  perform public.save_crm_organisation('00000000-0000-0000-0000-000000000603', jsonb_build_object('name', 'Test unbranded org', 'kind', 'institution', 'town', 'Tamale'), '{}');
+  -- ...but it cannot be branded by them (that would hide it from the other teams); the test below checks the insert.
+  begin
+    perform public.save_crm_organisation('00000000-0000-0000-0000-000000000603', null, array[(select yazz from ids)]);
+    raise exception 'FAIL: Yazz rep branded an unbranded organisation management added (through save)';
+  exception when insufficient_privilege then null;
+  end;
+  -- An unbranded organisation the website made (no owner, no creator): any rep may add one of their own brands.
+  begin
+    insert into public.crm_organisation_brands (organisation_id, brand_id) values ('00000000-0000-0000-0000-000000000606', (select linzzy from ids));
+    raise exception 'FAIL: Yazz rep added a brand they do not work on to a website organisation';
+  exception when insufficient_privilege then null;
+  end;
+  perform public.save_crm_organisation('00000000-0000-0000-0000-000000000606', null, array[(select yazz from ids)]);
+  if not exists (select 1 from public.crm_organisation_brands where organisation_id = '00000000-0000-0000-0000-000000000606' and brand_id = (select yazz from ids)) then
+    raise exception 'FAIL: Yazz rep could not add Yazz to a website organisation';
+  end if;
   -- Visible organisation details can be edited.
   perform public.save_crm_organisation('00000000-0000-0000-0000-000000000601', jsonb_build_object('name', 'Test Yazz org', 'kind', 'retailer',
                                        'region_id', (select accra from ids), 'town', 'Accra', 'notes', 'Staff note on Yazz org', 'phone', '+233 30 222 3333'), null);
@@ -639,6 +663,27 @@ begin
 end $$;
 reset role;
 
+-- Rep with Yazz and Linzzy: moves an organisation from one of their brands to the other in one save ------------
+set local role authenticated;
+set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006b0';
+do $$
+declare new_org uuid;
+begin
+  new_org := public.save_crm_organisation(null, jsonb_build_object('name', 'YL org'), array[(select yazz from ids)]);
+  perform public.save_crm_organisation(new_org, null, array[(select linzzy from ids)]);
+  if (select array_agg(brand_id) from public.crm_organisation_brands where organisation_id = new_org) <> array[(select linzzy from ids)] then
+    raise exception 'FAIL: moving an organisation from Yazz to Linzzy in one save did not work';
+  end if;
+  -- And on an organisation they do not own or create, carrying only Yazz: same move works.
+  perform public.save_crm_organisation('00000000-0000-0000-0000-000000000601', null, array[(select linzzy from ids)]);
+  if (select array_agg(brand_id) from public.crm_organisation_brands where organisation_id = '00000000-0000-0000-0000-000000000601') <> array[(select linzzy from ids)] then
+    raise exception 'FAIL: moving a Yazz organisation they do not own to Linzzy did not work';
+  end if;
+  perform public.save_crm_organisation('00000000-0000-0000-0000-000000000601', null, array[(select yazz from ids)]);
+  raise notice 'PASS: a rep moves an organisation between their own brands in one save';
+end $$;
+reset role;
+
 -- Marketing with Hooch access ----------------------------------------------------------------------
 set local role authenticated;
 set local request.jwt.claim.sub = '00000000-0000-0000-0000-0000000006a4';
@@ -709,7 +754,7 @@ do $$
 declare n int; new_contact uuid; new_lead uuid;
 begin
   if (select count(*) from public.crm_leads where title like 'Test %') <> 7 then raise exception 'FAIL: customer care should see all 7 test leads'; end if;
-  if (select count(*) from public.crm_organisations where name like 'Test %') <> 5 then raise exception 'FAIL: customer care should see all test organisations'; end if;
+  if (select count(*) from public.crm_organisations where name like 'Test %') <> 6 then raise exception 'FAIL: customer care should see all test organisations'; end if;
   new_contact := public.save_crm_contact(null, jsonb_build_object('full_name', 'Care contact', 'email', 'care.contact@test.local'));
   -- Customer care only adds new leads: never straight into a later or closed stage.
   if public.crm_care_may_edit() then raise exception 'FAIL: crm_care_may_edit() should be false until Desmond decides'; end if;
@@ -986,6 +1031,11 @@ begin
     raise exception 'FAIL: short form of a rate limited number was accepted';
   exception when sqlstate 'PT429' then null;
   end;
+  begin
+    perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Phone flood', 'phone', '00233 27 123 0000', 'email', 'p12@flood.test', 'message', 'm'));
+    raise exception 'FAIL: 00233 form of a rate limited number was accepted';
+  exception when sqlstate 'PT429' then null;
+  end;
   -- Someone else is not affected.
   perform public.submit_website_enquiry('contact', jsonb_build_object('name', 'Other', 'email', 'other@test.local', 'message', 'm'));
   raise notice 'PASS: at most 5 submissions per email or phone per hour';
@@ -996,7 +1046,7 @@ reset role;
 do $$
 declare v text;
 begin
-  foreach v in array array['+233 (0)24 555 6666', '024 555 6666', '24 555 6666', '233245556666', '+233245556666', '0245556666'] loop
+  foreach v in array array['+233 (0)24 555 6666', '024 555 6666', '24 555 6666', '233245556666', '+233245556666', '0245556666', '00233 24 555 6666', '00233245556666'] loop
     if public.crm_phone_key(v) is distinct from '245556666' then raise exception 'FAIL: phone key of % is %', v, public.crm_phone_key(v); end if;
   end loop;
   if public.crm_phone_key('call me') is not null then raise exception 'FAIL: phone key of text should be empty'; end if;
