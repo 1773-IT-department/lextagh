@@ -380,17 +380,31 @@ end $$;
 
 reset role;
 
--- Why the order matters: once the product row is gone the files can no longer be removed by staff.
-insert into storage.objects (bucket_id, name) values ('product-images', 'yazz/00000000-0000-0000-0000-000000000199/orphan.png');
+-- Files left in the folder of a deleted product (0007): an editor of that brand can list and remove them, so the portal
+-- deletes the product first and cleans up after; nobody else can, and the folder of a live product is unaffected.
+insert into storage.objects (bucket_id, name) values
+  ('product-images', 'yazz/00000000-0000-0000-0000-000000000199/orphan.png'),
+  ('product-images', 'hooch/00000000-0000-0000-0000-000000000198/orphan.png');
 set local role authenticated;
-set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000c';
 do $$
 declare n int;
 begin
-  delete from storage.objects where name = 'yazz/00000000-0000-0000-0000-000000000199/orphan.png';
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000f', true);
+  delete from storage.objects where name like '%/00000000-0000-0000-0000-00000000019_/orphan.png';
   get diagnostics n = row_count;
-  if n <> 0 then raise exception 'FAIL: expected files of a deleted product to be locked'; end if;
-  raise notice 'PASS: files of a deleted product cannot be removed by staff (so the portal deletes files first)';
+  if n <> 0 then raise exception 'FAIL: marketing without brands removed files of a deleted product'; end if;
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000d', true);
+  delete from storage.objects where name like '%/00000000-0000-0000-0000-00000000019_/orphan.png';
+  get diagnostics n = row_count;
+  if n <> 0 then raise exception 'FAIL: a sales rep removed files of a deleted product'; end if;
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000c', true);
+  if (select count(*) from storage.objects where name like '%/00000000-0000-0000-0000-00000000019_/orphan.png') <> 1 then
+    raise exception 'FAIL: Yazz marketing should list only the Yazz orphan';
+  end if;
+  delete from storage.objects where name like '%/00000000-0000-0000-0000-00000000019_/orphan.png';
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FAIL: Yazz marketing could not clean the deleted Yazz product folder (removed %)', n; end if;
+  raise notice 'PASS: only an editor of the brand cleans up files of a deleted product';
 end $$;
 reset role;
 

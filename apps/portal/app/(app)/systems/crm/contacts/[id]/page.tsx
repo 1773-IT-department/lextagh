@@ -78,6 +78,7 @@ export default async function ContactPage({ params, searchParams }: {
 
       {flags.created && <div className="alert ok" role="status">Contact added.</div>}
       {flags.error === "delete" && <div className="alert error" role="alert">The contact could not be deleted. You may not have permission, or it was already removed. Please reload and try again.</div>}
+      {flags.error === "complaints" && <div className="alert error" role="alert">This contact is the customer on one or more complaints, so it cannot be deleted. Complaints keep their customer for the record.</div>}
       {flags.error === "linked" && <div className="alert error" role="alert">This contact still has leads. Move or delete those leads first.</div>}
       {!access.canEdit && <div className="alert info" role="note">You can read this contact, add to its timeline and create leads for it. Your role cannot change it.</div>}
 

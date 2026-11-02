@@ -73,7 +73,9 @@ export default async function EditStockistPage({
       </div>
 
       {flags.created && <div className="alert ok" role="status">Stockist added. It shows on Where to Buy while it is active.</div>}
-      {flags.error === "delete" && <div className="alert error" role="alert">The stockist could not be deleted. You may not have permission, or it was already removed. Please reload and try again.</div>}
+      {flags.error === "delete" && <div className="alert error" role="alert">The stockist could not be deleted. It may have been removed already. Please reload and try again.</div>}
+      {flags.error === "permission" && <div className="alert error" role="alert">The stockist was not deleted: it carries a brand you do not work on, or someone else added it. Ask an admin.</div>}
+      {flags.error === "linked" && <div className="alert error" role="alert">The stockist was not deleted because other records still need it. Tell the IT team which stockist it is.</div>}
       {mode === "brands" && (
         <div className="alert info" role="note">
           This stockist also carries brands you do not work on, so you can only add or remove your own brands here. Ask an administrator to change its details.

@@ -6,6 +6,7 @@ import { notifySites } from "@/lib/revalidate-sites";
 import { checkCsv, checkStockist, duplicateKey, type ImportReport } from "@/lib/stockist-input";
 import { getStockistAccess } from "@/lib/stockists";
 import { createClient } from "@/lib/supabase/server";
+import { deleteFailure, ownDbMessage } from "@/lib/db-errors";
 
 export type StockistFormState = { error?: string; message?: string; fieldErrors?: Record<string, string> };
 export type ActionResult = { error?: string };
@@ -24,8 +25,10 @@ async function afterChange(reason: string, stockistId?: string) {
 }
 
 function dbError(error: { code?: string; message: string }, context: string): string {
-  if (error.code === "42501") return NO_PERMISSION;
+  // Row Level Security refusals mean the stockist is not this person's to change; a rule of ours says what is wrong itself.
+  if (error.code === "42501") return ownDbMessage(error) ?? NO_PERMISSION;
   if (error.code === "23505") return "This shop is already in the system with the same name, region, town and address.";
+  if (error.code === "23514" && ownDbMessage(error)) return ownDbMessage(error)!;
   if (error.code === "23514" || error.code === "22P02" || error.code === "22003") return "One of the fields is too long or in the wrong format. Please check and try again.";
   if (error.code === "23503") return "The region or a brand no longer exists. Reload the page and try again.";
   console.error(`[stockists] ${context} failed`, error);
@@ -119,7 +122,7 @@ export async function deleteStockist(stockistId: string): Promise<void> {
   const { error } = await supabase.rpc("delete_stockist", { target_id: stockistId });
   if (error) {
     if (error.code !== "42501") console.error("[stockists] delete failed", error);
-    redirect(`/systems/stockists/${stockistId}?error=delete`);
+    redirect(`/systems/stockists/${stockistId}?error=${deleteFailure(error)}`);
   }
   await afterChange("stockist deleted");
   redirect("/systems/stockists?deleted=1");

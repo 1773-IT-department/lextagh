@@ -1,7 +1,8 @@
-// Hand written from supabase/migrations/0001_foundations.sql, 0003_products.sql, 0005_stockists.sql and 0006_crm.sql because the Supabase project
+// Hand written from supabase/migrations/0001_foundations.sql, 0003_products.sql, 0005_stockists.sql, 0006_crm.sql and 0007_complaints.sql because the Supabase project
 // was not reachable from the build shift. Replace with `generate_typescript_types` output
 // once the migration is applied.
 
+import type { Complaint, ComplaintEvent, ComplaintFile } from "./complaints";
 import type { CrmActivity, CrmContact, CrmLead, CrmOrganisation, CrmOrganisationBrand, CrmStaff } from "./crm";
 
 export type AppRole =
@@ -260,6 +261,36 @@ export type Database = {
           { foreignKeyName: "crm_activities_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
         ];
       };
+      complaints: {
+        Row: Complaint;
+        Insert: Partial<Pick<Complaint, "product_id" | "sku_id" | "batch_number" | "stockist_id" | "purchase_place" | "purchase_date" | "severity" | "organisation_id" | "owner_id">>
+          & Pick<Complaint, "brand_id" | "category" | "channel" | "description" | "contact_id">;
+        Update: Partial<Pick<Complaint, "brand_id" | "product_id" | "sku_id" | "batch_number" | "stockist_id" | "purchase_place" | "purchase_date" | "category" | "severity" | "channel" | "description" | "contact_id" | "organisation_id" | "owner_id" | "status" | "resolution_summary" | "root_cause">>;
+        Relationships: [
+          { foreignKeyName: "complaints_brand_id_fkey"; columns: ["brand_id"]; isOneToOne: false; referencedRelation: "brands"; referencedColumns: ["id"] },
+          { foreignKeyName: "complaints_product_id_fkey"; columns: ["product_id"]; isOneToOne: false; referencedRelation: "products"; referencedColumns: ["id"] },
+          { foreignKeyName: "complaints_sku_id_fkey"; columns: ["sku_id"]; isOneToOne: false; referencedRelation: "product_skus"; referencedColumns: ["id"] },
+          { foreignKeyName: "complaints_stockist_id_fkey"; columns: ["stockist_id"]; isOneToOne: false; referencedRelation: "stockists"; referencedColumns: ["id"] },
+          { foreignKeyName: "complaints_contact_id_fkey"; columns: ["contact_id"]; isOneToOne: false; referencedRelation: "crm_contacts"; referencedColumns: ["id"] },
+          { foreignKeyName: "complaints_organisation_id_fkey"; columns: ["organisation_id"]; isOneToOne: false; referencedRelation: "crm_organisations"; referencedColumns: ["id"] },
+        ];
+      };
+      complaint_events: {
+        Row: ComplaintEvent;
+        Insert: Pick<ComplaintEvent, "complaint_id" | "body"> & { type: "note" | "call" | "email"; occurred_at?: string };
+        Update: never;
+        Relationships: [
+          { foreignKeyName: "complaint_events_complaint_id_fkey"; columns: ["complaint_id"]; isOneToOne: false; referencedRelation: "complaints"; referencedColumns: ["id"] },
+        ];
+      };
+      complaint_files: {
+        Row: ComplaintFile;
+        Insert: Pick<ComplaintFile, "complaint_id" | "storage_path" | "file_name" | "mime_type" | "size_bytes">;
+        Update: never;
+        Relationships: [
+          { foreignKeyName: "complaint_files_complaint_id_fkey"; columns: ["complaint_id"]; isOneToOne: false; referencedRelation: "complaints"; referencedColumns: ["id"] },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -295,6 +326,16 @@ export type Database = {
       set_crm_owner: { Args: { kind: "lead" | "contact" | "organisation"; target_id: string; new_owner: string | null }; Returns: undefined };
       delete_crm_record: { Args: { kind: "lead" | "contact" | "organisation"; target_id: string }; Returns: undefined };
       submit_website_enquiry: { Args: { form: "contact" | "partner" | "newsletter"; payload: Record<string, unknown> }; Returns: string };
+      complaint_can_see: { Args: { target_brand: string }; Returns: boolean };
+      complaint_can_see_id: { Args: { target_complaint: string }; Returns: boolean };
+      complaint_works: { Args: Record<string, never>; Returns: boolean };
+      complaint_reassigns: { Args: Record<string, never>; Returns: boolean };
+      complaint_is_owner_candidate: { Args: { target_profile: string }; Returns: boolean };
+      save_complaint: { Args: { target_id: string | null; details: Record<string, unknown> }; Returns: string };
+      set_complaint_status: { Args: { target_id: string; new_status: string; note: string | null; resolution_summary: string | null; root_cause: string | null }; Returns: undefined };
+      set_complaint_owner: { Args: { target_id: string; new_owner: string | null }; Returns: undefined };
+      delete_complaint: { Args: { target_id: string }; Returns: undefined };
+      submit_complaint: { Args: { payload: Record<string, unknown> }; Returns: string };
     };
     Enums: { app_role: AppRole };
     CompositeTypes: Record<string, never>;

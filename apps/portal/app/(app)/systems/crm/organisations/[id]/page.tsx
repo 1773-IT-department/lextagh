@@ -79,6 +79,7 @@ export default async function OrganisationPage({ params, searchParams }: {
 
       {flags.created && <div className="alert ok" role="status">Organisation added.</div>}
       {flags.error === "delete" && <div className="alert error" role="alert">The organisation could not be deleted. You may not have permission, or it was already removed. Please reload and try again.</div>}
+      {flags.error === "complaints" && <div className="alert error" role="alert">This organisation is linked to one or more complaints, so it cannot be deleted. Unlink it from those complaints first (a closed complaint must be reopened to change it).</div>}
       {flags.error === "linked" && <div className="alert error" role="alert">This organisation still has leads. Move or delete those leads first.</div>}
       {!canEdit && (
         <div className="alert info" role="note">

@@ -6,6 +6,7 @@ import { PRODUCT_IMAGES_BUCKET, type ProductSku } from "@lexta/db";
 import { getProductAccess, slugify } from "@/lib/products";
 import { notifySites } from "@/lib/revalidate-sites";
 import { createClient } from "@/lib/supabase/server";
+import { deleteFailure, ownDbMessage } from "@/lib/db-errors";
 
 export type ProductFormState = {
   error?: string;
@@ -208,8 +209,10 @@ async function saveSkus(supabase: Supabase, productId: string, skus: SkuInput[])
 
 function productError(error: { code?: string; message: string }): ProductFormState {
   if (error.code === "23505") return { error: "Another product of this brand already uses that web address.", fieldErrors: { slug: "Already used in this brand. Choose another." } };
-  if (error.code === "42501") return { error: NO_PERMISSION };
-  if (error.code === "23514") return { error: "One of the fields is too long or in the wrong format. Please check and try again." };
+  // A rule of ours (a trigger) says what is wrong in plain words; Row Level Security refusals mean no permission.
+  if (error.code === "42501") return { error: ownDbMessage(error) ?? NO_PERMISSION };
+  if (error.code === "23514") return { error: ownDbMessage(error) ?? "One of the fields is too long or in the wrong format. Please check and try again." };
+  if (error.code === "23503") return { error: "Something this product is linked to no longer exists, or other records still need it. Reload the page and try again." };
   console.error("[products] save failed", error);
   return { error: "We could not save the product. Please try again." };
 }
@@ -237,29 +240,28 @@ export async function deleteProduct(productId: string): Promise<void> {
   const { supabase, product, brandSlug } = await loadProductForImages(productId);
   if (!product || !brandSlug) redirect(`/systems/products/${productId}?error=delete`);
 
-  // Files first: the storage rules only let staff remove files while the product still exists.
-  const folder = `${brandSlug}/${productId}`;
-  const bucket = supabase.storage.from(PRODUCT_IMAGES_BUCKET);
-  for (;;) {
-    const { data: files, error: listError } = await bucket.list(folder, { limit: 100 });
-    if (listError) {
-      console.error("[products] listing files failed", listError);
-      redirect(`/systems/products/${productId}?error=delete_files`);
-    }
-    if (!files?.length) break;
-    const { data: removed, error: removeError } = await bucket.remove(files.map((f) => `${folder}/${f.name}`));
-    if (removeError || (removed?.length ?? 0) === 0) {
-      console.error("[products] removing files failed", removeError);
-      redirect(`/systems/products/${productId}?error=delete_files`);
-    }
-  }
-
+  // The product first: if the delete is refused, the product keeps all its images. Its image rows go with it (on
+  // delete cascade); the files left in its folder are then removed (0007 lets editors of the brand clean the folder of
+  // a product that no longer exists).
   const { data, error } = await supabase.from("products").delete().eq("id", productId).select("id");
   if (error || !data?.length) {
-    console.error("[products] delete failed", error);
-    redirect(`/systems/products/${productId}?error=delete`);
+    if (error) console.error("[products] delete failed", error);
+    redirect(`/systems/products/${productId}?error=${error ? deleteFailure(error) : "permission"}`);
+  }
+
+  const folder = `${brandSlug}/${productId}`;
+  const bucket = supabase.storage.from(PRODUCT_IMAGES_BUCKET);
+  let cleaned = true;
+  for (let round = 0; round < 50; round++) {
+    const { data: files, error: listError } = await bucket.list(folder, { limit: 100 });
+    if (listError) { cleaned = false; console.error("[products] listing files of a deleted product failed", listError); break; }
+    if (!files?.length) break;
+    const { data: removed, error: removeError } = await bucket.remove(files.map((f) => `${folder}/${f.name}`));
+    if (removeError || (removed?.length ?? 0) === 0) { cleaned = false; console.error("[products] removing files of a deleted product failed", removeError); break; }
   }
   await afterChange(productId, "product deleted");
+  // The product is gone either way; leftover files are only logged (they are no longer shown anywhere).
+  if (!cleaned) redirect("/systems/products?deleted=1&files=left");
   redirect("/systems/products?deleted=1");
 }
 

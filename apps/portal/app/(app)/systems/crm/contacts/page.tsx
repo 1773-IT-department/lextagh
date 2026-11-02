@@ -28,8 +28,9 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
   let query = supabase.from("crm_contacts")
     .select("id, full_name, email, phone, job_title, preferred_channel, consent_marketing, owner_id, organisation:crm_organisations!crm_contacts_organisation_id_fkey(name)", { count: "exact" });
   if (q) {
-    const digits = q.replace(/[^0-9]/g, "");
-    query = query.or([`full_name.ilike.*${q}*`, `email.ilike.*${q}*`, `phone.ilike.*${q}*`, ...(digits.length >= 4 ? [`phone_key.ilike.*${digits.replace(/^233/, "").replace(/^0/, "")}*`] : [])].join(","));
+    // Same rule as public.crm_phone_key (0007): drop leading zeros, a leading 233, then leading zeros again.
+    const digits = q.replace(/[^0-9]/g, "").replace(/^0+/, "").replace(/^233/, "").replace(/^0+/, "");
+    query = query.or([`full_name.ilike.*${q}*`, `email.ilike.*${q}*`, `phone.ilike.*${q}*`, ...(digits.length >= 4 ? [`phone_key.ilike.*${digits}*`] : [])].join(","));
   }
   if (consent) query = query.eq("consent_marketing", consent === "yes");
   if (owner === "mine") query = query.eq("owner_id", access.userId);

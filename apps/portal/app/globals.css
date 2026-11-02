@@ -251,3 +251,44 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .brand-checks + .small { margin: 10px 0 0; }
 .label-like { font-size: 13px; font-weight: 600; }
 .field .label-like + .small { margin: 0; }
+
+/* Complaints */
+.complaint-counts { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+.pipe.c-new { border-top-color: #9fc9d6; }
+.pipe.c-acknowledged { border-top-color: #12a3c4; }
+.pipe.c-investigating { border-top-color: #0d8ba8; }
+.pipe.c-awaiting_customer { border-top-color: #6b7f88; }
+.pipe.c-reopened { border-top-color: #8a4b00; }
+.pipe.c-resolved { border-top-color: #146c43; }
+.pipe.c-closed { border-top-color: #0b2f3d; }
+.pipe.c-overdue { border-top-color: var(--danger); }
+.pipe.c-overdue b { color: var(--danger); }
+.complaint-filters { grid-template-columns: minmax(0, 2fr) repeat(5, minmax(0, 1fr)) auto auto; }
+.check-inline { display: flex; align-items: center; gap: 8px; min-height: 46px; font-size: 13px; font-weight: 600; white-space: nowrap; }
+.check-inline input { width: 20px; height: 20px; }
+.badge.cstatus { background: #e8f4f8; color: var(--navy); }
+.badge.cstatus.c-resolved, .badge.cstatus.c-closed { background: #e7f7ee; color: #146c43; }
+.badge.cstatus.c-reopened { background: #fff4e5; color: #8a4b00; }
+.badge.sev-low { background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
+.badge.sev-normal { background: #e8f4f8; color: var(--navy); }
+.badge.sev-high { background: #fff4e5; color: #8a4b00; }
+.badge.sev-critical { background: #fdecea; color: var(--danger); }
+.stage-pill.on.c-resolved, .stage-pill.on.c-closed { background: #146c43; border-color: #146c43; }
+.stage-pill.on.c-reopened { background: #8a4b00; border-color: #8a4b00; }
+.timeline li.t-owner_change { border-left-color: var(--navy); }
+.timeline li.t-attachment_added { border-left-color: #9fc9d6; }
+.find-form { display: flex; gap: 10px; align-items: flex-end; }
+.find-form .field { flex: 1; margin: 0; }
+.find-contact .mini-list { margin-top: 10px; }
+.find-contact .mini-list li { justify-content: space-between; }
+.pre-line { white-space: pre-wrap; }
+
+@media (max-width: 1300px) {
+  .complaint-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .complaint-filters .field:first-child, .complaint-filters .filter-actions { grid-column: 1 / -1; }
+}
+@media (max-width: 800px) {
+  .complaint-counts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .complaint-filters { grid-template-columns: 1fr 1fr; }
+  .find-form { flex-direction: column; align-items: stretch; }
+}
