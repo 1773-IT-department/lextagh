@@ -1,4 +1,4 @@
-// Hand written from supabase/migrations/0001_foundations.sql and 0003_products.sql because the Supabase project
+// Hand written from supabase/migrations/0001_foundations.sql, 0003_products.sql and 0005_stockists.sql because the Supabase project
 // was not reachable from the build shift. Replace with `generate_typescript_types` output
 // once the migration is applied.
 
@@ -80,6 +80,62 @@ export type ProductImage = Timestamps & {
   is_primary: boolean;
 };
 
+export type Region = Timestamps & {
+  id: string;
+  slug: string;
+  name: string;
+  is_in_ghana: boolean;
+  sort_order: number;
+};
+
+export type OutletType = "supermarket" | "pharmacy" | "open_market" | "general_trade" | "distributor" | "other";
+
+/** Outlet types in display order, with the words staff and visitors see. */
+export const OUTLET_TYPES: readonly { value: OutletType; label: string }[] = [
+  { value: "supermarket", label: "Supermarket" },
+  { value: "pharmacy", label: "Pharmacy" },
+  { value: "open_market", label: "Open market" },
+  { value: "general_trade", label: "General trade / neighbourhood shop" },
+  { value: "distributor", label: "Distributor" },
+  { value: "other", label: "Other" },
+] as const;
+
+export function outletTypeLabel(value: string): string {
+  return OUTLET_TYPES.find((o) => o.value === value)?.label ?? "Other";
+}
+
+export type Stockist = Timestamps & {
+  id: string;
+  name: string;
+  outlet_type: OutletType;
+  region_id: string;
+  town: string;
+  address: string | null;
+  phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  opening_hours: string | null;
+  is_active: boolean;
+  created_by: string | null;
+  updated_by: string | null;
+};
+
+/** The stockist columns every role may read. created_by and updated_by are staff only (stockist_authors). */
+export type StockistPublic = Omit<Stockist, "created_by" | "updated_by">;
+
+export type StockistBrand = Timestamps & {
+  id: string;
+  stockist_id: string;
+  brand_id: string;
+};
+
+/** Staff only. Never readable by website visitors. */
+export type StockistNote = Timestamps & {
+  id: string;
+  stockist_id: string;
+  notes: string;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -125,6 +181,37 @@ export type Database = {
           { foreignKeyName: "product_images_product_id_fkey"; columns: ["product_id"]; isOneToOne: false; referencedRelation: "products"; referencedColumns: ["id"] },
         ];
       };
+      regions: {
+        Row: Region;
+        Insert: Partial<Region> & Pick<Region, "slug" | "name">;
+        Update: Partial<Omit<Region, "id">>;
+        Relationships: [];
+      };
+      stockists: {
+        Row: Stockist;
+        Insert: Partial<Omit<Stockist, "created_by" | "updated_by">> & Pick<Stockist, "name" | "outlet_type" | "region_id" | "town">;
+        Update: Partial<Omit<Stockist, "id" | "created_by" | "updated_by">>;
+        Relationships: [
+          { foreignKeyName: "stockists_region_id_fkey"; columns: ["region_id"]; isOneToOne: false; referencedRelation: "regions"; referencedColumns: ["id"] },
+        ];
+      };
+      stockist_brands: {
+        Row: StockistBrand;
+        Insert: Partial<StockistBrand> & Pick<StockistBrand, "stockist_id" | "brand_id">;
+        Update: never;
+        Relationships: [
+          { foreignKeyName: "stockist_brands_stockist_id_fkey"; columns: ["stockist_id"]; isOneToOne: false; referencedRelation: "stockists"; referencedColumns: ["id"] },
+          { foreignKeyName: "stockist_brands_brand_id_fkey"; columns: ["brand_id"]; isOneToOne: false; referencedRelation: "brands"; referencedColumns: ["id"] },
+        ];
+      };
+      stockist_notes: {
+        Row: StockistNote;
+        Insert: Partial<StockistNote> & Pick<StockistNote, "stockist_id" | "notes">;
+        Update: Partial<Omit<StockistNote, "id">>;
+        Relationships: [
+          { foreignKeyName: "stockist_notes_stockist_id_fkey"; columns: ["stockist_id"]; isOneToOne: true; referencedRelation: "stockists"; referencedColumns: ["id"] },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -136,6 +223,16 @@ export type Database = {
       can_edit_brand_products: { Args: { target_brand: string }; Returns: boolean };
       can_manage_product_object: { Args: { object_name: string }; Returns: boolean };
       set_primary_product_image: { Args: { target_image: string }; Returns: undefined };
+      can_view_stockists: { Args: Record<string, never>; Returns: boolean };
+      can_create_stockists: { Args: Record<string, never>; Returns: boolean };
+      can_link_stockist_brand: { Args: { target_brand: string }; Returns: boolean };
+      can_edit_stockist: { Args: { target_stockist: string }; Returns: boolean };
+      save_stockist: { Args: { target_id: string | null; details: Record<string, unknown> | null; brand_ids: string[] }; Returns: string };
+      import_stockists: { Args: { items: unknown[] }; Returns: number };
+      can_add_stockist_brand: { Args: { target_stockist: string; target_brand: string }; Returns: boolean };
+      set_stockist_active: { Args: { target_id: string; active: boolean }; Returns: undefined };
+      delete_stockist: { Args: { target_id: string }; Returns: undefined };
+      stockist_authors: { Args: { target_ids: string[] }; Returns: { stockist_id: string; created_by: string | null; updated_by: string | null }[] };
       update_my_profile: { Args: { new_full_name: string; new_phone: string }; Returns: undefined };
     };
     Enums: { app_role: AppRole };
