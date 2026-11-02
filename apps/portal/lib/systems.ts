@@ -4,6 +4,7 @@ export type SystemDef = { slug: string; name: string; summary: string; roles: Ap
 
 /**
  * The 8 systems from proposal 1773/LEX/2026-09, plus the shared chat inbox and user admin.
+ * Stockists belong to Where to Buy and sit next to Product management.
  * Which roles see which system is the starting default; Desmond can change it.
  * Admin and management see everything. Distributors only see ordering.
  * The database enforces access with Row Level Security; this list only shapes the navigation.
@@ -15,6 +16,7 @@ export const SYSTEMS: SystemDef[] = [
   { slug: "crm", name: "CRM", summary: "Leads, distributors, institutions and partners.", roles: ["admin", "management", "sales_rep", "customer_care", "marketing"] },
   { slug: "complaints", name: "Complaints", summary: "Case number, owner, status and closure.", roles: ["admin", "management", "customer_care"] },
   { slug: "products", name: "Product management", summary: "Edit a product once and all four websites update.", roles: ["admin", "management", "marketing"] },
+  { slug: "stockists", name: "Stockists (Where to Buy)", summary: "Shops, regions and brands carried, shown on Where to Buy.", roles: ["admin", "management", "sales_rep", "marketing", "customer_care"] },
   { slug: "csr", name: "CSR activities", summary: "Track CSR projects and outreach.", roles: ["admin", "management", "marketing"] },
   { slug: "recruitment", name: "Recruitment", summary: "Open roles and applications from the Careers page.", roles: ["admin", "management", "hr"] },
   { slug: "chat", name: "Live chat inbox", summary: "Answer website visitors from all four sites in one place.", roles: ["admin", "management", "customer_care"] },

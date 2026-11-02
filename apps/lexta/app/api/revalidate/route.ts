@@ -1,12 +1,18 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { PRODUCTS_CACHE_TAG } from "@lexta/db";
+import { PRODUCTS_CACHE_TAG, STOCKISTS_CACHE_TAG } from "@lexta/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** Pages that show product data. Add brand pages here as they are converted. */
-const PRODUCT_PATHS = ["/our-brands"];
+/**
+ * Pages that show each kind of data. Add brand pages and Where to Buy pages here as they are converted.
+ * The Home page has a Where to Buy section, so stockist changes refresh "/".
+ */
+const TARGETS: Record<string, string[]> = {
+  [PRODUCTS_CACHE_TAG]: ["/our-brands"],
+  [STOCKISTS_CACHE_TAG]: ["/"],
+};
 
 function sameSecret(given: string, expected: string) {
   // Compare fixed length digests so the check takes the same time whatever was sent.
@@ -15,9 +21,24 @@ function sameSecret(given: string, expected: string) {
   return timingSafeEqual(a, b);
 }
 
+/** Which tags the portal asked for. Unknown or missing tags mean "refresh everything". */
+async function requestedTags(request: Request): Promise<string[]> {
+  try {
+    const body = (await request.json()) as { tags?: unknown };
+    if (Array.isArray(body?.tags)) {
+      const tags = body.tags.filter((t): t is string => typeof t === "string" && t in TARGETS);
+      if (tags.length) return [...new Set(tags)];
+    }
+  } catch {
+    // No body or not JSON: fall through.
+  }
+  return Object.keys(TARGETS);
+}
+
 /**
- * Called by the portal after a product is saved or published, so the site shows the change right away.
+ * Called by the portal after a product or stockist is saved, so the site shows the change right away.
  * Requires the x-revalidate-secret header to equal REVALIDATE_SECRET.
+ * Optional JSON body: { "tags": ["products"] } or { "tags": ["stockists"] }.
  */
 export async function POST(request: Request) {
   const expected = process.env.REVALIDATE_SECRET;
@@ -30,7 +51,9 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 
-  revalidateTag(PRODUCTS_CACHE_TAG);
-  for (const path of PRODUCT_PATHS) revalidatePath(path);
-  return Response.json({ ok: true, revalidated: { tags: [PRODUCTS_CACHE_TAG], paths: PRODUCT_PATHS }, at: new Date().toISOString() });
+  const tags = await requestedTags(request);
+  const paths = [...new Set(tags.flatMap((t) => TARGETS[t]))];
+  for (const tag of tags) revalidateTag(tag);
+  for (const path of paths) revalidatePath(path);
+  return Response.json({ ok: true, revalidated: { tags, paths }, at: new Date().toISOString() });
 }
