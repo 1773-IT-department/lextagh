@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeNext } from "@/lib/safe-next";
 import AuthCard from "@/components/AuthCard";
 import { LoginForm } from "@/components/AuthForms";
 
@@ -6,7 +7,7 @@ export const metadata = { title: "Sign in | Lexta Business System" };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const { next, error } = await searchParams;
-  const safe = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  const safe = safeNext(next);
   return (
     <AuthCard title="Lexta Business System" lead="Sign in with the email Lexta invited you with.">
       {error === "link" && (

@@ -3,13 +3,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/safe-next";
 
 export type FormState = { error?: string; message?: string; email?: string };
 
-function safeNext(next: FormDataEntryValue | null): string {
-  const n = typeof next === "string" ? next : "";
-  return n.startsWith("/") && !n.startsWith("//") ? n : "/";
-}
 
 export async function signIn(_prev: FormState, form: FormData): Promise<FormState> {
   const email = String(form.get("email") || "").trim();
@@ -32,7 +29,8 @@ export async function requestPasswordReset(_prev: FormState, form: FormData): Pr
   const email = String(form.get("email") || "").trim();
   if (!email) return { error: "Please enter your email." };
   const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
+  // Prefer the configured portal address; fall back to the request host for previews.
+  const origin = process.env.NEXT_PUBLIC_PORTAL_URL?.replace(/\/$/, "") ?? `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
   const supabase = await createClient();
   await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${origin}/auth/confirm?next=/set-password` });
   // Same reply whether or not the email exists, so the form cannot be used to find accounts.

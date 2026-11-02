@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
-const PUBLIC_PATHS = ["/login", "/forgot-password", "/auth/"];
+const PUBLIC_PATHS = ["/login", "/forgot-password"];
 
 /** Refreshes the Supabase session cookie on every request and sends signed out people to /login. */
 export async function updateSession(request: NextRequest) {
@@ -25,7 +25,7 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(p));
+  const isPublic = PUBLIC_PATHS.includes(path) || path.startsWith("/auth/");
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
