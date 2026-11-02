@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
+import ArrowButton from "@/components/ArrowButton";
 import ImageSlot from "@/components/ImageSlot";
-import CountUp from "@/components/home/CountUp";
+import CountUp from "@/components/CountUp";
 import HeroSlider from "@/components/home/HeroSlider";
 import RegionDropdown from "@/components/home/RegionDropdown";
-import RevealOnScroll from "@/components/home/RevealOnScroll";
+import RevealOnScroll from "@/components/RevealOnScroll";
 import StoriesCarousel from "@/components/home/StoriesCarousel";
 import SubscribeForm from "@/components/home/SubscribeForm";
 import s from "@/components/home/home.module.css";
@@ -34,22 +35,6 @@ const outlineBtn: CSSProperties = {
   fontSize: 13, fontWeight: 600, padding: "11px 20px", borderRadius: 7,
 };
 const h2Base: CSSProperties = { fontWeight: 700, letterSpacing: "-.02em", color: "#12313d" };
-
-/** Solid blue button with the round arrow badge, used throughout the page. */
-function ArrowButton({ href, padding, children, style }: { href: string; padding: string; children: ReactNode; style?: CSSProperties }) {
-  return (
-    <Link
-      href={href}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13,
-        fontWeight: 600, padding, borderRadius: 7, ...style,
-      }}
-    >
-      {children}
-      <span style={btnArrow}>→</span>
-    </Link>
-  );
-}
 
 /* ---------- Page data (copy exactly as in the approved prototype) ---------- */
 
@@ -506,6 +491,7 @@ export default function HomePage() {
 
       <section data-screen-label="Careers" data-reveal="1" style={{ position: "relative", background: "#0b2f3d", padding: 0 }}>
         <div style={{ position: "absolute", inset: 0 }}>
+          {/* [PLACEHOLDER: team celebration photo from Lexta] */}
           <ImageSlot placeholder="Team celebration photo" />
         </div>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(8,42,55,.94),rgba(8,42,55,.72))", pointerEvents: "none" }} />

@@ -30,14 +30,17 @@ const socials = [
 export default function SiteFooter() {
   const pathname = usePathname();
   // On Home the newsletter band sits right above the footer, so the prototype uses a 10px top padding there.
-  const topPad = pathname === "/" ? 10 : 60;
+  const isHome = pathname === "/";
+  const topPad = isHome ? 10 : 60;
+  // The prototype's Home footer wraps the logo in a block-level box; every other page uses an inline-flex link
+  // (which sits on a text line, so the tagline starts a few pixels lower). Both kept as approved.
   const stroke = "rgba(255,255,255,.7)";
 
   return (
     <footer style={{ background: "#0b2f3d", padding: `${topPad}px 28px 34px` }}>
       <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 38 }}>
         <div>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, width: "fit-content" }}>
+          <Link href="/" style={{ display: isHome ? "flex" : "inline-flex", alignItems: "center", gap: 8, width: isHome ? "fit-content" : undefined }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/assets/lexta-logo-white.png" alt="Lexta" style={{ height: 40, width: "auto", display: "block" }} />
           </Link>

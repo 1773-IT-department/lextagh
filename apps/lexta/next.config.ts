@@ -5,13 +5,16 @@ import type { NextConfig } from "next";
  * The approved static prototype lives in /public as plain .html files.
  * Each clean URL below falls back to its .html file ONLY while no Next.js route exists for it
  * (afterFiles rewrites run after app routes). When a page is converted to app/<slug>/page.tsx,
- * the new route wins automatically; then delete the .html file and its line here.
+ * the new route wins automatically; then delete the .html file and move its name to convertedPages.
  * Home (/) is converted: app/(site)/page.tsx. /index.html still redirects to /.
  */
 const legacyPages = [
-  "about-us", "careers", "contact-us", "corporate-social-responsibility", "faqs", "news",
+  "careers", "contact-us", "corporate-social-responsibility", "faqs", "news",
   "our-brands", "partner-with-us", "people-and-culture", "privacy-policy", "terms-and-conditions",
 ];
+
+/** Pages already converted to Next.js routes. Their old .html links still redirect to the clean URL. */
+const convertedPages = ["about-us"];
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lexta/db"],
@@ -19,7 +22,7 @@ const nextConfig: NextConfig = {
     // Old links like /about-us.html go to the clean URL.
     return [
       { source: "/index.html", destination: "/", permanent: true },
-      ...legacyPages.map((p) => ({ source: `/${p}.html`, destination: `/${p}`, permanent: true })),
+      ...[...convertedPages, ...legacyPages].map((p) => ({ source: `/${p}.html`, destination: `/${p}`, permanent: true })),
     ];
   },
   async rewrites() {

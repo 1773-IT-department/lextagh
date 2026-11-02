@@ -67,6 +67,7 @@ const navBtn: CSSProperties = {
 export default function StoriesCarousel() {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const [perView, setPerView] = useState(2);
   const indexRef = useRef(0);
   const timer = useRef<number | undefined>(undefined);
   const maxIdx = Math.max(0, stories.length - 2);
@@ -77,7 +78,13 @@ export default function StoriesCarousel() {
     setActive(a);
     const el = track.current;
     const first = el?.firstElementChild;
-    if (el && first) el.style.transform = `translateX(${-a * (first.getBoundingClientRect().width + GAP)}px)`;
+    if (el && first) {
+      const cardW = first.getBoundingClientRect().width;
+      el.style.transform = `translateX(${-a * (cardW + GAP)}px)`;
+      // Two cards per view on desktop, one on phones (the track's parent is the visible window).
+      const windowW = el.parentElement?.getBoundingClientRect().width ?? 0;
+      setPerView(cardW * 2 + GAP <= windowW + 1 ? 2 : 1);
+    }
   };
   const restart = () => {
     window.clearInterval(timer.current);
@@ -86,6 +93,7 @@ export default function StoriesCarousel() {
   const goAndRestart = (n: number) => { go(n); restart(); };
 
   useEffect(() => {
+    go(0);
     restart();
     const onResize = () => go(indexRef.current);
     window.addEventListener("resize", onResize);
@@ -96,8 +104,11 @@ export default function StoriesCarousel() {
     <div data-acar="1" style={{ position: "relative" }}>
       <div style={{ overflow: "hidden", borderRadius: 12 }}>
         <div ref={track} data-acar-track="1" style={{ display: "flex", gap: GAP, transition: "transform .7s cubic-bezier(.3,.7,.2,1)", willChange: "transform" }}>
-          {stories.map((st) => (
-            <article key={st.title} style={card}>
+          {stories.map((st, k) => {
+            // Cards outside the visible window must not take keyboard focus.
+            const offscreen = k < active || k >= active + perView;
+            return (
+            <article key={st.title} style={card} inert={offscreen} aria-hidden={offscreen || undefined}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={st.img} alt={st.alt} style={{ ...fill, width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
               <div style={{ ...fill, background: "linear-gradient(180deg,rgba(6,32,42,0) 42%,rgba(6,32,42,.82))", pointerEvents: "none" }} />
@@ -107,7 +118,7 @@ export default function StoriesCarousel() {
               </div>
               <Link
                 href="/news"
-                aria-label="Read story"
+                aria-label={`Read story: ${st.title}`}
                 style={{
                   position: "absolute", right: 18, bottom: 22, width: 34, height: 34, borderRadius: "50%", background: "#12a3c4",
                   color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15,
@@ -116,7 +127,8 @@ export default function StoriesCarousel() {
                 →
               </Link>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
       <button type="button" data-acar-prev="1" aria-label="Previous stories" onClick={() => goAndRestart(indexRef.current - 1)} style={{ ...navBtn, left: -12 }}>‹</button>

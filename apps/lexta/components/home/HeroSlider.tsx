@@ -108,6 +108,9 @@ export default function HeroSlider() {
       i = (n + els.length) % els.length;
       const d = dir === undefined ? (i === (from + 1) % els.length ? 1 : -1) : dir;
       els.forEach((el, k) => {
+        // Only the visible slide is reachable by keyboard and screen readers.
+        el.inert = k !== i;
+        if (k === i) el.removeAttribute("aria-hidden"); else el.setAttribute("aria-hidden", "true");
         if (k === i) {
           if (k !== from) {
             el.style.transition = "none";
@@ -151,7 +154,7 @@ export default function HeroSlider() {
       {slides.map((sl, k) => {
         const Title = k === 0 ? "h1" : "h2";
         return (
-          <div key={k} data-slide={k} style={{ ...fill, transform: k === 0 ? "translateX(0)" : "translateX(100%)", transition: SLIDE_TRANSITION }}>
+          <div key={k} data-slide={k} inert={k !== 0} aria-hidden={k !== 0 || undefined} style={{ ...fill, transform: k === 0 ? "translateX(0)" : "translateX(100%)", transition: SLIDE_TRANSITION }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={sl.img} alt={sl.alt} width={sl.w} height={sl.h} style={{ ...fill, width: "100%", height: "100%", objectFit: "cover", objectPosition: sl.focus, display: "block" }} />
             <div style={{ ...fill, background: sl.shade ?? SHADE, pointerEvents: "none" }} />
