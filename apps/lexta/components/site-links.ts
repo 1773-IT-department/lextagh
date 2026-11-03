@@ -52,5 +52,7 @@ export function normPath(p: string): string {
 }
 
 export function isCurrent(href: string, pathname: string | null): boolean {
+  // Pages under a section (an article at /news/<slug>) mark that section as current.
+  if (href !== "/" && pathname?.startsWith(`${href}/`)) return true;
   return normPath(href) === normPath(pathname || "/");
 }

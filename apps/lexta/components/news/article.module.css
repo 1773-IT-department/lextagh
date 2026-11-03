@@ -1,0 +1,186 @@
+/*
+ * Article page (/news/<slug>). New design in the Lexta visual language: Poppins, #12313d / #12a3c4 / #3fc0dd,
+ * the dark #0c303e hero band of the News page, 14px radii and the soft blue shadows used across the site.
+ * Note: globals.css forces h1/h2 sizes on small phones with !important; the overrides below keep the
+ * reading sizes right there.
+ */
+
+/* ---------- Hero ---------- */
+.hero {
+  background: #0c303e;
+  padding: 46px 28px 0;
+  color: #fff;
+}
+.heroInner { max-width: 880px; margin: 0 auto; }
+
+.crumbs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; font-size: 12px; font-weight: 500; color: rgba(255, 255, 255, .62); }
+.crumbs li { display: inline-flex; align-items: center; }
+.crumbs li + li::before { content: "/"; margin: 0 10px; color: rgba(255, 255, 255, .32); }
+.crumbs a { color: rgba(255, 255, 255, .78); border-radius: 3px; }
+.crumbs a:hover { color: #3fc0dd; }
+.crumbs li:last-child a { color: #3fc0dd; }
+
+.bar { width: 46px; height: 4px; background: #12a3c4; border-radius: 2px; margin-top: 26px; }
+
+.meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 22px; font-size: 12.5px; font-weight: 600; color: rgba(255, 255, 255, .72); }
+.pill {
+  background: rgba(63, 192, 221, .14); color: #3fc0dd; font-size: 11px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; padding: 6px 11px; border-radius: 5px; margin-right: 4px;
+}
+.pill:hover { background: rgba(63, 192, 221, .24); color: #fff; }
+.dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255, 255, 255, .45); }
+
+.title {
+  margin: 18px 0 0; font-size: clamp(30px, 4.6vw, 48px); line-height: 1.1; font-weight: 800; letter-spacing: -.03em;
+  color: #fff; text-wrap: balance;
+}
+.standfirst { margin: 20px 0 0; font-size: 17px; line-height: 1.75; color: rgba(255, 255, 255, .86); max-width: 780px; text-wrap: pretty; }
+
+/* ---------- Cover (straddles the dark band and the white page, like the News featured story) ---------- */
+.coverBand { background: linear-gradient(#0c303e 0 50%, #fff 50% 100%); padding: 44px 28px 0; }
+.cover {
+  max-width: 1080px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden;
+  background: #eef7fa; box-shadow: 0 24px 50px rgba(11, 60, 78, .2);
+}
+.cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Reading column ---------- */
+.wrap { padding: 0 28px 72px; }
+.col { max-width: 720px; margin: 0 auto; }
+
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  margin-top: 34px; padding-bottom: 20px; border-bottom: 1px solid rgba(18, 163, 196, .18);
+}
+.backLink { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #12a3c4; border-radius: 4px; }
+.backLink:hover { color: #0b6d88; }
+
+.prose { color: #2c4955; font-size: 17.5px; line-height: 1.85; }
+.prose > :first-child { margin-top: 34px; }
+.prose p { margin: 22px 0 0; text-wrap: pretty; }
+.prose h2 { margin: 48px 0 0; font-size: 24px; line-height: 1.3; font-weight: 700; letter-spacing: -.02em; color: #12313d; text-wrap: balance; }
+.prose h2 + p { margin-top: 14px; }
+.prose ul { list-style: none; margin: 20px 0 0; padding: 0; }
+.prose li { position: relative; padding-left: 28px; }
+.prose li + li { margin-top: 10px; }
+.prose li::before { content: ""; position: absolute; left: 6px; top: .72em; width: 8px; height: 8px; border-radius: 50%; background: #12a3c4; box-shadow: 0 0 0 4px rgba(18, 163, 196, .14); }
+.quote { margin: 38px 0 0; padding: 4px 0 4px 26px; border-left: 4px solid #12a3c4; }
+.quote blockquote { margin: 0; }
+.quote blockquote p { margin: 0; font-size: 22px; line-height: 1.5; font-weight: 600; letter-spacing: -.015em; color: #12313d; }
+.quote figcaption { margin-top: 12px; font-size: 13px; font-weight: 600; color: #5d7883; }
+
+/* ---------- Share ---------- */
+.share { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.shareLabel { font-size: 13px; font-weight: 700; color: #12313d; }
+.shareButtons { position: relative; display: flex; gap: 8px; }
+.shareBtn {
+  width: 38px; height: 38px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(18, 163, 196, .3); background: #fff; color: #12313d; cursor: pointer; padding: 0;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.shareBtn:hover { background: #12a3c4; border-color: #12a3c4; color: #fff; }
+.copied {
+  position: absolute; right: 0; bottom: calc(100% + 8px); background: #12313d; color: #fff; font-size: 11.5px; font-weight: 600;
+  padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+}
+.endShare { margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(18, 163, 196, .18); }
+
+/* ---------- Draft note ---------- */
+.draft {
+  display: flex; gap: 14px; align-items: flex-start; margin-top: 28px; padding: 18px 20px;
+  background: #f7fcfe; border: 1px solid rgba(18, 163, 196, .22); border-radius: 12px;
+}
+.draftIcon {
+  flex: 0 0 auto; width: 24px; height: 24px; border-radius: 50%; background: rgba(18, 163, 196, .14); color: #0b6d88;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-family: Georgia, serif;
+}
+.draftTitle { font-size: 13px; font-weight: 700; color: #12313d; }
+.draft p { margin: 4px 0 0; font-size: 13px; line-height: 1.7; color: #5d7883; }
+
+/* ---------- Sources, About Lexta, media contact ---------- */
+.smallHeading {
+  margin: 0; font-size: 11px !important; line-height: 1.4; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #12a3c4;
+}
+.sources { margin-top: 40px; }
+.sources ol { margin: 14px 0 0; padding: 0 0 0 20px; color: #8fa8b2; font-size: 13px; }
+.sources li { padding-left: 4px; line-height: 1.6; }
+.sources li + li { margin-top: 8px; }
+.sources a { color: #12313d; font-size: 14px; font-weight: 500; overflow-wrap: anywhere; border-radius: 3px; }
+.sources a:hover { color: #128fb0; text-decoration: underline; text-underline-offset: 3px; }
+.ext { margin-left: 6px; color: #12a3c4; font-size: 12px; }
+
+.boiler {
+  display: grid; grid-template-columns: 1.35fr 1fr; margin-top: 40px; background: #f7fcfe;
+  border: 1px solid rgba(18, 163, 196, .18); border-radius: 14px; overflow: hidden;
+}
+.boiler > section { padding: 28px 28px 30px; }
+.boiler > section + section { border-left: 1px solid rgba(18, 163, 196, .18); }
+.boiler p { margin: 12px 0 0; font-size: 13.5px; line-height: 1.85; color: #5d7883; }
+.contactLine { display: block; margin-top: 10px; font-size: 14px; font-weight: 600; color: #12313d; overflow-wrap: anywhere; }
+.boiler p + .contactLine { margin-top: 16px; }
+.contactLine:hover { color: #128fb0; }
+
+/* ---------- Newer / older ---------- */
+.pager { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+.pagerLink {
+  display: flex; flex-direction: column; gap: 8px; padding: 18px 20px 20px; border: 1px solid rgba(18, 163, 196, .2);
+  border-radius: 12px; background: #fff; transition: box-shadow .25s, border-color .25s;
+}
+.pagerLink:hover { border-color: rgba(18, 163, 196, .5); box-shadow: 0 14px 30px rgba(11, 60, 78, .1); }
+.pagerNext { text-align: right; align-items: flex-end; }
+.pagerLabel { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #12a3c4; }
+.pagerTitle { font-size: 15px; line-height: 1.4; font-weight: 700; letter-spacing: -.01em; color: #12313d; text-wrap: pretty; }
+
+/* ---------- More stories ---------- */
+.more { background: #f7fcfe; padding: 70px 28px 78px; border-top: 1px solid rgba(18, 163, 196, .14); }
+.moreInner { max-width: 1240px; margin: 0 auto; }
+.moreHead {
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  border-bottom: 1px solid rgba(18, 163, 196, .2); padding-bottom: 18px;
+}
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #12a3c4; }
+.moreTitle { margin: 12px 0 0; font-size: 30px; line-height: 1.18; font-weight: 700; letter-spacing: -.025em; color: #12313d; }
+.moreGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; margin-top: 34px; }
+/* Tablet: two cards side by side (a lone third card would sit on its own row). */
+@media (max-width: 980px) and (min-width: 641px) {
+  .moreGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .moreGrid > :nth-child(3) { display: none !important; }
+}
+
+/* ---------- Focus ---------- */
+.crumbs a:focus-visible, .pill:focus-visible { outline: 2px solid #3fc0dd; outline-offset: 3px; }
+.backLink:focus-visible, .shareBtn:focus-visible, .sources a:focus-visible, .contactLine:focus-visible, .pagerLink:focus-visible {
+  outline: 3px solid #3fc0dd; outline-offset: 3px;
+}
+
+.srOnly {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- Tablet and phone ---------- */
+@media (max-width: 760px) {
+  .boiler { grid-template-columns: minmax(0, 1fr); }
+  .boiler > section + section { border-left: 0; border-top: 1px solid rgba(18, 163, 196, .18); }
+  .pager { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .hero { padding: 30px 20px 0; }
+  .title { font-size: clamp(27px, 7.6vw, 34px) !important; }
+  .standfirst { font-size: 16px; }
+  .coverBand { padding: 30px 16px 0; }
+  .cover { aspect-ratio: 4 / 3; border-radius: 12px; }
+  .wrap { padding: 0 20px 56px; }
+  .prose { font-size: 17px; line-height: 1.8; }
+  .prose h2 { font-size: 21px !important; margin-top: 40px; }
+  .quote blockquote p { font-size: 19px; }
+  .boiler > section { padding: 22px 20px 24px; }
+  .more { padding: 52px 20px 56px; }
+  .moreTitle { font-size: clamp(22px, 6.4vw, 27px); }
+  .moreGrid { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shareBtn, .pagerLink { transition: none; }
+}
