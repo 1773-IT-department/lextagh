@@ -6,7 +6,7 @@ import type { NextConfig } from "next";
  * Each clean URL below falls back to its .html file ONLY while no Next.js route exists for it
  * (afterFiles rewrites run after app routes). When a page is converted to app/<slug>/page.tsx,
  * the new route wins automatically; then delete the .html file and move its name to convertedPages.
- * Home (/) is converted: app/(site)/page.tsx. /index.html still redirects to /.
+ * Home (/) is converted: app/(site)/page.tsx. /index.html still redirects to /. Other converted pages are listed in convertedPages.
  */
 const legacyPages = [
   "careers", "contact-us", "corporate-social-responsibility", "faqs", "news",

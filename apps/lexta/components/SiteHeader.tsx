@@ -9,6 +9,8 @@ const linkBase = { fontSize: 13, fontWeight: 500, color: "#1d3c48" } as const;
 /**
  * Per-page differences the approved prototype has in its header "Contact Us" button (left by the design editor).
  * Kept so each page matches what Lexta approved; delete an entry to fall back to the standard button.
+ * Only the resting look is copied: on the prototype the same stray editor class also gave the button a
+ * near-white hover (white text on #f1fbfe), so the standard darker hover is kept instead.
  */
 const contactOverrides: Record<string, CSSProperties> = {
   "/our-brands": { padding: "0 16px", fontSize: 13, fontWeight: 400, whiteSpace: "normal" },
