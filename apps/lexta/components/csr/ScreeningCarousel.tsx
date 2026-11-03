@@ -54,7 +54,7 @@ const card: CSSProperties = {
 
 /**
  * Port of the prototype's cervical cancer story strip: the five cards plus a copy of them scroll left
- * continuously and loop, pausing while the pointer (or keyboard focus) is on the strip.
+ * continuously and loop, pausing while the pointer or keyboard focus is on the strip, and staying still for visitors who ask for reduced motion.
  */
 export default function ScreeningCarousel() {
   const wrap = useRef<HTMLDivElement>(null);
@@ -66,8 +66,17 @@ export default function ScreeningCarousel() {
     if (!w || !t) return;
     let x = 0;
     let last = 0;
-    let paused = false;
+    let hovered = false;
+    let focused = false;
     let raf = 0;
+    // Respect the visitor's reduced motion setting: the strip stays still and can be scrolled by focus.
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const applyMotionPref = () => {
+      w.style.overflowX = reduce.matches ? "auto" : "hidden";
+      if (reduce.matches) { x = 0; t.style.transform = "translateX(0px)"; }
+    };
+    applyMotionPref();
+    reduce.addEventListener("change", applyMotionPref);
     const span = () => {
       const cardW = (w.clientWidth - GAP * (PER - 1)) / PER;
       return stories.length * (cardW + GAP);
@@ -76,7 +85,7 @@ export default function ScreeningCarousel() {
       if (!last) last = time;
       const dt = Math.min(time - last, 60);
       last = time;
-      if (!paused) {
+      if (!hovered && !focused && !reduce.matches) {
         x -= dt * SPEED;
         const s = span();
         if (-x >= s) x += s;
@@ -85,20 +94,25 @@ export default function ScreeningCarousel() {
       raf = requestAnimationFrame(step);
     };
     raf = requestAnimationFrame(step);
-    const pause = () => { paused = true; };
-    const resume = () => { paused = false; };
+    const onEnter = () => { hovered = true; };
+    const onLeave = () => { hovered = false; };
+    const onFocusIn = () => { focused = true; };
+    const onFocusOut = (e: FocusEvent) => {
+      if (!w.contains(e.relatedTarget as Node | null)) focused = false;
+    };
     const onResize = () => { x = 0; t.style.transform = "translateX(0px)"; };
-    w.addEventListener("mouseenter", pause);
-    w.addEventListener("mouseleave", resume);
-    w.addEventListener("focusin", pause);
-    w.addEventListener("focusout", resume);
+    w.addEventListener("mouseenter", onEnter);
+    w.addEventListener("mouseleave", onLeave);
+    w.addEventListener("focusin", onFocusIn);
+    w.addEventListener("focusout", onFocusOut);
     window.addEventListener("resize", onResize);
     return () => {
       cancelAnimationFrame(raf);
-      w.removeEventListener("mouseenter", pause);
-      w.removeEventListener("mouseleave", resume);
-      w.removeEventListener("focusin", pause);
-      w.removeEventListener("focusout", resume);
+      reduce.removeEventListener("change", applyMotionPref);
+      w.removeEventListener("mouseenter", onEnter);
+      w.removeEventListener("mouseleave", onLeave);
+      w.removeEventListener("focusin", onFocusIn);
+      w.removeEventListener("focusout", onFocusOut);
       window.removeEventListener("resize", onResize);
     };
   }, []);
