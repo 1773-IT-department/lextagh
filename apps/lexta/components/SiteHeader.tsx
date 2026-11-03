@@ -2,9 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { CSSProperties } from "react";
 import { headerLinks, isCurrent } from "./site-links";
 
 const linkBase = { fontSize: 13, fontWeight: 500, color: "#1d3c48" } as const;
+/**
+ * Per-page differences the approved prototype has in its header "Contact Us" button (left by the design editor).
+ * Kept so each page matches what Lexta approved; delete an entry to fall back to the standard button.
+ * Only the resting look is copied: on the prototype the same stray editor class also gave the button a
+ * near-white hover (white text on #f1fbfe), so the standard darker hover is kept instead.
+ */
+const contactOverrides: Record<string, CSSProperties> = {
+  "/our-brands": { padding: "0 16px", fontSize: 13, fontWeight: 400, whiteSpace: "normal" },
+};
+
 const linkActive = { fontSize: 13, fontWeight: 600, color: "#12a3c4", boxShadow: "0 8px 0 -6px #12a3c4" } as const;
 
 /** Desktop header, ported 1:1 from the prototype. Hidden under 900px by globals.css (mobile bar takes over). */
@@ -39,7 +50,7 @@ export default function SiteHeader() {
           })}
         </nav>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flex: "0 0 auto", justifySelf: "end" }}>
-          <Link href="/contact-us" className="lx-btn-solid">Contact Us</Link>
+          <Link href="/contact-us" className="lx-btn-solid" style={contactOverrides[pathname]}>Contact Us</Link>
           <Link href="/partner-with-us" className="lx-btn-outline" data-partner="1">Partner With Us</Link>
         </div>
       </div>

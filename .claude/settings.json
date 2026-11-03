@@ -22,7 +22,6 @@
       "Bash(kill *)"
     ],
     "deny": [
-      "mcp__Supabase",
       "mcp__Ivie_Supabase",
       "mcp__Bezalel_Junior_Supabase"
     ]
