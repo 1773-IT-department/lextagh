@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import ArrowButton from "@/components/ArrowButton";
+import ArrowText from "@/components/ArrowText";
 import ImageSlot from "@/components/ImageSlot";
 import CountUp from "@/components/CountUp";
 import HeroSlider from "@/components/home/HeroSlider";
@@ -9,6 +10,7 @@ import RegionDropdown from "@/components/home/RegionDropdown";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import StoriesCarousel from "@/components/home/StoriesCarousel";
 import SubscribeForm from "@/components/home/SubscribeForm";
+import VideoModule from "@/components/home/VideoModule";
 import s from "@/components/home/home.module.css";
 
 const title = "Lexta Ghana Limited | Home Care, Personal Care & Food Manufacturer";
@@ -277,7 +279,7 @@ export default function HomePage() {
                   style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, background: b.color, color: "#fff", fontSize: 12, fontWeight: 600, padding: 12 }}
                 >
                   Explore Brand{" "}
-                  <span style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
+                  <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: "50%", background: "rgba(255,255,255,.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
                 </Link>
               </article>
             ))}
@@ -285,7 +287,7 @@ export default function HomePage() {
           <div style={{ display: "flex", justifyContent: "center", marginTop: 36 }}>
             <Link href="/our-brands" className={s.outlineHover} style={outlineBtn}>
               See the full range
-              <span style={outlineArrow}>→</span>
+              <span aria-hidden="true" style={outlineArrow}>→</span>
             </Link>
           </div>
         </div>
@@ -343,7 +345,7 @@ export default function HomePage() {
               style={{ marginTop: 22, display: "inline-flex", alignItems: "center", gap: 10, background: "#fff", color: "#0e7f97", fontSize: 12, fontWeight: 600, padding: "9px 9px 9px 18px", borderRadius: 6 }}
             >
               See Our Impact
-              <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
+              <span aria-hidden="true" style={{ width: 20, height: 20, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11 }}>→</span>
             </Link>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 16 }}>
@@ -418,7 +420,7 @@ export default function HomePage() {
               <div key={b.title} style={{ border: "1px solid #e6f1f5", borderRadius: 12, padding: 28, display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#12313d" }}>{b.title}</div>
                 <p style={{ margin: 0, fontSize: 13, lineHeight: 1.8, color: "#5d7883", flex: 1 }}>{b.text}</p>
-                <Link href={b.href} style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>{b.link}</Link>
+                <Link href={b.href} style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4" }}><ArrowText text={b.link} /></Link>
               </div>
             ))}
           </div>
@@ -435,25 +437,7 @@ export default function HomePage() {
             </p>
             <ArrowButton href="/news" padding="10px 10px 10px 20px" style={{ marginTop: 24 }}>More Videos</ArrowButton>
           </div>
-          <div style={{ position: "relative", height: 340, borderRadius: 12, overflow: "hidden", boxShadow: "0 20px 44px rgba(11,60,78,.2)" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://lextagh.com/wp-content/uploads/2026/06/KAKEL-1897-scaled.jpg"
-              alt="Lexta outreach team with students"
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            />
-            <button
-              type="button"
-              aria-label="Play video"
-              style={{
-                position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)", width: 56, height: 56, borderRadius: "50%",
-                border: 0, background: "#12a3c4", color: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center",
-                justifyContent: "center", boxShadow: "0 10px 24px rgba(4,40,52,.4)",
-              }}
-            >
-              ▶
-            </button>
-          </div>
+          <VideoModule />
         </div>
       </section>
 
@@ -466,7 +450,7 @@ export default function HomePage() {
             </div>
             <Link href="/news" className={s.outlineHover} style={outlineBtn}>
               Read all news
-              <span style={outlineArrow}>→</span>
+              <span aria-hidden="true" style={outlineArrow}>→</span>
             </Link>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 24, marginTop: 36 }}>

@@ -16,7 +16,7 @@ type Props = {
 const fill: CSSProperties = { position: "absolute", inset: 0 };
 
 /**
- * Port of the prototype's <image-slot> element (shape="rect", fit="cover").
+ * Port of the retired prototype's <image-slot> element (shape="rect", fit="cover"). This component is now the only copy.
  * Same box (block, 100% x 100%, 3/2 aspect fallback). With a src it shows the photo cover-fitted and centred,
  * exactly as the element did. Without one it shows the empty placeholder (soft grey wash, dashed outline,
  * picture icon and caption). It never invents a photo: pass a real src once Lexta supplies the picture.

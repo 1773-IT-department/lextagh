@@ -3,8 +3,8 @@
 import s from "./home.module.css";
 
 /**
- * Newsletter sign-up, visually as in the prototype. Not wired yet: saving into the CRM is the forms card,
- * so submitting does nothing (no fake "subscribed" message).
+ * Newsletter sign-up, visually as in the prototype, with a visually hidden label. Not wired yet: saving into the CRM
+ * is the forms card (item 19), so submitting does nothing (no fake "subscribed" message).
  */
 export default function SubscribeForm() {
   return (
@@ -16,7 +16,8 @@ export default function SubscribeForm() {
         name="email"
         autoComplete="email"
         placeholder="Enter your email address"
-        style={{ flex: 1, minWidth: 0, border: 0, borderRadius: "5px 0 0 5px", padding: "11px 14px", fontSize: 13, color: "#12313d", outline: "none" }}
+        className={s.subscribeInput}
+        style={{ flex: 1, minWidth: 0, border: 0, borderRadius: "5px 0 0 5px", padding: "11px 14px", fontSize: 13, color: "#12313d" }}
       />
       <button
         type="submit"

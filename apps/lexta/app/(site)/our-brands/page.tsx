@@ -74,7 +74,7 @@ function BrandButton({ href, children }: { href: string; children: ReactNode }) 
   const inner = (
     <>
       {children}
-      <span style={arrowBadge}>→</span>
+      <span aria-hidden="true" style={arrowBadge}>→</span>
     </>
   );
   return external ? <a href={href} style={brandBtn}>{inner}</a> : <Link href={href} style={brandBtn}>{inner}</Link>;
@@ -297,7 +297,7 @@ export default function OurBrandsPage() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
               >
                 Find a stockist
-                <span style={arrowBadge}>→</span>
+                <span aria-hidden="true" style={arrowBadge}>→</span>
               </Link>
               <a
                 href="#trade"
@@ -343,7 +343,7 @@ export default function OurBrandsPage() {
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               Contact us
-              <span style={whiteBtnArrow}>→</span>
+              <span aria-hidden="true" style={whiteBtnArrow}>→</span>
             </Link>
             <Link href="/contact-us" style={ghostBtn}>Request a bulk quote</Link>
           </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import ArrowButton from "@/components/ArrowButton";
+import ArrowText from "@/components/ArrowText";
 import ImageSlot from "@/components/ImageSlot";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import Enquiry from "@/components/contact/Enquiry";
@@ -52,6 +53,10 @@ const departments: Dept[] = [
     second: { label: "See open roles →", href: "/careers#openings" },
   },
 ];
+
+/** Plain Google Maps search link (no API key) for the head office address. */
+const directionsUrl = "https://www.google.com/maps/search/?api=1&query=" +
+  encodeURIComponent("Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra");
 
 const visitFacts = [
   { title: "Office hours", text: "Monday to Friday, 8am to 5pm. Saturdays by arrangement." },
@@ -137,7 +142,7 @@ export default function ContactPage() {
                 <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 5 }}>
                   <a href={`mailto:${d.email}`} style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>{d.email}</a>
                   {d.second.href.startsWith("/") ? (
-                    <Link href={d.second.href} style={deptLink}>{d.second.label}</Link>
+                    <Link href={d.second.href} style={deptLink}><ArrowText text={d.second.label} /></Link>
                   ) : (
                     <a href={d.second.href} style={deptLink}>{d.second.label}</a>
                   )}
@@ -151,14 +156,10 @@ export default function ContactPage() {
       <section data-reveal="1" data-screen-label="Visit us" className={p.pad78} style={{ background: "#fff" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "center" }}>
           <div style={{ borderRadius: 14, overflow: "hidden", height: 420, display: "block", boxShadow: "0 20px 44px rgba(11,60,78,.18)" }}>
-            <ImageSlot
-              placeholder="Map or photo of Lexta Square, Dzorwulu"
-              src="/pasted-1788866487314-0-mtskx3iw-btc6.png"
-              width={707}
-              height={434}
-              alt="Lexta Square, the Lexta head office building in Dzorwulu, Accra"
-              style={{ display: "block", width: "100%", height: 420 }}
-            />
+            {/* [PLACEHOLDER: photo of Lexta Square from Lexta]. The prototype used a third party Street View screenshot
+                (someone else's credit and an Allianz caption), so it is not used. When Lexta supplies its own photo, add it
+                to public/assets and pass src, width, height and alt here. */}
+            <ImageSlot placeholder="Photo of Lexta Square, Dzorwulu" style={{ display: "block", width: "100%", height: 420 }} />
           </div>
           <div>
             <div style={eyebrow}>Visit us</div>
@@ -175,7 +176,7 @@ export default function ContactPage() {
               ))}
             </div>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
-              <ArrowButton href="https://maps.google.com/?q=Dzorwulu,+Accra,+Ghana" padding="12px 12px 12px 20px">Get directions</ArrowButton>
+              <ArrowButton href={directionsUrl} padding="12px 12px 12px 20px">Get directions</ArrowButton>
               <a
                 href="mailto:support@lextagh.com"
                 style={{ display: "inline-flex", alignItems: "center", border: "1px solid rgba(18,163,196,.45)", background: "#f7fcfe", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 20px", borderRadius: 7 }}
@@ -215,7 +216,7 @@ export default function ContactPage() {
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               Contact us
-              <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
+              <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </a>
             <Link
               href="/our-brands"

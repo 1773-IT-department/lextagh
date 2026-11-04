@@ -131,7 +131,7 @@ export default function ScreeningCarousel() {
               <div style={{ padding: "22px 22px 24px", display: "flex", flexDirection: "column", flex: 1 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>{s.title}</div>
                 <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,.8)" }}>{s.text}</p>
-                <span style={{ marginTop: "auto", paddingTop: 16, fontSize: 12, fontWeight: 600, color: "#3fc0dd" }}>Read more →</span>
+                <span style={{ marginTop: "auto", paddingTop: 16, fontSize: 12, fontWeight: 600, color: "#3fc0dd" }}>Read more <span aria-hidden="true">→</span></span>
               </div>
             </a>
           )),

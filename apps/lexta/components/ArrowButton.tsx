@@ -17,7 +17,7 @@ export default function ArrowButton({ href, padding, children, style, badgeStyle
       }}
     >
       {children}
-      <span style={badgeStyle ? { ...arrow, ...badgeStyle } : arrow}>→</span>
+      <span aria-hidden="true" style={badgeStyle ? { ...arrow, ...badgeStyle } : arrow}>→</span>
     </Link>
   );
 }

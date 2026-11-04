@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { faqs } from "./data";
+import LinkedText from "../LinkedText";
 
 /** "Questions we get most": one answer open at a time, as in the prototype (+ / minus badge). */
 export default function Faq() {
@@ -30,7 +31,7 @@ export default function Faq() {
             </button>
             {isOpen && (
               <p id={panelId} style={{ margin: 0, borderTop: "1px solid rgba(18,163,196,.14)", padding: "18px 22px 22px", fontSize: 13, lineHeight: 1.9, color: "#5d7883", textWrap: "pretty" }}>
-                {f.a}
+                <LinkedText text={f.a} links={f.links} />
               </p>
             )}
           </div>

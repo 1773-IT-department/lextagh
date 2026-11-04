@@ -504,7 +504,7 @@ export default function AboutUsPage() {
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               Contact us
-              <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
+              <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </Link>
             <Link href="/contact-us" style={ghostBtn}>Request a bulk quote</Link>
             <Link href="/people-and-culture" style={ghostBtn}>View current openings</Link>

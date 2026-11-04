@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ArrowButton from "@/components/ArrowButton";
 import { faqGroups } from "@/components/faqs/data";
+import LinkedText from "@/components/LinkedText";
 
 // Title and description from faqs.html.
 const title = "FAQs | Lexta Ghana";
@@ -39,7 +40,7 @@ export default function FaqsPage() {
                 {g.items.map((q) => (
                   <div key={q.q} style={{ border: "1px solid rgba(18,163,196,.18)", borderRadius: 13, padding: "22px 24px", background: "#f9fdfe" }}>
                     <div style={{ fontSize: 14.5, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em", textWrap: "pretty" }}>{q.q}</div>
-                    <p style={{ margin: "9px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883", textWrap: "pretty" }}>{q.a}</p>
+                    <p style={{ margin: "9px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883", textWrap: "pretty" }}><LinkedText text={q.a} links={q.links} /></p>
                   </div>
                 ))}
               </div>

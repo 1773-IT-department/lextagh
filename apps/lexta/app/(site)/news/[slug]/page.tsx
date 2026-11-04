@@ -175,7 +175,7 @@ export default async function ArticlePage({ params }: Params) {
                 <h2 id="media-title" className={s.smallHeading}>Media enquiries</h2>
                 <p>{mediaContact}</p>
                 <a href={`mailto:${mediaEmail}`} className={s.contactLine}>{mediaEmail}</a>
-                <a href={`tel:${mediaPhone.replace(/[^+\d]/g, "")}`} className={s.contactLine}>{mediaPhone}</a>
+                <a href={`tel:${mediaPhone.replace("(0)", "").replace(/[^+\d]/g, "")}`} className={s.contactLine}>{mediaPhone}</a>
               </section>
             </div>
 

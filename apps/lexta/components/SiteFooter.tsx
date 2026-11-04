@@ -16,8 +16,8 @@ const socialStyle: CSSProperties = {
 };
 
 /**
- * Social links keep the prototype's look ("f", "ig", "in", "tk" text badges) for now.
- * Swapping them for real icons is the separate "Fix prototype gaps" card.
+ * Social links keep the approved prototype's look ("f", "ig", "in", "tk" text badges) and its profile URLs.
+ * The badge letters are hidden from screen readers; each link is announced as "Lexta on Facebook (opens in a new tab)".
  */
 const socials = [
   { label: "Facebook", short: "f", href: "https://www.facebook.com/lextagh" },
@@ -49,7 +49,9 @@ export default function SiteFooter() {
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             {socials.map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener" aria-label={s.label} style={socialStyle}>{s.short}</a>
+              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`Lexta on ${s.label} (opens in a new tab)`} title={`Lexta on ${s.label}`} style={socialStyle}>
+                <span aria-hidden="true">{s.short}</span>
+              </a>
             ))}
           </div>
         </div>
@@ -97,7 +99,7 @@ export default function SiteFooter() {
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           style={{ width: 30, height: 30, borderRadius: 6, border: 0, background: "rgba(255,255,255,.14)", color: "#fff", cursor: "pointer", fontSize: 12 }}
         >
-          ▲
+          <span aria-hidden="true">▲</span>
         </button>
       </div>
     </footer>

@@ -47,7 +47,7 @@ function Photo({ src, alt, box = photoBox }: { src: string; alt: string; box?: C
 function StoryLink({ href, children, marginTop = 22 }: { href: string; children: ReactNode; marginTop?: number }) {
   return (
     <a href={href} style={{ ...storyLink, marginTop }}>
-      {children} <span style={{ fontSize: 14 }}>→</span>
+      {children} <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
     </a>
   );
 }
@@ -288,7 +288,7 @@ export default function CorporateSocialResponsibilityPage() {
                 <h3 style={{ margin: "12px 0 0", fontSize: 18, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em" }}>{pr.title}</h3>
                 <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883" }}>{pr.text}</p>
                 <a href={pr.href} style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-                  Read the full story →
+                  Read the full story <span aria-hidden="true">→</span>
                 </a>
               </div>
             ))}
@@ -487,7 +487,7 @@ export default function CorporateSocialResponsibilityPage() {
               }}
             >
               Propose a partnership
-              <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
+              <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </Link>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -497,7 +497,7 @@ export default function CorporateSocialResponsibilityPage() {
                 Schools and institutions can request a Lexta or Yazz outreach session covering menstrual health, oral care, cervical cancer awareness or general hygiene.
               </p>
               <Link href="/about-us#contact" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
-                Request a visit <span style={{ fontSize: 14 }}>→</span>
+                Request a visit <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
               </Link>
             </div>
             <div style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.4)", borderRadius: 12, padding: "26px 24px 28px" }}>
@@ -506,7 +506,7 @@ export default function CorporateSocialResponsibilityPage() {
                 Our full archive of screenings, school tours and campaigns, from 2017 to today.
               </p>
               <a href="/news?category=CSR" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
-                View all CSR stories <span style={{ fontSize: 14 }}>→</span>
+                View all CSR stories <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
               </a>
             </div>
           </div>
