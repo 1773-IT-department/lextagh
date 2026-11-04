@@ -5,35 +5,35 @@ import { useEffect, useRef, type CSSProperties } from "react";
 /** Cervical cancer stories, linked to the Yazz site exactly as the prototype links them. */
 const stories = [
   {
-    href: "https://yazzproducts.com/cervical-cancer-awareness-launch-2024-tamale/",
+    href: "/news/cervical-cancer-awareness-launch-2024-tamale",
     img: "https://yazzproducts.com/wp-content/uploads/2024/02/WhatsApp-Image-2024-01-16-at-21.50.17-1021x1024.jpeg",
     title: "Cervical Cancer Awareness Launch 2024, Tamale",
     alt: "Cervical Cancer Awareness Launch 2024, Tamale",
     text: "The first time the national launch was held in the northern sector, hosted at the forecourt of Tamale Teaching Hospital with school children, women's groups, apprentices and the public, followed by free screening at the hospital's gynaecology clinic.",
   },
   {
-    href: "https://yazzproducts.com/we-hosted-the-cervical-cancer-awareness-event-on-28th-january-2025-at-the-tuesday-market-park-mamprobi/",
+    href: "/news/cervical-cancer-awareness-at-tuesday-market-park-mamprobi",
     img: "https://yazzproducts.com/wp-content/uploads/2025/03/WE6A0601-1024x683.jpg",
     title: "Tuesday Market Park, Mamprobi, 2025",
     alt: "Tuesday Market Park, Mamprobi, 2025",
     text: "Taking screening and education into the market, where the women who most need it already are.",
   },
   {
-    href: "https://yazzproducts.com/ghanaian-women-doctors-sponsored-by-lexta-ghana-encourage-cervical-cancer-screening-for-early-detection/",
+    href: "/news/ghanaian-women-doctors-encourage-screening-for-early-detection",
     img: "https://yazzproducts.com/wp-content/uploads/2025/04/130202594139-vaqdtgfssn-health-cervical-cancer1.jpg",
     title: "Ghanaian women doctors encourage screening for early detection",
     alt: "Ghanaian women doctors encourage screening",
     text: "MWAG's Cervical Cancer Awareness Month launch in Ablekuma South, sponsored by Lexta, under the theme “We Can Prevent Cervical Cancer, Get Screened Now.”",
   },
   {
-    href: "https://yazzproducts.com/sofpog-in-collaboration-with-mwag-yazz-and-korle-bu-polyclinic-family-medicine-department-organized-free-cervical-cancer-screening-for-the-public-as-part-of-the-cervical-cancer-awareness-month/",
+    href: "/news/free-public-cervical-cancer-screening-with-sofpog-mwag-and-korle-bu-polyclinic",
     img: "https://yazzproducts.com/wp-content/uploads/2026/02/yazz-crvical-cancer-awareness-2026.png",
     title: "SOFPOG, MWAG, Yazz and Korle Bu Polyclinic",
     alt: "SOFPOG, MWAG, Yazz and Korle Bu Polyclinic",
     text: "Free public screening during Cervical Cancer Awareness Month, with education on HPV, vaccination and the warning signs that should never be ignored.",
   },
   {
-    href: "https://yazzproducts.com/free-cervical-cancer-screening-and-education-on-cervical-cancer-that-happened-in-kumasi-copy-copy/",
+    href: "/news/free-cervical-cancer-screening-and-education-in-kumasi",
     img: "https://yazzproducts.com/wp-content/uploads/2026/05/WhatsApp-Image-2020-01-19-at-8.42.06-AM-1080x675-1-1024x640.jpeg",
     title: "Free screening in Kumasi",
     alt: "Free screening in Kumasi",

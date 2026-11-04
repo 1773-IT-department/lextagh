@@ -69,19 +69,19 @@ const pillars = [
 
 const programmes = [
   {
-    tag: "Oral health", title: "The Bright Smiles School Tour", href: "https://lextagh.com/2026/07/15/the-bright-smiles-school-tour/",
+    tag: "Oral health", title: "The Bright Smiles School Tour", href: "/news/the-bright-smiles-school-tour",
     text: "In partnership with the Ghana Dental Association, providing free biannual screenings and oral hygiene workshops in rural primary schools.",
   },
   {
-    tag: "Water and sanitation", title: "The Safe Bottoms Initiative", href: "https://lextagh.com/2026/07/15/the-safe-bottoms-initiative/",
+    tag: "Water and sanitation", title: "The Safe Bottoms Initiative", href: "/news/the-safe-bottoms-initiative",
     text: "For every jumbo pack sold, Lexta funds the construction and maintenance of mechanised boreholes in communities facing water scarcity, so that safe hygiene for infants is possible in the first place.",
   },
   {
-    tag: "Environment", title: "The Lexta Forest Project", href: "https://lextagh.com/2026/07/15/the-lexta-forest-project/",
+    tag: "Environment", title: "The Lexta Forest Project", href: "/news/the-lexta-forest-project",
     text: "A commitment to plant 10 indigenous trees for every 1,000 rolls of 100 percent virgin pulp tissue sold, restoring degraded forest reserves in the Ashanti and Eastern regions.",
   },
   {
-    tag: "Circular economy", title: "Clean Hands, Green Land", href: "https://lextagh.com/2026/07/15/clean-hands-green-land/",
+    tag: "Circular economy", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
     text: "A plastic buy back programme. Consumers return empty sachet and detergent wrappers to Lexta distributors in exchange for Eco Points, redeemable against our products. Waste gets a value, and our distribution network becomes a collection network.",
   },
 ];
@@ -255,7 +255,7 @@ export default function CorporateSocialResponsibilityPage() {
             <p style={body}>
               The campaign combats period poverty and school absenteeism by supplying free premium sanitary products and hosting reproductive health seminars for schoolgirls annually. We believe no girl should miss an education because of a lack of basic hygiene resources.
             </p>
-            <StoryLink href="https://lextagh.com/2026/06/28/the-empowered-periods-campaign/">Read the full story</StoryLink>
+            <StoryLink href="/news/empowered-periods-reaches-19-locations-in-a-single-day">Read the full story</StoryLink>
           </div>
         </div>
       </section>
@@ -272,7 +272,7 @@ export default function CorporateSocialResponsibilityPage() {
             <p style={body}>
               The tour takes our advocacy directly into senior high schools nationwide, combining education, mentorship sessions and product engagement across five focus areas: breast cancer awareness, menstrual hygiene, oral health, personal hygiene and mental health.
             </p>
-            <StoryLink href="https://yazzproducts.com/yazz-partners-mx24-tv-for-2026-croxitout-high-school-tour-to-advance-menstrual-health-education/">Read the full story</StoryLink>
+            <StoryLink href="/news/yazz-partners-mx24-tv-for-the-2026-croxitout-high-school-tour">Read the full story</StoryLink>
           </div>
           <Photo src="https://yazzproducts.com/wp-content/uploads/2026/09/WhatsApp-Image-2026-05-29-at-15.58.53-780x470-1.webp" alt="CroxItOut High School Tour with MX24 TV" />
         </div>
@@ -309,7 +309,7 @@ export default function CorporateSocialResponsibilityPage() {
             <p style={body}>
               Cervical cancer is the leading cause of cancer death for women in 40 of the 48 countries of sub Saharan Africa. Across the world, between 60 and 90 percent of school children have dental cavities. Poor sanitation drives cholera, diarrhoea, dysentery, hepatitis A and typhoid. Each of those is preventable, and each begins with education.
             </p>
-            <StoryLink href="https://lextagh.com/2017/05/30/lexta-teen-care-campaign/">Read the full story</StoryLink>
+            <StoryLink href="/news/the-lexta-teen-care-campaign-launches">Read the full story</StoryLink>
           </div>
         </div>
       </section>
@@ -349,7 +349,7 @@ export default function CorporateSocialResponsibilityPage() {
               <p style={body}>
                 Alongside the Medical Women Association of Ghana, led by immediate past MWAG President Dr. Naa Sodzi Tettey, our team visited Mawuko Girls Senior High School to educate students on cervical cancer and femcare, as part of a national school tour. The session focused on prevention and the importance of periodic screening. Products and learning materials were distributed to students.
               </p>
-              <StoryLink href="https://lextagh.com/2019/02/04/lexta-ghana-limited-visits-mawuko-girls-shs-ho/" marginTop={20}>Read the full story</StoryLink>
+              <StoryLink href="/news/lexta-ghana-visits-mawuko-girls-shs-ho" marginTop={20}>Read the full story</StoryLink>
             </div>
             <Photo src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-Visits-Mawuko-girls-SHS-Ho.jpeg" alt="Lexta Ghana visits Mawuko Girls SHS, Ho" box={photoBoxSm} />
           </div>
@@ -365,7 +365,7 @@ export default function CorporateSocialResponsibilityPage() {
               <p style={body}>
                 In collaboration with the Domite Foundation, our team spent International Women&apos;s Day with the girls of Unity High JHS, taking them through basic hygiene routines and encouraging them to focus on their studies. Yazz sanitary towels and free learning materials were distributed to support the wellbeing and education of the girl child.
               </p>
-              <StoryLink href="https://lextagh.com/2019/03/08/lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kotobabi-in-commemoration-of-the-internal-womens-day/" marginTop={20}>
+              <StoryLink href="/news/international-womens-day-with-the-girls-of-unity-high-jhs-kotobabi" marginTop={20}>
                 Read the full story
               </StoryLink>
             </div>
@@ -385,7 +385,7 @@ export default function CorporateSocialResponsibilityPage() {
               <p style={body}>
                 We launched the second edition of the Cook Arts Schools Competition, an annual contest organised by the Ghana Education Service to promote Home Economics in second cycle schools. Ashaiman Senior High School took the title. The competition tours the country, with two students selected from each of the 16 regions to compete in the national final in Accra.
               </p>
-              <StoryLink href="https://yazzproducts.com/yazz-partners-ges-cook-art-competition-2/" marginTop={20}>Read the full story</StoryLink>
+              <StoryLink href="/news/yazz-partners-the-ges-cook-art-competition" marginTop={20}>Read the full story</StoryLink>
             </div>
             <Photo src="https://yazzproducts.com/wp-content/uploads/2020/02/WhatsApp-Image-2020-02-11-at-11.57.18-AM.jpeg" alt="GES Cook Art Competition" box={photoBoxSm} />
           </div>
@@ -505,7 +505,7 @@ export default function CorporateSocialResponsibilityPage() {
               <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,.92)" }}>
                 Our full archive of screenings, school tours and campaigns, from 2017 to today.
               </p>
-              <a href="https://lextagh.com/category/csr/" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
+              <a href="/news?category=CSR" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
                 View all CSR stories <span style={{ fontSize: 14 }}>→</span>
               </a>
             </div>

@@ -16,6 +16,9 @@ type Params = { params: Promise<{ slug: string }> };
 /** Every story is built at build time; any other /news/<slug> is a 404. */
 export const dynamicParams = false;
 
+/** Machine readable publish date only when the full day is known; month only dates are left out rather than guessed. */
+const fullDate = (iso: string) => (/^\d{4}-\d{2}-\d{2}$/.test(iso) ? iso : undefined);
+
 export function generateStaticParams() {
   return articles.map((a) => ({ slug: a.slug }));
 }
@@ -32,7 +35,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
     alternates: { canonical: articleHref(a) },
     openGraph: {
       type: "article", title, description: a.standfirst, url: articleHref(a), siteName: "Lexta Ghana",
-      publishedTime: a.isoDate, section: a.category, images: [{ url: image, alt: a.imageAlt }],
+      publishedTime: fullDate(a.isoDate), section: a.category, images: [{ url: image, alt: a.imageAlt }],
     },
     twitter: { card: "summary_large_image", title, description: a.standfirst, images: [image] },
   };
@@ -77,7 +80,7 @@ export default async function ArticlePage({ params }: Params) {
     headline: a.title,
     description: a.standfirst,
     image: [absoluteUrl(a.image)],
-    datePublished: a.isoDate,
+    datePublished: fullDate(a.isoDate),
     articleSection: a.category,
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     url: pageUrl,
