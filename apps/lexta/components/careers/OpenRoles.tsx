@@ -96,7 +96,7 @@ export default function OpenRoles() {
             placeholder="Search roles, e.g. quality, sales"
             value={q}
             onChange={(e) => { setQ(e.target.value); setOpen(null); }}
-            style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", outline: "none", fontSize: 13, color: "#12313d" }}
+            style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 13, color: "#12313d" }}
           />
         </div>
       </div>
@@ -129,7 +129,7 @@ export default function OpenRoles() {
               <button
                 type="button"
                 aria-expanded={isOpen}
-                aria-controls={panelId}
+                aria-controls={isOpen ? panelId : undefined}
                 onClick={() => setOpen((o) => (o === i ? null : i))}
                 style={{ width: "100%", textAlign: "left", border: 0, background: "transparent", cursor: "pointer", padding: "24px 26px", display: "flex", alignItems: "center", gap: 22, flexWrap: "wrap" }}
               >

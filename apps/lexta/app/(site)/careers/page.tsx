@@ -167,7 +167,7 @@ export default function CareersPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>support@lextagh.com</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>+233 (0) 501 619 588</div>
-              <div style={{ fontSize: 13, lineHeight: 1.8, color: "#5d7883", maxWidth: 320 }}>Lexta Square, Olusegu Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
+              <div style={{ fontSize: 13, lineHeight: 1.8, color: "#5d7883", maxWidth: 320 }}>Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
             </div>
             <div style={{ marginTop: 26, borderRadius: 12, overflow: "hidden", flex: "1 1 auto", minHeight: 240, boxShadow: "0 18px 38px rgba(11,60,78,.16)" }}>
               <ImageSlot placeholder="Recruitment team photo" />
