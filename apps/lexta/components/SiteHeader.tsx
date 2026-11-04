@@ -15,6 +15,7 @@ const linkBase = { fontSize: 13, fontWeight: 500, color: "#1d3c48" } as const;
 const contactOverrides: Record<string, CSSProperties> = {
   "/our-brands": { padding: "0 16px", fontSize: 13, fontWeight: 400, whiteSpace: "normal" },
   "/people-and-culture": { padding: "0 16px", fontSize: 13 },
+  "/news": { padding: "0 16px", fontSize: 13, fontWeight: 400 },
 };
 
 const linkActive = { fontSize: 13, fontWeight: 600, color: "#12a3c4", boxShadow: "0 8px 0 -6px #12a3c4" } as const;
