@@ -41,6 +41,9 @@ const brandChip: CSSProperties = {
 /**
  * Where to Buy finder (Home page): pick a region, press Find a stockist, and the live stockists of that region
  * appear under the buttons. Until then the card looks exactly like the approved prototype.
+ * Without JavaScript the button still works as it did before item 20: the card is a form whose action is
+ * /contact-us, so pressing it opens the contact page. With JavaScript the submit is intercepted and the list
+ * loads in place. (A server rendered ?region= search is not used because it would stop Home being prerendered.)
  */
 export default function StockistFinder({ regions }: { regions: RegionOption[] }) {
   const [region, setRegion] = useState(regions[0]?.slug ?? "");
@@ -71,11 +74,19 @@ export default function StockistFinder({ regions }: { regions: RegionOption[] })
   const regionName = regions.find((r) => r.slug === (result.state === "idle" ? region : result.region))?.name ?? "";
 
   return (
-    <>
+    <form
+      action="/contact-us"
+      method="get"
+      style={{ margin: 0 }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        void search(region);
+      }}
+    >
       <div style={smallLabel}>Your region</div>
       <RegionDropdown regions={regions} value={region} onChange={setRegion} />
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
-        <button type="button" style={findBtn} aria-controls="stockist-results" onClick={() => void search(region)}>
+        <button type="submit" style={findBtn} aria-controls="stockist-results">
           Find a stockist
         </button>
         <Link href="/partner-with-us" className={s.outlineHover} style={outlineBtn}>
@@ -139,6 +150,6 @@ export default function StockistFinder({ regions }: { regions: RegionOption[] })
           </div>
         )}
       </div>
-    </>
+    </form>
   );
 }

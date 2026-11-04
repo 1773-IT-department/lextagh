@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createPublicClient, websiteReadDeadline } from "./client";
+import { createWebsiteReadClient, websiteReadDeadline } from "./client";
 import { outletTypeLabel, type OutletType } from "./types";
 
 /** Cache tag the websites use for stockist data; the revalidate route clears it. */
@@ -57,14 +57,14 @@ const one = <T>(v: T | T[] | null | undefined): T | undefined => (Array.isArray(
  * For the websites: uses the publishable key, so Row Level Security only returns active stockists and
  * the brands they carry. Requests are cached under the "stockists" tag, so a portal save refreshes pages.
  * An unknown or malformed brand or region gives an empty list rather than an error.
- * Gives up after WEBSITE_READ_TIMEOUT_MS (retries included) so a site can fall back instead of waiting.
+ * Gives up after WEBSITE_READ_TIMEOUT_MS (one attempt, no retries) so a site can fall back instead of waiting.
  */
 export async function getStockists(filter: StockistFilter = {}, client?: SupabaseClient): Promise<PublicStockist[]> {
   const brandSlug = filter.brandSlug?.trim().toLowerCase();
   const region = filter.region?.trim().toLowerCase();
   if ((brandSlug && !SLUG.test(brandSlug)) || (region && !SLUG.test(region))) return [];
 
-  const supabase = client ?? createPublicClient({ cacheTags: [STOCKISTS_CACHE_TAG], revalidateSeconds: 3600 });
+  const supabase = client ?? createWebsiteReadClient(STOCKISTS_CACHE_TAG);
   const rows: Row[] = [];
   const deadline = websiteReadDeadline(); // one time limit for every page of this read
   for (let from = 0; ; from += PAGE) {
@@ -115,7 +115,7 @@ export type PublicRegion = { slug: string; name: string; isInGhana: boolean };
  * Uses the publishable key and is cached under the "stockists" tag like the stockists themselves.
  */
 export async function getRegions(client?: SupabaseClient): Promise<PublicRegion[]> {
-  const supabase = client ?? createPublicClient({ cacheTags: [STOCKISTS_CACHE_TAG], revalidateSeconds: 3600 });
+  const supabase = client ?? createWebsiteReadClient(STOCKISTS_CACHE_TAG);
   const { data, error } = await supabase.from("regions").select("slug, name, is_in_ghana, sort_order").order("sort_order").order("name")
     .abortSignal(websiteReadDeadline());
   if (error) throw new Error(`Could not load regions: ${error.message}`);

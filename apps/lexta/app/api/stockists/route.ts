@@ -1,4 +1,4 @@
-import { getStockists } from "@lexta/db";
+import { getRegions, getStockists } from "@lexta/db";
 
 export const runtime = "nodejs";
 
@@ -9,6 +9,8 @@ const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
  * GET /api/stockists?region=greater-accra
  * Reads with the publishable key (Row Level Security returns only active stockists and their public columns),
  * cached under the "stockists" tag for up to an hour and cleared by /api/revalidate when staff save a stockist.
+ * The region must be one of the regions in the database (read from the same cached list as the picker), so made up
+ * names are refused with 400 and never cause a stockists read.
  */
 export async function GET(request: Request) {
   const region = new URL(request.url).searchParams.get("region")?.trim().toLowerCase() ?? "";
@@ -16,6 +18,10 @@ export async function GET(request: Request) {
     return Response.json({ ok: false, error: "Choose a region" }, { status: 400 });
   }
   try {
+    const regions = await getRegions();
+    if (!regions.some((r) => r.slug === region)) {
+      return Response.json({ ok: false, error: "Choose a region" }, { status: 400, headers: { "cache-control": "no-store" } });
+    }
     const stockists = await getStockists({ region });
     return Response.json(
       {

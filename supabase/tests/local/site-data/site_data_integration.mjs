@@ -5,8 +5,9 @@
 // components/home/where-to-buy.ts and app/api/stockists/route.ts), points them at rpc_shim.mjs, which answers the
 // reads as anon in the harness database, and checks what a website visitor would get.
 import { register } from "node:module";
+import net from "node:net";
 import { isDeepStrictEqual } from "node:util";
-import { psql, startShim } from "../forms/rpc_shim.mjs";
+import { psql, requestLog, startShim } from "../forms/rpc_shim.mjs";
 
 register(new URL("../forms/ts-hook.mjs", import.meta.url));
 
@@ -173,6 +174,12 @@ try {
     const empty = await apiGet("volta");
     check(empty.status === 200 && empty.body.ok && empty.body.stockists.length === 0, "an empty region answers an empty list (the page shows the honest empty state)");
     check((await apiGet("../etc")).status === 400 && (await apiGet("")).status === 400, "a bad region is refused with 400");
+    const before = requestLog.length;
+    const unknown = await apiGet("made-up-region");
+    const reads = requestLog.slice(before);
+    check(unknown.status === 400 && unknown.body.ok === false, "a well formed but unknown region is refused with 400", unknown);
+    check(!reads.some((r) => r.includes("/rest/v1/stockists")), "an unknown region never causes a stockists read (checked against the regions list)", reads);
+    check((await apiGet("Liberia-Monrovia")).status === 200, "a known region is accepted in any letter case");
 
     const anonNotes = await psql(`set role anon; select notes from public.stockist_notes;`);
     check(anonNotes.code !== 0, "anon cannot read stockist notes (Row Level Security and grants)");
@@ -195,6 +202,60 @@ try {
     const down = await apiGet("greater-accra");
     check(down.status === 503 && down.body.ok === false && !JSON.stringify(down.body).includes("127.0.0.1"), "database down: /api/stockists answers 503 without details");
     check(warnings.length === 5, "each fallback logs one server warning", warnings);
+
+    // Refused connection (nothing listens): one attempt, no retries, so the fallback is immediate.
+    const timed = async (fn) => {
+      const t0 = performance.now();
+      const value = await fn();
+      return { value, ms: Math.round(performance.now() - t0) };
+    };
+    const limit = db.WEBSITE_READ_TIMEOUT_MS;
+    const closed = await new Promise((resolve) => {
+      const probe = net.createServer().listen(0, "127.0.0.1", () => {
+        const { port } = probe.address();
+        probe.close(() => resolve(port));
+      });
+    });
+    process.env.NEXT_PUBLIC_SUPABASE_URL = `http://127.0.0.1:${closed}`;
+    const refused = [
+      await timed(() => live.getBrandRanges()),
+      await timed(() => wtb.getWhereToBuyRegions()),
+      await timed(() => apiGet("greater-accra")),
+    ];
+    console.log(`  refused connection: fallback after ${refused.map((r) => `${r.ms} ms`).join(", ")} (Our Brands, regions, API)`);
+    check(same(refused[0].value, live.staticRanges) && same(refused[1].value, wtb.FALLBACK_REGIONS) && refused[2].value.status === 503, "refused connection: every helper falls back");
+    check(refused.every((r) => r.ms < 1000), "refused connection: each fallback in under 1 s (no retry waits)", refused.map((r) => r.ms));
+
+    // A server that accepts the connection and never answers: each read gives up at the time limit.
+    const sockets = new Set();
+    const silent = net.createServer((socket) => {
+      sockets.add(socket);
+      socket.on("close", () => sockets.delete(socket));
+    });
+    await new Promise((resolve) => silent.listen(0, "127.0.0.1", resolve));
+    process.env.NEXT_PUBLIC_SUPABASE_URL = `http://127.0.0.1:${silent.address().port}`;
+    try {
+      const hung = [
+        await timed(() => live.getBrandRanges()),
+        await timed(() => wtb.getWhereToBuyRegions()),
+        await timed(() => apiGet("greater-accra")),
+        await timed(() => db.getStockists({ region: "greater-accra" }).then(() => "answered", (e) => String(e))),
+      ];
+      console.log(`  server never answers: fallback after ${hung.map((r) => `${r.ms} ms`).join(", ")} (Our Brands, regions, API, getStockists)`);
+      check(
+        same(hung[0].value, live.staticRanges) && same(hung[1].value, wtb.FALLBACK_REGIONS) && hung[2].value.status === 503 && /abort|timeout/i.test(hung[3].value),
+        "server never answers: every helper gives up and falls back",
+        hung.map((r) => r.value?.status ?? (typeof r.value === "string" ? r.value : "")),
+      );
+      check(
+        hung.every((r) => r.ms >= limit - 250 && r.ms < limit + 1000),
+        `server never answers: each fallback at the ${limit} ms limit (under 5 s), never an indefinite hang`,
+        hung.map((r) => r.ms),
+      );
+    } finally {
+      for (const socket of sockets) socket.destroy();
+      await new Promise((resolve) => silent.close(resolve));
+    }
 
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
     delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
