@@ -1,37 +1,22 @@
 import type { NextConfig } from "next";
 
 /**
- * Migration bridge.
- * The approved static prototype lives in /public as plain .html files.
- * Each clean URL below falls back to its .html file ONLY while no Next.js route exists for it
- * (afterFiles rewrites run after app routes). When a page is converted to app/<slug>/page.tsx,
- * the new route wins automatically; then delete the .html file and move its name to convertedPages.
- * Home (/) is converted: app/(site)/page.tsx. /index.html still redirects to /. Other converted pages are listed in convertedPages.
+ * Every page of the approved prototype is now a Next.js route under app/(site), so the old
+ * .html-in-/public rewrite bridge is gone. Old links and bookmarks such as /about-us.html
+ * still redirect permanently to the clean URL.
  */
-const legacyPages = [
-  "faqs", "privacy-policy", "terms-and-conditions",
+const convertedPages = [
+  "about-us", "our-brands", "people-and-culture", "corporate-social-responsibility", "news", "careers",
+  "contact-us", "partner-with-us", "faqs", "privacy-policy", "terms-and-conditions",
 ];
-
-/** Pages already converted to Next.js routes. Their old .html links still redirect to the clean URL. */
-const convertedPages = ["about-us", "our-brands", "people-and-culture", "corporate-social-responsibility", "news", "careers", "contact-us", "partner-with-us"];
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lexta/db"],
   async redirects() {
-    // Old links like /about-us.html go to the clean URL.
     return [
       { source: "/index.html", destination: "/", permanent: true },
-      ...[...convertedPages, ...legacyPages].map((p) => ({ source: `/${p}.html`, destination: `/${p}`, permanent: true })),
+      ...convertedPages.map((p) => ({ source: `/${p}.html`, destination: `/${p}`, permanent: true })),
     ];
-  },
-  async rewrites() {
-    return {
-      beforeFiles: [],
-      afterFiles: [
-        ...legacyPages.map((p) => ({ source: `/${p}`, destination: `/${p}.html` })),
-      ],
-      fallback: [],
-    };
   },
 };
 

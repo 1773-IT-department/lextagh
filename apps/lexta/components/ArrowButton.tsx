@@ -6,8 +6,8 @@ const arrow: CSSProperties = {
   alignItems: "center", justifyContent: "center", fontSize: 12,
 };
 
-/** The prototype's solid blue button with the round arrow badge (used on most pages). */
-export default function ArrowButton({ href, padding, children, style }: { href: string; padding: string; children: ReactNode; style?: CSSProperties }) {
+/** The prototype's solid blue button with the round arrow badge (used on most pages). badgeStyle tweaks the badge where a page differs. */
+export default function ArrowButton({ href, padding, children, style, badgeStyle }: { href: string; padding: string; children: ReactNode; style?: CSSProperties; badgeStyle?: CSSProperties }) {
   return (
     <Link
       href={href}
@@ -17,7 +17,7 @@ export default function ArrowButton({ href, padding, children, style }: { href: 
       }}
     >
       {children}
-      <span style={arrow}>→</span>
+      <span style={badgeStyle ? { ...arrow, ...badgeStyle } : arrow}>→</span>
     </Link>
   );
 }
