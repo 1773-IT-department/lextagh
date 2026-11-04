@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createPublicClient } from "./client";
+import { createPublicClient, websiteReadDeadline } from "./client";
 import type { Product, ProductImage, ProductSku } from "./types";
 
 /** Storage bucket for uploaded product photos. Paths are <brand_slug>/<product_id>/<file name>. */
@@ -25,6 +25,7 @@ export function productImageUrl(image: Pick<ProductImage, "storage_path" | "exte
  * Published products of one brand with their active SKUs and images, in display order.
  * For the websites: uses the publishable key, so Row Level Security only ever returns published data.
  * Requests are cached under the "products" tag, so a portal save refreshes the pages.
+ * Gives up after WEBSITE_READ_TIMEOUT_MS (retries included) so a site can fall back instead of waiting.
  */
 export async function getPublishedProducts(brandSlug: string, client?: SupabaseClient): Promise<PublishedProduct[]> {
   const supabase = client ?? createPublicClient({ cacheTags: [PRODUCTS_CACHE_TAG], revalidateSeconds: 3600 });
@@ -34,7 +35,8 @@ export async function getPublishedProducts(brandSlug: string, client?: SupabaseC
     .eq("brand.slug", brandSlug)
     .eq("is_published", true)
     .order("sort_order")
-    .order("name");
+    .order("name")
+    .abortSignal(websiteReadDeadline());
   if (error) throw new Error(`Could not load products for ${brandSlug}: ${error.message}`);
 
   type Row = Product & { brand: unknown; skus: ProductSku[] | null; images: ProductImage[] | null };
