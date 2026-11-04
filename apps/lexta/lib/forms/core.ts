@@ -228,7 +228,7 @@ export type ContactRoute =
  * "2026-04-18". With no "batch" word, a short field is taken whole (people often type only the code).
  */
 export function batchCodeFrom(detail: string): string | undefined {
-  const m = /\b(?:batch|lot)(?:\s*(?:code|no\.?|number))?\s*[:#.]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]*)/i.exec(detail);
+  const m = /\b(?:batch|lot)\b(?:\s*(?:code|no\.?|number))?\s*[:#.]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]*)/i.exec(detail);
   const code = (m?.[1] ?? (/\d/.test(detail) && !/\s/.test(detail) ? detail : undefined))?.replace(/[.\-/]+$/, "");
   return code && code.length <= LIMITS.batch ? code : undefined;
 }
