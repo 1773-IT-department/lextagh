@@ -35,7 +35,7 @@ export default function ProductCardView({ product, variant }: { product: Product
       )}
       {m.kind === "grid" && (
         <div style={{ ...mediaBox, display: "grid", gridTemplateColumns: m.columns === 3 ? "repeat(3,1fr)" : "1fr 1fr", gap: 8 }}>
-          {m.images.map((im) => <img key={im.src} src={im.src} alt={im.alt} style={gridImg} />)}
+          {m.images.map((im, k) => <img key={`${k}-${im.src}`} src={im.src} alt={im.alt} style={gridImg} />)}
         </div>
       )}
       {m.kind === "photo" && (

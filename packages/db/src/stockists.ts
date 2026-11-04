@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { createPublicClient } from "./client";
+import { createWebsiteReadClient, websiteReadDeadline } from "./client";
 import { outletTypeLabel, type OutletType } from "./types";
 
 /** Cache tag the websites use for stockist data; the revalidate route clears it. */
@@ -57,16 +57,18 @@ const one = <T>(v: T | T[] | null | undefined): T | undefined => (Array.isArray(
  * For the websites: uses the publishable key, so Row Level Security only returns active stockists and
  * the brands they carry. Requests are cached under the "stockists" tag, so a portal save refreshes pages.
  * An unknown or malformed brand or region gives an empty list rather than an error.
+ * Gives up after WEBSITE_READ_TIMEOUT_MS (one attempt, no retries) so a site can fall back instead of waiting.
  */
 export async function getStockists(filter: StockistFilter = {}, client?: SupabaseClient): Promise<PublicStockist[]> {
   const brandSlug = filter.brandSlug?.trim().toLowerCase();
   const region = filter.region?.trim().toLowerCase();
   if ((brandSlug && !SLUG.test(brandSlug)) || (region && !SLUG.test(region))) return [];
 
-  const supabase = client ?? createPublicClient({ cacheTags: [STOCKISTS_CACHE_TAG], revalidateSeconds: 3600 });
+  const supabase = client ?? createWebsiteReadClient(STOCKISTS_CACHE_TAG);
   const rows: Row[] = [];
+  const deadline = websiteReadDeadline(); // one time limit for every page of this read
   for (let from = 0; ; from += PAGE) {
-    let query = supabase.from("stockists").select(COLUMNS).eq("is_active", true).order("id").range(from, from + PAGE - 1);
+    let query = supabase.from("stockists").select(COLUMNS).eq("is_active", true).order("id").range(from, from + PAGE - 1).abortSignal(deadline);
     if (region) query = query.eq("region.slug", region);
     const { data, error } = await query;
     if (error) throw new Error(`Could not load stockists: ${error.message}`);
@@ -103,4 +105,22 @@ export async function getStockists(filter: StockistFilter = {}, client?: Supabas
   return result
     .sort((a, b) => a.sortRegion - b.sortRegion || a.town.localeCompare(b.town) || a.name.localeCompare(b.name))
     .map(({ sortRegion: _sortRegion, ...s }) => s);
+}
+
+/** A region as the websites show it in Where to Buy. */
+export type PublicRegion = { slug: string; name: string; isInGhana: boolean };
+
+/**
+ * Every region for the Where to Buy picker, in the order staff set (Ghana first, then outside Ghana).
+ * Uses the publishable key and is cached under the "stockists" tag like the stockists themselves.
+ */
+export async function getRegions(client?: SupabaseClient): Promise<PublicRegion[]> {
+  const supabase = client ?? createWebsiteReadClient(STOCKISTS_CACHE_TAG);
+  const { data, error } = await supabase.from("regions").select("slug, name, is_in_ghana, sort_order").order("sort_order").order("name")
+    .abortSignal(websiteReadDeadline());
+  if (error) throw new Error(`Could not load regions: ${error.message}`);
+  type RegionRow = { slug: string; name: string; is_in_ghana: boolean; sort_order: number };
+  return ((data ?? []) as RegionRow[])
+    .sort((a, b) => Number(b.is_in_ghana) - Number(a.is_in_ghana) || a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+    .map((r) => ({ slug: r.slug, name: r.name, isInGhana: r.is_in_ghana }));
 }
