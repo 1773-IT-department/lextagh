@@ -100,7 +100,7 @@ export default async function ApplicationPage({ params, searchParams }: {
                 <a className="btn small" href={`/systems/recruitment/applications/${a.id}/cv`}>Download CV</a>
               </div>
             ) : <p className="small">No CV on file.</p>}
-            <p className="small" style={{ margin: "12px 0 0" }}>The download link works for one minute and is made for you only.</p>
+            <p className="small" style={{ margin: "12px 0 0" }}>The CV downloads straight from the portal with your own login; there is no link to share.</p>
           </section>
 
           <section className="panel">

@@ -7,24 +7,28 @@
 --   management, hr            read and manage every role and application: create, edit, open, close and delete roles
 --                             (a role with applications cannot be deleted, close it instead), move applications
 --                             through the stages with notes, assign owners, keep staff notes, open CVs through
---                             short lived signed links, clean up unclaimed CV uploads
+--                             their own login, remove unclaimed CV uploads
 --   every other role          nothing at all
 --   website visitors (anon)   read the public columns of live roles (status open, opened, not past the closing
---                             date); upload a CV only into incoming/<uuid>/<file name>; send an application only
---                             through public.submit_job_application(), which returns the application reference and
---                             nothing else. They never read applications or CVs, and never list the bucket.
+--                             date). Through the website's server only (the publishable key plus a signature
+--                             only that server can make): upload a CV at the one path a ticket allows, and send an
+--                             application with public.submit_job_application(), which returns the application
+--                             reference and nothing else. They never read applications or CVs, and never list the bucket.
 --
--- CV uploads. The website (with the publishable key) uploads the CV first, to incoming/<new uuid>/<file name> in the
--- private job-cvs bucket (PDF, DOC or DOCX, at most 5 MB: the bucket enforces both; the policy also checks the path
--- shape and the extension, that the folder is new, and caps uploads nobody has claimed: 20 in the last hour and
--- 100 in the last day across the whole site). It then calls submit_job_application with that path. The function
--- checks the object exists, is recent, unclaimed, within the size and of an allowed type (from the storage
--- metadata, not from the browser), and records it on the application: the file is "claimed". Files are not moved:
--- Storage keeps the bytes under the object name, so moving would need the Storage API.
--- Cleanup: uploads nobody claimed within a day are junk (a bot, or a visitor who gave up). Staff (admin, management,
--- hr) call public.unclaimed_job_cvs() for the list and remove those files through the Storage API (the portal has a
--- "Clean up unclaimed uploads" button doing exactly that); the delete policy only allows unclaimed files older than
--- a day for them. A scheduled job can do the same later with the service role (not set up in this item).
+-- CV uploads go through the website's server only, never straight from a browser. The Careers server action takes
+-- the form with the file, checks its size (at most 4 MB, under Vercel's 4.5 MB request limit), its type and its
+-- first bytes, then asks for a one time ticket with public.begin_job_cv_upload: a request signed with a secret only
+-- the website server and the database know (HMAC SHA-256 over a fresh uuid, the time and a hash of the visitor's IP
+-- address; at most 5 minutes old; 5 tickets an hour and 10 a day per IP hash; a circuit breaker at 2000 a day site
+-- wide). The ticket names the path, incoming/<that uuid>/<cleaned file name>. Storage takes a website upload only at
+-- the path of an unused ticket within 15 minutes (and never twice: Storage refuses a second object at the same
+-- path), with the content type the server set from the checked bytes. submit_job_application then claims the
+-- ticketed upload once (the ticket row is locked while it does), checks size and type as Storage recorded them and
+-- applies the per email and phone limits. Without the secret nobody can get a ticket, so nobody can upload or apply
+-- by calling the API directly. The bucket enforces 4 MB and the three types too.
+-- Cleanup: uploads nobody claimed (a visitor who gave up, or refused applications) can be removed by recruitment
+-- staff at any age: public.unclaimed_job_cvs() lists them and the portal's "Remove unclaimed uploads" button removes
+-- them through the Storage API. A scheduled job can do the same later with the service role (not set up here).
 --
 -- Application references come from the database: LX-APP-<year>-0001, counting from 1 again each year.
 -- Stages: new, screening, shortlisted, interview, offer, hired, rejected, withdrawn; any stage may move to any other.
@@ -219,7 +223,7 @@ create table if not exists public.job_applications (
   -- The claimed object in the job-cvs bucket, and what Storage recorded about it.
   cv_path text unique,
   cv_file_name text check (cv_file_name is null or length(cv_file_name) between 1 and 200),
-  cv_size_bytes integer check (cv_size_bytes is null or cv_size_bytes between 1 and 5242880),
+  cv_size_bytes integer check (cv_size_bytes is null or cv_size_bytes between 1 and 4194304),
   cv_mime_type text check (cv_mime_type is null or cv_mime_type in (
     'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')),
   -- The applicant agreed that Lexta keeps their details for this and future roles.
@@ -467,16 +471,16 @@ create policy "admins delete application history"
 -- No update policy: the history is a record of what happened.
 
 -- Storage: job-cvs bucket -------------------------------------------------------------------------------
--- Private: CVs are only ever served through short lived signed links made for recruitment staff.
+-- Private: CVs are only ever read by recruitment staff with their own login.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
-  'job-cvs', 'job-cvs', false, 5242880,
+  'job-cvs', 'job-cvs', false, 4194304,
   array['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
 )
 on conflict (id) do update set public = false, file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
--- The only upload path for website visitors: incoming/<uuid>/<file name ending .pdf, .doc or .docx>.
+-- The shape of every website upload: incoming/<uuid>/<file name ending .pdf, .doc or .docx>.
 create or replace function public.job_cv_path_ok(object_name text)
 returns boolean
 language sql
@@ -486,39 +490,154 @@ as $$
   select coalesce(object_name ~ '^incoming/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.([Pp][Dd][Ff]|[Dd][Oo][Cc]|[Dd][Oo][Cc][Xx])$', false);
 $$;
 
-grant execute on function public.job_cv_path_ok(text) to anon, authenticated;
+revoke all on function public.job_cv_path_ok(text) from public, anon;
+grant execute on function public.job_cv_path_ok(text) to authenticated;
 
--- Website upload check: right path, a folder nobody used yet, and not too many unclaimed uploads site wide
--- (20 in the last hour, 100 in the last day), so a bot cannot fill the bucket. Legitimate uploads are claimed
--- within seconds by submit_job_application, so they stop counting at once.
-create or replace function public.job_cv_upload_allowed(object_name text)
+-- The website's shared secret. The Careers server (env RECRUITMENT_INTAKE_SECRET) signs every upload request with
+-- it; the database checks the signature. Kept in the private schema, which the Data API does not expose, with Row
+-- Level Security on and no policies, so only the security definer functions below read it.
+-- One time set up (the same value as RECRUITMENT_INTAKE_SECRET on the website's Vercel project, at least 32 characters):
+--   insert into private.recruitment_intake_secret (secret) values ('<value>')
+--   on conflict (id) do update set secret = excluded.secret, updated_at = now();
+-- Until it is set, every upload request is refused and the Careers form says it could not send.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+
+create table if not exists private.recruitment_intake_secret (
+  id boolean primary key default true check (id),
+  secret text not null check (length(secret) >= 32),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table private.recruitment_intake_secret enable row level security;
+revoke all on private.recruitment_intake_secret from public, anon, authenticated;
+
+-- HMAC for the signatures.
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+
+-- One time upload tickets. The Careers server asks for one (begin_job_cv_upload) before it uploads a CV; Storage
+-- only takes a website upload at the path of an unused ticket, and an application only claims a ticketed upload.
+-- The visitor's IP address is never stored: ip_hash is an HMAC of it with the shared secret, made on the website
+-- server. Tickets are removed after 7 days.
+create table if not exists public.job_cv_upload_tickets (
+  id uuid primary key,
+  object_name text not null unique,
+  ip_hash text not null check (ip_hash ~ '^[0-9a-f]{64}$'),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  -- Storage takes the upload until then (15 minutes).
+  upload_by timestamptz not null,
+  -- Set when an application claims the upload.
+  claimed_at timestamptz
+);
+
+create index if not exists job_cv_upload_tickets_ip_idx on public.job_cv_upload_tickets (ip_hash, created_at);
+create index if not exists job_cv_upload_tickets_created_idx on public.job_cv_upload_tickets (created_at);
+
+drop trigger if exists job_cv_upload_tickets_set_updated_at on public.job_cv_upload_tickets;
+create trigger job_cv_upload_tickets_set_updated_at before update on public.job_cv_upload_tickets
+  for each row execute function public.set_updated_at();
+
+alter table public.job_cv_upload_tickets enable row level security;
+revoke all on public.job_cv_upload_tickets from anon, authenticated;
+-- No policies: only the security definer functions below touch tickets.
+
+-- Ticket limits: 5 an hour and 10 a day per IP hash; above 2000 a day site wide the intake stops (a circuit
+-- breaker, logged as a warning), which only a flood can reach.
+create or replace function public.begin_job_cv_upload(nonce uuid, issued_at bigint, ip_hash text, signature text, file_name text)
+returns text
+language plpgsql
+volatile
+security definer
+set search_path = ''
+as $$
+declare
+  v_secret text;
+  v_ext text;
+  v_stem text;
+  v_path text;
+  recent integer;
+begin
+  select s.secret into v_secret from private.recruitment_intake_secret s where s.id;
+  if v_secret is null then
+    raise exception 'recruitment intake is not set up' using errcode = '55000';
+  end if;
+  if nonce is null or issued_at is null or ip_hash is null or ip_hash !~ '^[0-9a-f]{64}$'
+     or signature is null or signature !~ '^[0-9a-f]{64}$' then
+    raise exception 'invalid field: signature' using errcode = '22023';
+  end if;
+  if encode(extensions.hmac(nonce::text || '.' || issued_at::text || '.' || ip_hash, v_secret, 'sha256'), 'hex') <> signature then
+    raise exception 'invalid field: signature' using errcode = '22023';
+  end if;
+  if issued_at < extract(epoch from now())::bigint - 300 or issued_at > extract(epoch from now())::bigint + 60 then
+    raise exception 'invalid field: issued_at' using errcode = '22023';
+  end if;
+
+  v_ext := lower(substring(coalesce(file_name, '') from '\.([A-Za-z]+)$'));
+  if v_ext is null or v_ext not in ('pdf', 'doc', 'docx') then
+    raise exception 'invalid field: cv_type' using errcode = '22023';
+  end if;
+  v_stem := regexp_replace(left(file_name, 300), '\.[A-Za-z]+$', '');
+  v_stem := regexp_replace(v_stem, '[^A-Za-z0-9._-]+', '-', 'g');
+  v_stem := regexp_replace(v_stem, '^[^A-Za-z0-9]+', '');
+  v_stem := regexp_replace(left(v_stem, 80), '[._-]+$', '');
+  v_path := 'incoming/' || nonce::text || '/' || coalesce(nullif(v_stem, ''), 'cv') || '.' || v_ext;
+  if not public.job_cv_path_ok(v_path) then
+    raise exception 'invalid field: cv_name' using errcode = '22023';
+  end if;
+
+  -- One at a time, so the counts below and the nonce check cannot race.
+  perform pg_advisory_xact_lock(64, 0);
+  delete from public.job_cv_upload_tickets t where t.created_at < now() - interval '7 days';
+  if exists (select 1 from public.job_cv_upload_tickets t where t.id = nonce) then
+    raise exception 'invalid field: nonce' using errcode = '22023';
+  end if;
+  select count(*) into recent from public.job_cv_upload_tickets t
+   where t.ip_hash = begin_job_cv_upload.ip_hash and t.created_at > now() - interval '1 hour';
+  if recent >= 5 then
+    raise exception 'too many uploads, please try again later' using errcode = 'PT429';
+  end if;
+  select count(*) into recent from public.job_cv_upload_tickets t
+   where t.ip_hash = begin_job_cv_upload.ip_hash and t.created_at > now() - interval '1 day';
+  if recent >= 10 then
+    raise exception 'too many uploads, please try again tomorrow' using errcode = 'PT429';
+  end if;
+  select count(*) into recent from public.job_cv_upload_tickets t where t.created_at > now() - interval '1 day';
+  if recent >= 2000 then
+    raise warning 'recruitment: CV upload circuit breaker on, % upload tickets in the last day', recent;
+    raise exception 'too many uploads, please try again later' using errcode = 'PT429';
+  end if;
+
+  insert into public.job_cv_upload_tickets (id, object_name, ip_hash, upload_by)
+  values (nonce, v_path, begin_job_cv_upload.ip_hash, now() + interval '15 minutes');
+  return v_path;
+end;
+$$;
+
+revoke all on function public.begin_job_cv_upload(uuid, bigint, text, text, text) from public, authenticated;
+grant execute on function public.begin_job_cv_upload(uuid, bigint, text, text, text) to anon;
+
+-- Storage's check for a website upload: the path has a ticket that is unused and not past its 15 minutes. Website
+-- visitors need to run it (Storage applies the policy as them); it only answers for a path, and ticketed paths
+-- contain a random uuid the server got from the database, so it reveals nothing useful.
+create or replace function public.job_cv_ticket_open(object_name text)
 returns boolean
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select public.job_cv_path_ok(object_name)
-     and not exists (
-       select 1 from storage.objects o
-       where o.bucket_id = 'job-cvs' and o.name like 'incoming/' || split_part(object_name, '/', 2) || '/%'
-     )
-     and (
-       select count(*) from storage.objects o
-       where o.bucket_id = 'job-cvs' and o.created_at > now() - interval '1 hour'
-         and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
-     ) < 20
-     and (
-       select count(*) from storage.objects o
-       where o.bucket_id = 'job-cvs' and o.created_at > now() - interval '1 day'
-         and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
-     ) < 100;
+  select exists (
+    select 1 from public.job_cv_upload_tickets t
+    where t.object_name = job_cv_ticket_open.object_name and t.claimed_at is null and t.upload_by > now()
+  );
 $$;
 
-revoke all on function public.job_cv_upload_allowed(text) from public;
-grant execute on function public.job_cv_upload_allowed(text) to anon, authenticated;
+revoke all on function public.job_cv_ticket_open(text) from public, authenticated;
+grant execute on function public.job_cv_ticket_open(text) to anon;
 
--- An upload nobody claimed within a day: safe to remove.
+-- An upload no application claimed: recruitment staff may remove it at any age.
 create or replace function public.job_cv_unclaimed(object_name text)
 returns boolean
 language sql
@@ -528,7 +647,7 @@ set search_path = ''
 as $$
   select exists (
     select 1 from storage.objects o
-    where o.bucket_id = 'job-cvs' and o.name = object_name and o.created_at < now() - interval '1 day'
+    where o.bucket_id = 'job-cvs' and o.name = object_name
       and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
   );
 $$;
@@ -536,10 +655,11 @@ $$;
 revoke all on function public.job_cv_unclaimed(text) from public, anon;
 grant execute on function public.job_cv_unclaimed(text) to authenticated;
 
--- The cleanup list: every unclaimed upload older than older_than (never less than a day), oldest first. Recruitment
--- staff and the service role only. Remove the files through the Storage API (supabase.storage.from('job-cvs')
--- .remove(names)); deleting rows from storage.objects directly would leave the bytes behind.
-create or replace function public.unclaimed_job_cvs(older_than interval default interval '1 day')
+-- The cleanup list: unclaimed uploads older than older_than (default: all of them), oldest first. Recruitment staff
+-- and the service role only. Remove the files through the Storage API (supabase.storage.from('job-cvs')
+-- .remove(names)); deleting rows from storage.objects directly would leave the bytes behind. The portal's
+-- "Remove unclaimed uploads" button does exactly that; a scheduled job can do the same later (not set up here).
+create or replace function public.unclaimed_job_cvs(older_than interval default interval '0')
 returns table (name text, created_at timestamptz, size_bytes bigint)
 language plpgsql
 stable
@@ -554,7 +674,7 @@ begin
     select o.name, o.created_at, nullif(o.metadata ->> 'size', '')::bigint
     from storage.objects o
     where o.bucket_id = 'job-cvs'
-      and o.created_at < now() - greatest(coalesce(older_than, interval '1 day'), interval '1 day')
+      and o.created_at <= now() - greatest(coalesce(older_than, interval '0'), interval '0')
       and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
     order by o.created_at
     limit 1000;
@@ -565,9 +685,11 @@ revoke all on function public.unclaimed_job_cvs(interval) from public, anon;
 grant execute on function public.unclaimed_job_cvs(interval) to authenticated, service_role;
 
 drop policy if exists "website visitors upload CVs into incoming" on storage.objects;
-create policy "website visitors upload CVs into incoming"
+drop policy if exists "website visitors upload ticketed CVs" on storage.objects;
+create policy "website visitors upload ticketed CVs"
   on storage.objects for insert to anon
-  with check (bucket_id = 'job-cvs' and (select public.job_cv_upload_allowed(name)));
+  with check (bucket_id = 'job-cvs' and (select public.job_cv_ticket_open(name)));
+drop function if exists public.job_cv_upload_allowed(text);
 
 drop policy if exists "recruitment staff read CVs" on storage.objects;
 create policy "recruitment staff read CVs"
@@ -638,9 +760,12 @@ grant execute on function public.set_job_application_owner(uuid, uuid) to authen
 --   phone      optional, up to 24
 --   interest   area of interest, up to 120; required for a general application
 --   message    optional, up to 3000
---   cv_path    required: incoming/<uuid>/<file name> just uploaded to job-cvs, unclaimed, at most a day old,
---              at most 5 MB, PDF, DOC or DOCX according to Storage
---   cv_name    the file name as the applicant had it, up to 200 (defaults to the stored name)
+--   cv_path    required: the path begin_job_cv_upload gave the website server, uploaded to job-cvs, its ticket not
+--              yet claimed, at most a day old, at most 4 MB, PDF, DOC or DOCX as the website server stored it (the
+--              server checks the file's first bytes and sets the type itself; Storage records that type)
+--   cv_name    the file name as the applicant had it, up to 200 (defaults to the stored name); saved cleaned:
+--              letters, digits, spaces, dots, dashes, underscores and brackets, anything else becomes _, at most
+--              100 characters before the extension, which always comes from cv_path
 --   consent    boolean, must be true: Lexta may keep the details for this and future roles
 -- Errors: 22023 invalid input (the message names the field), PT429 too many applications (3 per email or phone in
 -- a day, 200 site wide in an hour; PostgREST answers HTTP 429).
@@ -667,6 +792,8 @@ declare
   v_size bigint;
   v_type text;
   v_object_created timestamptz;
+  v_ticket_id uuid;
+  v_ext text;
   v_ref text;
   recent integer;
 begin
@@ -718,6 +845,8 @@ begin
     if v_opening.id is null then
       raise exception 'invalid field: opening' using errcode = '22023';
     end if;
+    -- A role application has no area of interest (a form may still send one).
+    v_interest := null;
   elsif v_interest is null then
     raise exception 'invalid field: interest' using errcode = '22023';
   end if;
@@ -726,8 +855,14 @@ begin
   if v_cv_path is null or not public.job_cv_path_ok(v_cv_path) then
     raise exception 'invalid field: cv_path' using errcode = '22023';
   end if;
-  -- Taken in order, so two applications cannot claim the same file at once.
-  perform pg_advisory_xact_lock(64, hashtext(v_cv_path));
+  -- Only an upload the website server asked for (a ticket), claimed once: the ticket row stays locked until the
+  -- application is saved, so two applications cannot claim the same file.
+  select t.id into v_ticket_id from public.job_cv_upload_tickets t
+   where t.object_name = v_cv_path and t.claimed_at is null
+   for update;
+  if v_ticket_id is null then
+    raise exception 'invalid field: cv_path' using errcode = '22023';
+  end if;
   select nullif(o.metadata ->> 'size', '')::bigint, lower(o.metadata ->> 'mimetype'), o.created_at
     into v_size, v_type, v_object_created
     from storage.objects o where o.bucket_id = 'job-cvs' and o.name = v_cv_path;
@@ -735,14 +870,20 @@ begin
      or exists (select 1 from public.job_applications a where a.cv_path = v_cv_path) then
     raise exception 'invalid field: cv_path' using errcode = '22023';
   end if;
-  if v_size is null or v_size < 1 or v_size > 5242880 then
+  if v_size is null or v_size < 1 or v_size > 4194304 then
     raise exception 'invalid field: cv_size' using errcode = '22023';
   end if;
   if v_type is null or v_type not in ('application/pdf', 'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document') then
     raise exception 'invalid field: cv_type' using errcode = '22023';
   end if;
-  v_cv_name := coalesce(regexp_replace(v_cv_name, '[/\\]', '_', 'g'), split_part(v_cv_path, '/', 3));
+  -- The name staff see and download under: a safe character set only, the extension of the stored file.
+  v_ext := lower(substring(v_cv_path from '\.([A-Za-z]+)$'));
+  v_cv_name := regexp_replace(coalesce(v_cv_name, split_part(v_cv_path, '/', 3)), '\.[A-Za-z0-9]{1,5}$', '');
+  v_cv_name := regexp_replace(v_cv_name, '[^A-Za-z0-9 ._()-]', '_', 'g');
+  v_cv_name := btrim(regexp_replace(regexp_replace(v_cv_name, '_{2,}', '_', 'g'), '\s{2,}', ' ', 'g'), ' ._-');
+  v_cv_name := btrim(left(v_cv_name, 100), ' ._-');
+  v_cv_name := coalesce(nullif(v_cv_name, ''), 'cv') || '.' || v_ext;
 
   -- Abuse guard: at most 3 applications per email or phone number in a day, and 200 site wide in an hour.
   v_phone_key := public.crm_phone_key(v_phone);
@@ -767,6 +908,7 @@ begin
                                        consent_keep, consent_at, source)
   values (v_ref, v_opening.id, v_opening.reference, v_opening.title, v_name, v_email, v_phone, v_interest, v_message,
           v_cv_path, v_cv_name, v_size, v_type, true, now(), 'website');
+  update public.job_cv_upload_tickets set claimed_at = now() where id = v_ticket_id;
   return v_ref;
 end;
 $$;

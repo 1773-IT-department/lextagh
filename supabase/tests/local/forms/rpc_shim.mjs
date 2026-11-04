@@ -1,6 +1,6 @@
 // A tiny stand in for Supabase's REST API (PostgREST), for local tests only. It answers the three website intake
 // calls the Lexta site makes, POST /rest/v1/rpc/submit_website_enquiry, /rest/v1/rpc/submit_complaint and
-// /rest/v1/rpc/submit_job_application, by running the real database functions in the local harness database as the
+// /rest/v1/rpc/submit_job_application and begin_job_cv_upload, by running the real database functions in the local harness database as the
 // anon role, and answers errors the way PostgREST does ({ code, message } with HTTP 400 or 429). Connection settings
 // come from PGHOST, PGPORT, PGUSER, PGDATABASE.
 // It also answers the website reads (Our Brands products, Where to Buy regions and stockists, Careers open roles),
@@ -17,6 +17,10 @@ const CALLS = {
   submit_website_enquiry: { args: ["form", "payload"], sql: "select public.submit_website_enquiry(:'form', :'payload'::jsonb);" },
   submit_complaint: { args: ["payload"], sql: "select public.submit_complaint(:'payload'::jsonb);" },
   submit_job_application: { args: ["payload"], sql: "select public.submit_job_application(:'payload'::jsonb);" },
+  begin_job_cv_upload: {
+    args: ["nonce", "issued_at", "ip_hash", "signature", "file_name"],
+    sql: "select public.begin_job_cv_upload(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', :'file_name');",
+  },
 };
 
 /** Runs SQL through psql. vars become psql variables (quoted safely with :'name'). */
@@ -117,7 +121,8 @@ const res200 = (send, body) => send(200, JSON.parse(body));
 
 // Storage --------------------------------------------------------------------------------------------------
 // Enough of the Supabase Storage API for the CV upload and the portal's signed links: POST /storage/v1/object/<bucket>/
-// <path> (raw body or supabase-js multipart), POST /storage/v1/object/sign/<bucket>/<path>, GET the signed link, and
+// <path> (raw body or supabase-js multipart), GET /storage/v1/object/<bucket>/<path> (download as the caller),
+// POST /storage/v1/object/sign/<bucket>/<path>, GET the signed link, and
 // DELETE /storage/v1/object/<bucket> with { prefixes }. Like the real service it checks the bucket's size and type
 // limits itself, writes the storage.objects row as the caller (anon, or the signed in person of a JWT) so the real
 // storage policies decide, and records { size, mimetype } in the metadata. Files are kept in SHIM_STORAGE_DIR.
@@ -177,6 +182,16 @@ export async function answerStorage(req, url, send, who) {
       "content-type": meta.out || "application/octet-stream",
       ...(download !== null ? { "content-disposition": `attachment; filename="${(download || rest.at(-1)).replace(/"/g, "")}"` } : {}),
     });
+  }
+  if (req.method === "GET" && p.startsWith("/storage/v1/object/") && !p.startsWith("/storage/v1/object/sign/")) {
+    // Authenticated download: the caller must be able to select the row (storage policies decide).
+    const [bucket, ...rest] = p.slice("/storage/v1/object/".length).split("/");
+    const name = rest.join("/");
+    const r = await psql(asCaller(who) + "select coalesce(metadata ->> 'mimetype', 'application/octet-stream') from storage.objects where bucket_id = :'bucket' and name = :'name';", { bucket, name });
+    if (r.code !== 0 || !r.out) return storageError(send, 400, 404, "not_found", "Object not found");
+    let bytes;
+    try { bytes = readFileSync(fileOn(bucket, name)); } catch { return storageError(send, 400, 404, "not_found", "Object not found"); }
+    return send(200, bytes, { "content-type": r.out });
   }
   if (req.method === "POST" && p.startsWith("/storage/v1/object/")) {
     const [bucket, ...rest] = p.slice("/storage/v1/object/".length).split("/");

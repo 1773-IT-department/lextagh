@@ -3,14 +3,19 @@
 // Plain server code with no Next.js imports, so the local harness test (supabase/tests/local/recruitment) runs the
 // very same function. The server action submitApplicationForm in app/actions/forms.ts is a thin wrapper around it.
 //
-// The CV reaches the private job-cvs bucket in one of two ways, both with the publishable key only:
-//   with JavaScript      the browser uploads it straight to incoming/<uuid>/ first (so large files never pass
-//                        through the website's server), then posts the form with cv_path and cv_name;
-//   without JavaScript   the file comes in the multipart form post and is uploaded here.
-// Then public.submit_job_application claims the upload and returns the LX-APP reference. A filled honeypot gets a
-// thank you with a reference shaped like a real one, and nothing is uploaded or saved.
+// The CV always comes to this server in the multipart form post (with or without JavaScript); browsers never write
+// to Storage themselves. Here the file's size, type and first bytes are checked, then the server signs a request
+// for a one time upload ticket with RECRUITMENT_INTAKE_SECRET (shared only with the database; never sent to the
+// browser): HMAC SHA-256 over "<new uuid>.<unix seconds>.<visitor IP hash>". The IP hash is an HMAC of the visitor's
+// address with the same secret, so the raw address is never stored. The database checks the signature and the per
+// visitor limits and answers with the path the upload may use; the server uploads there with the publishable key and
+// the content type it worked out, and public.submit_job_application claims the upload and returns the LX-APP
+// reference. A filled honeypot gets a thank you with a reference shaped like a real one, and nothing is uploaded or
+// saved.
+import { createHmac, randomUUID } from "node:crypto";
 import {
   JOB_CV_MAX_BYTES,
+  JOB_CV_TYPES,
   isJobCvUploadPath,
   jobCvExtension,
   looksLikeCv,
@@ -20,22 +25,22 @@ import {
 } from "@lexta/db";
 import { formsConfigured, HONEYPOT_FIELD, msgUnavailable, payloadTooLarge, type FormState } from "./core";
 
-/** Where applicants can write instead when the form cannot send (the address the Careers page shows). */
 export const CAREERS_EMAIL = "support@lextagh.com";
 
 export const APPLICATION_LIMITS = { name: 120, email: 254, phone: 24, interest: 120, message: 3000, opening: 20, cvName: 200 };
 
 export const MSG_APPLICATION_RATE_LIMITED = "You have sent several applications today. Please try again tomorrow, or email " + CAREERS_EMAIL + ".";
+export const MSG_UPLOAD_RATE_LIMITED = "Too many CVs have been sent from your connection. Please try again later, or email " + CAREERS_EMAIL + ".";
 export const MSG_ROLE_CLOSED = "This role is no longer taking applications. Switch to a general application and we will keep it on file.";
 export const MSG_CHECK_FIELDS = "Please check the highlighted fields.";
 export const msgGeneric = (email: string) => `Sorry, your application could not be sent. Please try again in a few minutes, or email ${email}.`;
 
 export const CV_MESSAGES = {
-  missing: "Please attach your CV (PDF or Word, up to 5 MB).",
+  missing: "Please attach your CV (PDF or Word, up to 4 MB).",
   type: "Your CV must be a PDF or Word file (.pdf, .doc or .docx).",
-  size: "Your CV must be 5 MB or smaller.",
+  size: "Your CV must be 4 MB or smaller.",
   content: "This file does not look like a PDF or Word document. Please choose your CV again.",
-  upload: "Your CV could not be uploaded. Please try again with a PDF or Word file up to 5 MB.",
+  upload: "Your CV could not be uploaded. Please try again with a PDF or Word file up to 4 MB.",
 };
 
 const MESSAGES: Record<string, string> = {
@@ -90,8 +95,27 @@ export async function checkCvFile(file: File): Promise<string | null> {
   const ext = jobCvExtension(file.name);
   if (!ext) return CV_MESSAGES.type;
   if (file.size > JOB_CV_MAX_BYTES) return CV_MESSAGES.size;
+  if (file.size < 8) return CV_MESSAGES.content;
   const head = new Uint8Array(await file.slice(0, 8).arrayBuffer());
   return looksLikeCv(ext, head) ? null : CV_MESSAGES.content;
+}
+
+/** The shared secret, or null when the site has none (then the form says it is not available). */
+const intakeSecret = () => {
+  const s = process.env.RECRUITMENT_INTAKE_SECRET ?? "";
+  return s.length >= 32 ? s : null;
+};
+
+/**
+ * The signed ticket request for one upload. ip is the visitor's address as the server saw it (on Vercel the first
+ * x-forwarded-for value); it is hashed with the secret here and never sent anywhere.
+ */
+export function signTicketRequest(secret: string, ip: string, fileName: string, now = Date.now()) {
+  const nonce = randomUUID();
+  const issuedAt = Math.floor(now / 1000);
+  const ipHash = createHmac("sha256", secret).update(`ip:${ip || "unknown"}`).digest("hex");
+  const signature = createHmac("sha256", secret).update(`${nonce}.${issuedAt}.${ipHash}`).digest("hex");
+  return { nonce, issuedAt, ipHash, signature, fileName };
 }
 
 /** Validates the application form. Exported for the harness test. */
@@ -115,7 +139,9 @@ export async function buildApplication(fd: FormData): Promise<{ values: Fields; 
   else if (v.name.length > APPLICATION_LIMITS.name) errors.name = `Your name can be at most ${APPLICATION_LIMITS.name} characters.`;
   if (!v.email || v.email.length > APPLICATION_LIMITS.email || !EMAIL_RE.test(v.email)) errors.email = MESSAGES.email;
   if (v.phone && (v.phone.length > APPLICATION_LIMITS.phone || !PHONE_RE.test(v.phone))) errors.phone = MESSAGES.phone;
-  if (!v.opening && !v.interest) errors.interest = MESSAGES.interest;
+  // A role application has no area of interest (without JavaScript the form still sends the select).
+  if (v.opening) v.interest = "";
+  else if (!v.interest) errors.interest = MESSAGES.interest;
   else if (v.interest.length > APPLICATION_LIMITS.interest) errors.interest = MESSAGES.interest;
   if (v.message.length > APPLICATION_LIMITS.message) errors.message = MESSAGES.message;
   if (v.consent !== "yes") errors.consent = MESSAGES.consent;
@@ -141,8 +167,8 @@ export async function buildApplication(fd: FormData): Promise<{ values: Fields; 
 /** What the visitor keeps on an error: everything typed, and an uploaded CV unless the CV was the problem. */
 const keep = (v: Fields, cvOk: boolean): Fields => (cvOk ? v : { ...v, cv_path: "", cv_name: "" });
 
-/** The application form's server work. Never shows database details. */
-export async function handleApplication(fd: FormData): Promise<FormState> {
+/** The application form's server work. Never shows database details. ip: the visitor's address (see signTicketRequest). */
+export async function handleApplication(fd: FormData, ctx: { ip: string } = { ip: "" }): Promise<FormState> {
   const trap = fd.get(HONEYPOT_FIELD);
   if (typeof trap === "string" && trap.trim() !== "") {
     const ref = fakeApplicationReference();
@@ -153,7 +179,8 @@ export async function handleApplication(fd: FormData): Promise<FormState> {
   if (Object.keys(errors).length) {
     return { status: "error", message: errors.opening && Object.keys(errors).length === 1 ? MSG_ROLE_CLOSED : MSG_CHECK_FIELDS, fieldErrors: errors, values: keep(values, !errors.cv) };
   }
-  if (!formsConfigured()) return { status: "error", message: msgUnavailable(CAREERS_EMAIL), values: keep(values, false) };
+  const secret = intakeSecret();
+  if (!formsConfigured() || !secret) return { status: "error", message: msgUnavailable(CAREERS_EMAIL), values: keep(values, false) };
 
   const payload: JobApplicationPayload = {
     opening: values.opening || undefined,
@@ -172,9 +199,15 @@ export async function handleApplication(fd: FormData): Promise<FormState> {
 
   try {
     if (file) {
-      const up = await uploadJobCv(file, file.name);
+      const ext = jobCvExtension(file.name);
+      if (!ext) return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { cv: CV_MESSAGES.type }, values: keep(values, false) };
+      const bytes = await file.arrayBuffer();
+      // Stored with the type that matches the checked bytes, whatever the browser called the file.
+      const up = await uploadJobCv(signTicketRequest(secret, ctx.ip, file.name), bytes, JOB_CV_TYPES[ext]);
       if (!up.ok) {
         if (up.reason === "rejected") return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { cv: CV_MESSAGES.upload }, values: keep(values, false) };
+        if (up.reason === "rate_limited") return { status: "error", message: MSG_UPLOAD_RATE_LIMITED, values: keep(values, false) };
+        if (up.reason === "not_configured") return { status: "error", message: msgUnavailable(CAREERS_EMAIL), values: keep(values, false) };
         return { status: "error", message: msgGeneric(CAREERS_EMAIL), values: keep(values, false) };
       }
       payload.cv_path = up.path;

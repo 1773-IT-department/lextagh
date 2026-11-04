@@ -22,16 +22,18 @@ begin
   if exists (select 1 from public.job_applications) or exists (select 1 from public.job_application_counters) then
     raise exception 'FAIL: no applications may be seeded';
   end if;
-  if not exists (select 1 from storage.buckets where id = 'job-cvs' and not public and file_size_limit = 5242880
+  if not exists (select 1 from storage.buckets where id = 'job-cvs' and not public and file_size_limit = 4194304
                  and allowed_mime_types @> array['application/pdf', 'application/msword',
                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
                  and array_length(allowed_mime_types, 1) = 3) then
-    raise exception 'FAIL: job-cvs must be private, 5 MB, PDF, DOC and DOCX only';
+    raise exception 'FAIL: job-cvs must be private, 4 MB, PDF, DOC and DOCX only';
   end if;
-  if exists (select 1 from pg_tables where schemaname = 'public' and tablename like 'job_%' and not rowsecurity) then
+  if exists (select 1 from pg_tables where (schemaname = 'public' and tablename like 'job_%' or schemaname = 'private') and not rowsecurity) then
     raise exception 'FAIL: a recruitment table has Row Level Security off';
   end if;
-  raise notice 'PASS: 12 prototype roles seeded as drafts in order, nothing else; job-cvs private with size and type limits; RLS on';
+  if exists (select 1 from private.recruitment_intake_secret) then raise exception 'FAIL: the intake secret must not be seeded'; end if;
+  if to_regprocedure('public.job_cv_upload_allowed(text)') is not null then raise exception 'FAIL: job_cv_upload_allowed still exists'; end if;
+  raise notice 'PASS: 12 prototype roles seeded as drafts in order, nothing else; job-cvs private, 4 MB, three types; RLS on; no secret seeded';
 end $$;
 
 -- Fixtures -----------------------------------------------------------------------------------------------
@@ -63,9 +65,23 @@ insert into auth.users (id, email, raw_app_meta_data, raw_user_meta_data) values
   (pg_temp.u('hr_gone'), 'rc.gone@test.local',  '{"role":"hr"}',            '{}');
 update public.profiles set is_active = false where id = pg_temp.u('hr_gone');
 
--- A CV as Storage would record it (as the database owner, for set up only).
+-- The website server's shared secret, as Desmond sets it once (a test value here).
+insert into private.recruitment_intake_secret (secret) values ('harness-intake-secret-0123456789abcdef');
+
+-- What the website server signs: HMAC SHA-256 over "<nonce>.<unix seconds>.<ip hash>" with the shared secret.
+create function pg_temp.sig(nonce uuid, ts bigint, ip text, secret text default 'harness-intake-secret-0123456789abcdef')
+returns text language sql immutable as $$
+  select encode(extensions.hmac(nonce::text || '.' || ts::text || '.' || ip, secret, 'sha256'), 'hex');
+$$;
+create function pg_temp.ip(tag text) returns text language sql immutable as $$ select md5(tag) || md5(tag || '2'); $$;
+create function pg_temp.now_s() returns bigint language sql stable as $$ select extract(epoch from now())::bigint; $$;
+
+-- A CV as Storage would record it after a ticketed upload (as the database owner, for set up only).
 create function pg_temp.put_cv(object_name text, size_bytes bigint default 120000, mime text default 'application/pdf',
-                               age interval default interval '0') returns void language sql as $$
+                               age interval default interval '0', ticket boolean default true) returns void language sql as $$
+  insert into public.job_cv_upload_tickets (id, object_name, ip_hash, upload_by, created_at)
+  select split_part(object_name, '/', 2)::uuid, object_name, pg_temp.ip('fixtures'), now() + interval '15 minutes', now() - age
+  where ticket;
   insert into storage.objects (bucket_id, name, metadata, created_at)
   values ('job-cvs', object_name, jsonb_build_object('size', size_bytes, 'mimetype', mime), now() - age);
 $$;
@@ -143,7 +159,8 @@ begin
   foreach t in array array['select public.recruitment_staff_role()', 'select * from public.recruitment_staff()',
       'select * from public.unclaimed_job_cvs()', $q$select public.set_job_application_stage(gen_random_uuid(), 'hired', null)$q$,
       'select public.set_job_application_owner(gen_random_uuid(), null)', 'select public.next_job_application_reference(2026)',
-      $q$select public.job_cv_unclaimed('x')$q$] loop
+      $q$select public.job_cv_unclaimed('x')$q$, $q$select public.job_cv_path_ok('x')$q$,
+      'select count(*) from public.job_cv_upload_tickets', 'select count(*) from private.recruitment_intake_secret'] loop
     begin
       execute t;
       raise exception 'FAIL: anon ran %', t;
@@ -153,42 +170,70 @@ begin
   raise notice 'PASS: anon reads only the public columns of live roles (open, opened, closing date not passed) and nothing else';
 end $$;
 
--- Website visitors: CV uploads -----------------------------------------------------------------------------
+-- Website visitors: CV uploads need a ticket the website server signed -----------------------------------------
+-- (still as anon here)
 do $$
-declare n int;
+declare
+  n int;
+  nonce uuid := gen_random_uuid();
+  p text;
+  t bigint := pg_temp.now_s();
 begin
-  insert into storage.objects (bucket_id, name, metadata) values ('job-cvs', pg_temp.cv('anon-ok'), '{"size": 1000, "mimetype": "application/pdf"}');
-  insert into storage.objects (bucket_id, name, metadata)
-  values ('job-cvs', 'incoming/' || gen_random_uuid() || '/My_CV-2026.DOCX', '{"size": 1000, "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}');
+  -- No ticket, no upload: the publishable key alone cannot put anything in the bucket.
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', 'cvs/' || gen_random_uuid() || '/cv.pdf');
-    raise exception 'FAIL: anon uploaded outside incoming/';
+    insert into storage.objects (bucket_id, name, metadata) values ('job-cvs', pg_temp.cv('anon-direct'), '{"size": 1000, "mimetype": "application/pdf"}');
+    raise exception 'FAIL: anon uploaded without a ticket';
   exception when insufficient_privilege then null;
   end;
+  -- A signed request gets a ticket for one cleaned path.
+  p := public.begin_job_cv_upload(nonce, t, pg_temp.ip('visitor-1'), pg_temp.sig(nonce, t, pg_temp.ip('visitor-1')), '../My CV <final>!.PDF');
+  if p <> 'incoming/' || nonce || '/My-CV-final.pdf' then raise exception 'FAIL: ticket path was %', p; end if;
+  insert into storage.objects (bucket_id, name, metadata) values ('job-cvs', p, '{"size": 1000, "mimetype": "application/pdf"}');
+  -- The ticket allows that one path, once.
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', 'incoming/' || gen_random_uuid() || '/cv.html');
-    raise exception 'FAIL: anon uploaded an HTML file';
-  exception when insufficient_privilege then null;
+    insert into storage.objects (bucket_id, name, metadata) values ('job-cvs', p, '{"size": 1000, "mimetype": "application/pdf"}');
+    raise exception 'FAIL: a second upload at a ticketed path was taken';
+  exception when unique_violation then null;
   end;
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', 'incoming/' || gen_random_uuid() || '/sub/cv.pdf');
-    raise exception 'FAIL: anon uploaded into a sub folder';
+    insert into storage.objects (bucket_id, name) values ('job-cvs', 'incoming/' || nonce || '/second.pdf');
+    raise exception 'FAIL: anon uploaded a second file into a ticketed folder';
   exception when insufficient_privilege then null;
   end;
+  -- The same nonce cannot be used twice.
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', 'incoming/not-a-uuid/cv.pdf');
-    raise exception 'FAIL: anon uploaded into a folder that is not a uuid';
-  exception when insufficient_privilege then null;
+    perform public.begin_job_cv_upload(nonce, t, pg_temp.ip('visitor-1'), pg_temp.sig(nonce, t, pg_temp.ip('visitor-1')), 'cv.pdf');
+    raise exception 'FAIL: a nonce was reused';
+  exception when sqlstate '22023' then
+    if sqlerrm not like '%nonce%' then raise exception 'FAIL: reuse error was %', sqlerrm; end if;
   end;
+  -- Forged, tampered, stale and future signatures are refused.
+  declare
+    other uuid := gen_random_uuid();
+    bad record;
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', 'incoming/' || gen_random_uuid() || '/../cv.pdf');
-    raise exception 'FAIL: anon uploaded with a dotted path';
-  exception when insufficient_privilege then null;
-  end;
-  begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', replace(pg_temp.cv('anon-ok'), 'cv.pdf', 'second.pdf'));
-    raise exception 'FAIL: anon uploaded a second file into a used folder';
-  exception when insufficient_privilege then null;
+    for bad in select * from (values
+        (other, t, pg_temp.ip('v2'), pg_temp.sig(other, t, pg_temp.ip('v2'), 'a-different-secret-that-is-long-enough'), 'signature'),
+        (other, t, pg_temp.ip('v2'), pg_temp.sig(other, t, pg_temp.ip('v3')), 'signature'),
+        (other, t, pg_temp.ip('v2'), pg_temp.sig(other, t + 1, pg_temp.ip('v2')), 'signature'),
+        (other, t, pg_temp.ip('v2'), 'not-hex', 'signature'),
+        (other, t, 'raw 10.0.0.1', pg_temp.sig(other, t, 'raw 10.0.0.1'), 'signature'),
+        (other, t - 400, pg_temp.ip('v2'), pg_temp.sig(other, t - 400, pg_temp.ip('v2')), 'issued_at'),
+        (other, t + 600, pg_temp.ip('v2'), pg_temp.sig(other, t + 600, pg_temp.ip('v2')), 'issued_at')
+      ) as x(nonce, ts, ip, sig, field) loop
+      begin
+        perform public.begin_job_cv_upload(bad.nonce, bad.ts, bad.ip, bad.sig, 'cv.pdf');
+        raise exception 'FAIL: accepted a bad signature (%)', bad.field;
+      exception when sqlstate '22023' then
+        if sqlerrm not like '%' || bad.field || '%' then raise exception 'FAIL: expected %, got %', bad.field, sqlerrm; end if;
+      end;
+    end loop;
+    -- Only PDF, DOC and DOCX names get a ticket.
+    begin
+      perform public.begin_job_cv_upload(other, t, pg_temp.ip('v2'), pg_temp.sig(other, t, pg_temp.ip('v2')), 'cv.html');
+      raise exception 'FAIL: ticket for an HTML file';
+    exception when sqlstate '22023' then null;
+    end;
   end;
   begin
     insert into storage.objects (bucket_id, name) values ('complaint-files', gen_random_uuid() || '/x.pdf');
@@ -202,44 +247,122 @@ begin
   delete from storage.objects where bucket_id = 'job-cvs';
   get diagnostics n = row_count;
   if n <> 0 then raise exception 'FAIL: anon deleted a CV'; end if;
-  raise notice 'PASS: anon uploads only into a new incoming/<uuid>/ folder, only PDF, DOC or DOCX names; cannot list, read, rename or delete';
+  raise notice 'PASS: anon uploads only at the one path of a signed ticket, once; forged, tampered, stale and reused requests are refused; cannot list, read, rename or delete';
 end $$;
 reset role;
 
--- Upload caps: 20 unclaimed in an hour, 100 in a day, site wide.
+-- A ticket is good for 15 minutes.
 do $$
-declare i int;
+declare nonce uuid := gen_random_uuid(); p text; t bigint := pg_temp.now_s();
 begin
-  -- Two are already there from anon above.
-  for i in 1..17 loop perform pg_temp.put_cv(pg_temp.cv('cap-' || i)); end loop;
   set local role anon;
-  insert into storage.objects (bucket_id, name) values ('job-cvs', pg_temp.cv('cap-20th'));
+  p := public.begin_job_cv_upload(nonce, t, pg_temp.ip('late'), pg_temp.sig(nonce, t, pg_temp.ip('late')), 'late.docx');
+  reset role;
+  update public.job_cv_upload_tickets set upload_by = now() - interval '1 second' where id = nonce;
+  set local role anon;
   begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', pg_temp.cv('cap-21st'));
-    raise exception 'FAIL: a 21st unclaimed upload in an hour was allowed';
+    insert into storage.objects (bucket_id, name) values ('job-cvs', p);
+    raise exception 'FAIL: an expired ticket allowed an upload';
   exception when insufficient_privilege then null;
   end;
   reset role;
-  -- Older than an hour: only the daily cap counts.
-  update storage.objects set created_at = now() - interval '2 hours' where bucket_id = 'job-cvs';
-  for i in 1..79 loop perform pg_temp.put_cv(pg_temp.cv('day-' || i), 1000, 'application/pdf', interval '3 hours'); end loop;
-  set local role anon;
-  insert into storage.objects (bucket_id, name) values ('job-cvs', pg_temp.cv('day-100th'));
-  begin
-    insert into storage.objects (bucket_id, name) values ('job-cvs', pg_temp.cv('day-101st'));
-    raise exception 'FAIL: a 101st unclaimed upload in a day was allowed';
-  exception when insufficient_privilege then null;
-  end;
-  reset role;
-  delete from storage.objects where bucket_id = 'job-cvs';
-  raise notice 'PASS: unclaimed uploads are capped at 20 an hour and 100 a day site wide';
+  raise notice 'PASS: an upload ticket expires after 15 minutes';
 end $$;
+
+-- Per visitor: 5 tickets an hour and 10 a day for one IP hash; another visitor is not affected.
+do $$
+declare i int; nonce uuid; t bigint := pg_temp.now_s(); ip text := pg_temp.ip('busy-visitor');
+begin
+  set local role anon;
+  for i in 1..5 loop
+    nonce := gen_random_uuid();
+    perform public.begin_job_cv_upload(nonce, t, ip, pg_temp.sig(nonce, t, ip), 'cv.pdf');
+  end loop;
+  nonce := gen_random_uuid();
+  begin
+    perform public.begin_job_cv_upload(nonce, t, ip, pg_temp.sig(nonce, t, ip), 'cv.pdf');
+    raise exception 'FAIL: a 6th ticket in an hour for one visitor';
+  exception when sqlstate 'PT429' then null;
+  end;
+  nonce := gen_random_uuid();
+  perform public.begin_job_cv_upload(nonce, t, pg_temp.ip('someone-else'), pg_temp.sig(nonce, t, pg_temp.ip('someone-else')), 'cv.pdf');
+  reset role;
+  update public.job_cv_upload_tickets set created_at = now() - interval '2 hours' where ip_hash = ip;
+  set local role anon;
+  for i in 1..5 loop
+    nonce := gen_random_uuid();
+    perform public.begin_job_cv_upload(nonce, t, ip, pg_temp.sig(nonce, t, ip), 'cv.pdf');
+  end loop;
+  reset role;
+  update public.job_cv_upload_tickets set created_at = now() - interval '2 hours' where ip_hash = ip;
+  set local role anon;
+  nonce := gen_random_uuid();
+  begin
+    perform public.begin_job_cv_upload(nonce, t, ip, pg_temp.sig(nonce, t, ip), 'cv.pdf');
+    raise exception 'FAIL: an 11th ticket in a day for one visitor';
+  exception when sqlstate 'PT429' then null;
+  end;
+  reset role;
+  -- Tickets older than 7 days are removed (and stop counting).
+  update public.job_cv_upload_tickets set created_at = now() - interval '8 days' where ip_hash = ip;
+  set local role anon;
+  nonce := gen_random_uuid();
+  perform public.begin_job_cv_upload(nonce, t, ip, pg_temp.sig(nonce, t, ip), 'cv.pdf');
+  reset role;
+  if (select count(*) from public.job_cv_upload_tickets where ip_hash = ip) <> 1 then raise exception 'FAIL: old tickets were not removed'; end if;
+  raise notice 'PASS: 5 upload tickets an hour and 10 a day per IP hash, others unaffected; tickets kept 7 days';
+end $$;
+
+-- Site wide circuit breaker at 2000 tickets a day.
+do $$
+declare nonce uuid := gen_random_uuid(); t bigint := pg_temp.now_s();
+begin
+  insert into public.job_cv_upload_tickets (id, object_name, ip_hash, upload_by)
+  select gen_random_uuid(), 'incoming/' || gen_random_uuid() || '/flood.pdf', md5(g::text) || md5(g::text), now()
+  from generate_series(1, 2000) g;
+  set local role anon;
+  begin
+    perform public.begin_job_cv_upload(nonce, t, pg_temp.ip('fresh-visitor'), pg_temp.sig(nonce, t, pg_temp.ip('fresh-visitor')), 'cv.pdf');
+    raise exception 'FAIL: the circuit breaker did not stop ticket 2001';
+  exception when sqlstate 'PT429' then null;
+  end;
+  reset role;
+  delete from public.job_cv_upload_tickets where object_name like '%/flood.pdf';
+  raise notice 'PASS: above 2000 upload tickets a day site wide the intake stops (logged)';
+end $$;
+
+-- Without the shared secret in the database nobody gets a ticket.
+do $$
+declare nonce uuid := gen_random_uuid(); t bigint := pg_temp.now_s();
+begin
+  delete from private.recruitment_intake_secret;
+  set local role anon;
+  begin
+    perform public.begin_job_cv_upload(nonce, t, pg_temp.ip('x'), pg_temp.sig(nonce, t, pg_temp.ip('x')), 'cv.pdf');
+    raise exception 'FAIL: a ticket without a secret set';
+  exception when sqlstate '55000' then null;
+  end;
+  reset role;
+  insert into private.recruitment_intake_secret (secret) values ('harness-intake-secret-0123456789abcdef');
+  begin
+    insert into private.recruitment_intake_secret (secret) values ('too-short');
+    raise exception 'FAIL: a short secret was accepted';
+  exception when check_violation or unique_violation then null;
+  end;
+  raise notice 'PASS: no secret set, no tickets';
+end $$;
+delete from storage.objects where bucket_id = 'job-cvs';
+delete from public.job_cv_upload_tickets;
 
 -- Website intake ------------------------------------------------------------------------------------------
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('ama'), 250000, 'application/pdf'); end $$;
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('kofi'), 90000, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'); end $$;
-do $$ begin perform pg_temp.put_cv(pg_temp.cv('esi'), 5242880, 'application/msword'); end $$;
-do $$ begin perform pg_temp.put_cv(pg_temp.cv('big'), 5242881, 'application/pdf'); end $$;
+do $$ begin perform pg_temp.put_cv(pg_temp.cv('esi'), 4194304, 'application/msword'); end $$;
+do $$ begin perform pg_temp.put_cv(pg_temp.cv('big'), 4194305, 'application/pdf'); end $$;
+do $$ begin perform pg_temp.put_cv(pg_temp.cv('noticket'), 1000, 'application/pdf', interval '0', false); end $$;
+do $$ begin perform pg_temp.put_cv(pg_temp.cv('names-1')); perform pg_temp.put_cv(pg_temp.cv('names-2')); end $$;
+-- Many uploads nobody claimed (bots, people who gave up) block nobody.
+do $$ declare i int; begin for i in 1..150 loop perform pg_temp.put_cv(pg_temp.cv('crowd-' || i), 1000, 'application/pdf', interval '2 hours'); end loop; end $$;
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('html'), 1000, 'text/html'); end $$;
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('old'), 1000, 'application/pdf', interval '25 hours'); end $$;
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('zero'), 0, 'application/pdf'); end $$;
@@ -264,9 +387,9 @@ begin
     'cv_path', pg_temp.cv('kofi'), 'consent', true));
   if r !~ '-0002$' then raise exception 'FAIL: second reference was %', r; end if;
   insert into refs values ('kofi', r);
-  -- A role closing today still takes applications; exactly 5 MB is fine.
+  -- A role closing today still takes applications; exactly 4 MB is fine; a role application keeps no area of interest.
   r := public.submit_job_application(jsonb_build_object('name', 'Esi', 'email', 'esi@test.local', 'opening', 'LX-TST-002',
-    'cv_path', pg_temp.cv('esi'), 'consent', true));
+    'interest', 'Manufacturing and production', 'cv_path', pg_temp.cv('esi'), 'consent', true));
   insert into refs values ('esi', r);
 
   -- Refusals: (payload, field named in the error).
@@ -288,6 +411,7 @@ begin
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('missing'), 'consent', true), 'cv_path'),
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('ama'), 'consent', true), 'cv_path'),
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('old'), 'consent', true), 'cv_path'),
+      (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('noticket'), 'consent', true), 'cv_path'),
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', 'cvs/x/cv.pdf', 'consent', true), 'cv_path'),
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('big'), 'consent', true), 'cv_size'),
       (jsonb_build_object('name', 'X', 'email', 'x1@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('zero'), 'consent', true), 'cv_size'),
@@ -331,7 +455,38 @@ begin
      or not exists (select 1 from public.job_application_events where note = 'General application: Quality assurance') then
     raise exception 'FAIL: received entries missing from the history';
   end if;
-  raise notice 'PASS: applications saved with the claimed CV (size and type from Storage), consent time and a received entry';
+  if (select interest from public.job_applications where reference = (select ref from refs where label = 'esi')) is not null then
+    raise exception 'FAIL: a role application kept an area of interest';
+  end if;
+  if exists (select 1 from public.job_cv_upload_tickets where object_name in (pg_temp.cv('ama'), pg_temp.cv('kofi'), pg_temp.cv('esi')) and claimed_at is null)
+     or exists (select 1 from public.job_cv_upload_tickets where object_name = pg_temp.cv('closed') and claimed_at is not null) then
+    raise exception 'FAIL: tickets not marked claimed (or a refused application claimed one)';
+  end if;
+  raise notice 'PASS: applications saved with the claimed CV (size and type from Storage), consent time and a received entry; role applications keep no area of interest; tickets claimed once';
+end $$;
+
+-- File names staff see and download under are cleaned.
+set local role anon;
+do $$
+declare r1 text; r2 text; n1 text; n2 text;
+begin
+  r1 := public.submit_job_application(jsonb_build_object('name', 'Name Test', 'email', 'names1@test.local', 'interest', 'Sales', 'consent', true,
+    'cv_path', pg_temp.cv('names-1'), 'cv_name', E'../../etc/<script>alert(1)</script>"; rm -rf ~\r\n.exe.html'));
+  r2 := public.submit_job_application(jsonb_build_object('name', 'Name Test', 'email', 'names2@test.local', 'interest', 'Sales', 'consent', true,
+    'cv_path', pg_temp.cv('names-2'), 'cv_name', repeat('Ünïcödé name ', 14) || '.docx'));
+  insert into refs values ('names-1', r1), ('names-2', r2);
+end $$;
+reset role;
+do $$
+declare n1 text; n2 text;
+begin
+  n1 := (select cv_file_name from public.job_applications where reference = (select ref from refs where label = 'names-1'));
+  n2 := (select cv_file_name from public.job_applications where reference = (select ref from refs where label = 'names-2'));
+  if n1 !~ '^[A-Za-z0-9 ._()-]+\.pdf$' or n1 like '.%' or n1 like '%/%' or n1 like '%<%' or position('..' in n1) > 0 or position('__' in n1) > 0 then
+    raise exception 'FAIL: dangerous name kept as %', n1;
+  end if;
+  if n2 !~ '^[A-Za-z0-9 ._()-]+\.pdf$' or length(n2) > 104 then raise exception 'FAIL: long or accented name kept as % (%)', n2, length(n2); end if;
+  raise notice 'PASS: CV file names are cleaned (safe characters, no paths, at most 100 before the extension, extension of the stored file): %, %', n1, n2;
 end $$;
 
 -- Honeypot and rate limits.
@@ -368,7 +523,7 @@ begin
   if exists (select 1 from public.job_applications where email = 'bot@test.local' or cv_path = pg_temp.cv('trap')) then
     raise exception 'FAIL: the honeypot saved something';
   end if;
-  if (select count(*) from public.job_applications) <> 6 then raise exception 'FAIL: expected 6 applications, found %', (select count(*) from public.job_applications); end if;
+  if (select count(*) from public.job_applications) <> 8 then raise exception 'FAIL: expected 8 applications, found %', (select count(*) from public.job_applications); end if;
   -- An application from a day ago no longer counts (created_at is fixed by a trigger, so triggers are off here).
   perform set_config('session_replication_role', 'replica', true);
   update public.job_applications set created_at = now() - interval '25 hours' where lower(email) = 'ama.owusu@test.local';
@@ -392,7 +547,7 @@ end $$;
 do $$
 begin
   insert into public.job_applications (reference, full_name, email, interest)
-  select 'LX-APP-2090-' || lpad(g::text, 4, '0'), 'Flood ' || g, 'flood' || g || '@test.local', 'x' from generate_series(1, 193) g;
+  select 'LX-APP-2090-' || lpad(g::text, 4, '0'), 'Flood ' || g, 'flood' || g || '@test.local', 'x' from generate_series(1, 191) g;
   set local role anon;
   begin
     perform public.submit_job_application(jsonb_build_object('name', 'Late', 'email', 'late@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('rate-6'), 'consent', true));
@@ -459,7 +614,7 @@ begin
 
   -- HR works applications.
   perform set_config('request.jwt.claim.sub', pg_temp.u('hr')::text, true);
-  if (select count(*) from public.job_applications) <> 7 or (select count(*) from public.job_openings) <> 18 then
+  if (select count(*) from public.job_applications) <> 9 or (select count(*) from public.job_openings) <> 18 then
     raise exception 'FAIL: hr does not see every role and application';
   end if;
   if (select count(*) from storage.objects where bucket_id = 'job-cvs') < 6 then raise exception 'FAIL: hr cannot read CVs'; end if;
@@ -623,20 +778,25 @@ do $$
 declare n int; listed text;
 begin
   perform set_config('request.jwt.claim.sub', pg_temp.u('hr')::text, true);
-  select string_agg(name, ',' order by name) into listed from public.unclaimed_job_cvs();
-  -- stale-1 (2 days) and old (25 hours) are unclaimed and over a day old; kofi is claimed; fresh-1 is too new.
-  if listed <> (select string_agg(x, ',' order by x) from unnest(array[pg_temp.cv('stale-1'), pg_temp.cv('old')]) x) then
-    raise exception 'FAIL: cleanup list was %', listed;
+  -- Every unclaimed upload is listed, whatever its age; claimed ones never are.
+  if not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('stale-1'))
+     or not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('fresh-1'))
+     or not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('crowd-1'))
+     or exists (select 1 from public.unclaimed_job_cvs() u join public.job_applications a on a.cv_path = u.name) then
+    raise exception 'FAIL: cleanup list was wrong';
   end if;
-  if exists (select 1 from public.unclaimed_job_cvs(interval '1 minute') where name = pg_temp.cv('fresh-1')) then
-    raise exception 'FAIL: the cleanup list went below a day';
+  if exists (select 1 from public.unclaimed_job_cvs(interval '1 day') where name = pg_temp.cv('fresh-1'))
+     or not exists (select 1 from public.unclaimed_job_cvs(interval '1 day') where name = pg_temp.cv('stale-1')) then
+    raise exception 'FAIL: the older_than filter did not work';
   end if;
-  delete from storage.objects where bucket_id = 'job-cvs' and name in (pg_temp.cv('kofi'), pg_temp.cv('fresh-1'));
+  delete from storage.objects where bucket_id = 'job-cvs' and name = pg_temp.cv('kofi');
   get diagnostics n = row_count;
-  if n <> 0 then raise exception 'FAIL: hr removed a claimed or fresh CV'; end if;
-  delete from storage.objects where bucket_id = 'job-cvs' and name = pg_temp.cv('stale-1');
+  if n <> 0 then raise exception 'FAIL: hr removed a claimed CV'; end if;
+  delete from storage.objects where bucket_id = 'job-cvs' and name in (pg_temp.cv('stale-1'), pg_temp.cv('fresh-1'));
   get diagnostics n = row_count;
-  if n <> 1 then raise exception 'FAIL: hr could not remove an unclaimed CV over a day old'; end if;
+  if n <> 2 then raise exception 'FAIL: hr could not remove unclaimed CVs of any age'; end if;
+  delete from storage.objects where bucket_id = 'job-cvs' and name in (select u.name from public.unclaimed_job_cvs() u);
+  if exists (select 1 from public.unclaimed_job_cvs()) then raise exception 'FAIL: hr could not clear every unclaimed upload'; end if;
   perform set_config('request.jwt.claim.sub', pg_temp.u('admin')::text, true);
   delete from storage.objects where bucket_id = 'job-cvs' and name = pg_temp.cv('kofi');
   get diagnostics n = row_count;
@@ -644,7 +804,7 @@ begin
   delete from public.job_applications where reference = (select ref from refs where label = 'kofi');
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FAIL: admin could not delete an application'; end if;
-  raise notice 'PASS: staff list and remove unclaimed uploads over a day old; only admins remove claimed CVs and delete applications';
+  raise notice 'PASS: staff list and remove unclaimed uploads of any age; only admins remove claimed CVs and delete applications';
 end $$;
 reset role;
 
@@ -667,6 +827,9 @@ rollback;
 begin;
 insert into auth.users (id, email, raw_app_meta_data, raw_user_meta_data) values
   ('00000000-0000-0000-0000-000000000e01', 'rc.fresh.hr@test.local', '{"role":"hr"}', '{"full_name":"Fresh HR"}');
+insert into private.recruitment_intake_secret (secret) values ('harness-intake-secret-0123456789abcdef');
+insert into public.job_cv_upload_tickets (id, object_name, ip_hash, upload_by)
+values ('00000000-0000-0000-0000-000000000e02', 'incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf', repeat('a', 64), now() + interval '15 minutes');
 insert into storage.objects (bucket_id, name, metadata)
 values ('job-cvs', 'incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf', '{"size": 2048, "mimetype": "application/pdf"}');
 set local role anon;
@@ -698,6 +861,8 @@ commit;
 begin;
 delete from public.job_applications where email = 'fresh.applicant@test.local';
 delete from storage.objects where name = 'incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf';
+delete from public.job_cv_upload_tickets where id = '00000000-0000-0000-0000-000000000e02';
+delete from private.recruitment_intake_secret;
 delete from auth.users where id = '00000000-0000-0000-0000-000000000e01';
 drop table if exists fresh_ref;
 commit;

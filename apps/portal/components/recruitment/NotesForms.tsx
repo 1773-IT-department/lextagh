@@ -39,7 +39,7 @@ export function HistoryNoteForm({ id }: { id: string }) {
   );
 }
 
-/** Removes CV uploads nobody claimed within a day. */
+/** Removes CV uploads no application claimed, whatever their age. */
 export function CleanupForm({ count }: { count: number }) {
   const { state, pending, onSubmit } = useCrmForm(cleanUnclaimedUploads);
   return (

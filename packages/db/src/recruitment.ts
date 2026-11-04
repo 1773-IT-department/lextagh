@@ -2,7 +2,7 @@
 // supabase/migrations/0008_recruitment.sql.
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createPublicClient, createWebsiteReadClient, websiteReadDeadline } from "./client";
-import { JOB_CV_TYPES, JOB_CVS_BUCKET, jobCvExtension, jobCvUploadPath } from "./job-cv";
+import { JOB_CVS_BUCKET } from "./job-cv";
 
 export * from "./job-cv";
 
@@ -113,27 +113,53 @@ export type RecruitmentStaff = { id: string; display_name: string; role: string;
 
 // CVs -------------------------------------------------------------------------------------------------------
 
-export type CvUploadResult = { ok: true; path: string } | { ok: false; reason: "rejected" | "error" };
+/** A signed request for an upload ticket, made by the website server (see apps/lexta/lib/forms/careers.ts). */
+export type JobCvTicketRequest = {
+  /** A new uuid; it becomes the upload's folder. */
+  nonce: string;
+  /** Unix seconds when the server signed the request; the database accepts 5 minutes. */
+  issuedAt: number;
+  /** HMAC SHA-256 (hex) of the visitor's IP address with the shared secret: the raw address never leaves the server. */
+  ipHash: string;
+  /** HMAC SHA-256 (hex) of "<nonce>.<issuedAt>.<ipHash>" with the shared secret. */
+  signature: string;
+  /** The file name as the applicant had it; the database cleans it into the path. */
+  fileName: string;
+};
+
+export type CvUploadResult =
+  | { ok: true; path: string }
+  | { ok: false; reason: "rejected" | "rate_limited" | "not_configured" | "error" };
 
 /**
- * Uploads a visitor's CV with the publishable key into incoming/<uuid>/ (the only place the bucket lets website
- * visitors write). Nothing can be read back. The application then claims it with submitJobApplication.
+ * Website server only. Gets a one time upload ticket from public.begin_job_cv_upload (checks the signature, the time
+ * and the per visitor limits), then uploads the CV with the publishable key to the path the ticket allows, with the
+ * content type the caller worked out from the file's first bytes. Nothing can be read back. The application then
+ * claims the upload with submitJobApplication.
  */
-export async function uploadJobCv(file: Blob, fileName: string, client?: SupabaseClient): Promise<CvUploadResult> {
-  const path = jobCvUploadPath(fileName);
-  const ext = jobCvExtension(fileName);
-  if (!path || !ext) return { ok: false, reason: "rejected" };
+export async function uploadJobCv(
+  request: JobCvTicketRequest, bytes: ArrayBuffer, contentType: string, client?: SupabaseClient,
+): Promise<CvUploadResult> {
   const supabase = client ?? createPublicClient();
-  // Storage records the type of the uploaded part, so give it the type that matches the extension (browsers send ""
-  // or application/octet-stream for Word files on some systems, which the bucket would refuse).
-  const typed = new Blob([await file.arrayBuffer()], { type: JOB_CV_TYPES[ext] });
-  const { error } = await supabase.storage.from(JOB_CVS_BUCKET).upload(path, typed, { contentType: JOB_CV_TYPES[ext], upsert: false });
-  if (!error) return { ok: true, path };
+  const { data, error } = await supabase.rpc("begin_job_cv_upload", {
+    nonce: request.nonce, issued_at: request.issuedAt, ip_hash: request.ipHash, signature: request.signature, file_name: request.fileName,
+  });
+  if (error) {
+    if (error.code === "PT429") return { ok: false, reason: "rate_limited" };
+    if (error.code === "55000") return { ok: false, reason: "not_configured" };
+    if (error.code === "22023" && /cv_type|cv_name/.test(error.message)) return { ok: false, reason: "rejected" };
+    return { ok: false, reason: "error" };
+  }
+  const path = typeof data === "string" ? data : "";
+  if (!path) return { ok: false, reason: "error" };
+  const { error: upError } = await supabase.storage.from(JOB_CVS_BUCKET)
+    .upload(path, new Blob([bytes], { type: contentType }), { contentType, upsert: false });
+  if (!upError) return { ok: true, path };
   // StorageApiError: status is the HTTP status; statusCode is what the server put in its body.
-  const e = error as { status?: number; statusCode?: string | number };
+  const e = upError as { status?: number; statusCode?: string | number };
   const status = Number(e.status ?? e.statusCode ?? 0);
-  // 400 (bad type), 403 (policy: path, used folder or upload cap) and 413 (too big) are refusals, the rest trouble.
-  return { ok: false, reason: [400, 403, 413].includes(status) ? "rejected" : "error" };
+  // 400 (bad type) and 413 (too big) are refusals, the rest trouble.
+  return { ok: false, reason: [400, 413, 415].includes(status) ? "rejected" : "error" };
 }
 
 // Careers page --------------------------------------------------------------------------------------------
@@ -206,7 +232,7 @@ export type JobApplicationPayload = {
   /** Area of interest; required for a general application. */
   interest?: string;
   message?: string;
-  /** The path uploadJobCv returned. */
+  /** The path uploadJobCv returned (a ticketed upload). */
   cv_path: string;
   /** The file name as the applicant had it. */
   cv_name?: string;

@@ -3,8 +3,10 @@
 //
 // Loads the real site code (apps/lexta/lib/forms/careers.ts behind the application server action, and
 // apps/lexta/components/careers/live.ts behind the Careers page) and the helpers in packages/db, points them at
-// rpc_shim.mjs, which runs the intake function and the open roles read as anon and stands in for Supabase Storage
-// (bucket size and type limits, the real storage policies through the storage.objects row), then checks the database.
+// rpc_shim.mjs, which runs the upload ticket and intake functions and the open roles read as anon and stands in for
+// Supabase Storage (bucket size and type limits, the real storage policies through the storage.objects row), then
+// checks the database. The shared intake secret is set in the database and in RECRUITMENT_INTAKE_SECRET, as on
+// Vercel after the one time set up.
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { register } from "node:module";
 import net from "node:net";
@@ -45,7 +47,12 @@ function fd(fields) {
   return f;
 }
 
+const SECRET = "harness-intake-secret-0123456789abcdef";
 const stamp = Date.now().toString(36);
+// Each call comes from its own address unless a test says otherwise (the upload limits count per address).
+let ips = 0;
+const nextIp = () => `10.0.${Math.floor((ips += 1) / 250)}.${ips % 250}`;
+const apply = (form, ip = nextIp()) => careers.handleApplication(form, { ip });
 const mail = (who) => `${who}.${stamp}@example.com`;
 // Each applicant gets their own phone number (the daily limit also counts by phone).
 let phones = 0;
@@ -72,7 +79,7 @@ try {
     const jobs = await live.getCareersJobs();
     check(Array.isArray(jobs) && jobs.length === 0 && warnings.some((w) => w.includes("[careers] showing no open roles")),
       "no settings: Careers shows no roles (not the old samples) and logs a warning");
-    const s = await careers.handleApplication(fd({ ...base("noconfig"), cv: file(PDF, "cv.pdf") }));
+    const s = await apply(fd({ ...base("noconfig"), cv: file(PDF, "cv.pdf") }));
     check(s.status === "error" && s.message === "This form is not available right now, please email support@lextagh.com",
       "no settings: the form says it is not available and gives support@lextagh.com", s);
     check(s.values?.email === mail("noconfig"), "typed values are kept on that error");
@@ -80,6 +87,17 @@ try {
 
   process.env.NEXT_PUBLIC_SUPABASE_URL = shimUrl;
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_local_harness";
+  {
+    // Supabase set, but no intake secret on the site: still not available.
+    const s = await apply(fd({ ...base("nosecret"), cv: file(PDF, "cv.pdf") }));
+    check(s.status === "error" && s.message?.startsWith("This form is not available"), "no RECRUITMENT_INTAKE_SECRET: the form says it is not available", s);
+    // Secret on the site but not yet in the database: the database refuses tickets, the visitor gets the same answer.
+    process.env.RECRUITMENT_INTAKE_SECRET = SECRET;
+    const t = await apply(fd({ ...base("nodbsecret"), cv: file(PDF, "cv.pdf") }));
+    check(t.status === "error" && t.message?.startsWith("This form is not available") && (await objects()) === "0",
+      "secret not yet set in the database: not available, nothing uploaded", t);
+    await q(`insert into private.recruitment_intake_secret (secret) values ('${SECRET}')`);
+  }
 
   // ---------- Open roles ----------
   {
@@ -107,7 +125,7 @@ try {
   const before = Number(await objects());
   {
     // Without JavaScript: the CV comes in the form post and the server uploads it.
-    const s = await careers.handleApplication(fd({ ...base("ama"), opening: "LX-QA-051", interest: "", cv: file(PDF, "Ama Mensah CV (2026).pdf") }));
+    const s = await apply(fd({ ...base("ama"), opening: "LX-QA-051", interest: "", cv: file(PDF, "Ama Mensah CV (2026).pdf") }));
     check(s.status === "success" && /^LX-APP-\d{4}-\d{4,}$/.test(s.reference ?? "") && s.message?.includes(s.reference ?? "?"),
       `role application (CV in the form post) gets an LX-APP reference (${s.reference})`, s);
     const row = await q(`select opening_reference_snapshot || '|' || cv_path || '|' || cv_file_name || '|' || cv_size_bytes || '|' || cv_mime_type || '|' || consent_keep || '|' || stage
@@ -121,28 +139,72 @@ try {
   }
   {
     // A Word file the browser labelled application/octet-stream: stored with the Word type from its extension.
-    const s = await careers.handleApplication(fd({ ...base("kofi"), cv: file(DOCX, "kofi.docx", "application/octet-stream") }));
+    const s = await apply(fd({ ...base("kofi"), cv: file(DOCX, "kofi.docx", "application/octet-stream") }));
     check(s.status === "success", "general application with a DOCX succeeds", s);
     const row = await q(`select coalesce(opening_id::text, 'none') || '|' || interest || '|' || cv_mime_type from public.job_applications where reference = '${s.reference}'`);
     check(row === "none|Quality assurance|application/vnd.openxmlformats-officedocument.wordprocessingml.document", "saved as a general application with the area of interest and the DOCX type", row);
   }
   {
-    // With JavaScript: the browser uploads straight to Storage, then posts cv_path and cv_name.
-    const cvPath = db.jobCvUploadPath("Esi CV.doc");
-    const up = await fetch(`${shimUrl}/storage/v1/object/job-cvs/${cvPath}`, {
-      method: "POST", headers: { apikey: "sb_publishable_local_harness", authorization: "Bearer sb_publishable_local_harness", "content-type": "application/msword", "x-upsert": "false" }, body: DOC,
+    // Uploads need a ticket the server signed: the publishable key alone cannot write to the bucket.
+    const direct = await fetch(`${shimUrl}/storage/v1/object/job-cvs/${db.jobCvUploadPath("Esi CV.pdf")}`, {
+      method: "POST", headers: { apikey: "sb_publishable_local_harness", authorization: "Bearer sb_publishable_local_harness", "content-type": "application/pdf" }, body: PDF,
     });
-    check(up.ok, "the browser can upload a CV into incoming/ with the publishable key", up.status);
-    const s = await careers.handleApplication(fd({ ...base("esi"), opening: "LX-PRD-114", cv_path: cvPath, cv_name: "Esi CV.doc" }));
-    check(s.status === "success", "an application with a CV uploaded by the browser succeeds", s);
-    const row = await q(`select cv_path || '|' || cv_mime_type || '|' || opening_reference_snapshot from public.job_applications where reference = '${s.reference}'`);
-    check(row === `${cvPath}|application/msword|LX-PRD-114`, "that upload is claimed by the application", row);
-    const again = await careers.handleApplication(fd({ ...base("esi2"), cv_path: cvPath, cv_name: "Esi CV.doc" }));
-    check(again.status === "error" && again.fieldErrors?.cv && !again.values?.cv_path, "a CV already claimed cannot be claimed again", again);
+    check(direct.status === 400 && (await direct.json()).statusCode === "403", "a browser cannot upload a CV without a ticket", direct.status);
+    // A forged signature (wrong secret) and a stale one (10 minutes old) are refused and upload nothing.
+    const objs = await objects();
+    const forged = await db.uploadJobCv(careers.signTicketRequest("not-the-real-secret-but-long-enough-0000", "10.9.9.9", "cv.pdf"), PDF, "application/pdf");
+    const stale = await db.uploadJobCv(careers.signTicketRequest(SECRET, "10.9.9.9", "cv.pdf", Date.now() - 10 * 60 * 1000), PDF, "application/pdf");
+    check(!forged.ok && !stale.ok && (await objects()) === objs, "forged and stale ticket requests are refused, nothing uploaded", { forged, stale });
+    // A ticket is used once: the same signed request cannot upload again, nor can its path take a second file.
+    const req = careers.signTicketRequest(SECRET, "10.9.9.10", "Esi CV.doc");
+    const first = await db.uploadJobCv(req, DOC, "application/msword");
+    const again = await db.uploadJobCv(req, DOC, "application/msword");
+    const second = first.ok ? await fetch(`${shimUrl}/storage/v1/object/job-cvs/${first.path}`, {
+      method: "POST", headers: { apikey: "k", authorization: "Bearer sb_publishable_local_harness", "content-type": "application/msword" }, body: DOC,
+    }) : null;
+    check(first.ok && !again.ok && second?.status === 400, "a ticket allows one upload, once", { first, again, second: second?.status });
+    const s = await apply(fd({ ...base("esi"), opening: "LX-PRD-114", cv_path: first.ok ? first.path : "", cv_name: "Esi CV.doc" }));
+    check(s.status === "success", "an application claims that upload", s);
+    const reuse = await apply(fd({ ...base("esi2"), cv_path: first.ok ? first.path : "", cv_name: "Esi CV.doc" }));
+    check(reuse.status === "error" && reuse.fieldErrors?.cv && !reuse.values?.cv_path, "a CV already claimed cannot be claimed again", reuse);
+  }
+  {
+    // A dangerous file name is cleaned for the path and for the name staff see.
+    const s = await apply(fd({ ...base("names"), cv: file(PDF, '../../<script>alert("x")</script> CV;rm -rf.pdf') }));
+    const row = s.reference ? await q(`select cv_path || '|' || cv_file_name from public.job_applications where reference = '${s.reference}'`) : "";
+    const [p, n] = row.split("|");
+    check(s.status === "success" && /^incoming\/[0-9a-f-]{36}\/[A-Za-z0-9][A-Za-z0-9._-]*\.pdf$/.test(p ?? "") && /^[A-Za-z0-9 ._()-]+\.pdf$/.test(n ?? "")
+      && !(n ?? "").includes("..") && !(n ?? "").includes("/"), `dangerous file names are cleaned (${row})`, s);
+  }
+  {
+    // Without JavaScript a role application still sends the area of interest select: it is not stored.
+    const s = await apply(fd({ ...base("nojsrole"), opening: "", opening_choice: "LX-QA-051", interest: "Sales and distribution", cv: file(PDF, "r.pdf") }));
+    const row = s.reference ? await q(`select opening_reference_snapshot || '|' || coalesce(interest, 'none') from public.job_applications where reference = '${s.reference}'`) : "";
+    check(s.status === "success" && row === "LX-QA-051|none", "a no JavaScript role application stores no area of interest", { s, row });
+  }
+  {
+    // Many uploads nobody claimed (bots, people who gave up) do not block anyone.
+    await q(`insert into public.job_cv_upload_tickets (id, object_name, ip_hash, upload_by)
+               select u, 'incoming/' || u || '/junk.pdf', md5(u::text) || md5(u::text), now() from (select gen_random_uuid() u from generate_series(1, 300)) x;
+             insert into storage.objects (bucket_id, name, metadata)
+               select 'job-cvs', object_name, '{"size": 1000, "mimetype": "application/pdf"}' from public.job_cv_upload_tickets where object_name like '%/junk.pdf';`);
+    const s = await apply(fd({ ...base("crowded"), cv: file(PDF, "crowded.pdf") }));
+    check(s.status === "success", "300 unclaimed uploads by others do not block a real applicant", s);
+    await q(`delete from storage.objects where name like '%/junk.pdf'; delete from public.job_cv_upload_tickets where object_name like '%/junk.pdf';`);
+  }
+  {
+    // Per address: 5 uploads an hour.
+    const ip = "203.0.113.50";
+    const results = [];
+    for (let i = 0; i < 6; i += 1) results.push(await apply(fd({ ...base(`ip${i}`), cv: file(PDF, `ip${i}.pdf`) }), ip));
+    check(results.slice(0, 5).every((r) => r.status === "success") && results[5].status === "error" && results[5].message === careers.MSG_UPLOAD_RATE_LIMITED
+      && results[5].values?.email === mail("ip5"), "5 CV uploads an hour from one address; the 6th is turned away politely", results.map((r) => r.message));
+    const other = await apply(fd({ ...base("otherip"), cv: file(PDF, "o.pdf") }), "203.0.113.51");
+    check(other.status === "success", "another address is not affected", other);
   }
   {
     // No JavaScript role list: an empty choice is a general application even if the hidden field had a role.
-    const s = await careers.handleApplication(fd({ ...base("yaw"), opening: "LX-QA-051", opening_choice: "", cv: file(PDF, "yaw.pdf") }));
+    const s = await apply(fd({ ...base("yaw"), opening: "LX-QA-051", opening_choice: "", cv: file(PDF, "yaw.pdf") }));
     const row = s.reference ? await q(`select coalesce(opening_id::text, 'none') from public.job_applications where reference = '${s.reference}'`) : "";
     check(s.status === "success" && row === "none", "without JavaScript the role list decides (empty: general application)", s);
   }
@@ -151,7 +213,7 @@ try {
   {
     const appsBefore = await apps();
     const objsBefore = await objects();
-    const trap = await careers.handleApplication(fd({ ...base("bot"), website: "http://spam.example", cv: file(PDF, "bot.pdf") }));
+    const trap = await apply(fd({ ...base("bot"), website: "http://spam.example", cv: file(PDF, "bot.pdf") }));
     check(trap.status === "success" && /^LX-APP-\d{4}-\d{4}$/.test(trap.reference ?? ""), "honeypot: a thank you with a real looking reference", trap);
     check((await apps()) === appsBefore && (await objects()) === objsBefore, "honeypot: nothing saved and nothing uploaded");
 
@@ -159,7 +221,9 @@ try {
       [{ ...base("nocv") }, "cv", "Please attach your CV"],
       [{ ...base("txt"), cv: file(Buffer.from("hello"), "cv.txt", "text/plain") }, "cv", "PDF or Word"],
       [{ ...base("fake"), cv: file(Buffer.from("<html>not a pdf</html>"), "cv.pdf") }, "cv", "does not look like"],
-      [{ ...base("big"), cv: file(Buffer.concat([Buffer.from("%PDF"), Buffer.alloc(5 * 1024 * 1024 - 3)]), "big.pdf") }, "cv", "5 MB or smaller"],
+      [{ ...base("big"), cv: file(Buffer.concat([Buffer.from("%PDF-"), Buffer.alloc(4 * 1024 * 1024 - 4)]), "big.pdf") }, "cv", "4 MB or smaller"],
+      [{ ...base("htmlpdf"), cv: file(Buffer.from("<!doctype html><script>alert(1)</script>"), "cv.pdf", "application/pdf") }, "cv", "does not look like"],
+      [{ ...base("fakedocx"), cv: file(Buffer.from("MZ not a zip at all"), "cv.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document") }, "cv", "does not look like"],
       [{ ...base("noconsent"), consent: "", cv: file(PDF, "a.pdf") }, "consent", "tick the box"],
       [{ ...base("bademail"), email: "not-an-email", cv: file(PDF, "a.pdf") }, "email", "valid email"],
       [{ ...base("noname"), name: " ", cv: file(PDF, "a.pdf") }, "name", "your name"],
@@ -167,25 +231,25 @@ try {
       [{ ...base("badpath"), cv_path: "elsewhere/x.pdf", cv_name: "x.pdf" }, "cv", "Please attach your CV"],
     ];
     for (const [fields, field, words] of cases) {
-      const s = await careers.handleApplication(fd(fields));
+      const s = await apply(fd(fields));
       check(s.status === "error" && s.fieldErrors?.[field]?.includes(words) && s.message === "Please check the highlighted fields.",
         `refused with a message on ${field}: ${fields.email}`, s);
     }
     check((await apps()) === appsBefore && (await objects()) === objsBefore, "refused forms saved and uploaded nothing");
 
     // A role that is not open: the uploaded CV is kept for a general application instead.
-    const s = await careers.handleApplication(fd({ ...base("closed"), opening: "LX-TST-901", interest: "", cv: file(PDF, "closed.pdf") }));
+    const s = await apply(fd({ ...base("closed"), opening: "LX-TST-901", interest: "", cv: file(PDF, "closed.pdf") }));
     check(s.status === "error" && s.message === careers.MSG_ROLE_CLOSED && s.fieldErrors?.opening && /^incoming\//.test(s.values?.cv_path ?? ""),
       "a closed role is refused with a clear message, keeping the uploaded CV", s);
-    const retry = await careers.handleApplication(fd({ ...base("closed"), cv_path: s.values?.cv_path ?? "", cv_name: s.values?.cv_name ?? "" }));
+    const retry = await apply(fd({ ...base("closed"), cv_path: s.values?.cv_path ?? "", cv_name: s.values?.cv_name ?? "" }));
     check(retry.status === "success", "switching to a general application reuses that CV", retry);
-    const draft = await careers.handleApplication(fd({ ...base("draft"), opening: "LX-SLS-207", cv: file(PDF, "d.pdf") }));
+    const draft = await apply(fd({ ...base("draft"), opening: "LX-SLS-207", cv: file(PDF, "d.pdf") }));
     check(draft.status === "error" && draft.fieldErrors?.opening, "a draft role is refused", draft);
   }
   {
     // Three a day per email.
     const results = [];
-    for (let i = 0; i < 4; i += 1) results.push(await careers.handleApplication(fd({ ...base("busy"), cv: file(PDF, `b${i}.pdf`) })));
+    for (let i = 0; i < 4; i += 1) results.push(await apply(fd({ ...base("busy"), cv: file(PDF, `b${i}.pdf`) })));
     check(results.slice(0, 3).every((r) => r.status === "success") && results[3].status === "error"
       && results[3].message === careers.MSG_APPLICATION_RATE_LIMITED && results[3].values?.email === mail("busy"),
       "three applications a day per email; the fourth is turned away politely and keeps what was typed", results.map((r) => r.message));
@@ -198,12 +262,11 @@ try {
     });
     const html = await put(db.jobCvUploadPath("x.pdf"), Buffer.from("<script>"), "text/html");
     check(html.status === 400 && (await html.json()).statusCode === "415", "the bucket refuses an HTML upload", html.status);
-    const big = await put(db.jobCvUploadPath("x.pdf"), Buffer.alloc(5 * 1024 * 1024 + 1), "application/pdf");
-    check(big.status === 413, "the bucket refuses a file over 5 MB", big.status);
+    const big = await put(db.jobCvUploadPath("x.pdf"), Buffer.alloc(4 * 1024 * 1024 + 1), "application/pdf");
+    check(big.status === 413, "the bucket refuses a file over 4 MB", big.status);
     const outside = await put(`cvs/${crypto.randomUUID()}/x.pdf`, PDF, "application/pdf");
     check(outside.status === 400 && (await outside.json()).statusCode === "403", "visitors cannot upload outside incoming/", outside.status);
-    const p = db.jobCvUploadPath("x.pdf");
-    await put(p, PDF, "application/pdf");
+    const p = await q("select cv_path from public.job_applications where cv_path is not null limit 1");
     const sign = await fetch(`${shimUrl}/storage/v1/object/sign/job-cvs/${p}`, {
       method: "POST", headers: { apikey: "k", authorization: "Bearer sb_publishable_local_harness", "content-type": "application/json" }, body: JSON.stringify({ expiresIn: 60 }),
     });
@@ -226,7 +289,7 @@ try {
     warnings.length = 0;
     const jobs = await live.getCareersJobs();
     check(jobs.length === 0 && warnings.some((w) => w.includes("[careers] showing no open roles")), "database down: Careers shows the empty state and logs a warning");
-    const s = await careers.handleApplication(fd({ ...base("down"), cv: file(PDF, "down.pdf") }));
+    const s = await apply(fd({ ...base("down"), cv: file(PDF, "down.pdf") }));
     check(s.status === "error" && s.message === careers.msgGeneric("support@lextagh.com") && s.values?.email === mail("down"),
       "database down: the form says it could not send and keeps what was typed", s);
     process.env.NEXT_PUBLIC_SUPABASE_URL = shimUrl;

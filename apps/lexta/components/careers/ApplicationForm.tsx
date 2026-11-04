@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { startTransition, useActionState, useEffect, useRef, useState, type CSSProperties, type DragEvent, type FormEvent } from "react";
-import { JOB_CV_MAX_BYTES, JOB_CV_TYPES, JOB_CVS_BUCKET, jobCvExtension, jobCvUploadPath, looksLikeCv } from "@lexta/db/src/job-cv";
+import { JOB_CV_MAX_BYTES, jobCvExtension, looksLikeCv } from "@lexta/db/src/job-cv";
 import { submitApplicationForm } from "@/app/actions/forms";
 import { FieldError, FormMessage, Honeypot, idleState, invalidProps, useServerForm, visuallyHidden } from "@/components/forms/FormParts";
 import forms from "@/components/forms/forms.module.css";
@@ -19,14 +19,9 @@ const cell: CSSProperties = { display: "flex", flexDirection: "column", gap: 6, 
 /** Same words as lib/forms/careers.ts, for the checks made in the browser before sending. */
 const CV_MSG = {
   type: "Your CV must be a PDF or Word file (.pdf, .doc or .docx).",
-  size: "Your CV must be 5 MB or smaller.",
+  size: "Your CV must be 4 MB or smaller.",
   content: "This file does not look like a PDF or Word document. Please choose your CV again.",
-  missing: "Please attach your CV (PDF or Word, up to 5 MB).",
-  upload: "Your CV could not be uploaded. Please try again with a PDF or Word file up to 5 MB.",
 };
-
-/** Files up to this size can still go through the form post if the direct upload fails (hosts cap a post near 4.5 MB). */
-const POST_FALLBACK_MAX = 4 * 1024 * 1024;
 
 const errorId = (name: string) => `application-${name}-error`;
 
@@ -36,33 +31,11 @@ async function checkFile(file: File): Promise<string | null> {
   const ext = jobCvExtension(file.name);
   if (!ext) return CV_MSG.type;
   if (file.size > JOB_CV_MAX_BYTES) return CV_MSG.size;
+  if (file.size < 8) return CV_MSG.content;
   try {
     return looksLikeCv(ext, new Uint8Array(await file.slice(0, 8).arrayBuffer())) ? null : CV_MSG.content;
   } catch {
     return null; // The server checks again.
-  }
-}
-
-/**
- * Uploads the CV straight to the private job-cvs bucket (incoming/<uuid>/, the only place website visitors may write)
- * with the publishable key, so large files never pass through the website's own server. Null when it did not work.
- */
-async function uploadDirect(file: File): Promise<string | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  const ext = jobCvExtension(file.name);
-  const path = jobCvUploadPath(file.name);
-  if (!url || !key || !ext || !path) return null;
-  try {
-    const res = await fetch(`${url.replace(/\/$/, "")}/storage/v1/object/${JOB_CVS_BUCKET}/${path.split("/").map(encodeURIComponent).join("/")}`, {
-      method: "POST",
-      headers: { apikey: key, authorization: `Bearer ${key}`, "content-type": JOB_CV_TYPES[ext], "x-upsert": "false", "cache-control": "max-age=3600" },
-      body: file,
-      signal: AbortSignal.timeout(60000),
-    });
-    return res.ok ? path : null;
-  } catch {
-    return null;
   }
 }
 
@@ -72,8 +45,9 @@ export type RoleOption = { reference: string; title: string };
  * The Careers application form (item 21): a general application, or an application for the role picked with
  * "Apply for this role" (that role's reference goes in a hidden field, with an "Applying for" line and a way back to a
  * general application). Same pattern as the other website forms (item 19): useServerForm, honeypot, inline errors,
- * focus on the first problem or the message, and it posts without JavaScript too (the CV then travels in the form,
- * and a role list stands in for "Apply for this role").
+ * focus on the first problem or the message. The CV always travels in the form post to the website server, which
+ * checks it and puts it in Storage; it posts without JavaScript too (a role list then stands in for "Apply for this
+ * role").
  */
 export default function ApplicationForm({ roles, interests }: { roles: RoleOption[]; interests: string[] }) {
   const [state, formAction, pending] = useActionState(submitApplicationForm, idleState);
@@ -84,11 +58,10 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
   const [file, setFile] = useState<File | null>(null);
   const [attached, setAttached] = useState<{ path: string; name: string } | null>(v.cv_path ? { path: v.cv_path, name: v.cv_name ?? "" } : null);
   const [cvError, setCvError] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [drag, setDrag] = useState(false);
+    const [drag, setDrag] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const roleNote = useRef<HTMLDivElement>(null);
-  const busy = pending || uploading;
+  const busy = pending;
 
   // "Apply for this role" on a role above.
   useEffect(() => {
@@ -136,33 +109,19 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
     void choose(dropped);
   };
 
+  // Checks the file in the browser first (the server checks again), then posts the form with the file.
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (busy) return;
     const form = e.currentTarget;
     const data = new FormData(form);
-    const trap = data.get("website");
-    if (file && !(typeof trap === "string" && trap.trim())) {
+    if (file) {
       const problem = await checkFile(file);
       if (problem) {
         setCvError(problem);
         fileInput.current?.focus();
         return;
       }
-      setUploading(true);
-      const path = await uploadDirect(file);
-      setUploading(false);
-      if (path) {
-        data.delete("cv");
-        data.set("cv_path", path);
-        data.set("cv_name", file.name);
-      } else if (file.size > POST_FALLBACK_MAX) {
-        // Too big to send through the form instead.
-        setCvError(CV_MSG.upload);
-        fileInput.current?.focus();
-        return;
-      }
-      // Otherwise the file goes with the form and the server uploads it.
     }
     startTransition(() => formAction(data));
   };
@@ -293,7 +252,7 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
           />
           <span style={{ display: "block", fontSize: 13, fontWeight: 600, color: "#12313d", overflowWrap: "anywhere" }}>{shownName || "Attach your CV"}</span>
           <span id="application-cv-hint" style={{ display: "block", marginTop: 5, fontSize: 11, color: "#8fa8b2" }}>
-            {file ? `${fileSize(file.size)}. Choose another file to replace it.` : attached ? "Attached. Choose another file to replace it." : "PDF or Word, up to 5 MB"}
+            {file ? `${fileSize(file.size)}. Choose another file to replace it.` : attached ? "Attached. Choose another file to replace it." : "PDF or Word, up to 4 MB"}
           </span>
         </label>
         {attached && (
@@ -331,7 +290,7 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
         aria-disabled={busy}
         style={{ marginTop: 20, width: "100%", border: 0, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "14px 20px", borderRadius: 7, cursor: busy ? "progress" : "pointer", opacity: busy ? 0.75 : 1, fontFamily: "inherit" }}
       >
-        {uploading ? "Uploading your CV..." : pending ? "Sending..." : "Submit application"}
+        {pending ? (file ? "Sending your application and CV..." : "Sending...") : "Submit application"}
       </button>
       <FormMessage state={state} style={{ marginTop: 14 }} />
       <div style={{ marginTop: 12, fontSize: 11, lineHeight: 1.7, color: "#8fa8b2" }}>
