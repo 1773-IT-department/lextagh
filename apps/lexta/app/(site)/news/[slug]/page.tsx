@@ -9,7 +9,7 @@ import {
   aboutLexta, adjacentArticles, articleHref, articles, draftNotice, getArticle, mediaContact, mediaEmail, mediaPhone,
   relatedArticles, toCard, type ArticleBlock,
 } from "@/content/news";
-import { absoluteUrl, siteUrl } from "@/content/site";
+import { absoluteUrl, metadataBase } from "@/content/site";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const title = `${a.title} | Lexta Ghana`;
   const image = absoluteUrl(a.image);
   return {
-    metadataBase: new URL(siteUrl),
+    metadataBase,
     title: { absolute: title },
     description: a.standfirst,
     alternates: { canonical: articleHref(a) },
@@ -81,7 +81,7 @@ export default async function ArticlePage({ params }: Params) {
     articleSection: a.category,
     mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
     url: pageUrl,
-    author: { "@type": "Organization", name: "Lexta Ghana Limited", url: siteUrl },
+    author: { "@type": "Organization", name: "Lexta Ghana Limited", url: absoluteUrl("/") },
     publisher: { "@type": "Organization", name: "Lexta Ghana Limited", logo: { "@type": "ImageObject", url: absoluteUrl("/assets/lexta-logo.png") } },
   };
 
@@ -149,10 +149,14 @@ export default async function ArticlePage({ params }: Params) {
                 <ol>
                   {a.sources.map((src) => (
                     <li key={src.url + src.name}>
-                      <a href={src.url} target="_blank" rel="noopener noreferrer">
-                        {src.name}<span className={s.ext} aria-hidden="true">↗</span>
-                        <span className={s.srOnly}> (opens in a new tab)</span>
-                      </a>
+                      {src.url.startsWith("/") ? (
+                        <Link href={src.url}>{src.name}</Link>
+                      ) : (
+                        <a href={src.url} target="_blank" rel="noopener noreferrer">
+                          {src.name}<span className={s.ext} aria-hidden="true">↗</span>
+                          <span className={s.srOnly}> (opens in a new tab)</span>
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ol>

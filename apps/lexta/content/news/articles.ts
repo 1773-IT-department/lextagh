@@ -112,8 +112,8 @@ export const articles: Article[] = [
         url: "https://yazzproducts.com/the-bright-smiles-school-tour/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2026/07/15/the-bright-smiles-school-tour/"
@@ -183,8 +183,8 @@ export const articles: Article[] = [
         url: "https://yazzproducts.com/the-safe-bottoms-initiative/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2026/07/15/the-safe-bottoms-initiative/"
@@ -250,8 +250,8 @@ export const articles: Article[] = [
         url: "https://yazzproducts.com/the-lexta-forest-project/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2026/07/15/the-lexta-forest-project/"
@@ -321,8 +321,8 @@ export const articles: Article[] = [
         url: "https://yazzproducts.com/clean-hands-green-land/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2026/07/15/clean-hands-green-land/"
@@ -436,8 +436,8 @@ export const articles: Article[] = [
         url: "https://www.graphic.com.gh/entertainment/showbiz-news/empowered-periods-campaign-boosts-menstrual-health-education.html"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2026/06/28/the-empowered-periods-campaign/"
@@ -553,8 +553,8 @@ export const articles: Article[] = [
         url: "https://nowaccra.com/2025/10/06/beats-for-the-brave-lali-x-lola-lead-ghanas-breast-cancer-awareness-movement-with-new-single/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/yazz-partners-mx24-tv-for-2026-croxitout-high-school-tour-to-advance-menstrual-health-education/"
@@ -648,8 +648,8 @@ export const articles: Article[] = [
         url: "https://gna.org.gh/2025/01/ghanaian-women-doctors-encourage-cervical-cancer-screening-for-early-detection/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/sofpog-in-collaboration-with-mwag-yazz-and-korle-bu-polyclinic-family-medicine-department-organized-free-cervical-cancer-screening-for-the-public-as-part-of-the-cervical-cancer-awareness-month/"
@@ -727,8 +727,8 @@ export const articles: Article[] = [
         url: "https://mwia.net/2025/07/02/report-june-2025-gh/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/we-hosted-the-cervical-cancer-awareness-event-on-28th-january-2025-at-the-tuesday-market-park-mamprobi/"
@@ -818,8 +818,8 @@ export const articles: Article[] = [
         url: "https://www.yazzproducts.com/ghanaian-women-doctors-sponsored-by-lexta-ghana-encourage-cervical-cancer-screening-for-early-detection/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/ghanaian-women-doctors-sponsored-by-lexta-ghana-encourage-cervical-cancer-screening-for-early-detection/"
@@ -897,8 +897,8 @@ export const articles: Article[] = [
         url: "https://thebftonline.com/2023/01/28/mwag-yazz-conduct-free-cervical-cancer-screening-nation-wide/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/cervical-cancer-awareness-launch-2024-tamale/"
@@ -972,8 +972,8 @@ export const articles: Article[] = [
         url: "https://ghanaiantimes.com.gh/ashaiman-shs-wins-onga-cook-art-competition/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/yazz-partners-ges-cook-art-competition-2/"
@@ -1047,8 +1047,8 @@ export const articles: Article[] = [
         url: "https://www.yazzproducts.com/lexta-ghana-conducted-cervical-cancer-screening-at-accra-psychiatric-hospital/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://yazzproducts.com/free-cervical-cancer-screening-and-education-on-cervical-cancer-that-happened-in-kumasi-copy-copy/"
@@ -1106,8 +1106,8 @@ export const articles: Article[] = [
     ],
     sources: [
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2019/03/08/lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kotobabi-in-commemoration-of-the-internal-womens-day/"
@@ -1181,8 +1181,8 @@ export const articles: Article[] = [
         url: "https://lextagh.com/2019/02/04/lexta-ghana-limited-visits-mawuko-girls-shs-ho/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2019/02/04/lexta-ghana-limited-visits-mawuko-girls-shs-ho/"
@@ -1265,8 +1265,8 @@ export const articles: Article[] = [
         url: "https://www.lextagh.com/lexta-teen-care-campaign-st-marys-shs/"
       },
       {
-        name: "Lexta Ghana: Corporate Social Responsibility page (website prototype)",
-        url: "https://lextagh.vercel.app/corporate-social-responsibility"
+        name: "Lexta Ghana: Corporate Social Responsibility",
+        url: "/corporate-social-responsibility"
       }
     ],
     originalUrl: "https://lextagh.com/2017/05/30/lexta-teen-care-campaign/"

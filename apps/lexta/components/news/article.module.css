@@ -163,6 +163,7 @@
   .boiler { grid-template-columns: minmax(0, 1fr); }
   .boiler > section + section { border-left: 0; border-top: 1px solid rgba(18, 163, 196, .18); }
   .pager { grid-template-columns: minmax(0, 1fr); }
+  .pagerNext { text-align: left; align-items: flex-start; }
 }
 
 @media (max-width: 640px) {

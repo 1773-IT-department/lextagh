@@ -11,4 +11,4 @@ export const mediaPhone = "+233 (0) 501 619 588";
 
 /** Note shown at the end of every article with draft: true. */
 export const draftNotice =
-  "This story is a summary prepared from public coverage and earlier Lexta posts. It will be replaced with Lexta's official version.";
+  "This story is a summary prepared from public coverage and earlier Lexta posts, pending Lexta's official version.";
