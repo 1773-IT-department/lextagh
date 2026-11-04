@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # Local SQL test harness for the Lexta database.
-# Starts a throwaway Postgres, loads a minimal Supabase stub (auth, storage, API roles),
+# Starts a throwaway Postgres (UTF8, like Supabase), loads a minimal Supabase stub (auth, storage, API roles),
 # applies every migration in supabase/migrations in order, then runs every supabase/tests/*.sql file.
 # Nothing here talks to the real Supabase project.
 #
 # Usage: bash supabase/tests/local/run.sh            (all tests)
 #        bash supabase/tests/local/run.sh products_rls (only tests whose file name contains the word)
+#        HARNESS_THEN="command" bash supabase/tests/local/run.sh [filter]
+#          also runs the command while the database is still up, with PGHOST, PGPORT, PGUSER and PGDATABASE set
+#          (used by supabase/tests/local/forms/run.sh for the website forms test). Its failure fails the run.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -43,7 +46,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-"${RUN[@]}" "$PG_BIN/initdb" -D "$DATA" -U postgres -A trust --no-sync >/dev/null
+"${RUN[@]}" "$PG_BIN/initdb" -D "$DATA" -U postgres -A trust -E UTF8 --locale=C --no-sync >/dev/null
 "${RUN[@]}" "$PG_BIN/pg_ctl" -D "$DATA" -l "$WORK/postgres.log" -w \
   -o "-p $PORT -k $SOCK -c listen_addresses='' -c fsync=off" start >/dev/null
 
@@ -71,6 +74,16 @@ for t in "$ROOT"/supabase/tests/*.sql; do
   if [ "$status" != "0" ]; then failed=$((failed + 1)); echo "FAILED: $(basename "$t")"; fi
 done
 
+if [ -n "${HARNESS_THEN:-}" ]; then
+  echo "Running: $HARNESS_THEN"
+  set +e
+  PGHOST="$SOCK" PGPORT="$PORT" PGUSER=postgres PGDATABASE=postgres bash -c "$HARNESS_THEN"
+  status="$?"
+  set -e
+  ran=$((ran + 1))
+  if [ "$status" != "0" ]; then failed=$((failed + 1)); echo "FAILED: $HARNESS_THEN"; fi
+fi
+
 if [ "$ran" = "0" ]; then echo "No test files matched"; exit 1; fi
-if [ "$failed" != "0" ]; then echo "$failed of $ran test files failed"; exit 1; fi
-echo "All $ran test files passed"
+if [ "$failed" != "0" ]; then echo "$failed of $ran test runs failed"; exit 1; fi
+echo "All $ran test runs passed"
