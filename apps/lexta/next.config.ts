@@ -9,12 +9,12 @@ import type { NextConfig } from "next";
  * Home (/) is converted: app/(site)/page.tsx. /index.html still redirects to /. Other converted pages are listed in convertedPages.
  */
 const legacyPages = [
-  "careers", "contact-us", "faqs",
+  "contact-us", "faqs",
   "partner-with-us", "privacy-policy", "terms-and-conditions",
 ];
 
 /** Pages already converted to Next.js routes. Their old .html links still redirect to the clean URL. */
-const convertedPages = ["about-us", "our-brands", "people-and-culture", "corporate-social-responsibility", "news"];
+const convertedPages = ["about-us", "our-brands", "people-and-culture", "corporate-social-responsibility", "news", "careers"];
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@lexta/db"],
