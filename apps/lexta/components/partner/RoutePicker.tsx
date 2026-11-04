@@ -1,36 +1,49 @@
 "use client";
 
 import type { CSSProperties } from "react";
+import { choiceCardReset, visuallyHidden } from "@/components/forms/FormParts";
+import fx from "@/components/forms/forms.module.css";
 import { routes } from "./data";
 import { useActiveRoute } from "./RouteContext";
 
 /* Values copied from partner-with-us.html. */
 const panelLabel: CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#12a3c4" };
 
-/** "Six routes into the business": the six route cards (one is selected) and the selected-route panel below them. */
+/**
+ * "Six routes into the business": the six route cards (one is selected) and the selected-route panel below them.
+ * Each card is a label around a real radio of the application form (form attribute), so the route is sent even
+ * without JavaScript. The cards keep the look of the prototype's buttons.
+ */
 export default function RoutePicker() {
   const { active, select } = useActiveRoute();
 
   return (
     <>
       <div
-        role="group"
+        role="radiogroup"
         aria-label="Ways to partner"
         style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18, marginTop: 34, maxWidth: 1100 }}
       >
         {routes.map((r) => {
           const on = r.key === active.key;
           return (
-            <button
+            <label
               key={r.key}
-              type="button"
-              aria-pressed={on}
-              onClick={() => select(r.key)}
+              className={fx.choice}
               style={{
-                cursor: "pointer", textAlign: "left", border: `1px solid ${on ? "#12a3c4" : "rgba(18,163,196,.2)"}`,
+                ...choiceCardReset, cursor: "pointer", textAlign: "left", border: `1px solid ${on ? "#12a3c4" : "rgba(18,163,196,.2)"}`,
                 background: on ? "#f2fbfe" : "#fff", borderRadius: 13, padding: "26px 24px", display: "flex", flexDirection: "column", gap: 12,
               }}
             >
+              <input
+                type="radio"
+                name="route"
+                value={r.key}
+                form="partner-application"
+                defaultChecked={on}
+                onChange={() => select(r.key)}
+                style={visuallyHidden}
+              />
               <span
                 aria-hidden="true"
                 style={{
@@ -49,7 +62,7 @@ export default function RoutePicker() {
               >
                 {r.meta}
               </span>
-            </button>
+            </label>
           );
         })}
       </div>

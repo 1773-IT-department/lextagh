@@ -47,8 +47,15 @@ const mail = (who) => `${who}.${stamp}@example.com`;
 try {
   {
     const s = await core.handleNewsletter(fd({ email: mail("noconfig"), consent: "yes", website: "" }));
-    check(s.status === "error" && s.message === core.MSG_UNAVAILABLE, "missing Supabase settings show the 'not available' message");
+    check(s.status === "error" && s.message === "This form is not available right now, please email support@lextagh.com", "missing settings: newsletter says email support@lextagh.com");
     check(s.values?.email === mail("noconfig"), "typed values are kept on that error");
+    const p = await core.handlePartner(fd({ route: "Retail", contact_name: "A", business_name: "B", email: mail("noconfig") }));
+    check(p.message === "This form is not available right now, please email sales@lextagh.com", "missing settings: partner says email sales@lextagh.com");
+    const expected = { "General enquiry": "support", Distribution: "sales", "Bulk orders": "sales", "Consumer care": "support", Media: "support", Careers: "support" };
+    for (const [reason, box] of Object.entries(expected)) {
+      const c = await core.handleContact(fd({ reason, name: "A", email: mail("noconfig"), region: "Volta", message: "Hi" }));
+      check(c.message === `This form is not available right now, please email ${box}@lextagh.com`, `missing settings: contact reason ${reason} says email ${box}@lextagh.com`);
+    }
   }
 
   process.env.NEXT_PUBLIC_SUPABASE_URL = `http://127.0.0.1:${port}`;
@@ -97,10 +104,11 @@ try {
     }));
     check(s.status === "success" && /^LX-\d{4}-\d{4,}$/.test(s.reference ?? ""), `consumer care returns an LX case number (${s.reference})`);
     check(s.message === `Thank you. Your case number is ${s.reference}; our consumer care team will contact you.`, "complaint thank you names the case number");
-    const row = await q(`select k.channel || '|' || k.status || '|' || k.category || '|' || b.slug || '|' || c.email || '|' || replace(k.description, E'\\n', '~')
+    const row = await q(`select k.channel || '|' || k.status || '|' || k.category || '|' || b.slug || '|' || c.email || '|' || replace(k.description, E'\\n', '~') || '|' || coalesce(k.batch_number, '')
       from public.complaints k join public.crm_contacts c on c.id = k.contact_id join public.brands b on b.id = k.brand_id
       where k.case_number = '${s.reference}'`);
-    const [channel, status, category, brand, cEmail, desc] = row.split("|");
+    const [channel, status, category, brand, cEmail, desc, batch] = row.split("|");
+    check(batch === "2026-04-18", `batch code saved in the complaint's batch number (${batch})`);
     check(channel === "website" && status === "new" && category === "other" && brand === "lexta", "complaint saved: channel website, status new, category other, brand lexta");
     check(cEmail === email, "complaint linked to the visitor's contact");
     check(desc === "Product and batch code: Yazz Ultra, batch 2026-04-18~Region: Ashanti~~The pack was torn when I opened it.", "product, batch and region are at the top of the complaint text");
@@ -154,18 +162,38 @@ try {
     check((await counts()) === before, "invalid submissions save nothing");
   }
 
-  // Honeypot: every form path answers like a success and saves nothing.
+  // Honeypot: every form path answers like a real success, in the same reference format, and saves nothing.
   {
     const before = await counts();
     const trap = "http://spam.example";
-    const results = [
-      await core.handleContact(fd({ reason: "General enquiry", name: "Bot", email: mail("bot1"), region: "Volta", message: "spam", website: trap })),
-      await core.handleContact(fd({ reason: "Consumer care", name: "Bot", email: mail("bot2"), region: "Volta", message: "spam", website: trap })),
-      await core.handlePartner(fd({ route: "CSR", contact_name: "Bot", business_name: "Bot Ltd", email: mail("bot3"), website: trap })),
-      await core.handleNewsletter(fd({ email: mail("bot4"), consent: "yes", website: trap })),
+    const huge = "x".repeat(600);
+    const cases = [
+      ["contact", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "General enquiry", name: "Bot", email: mail("bot1"), region: "Volta", message: "spam", website: trap }))],
+      ["consumer care", /^LX-\d{4}-\d{4}$/, core.handleContact(fd({ reason: "Consumer care", name: "Bot", email: mail("bot2"), region: "Volta", message: "spam", website: trap }))],
+      ["partner", /^PTN-[0-9A-F]{10}$/, core.handlePartner(fd({ route: "CSR", contact_name: "Bot", business_name: "Bot Ltd", email: mail("bot3"), website: trap }))],
+      ["newsletter", /^NWS-[0-9A-F]{10}$/, core.handleNewsletter(fd({ email: mail("bot4"), consent: "yes", website: trap }))],
+      ["contact, 600 character trap", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "Media", name: "Bot", email: mail("bot5"), message: "spam", website: huge }))],
+      ["contact, trap and invalid fields", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "Careers", name: "", email: "nope", message: "", website: trap }))],
+      ["partner, 600 character trap", /^PTN-[0-9A-F]{10}$/, core.handlePartner(fd({ route: "Retail", contact_name: "Bot", business_name: "Bot", email: mail("bot6"), website: huge }))],
+      ["newsletter, 600 character trap", /^NWS-[0-9A-F]{10}$/, core.handleNewsletter(fd({ email: mail("bot7"), website: huge }))],
     ];
-    check(results.every((r) => r.status === "success" && r.reference), "honeypot submissions look successful to the bot");
+    for (const [name, format, promise] of cases) {
+      const r = await promise;
+      check(r.status === "success" && format.test(r.reference ?? "") && r.message?.includes(r.reference), `honeypot (${name}) gets a real looking thank you: ${r.reference}`);
+    }
     check((await counts()) === before, "honeypot submissions save nothing (leads, contacts, organisations, complaints, intake log)");
+  }
+
+  // Byte size: multi byte text within the character limit but over the database's 8000 byte payload limit.
+  {
+    const before = await counts();
+    const s = await core.handleContact(fd({ reason: "General enquiry", name: "Kofi", email: mail("euro"), region: "Volta", message: "€".repeat(2900), website: "" }));
+    check(s.status === "error" && s.fieldErrors?.message === "Your message is too long, please shorten it.", "2900 euro signs (8700 bytes) get the friendly 'too long' message on the message field");
+    const p = await core.handlePartner(fd({ route: "Retail", contact_name: "Kofi", business_name: "Kofi Ltd", email: mail("euro2"), message: "€".repeat(2900) }));
+    check(p.fieldErrors?.message === "Your message is too long, please shorten it.", "partner form gets the same 'too long' message");
+    check((await counts()) === before, "nothing saved for the oversized messages");
+    const ok = await core.handleContact(fd({ reason: "General enquiry", name: "Kofi", email: mail("accents"), region: "Volta", message: "é".repeat(2500), website: "" }));
+    check(ok.status === "success", `2500 accented letters (5000 bytes) still go through (${JSON.stringify(ok).slice(0, 200)})`);
   }
 
   // Rate limit: 5 per email per hour across the forms, then the friendly message.
@@ -192,11 +220,16 @@ try {
     check(r.code !== 0 && /22023: invalid field: region/.test(r.err), "database itself refuses an unknown region (22023)");
   }
 
+  // Batch code taken from the "Product and batch code" field.
+  for (const [text, want] of [["Yazz Ultra, batch 2026-04-18", "2026-04-18"], ["Linzzy pads Batch no. LZ2291.", "LZ2291"], ["B45-221", "B45-221"], ["Softcare tissue", undefined]]) {
+    check(core.batchCodeFrom(text) === want, `batch code from "${text}" is ${want}`);
+  }
+
   // Unreachable database: generic message, nothing leaked.
   {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "http://127.0.0.1:9";
     const s = await core.handleNewsletter(fd({ email: mail("down"), consent: "yes", website: "" }));
-    check(s.status === "error" && s.message === core.MSG_GENERIC, "unreachable database shows the generic error");
+    check(s.status === "error" && s.message === "Sorry, your message could not be sent. Please try again in a few minutes, or email support@lextagh.com.", "unreachable database shows the generic error");
   }
 } catch (error) {
   fail(`test crashed: ${error instanceof Error ? error.stack : error}`);

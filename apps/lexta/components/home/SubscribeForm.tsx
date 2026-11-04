@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { submitNewsletterForm } from "@/app/actions/forms";
-import { FieldError, FormMessage, Honeypot, idleState, invalidProps } from "@/components/forms/FormParts";
+import { FieldError, FormMessage, Honeypot, idleState, invalidProps, useServerForm } from "@/components/forms/FormParts";
 import s from "./home.module.css";
 
 /**
@@ -14,9 +14,10 @@ import s from "./home.module.css";
 export default function SubscribeForm() {
   const [state, formAction, pending] = useActionState(submitNewsletterForm, idleState);
   const v = state.values ?? {};
+  const { ref, onSubmit } = useServerForm(state, formAction, pending);
 
   return (
-    <form action={formAction} aria-label="Newsletter sign up" style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
+    <form ref={ref} action={formAction} onSubmit={onSubmit} aria-label="Newsletter sign up" style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, minWidth: 0 }}>
       <div data-subscribe="1" style={{ display: "flex", gap: 0, alignItems: "stretch" }}>
         <label htmlFor="home-subscribe-email" className={s.srOnly}>Email address</label>
         <input
@@ -34,7 +35,6 @@ export default function SubscribeForm() {
         />
         <button
           type="submit"
-          disabled={pending}
           aria-disabled={pending}
           style={{ border: 0, background: "#0b2f3d", color: "#fff", fontSize: 13, fontWeight: 600, padding: "0 22px", borderRadius: "0 5px 5px 0", cursor: pending ? "progress" : "pointer", opacity: pending ? 0.8 : 1 }}
         >

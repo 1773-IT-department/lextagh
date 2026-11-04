@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Local SQL test harness for the Lexta database.
-# Starts a throwaway Postgres, loads a minimal Supabase stub (auth, storage, API roles),
+# Starts a throwaway Postgres (UTF8, like Supabase), loads a minimal Supabase stub (auth, storage, API roles),
 # applies every migration in supabase/migrations in order, then runs every supabase/tests/*.sql file.
 # Nothing here talks to the real Supabase project.
 #
@@ -46,7 +46,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-"${RUN[@]}" "$PG_BIN/initdb" -D "$DATA" -U postgres -A trust --no-sync >/dev/null
+"${RUN[@]}" "$PG_BIN/initdb" -D "$DATA" -U postgres -A trust -E UTF8 --locale=C --no-sync >/dev/null
 "${RUN[@]}" "$PG_BIN/pg_ctl" -D "$DATA" -l "$WORK/postgres.log" -w \
   -o "-p $PORT -k $SOCK -c listen_addresses='' -c fsync=off" start >/dev/null
 

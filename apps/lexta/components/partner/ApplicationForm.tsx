@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, type CSSProperties } from "react";
-import { submitPartnerForm } from "@/app/actions/forms";
-import { FieldError, FormMessage, Honeypot, idleState, invalidProps } from "@/components/forms/FormParts";
+import type { CSSProperties } from "react";
+import { FieldError, FormMessage, Honeypot, invalidProps, useServerForm } from "@/components/forms/FormParts";
 import { useActiveRoute } from "./RouteContext";
 
 /* Values copied from partner-with-us.html. */
@@ -31,19 +30,22 @@ const errorId = (name: string) => `partner-${name}-error`;
  * organisation, with the picked route as the partnership type. Without JavaScript the form still posts.
  */
 export default function ApplicationForm() {
-  const { active } = useActiveRoute();
-  const [state, formAction, pending] = useActionState(submitPartnerForm, idleState);
+  const { active, form } = useActiveRoute();
+  const [state, formAction, pending] = form;
   const v = state.values ?? {};
+  const { ref, onSubmit } = useServerForm(state, formAction, pending);
 
   return (
     <form
+      id="partner-application"
+      ref={ref}
       action={formAction}
+      onSubmit={onSubmit}
       aria-label={`${active.title} application`}
       style={{ position: "relative", background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}
     >
       <div aria-live="polite" style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>{active.title} application</div>
       <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>{active.note}</p>
-      <input type="hidden" name="route" value={active.key} />
       <Honeypot />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginTop: 22 }}>
         {textFields.map((f) => (
@@ -84,7 +86,6 @@ export default function ApplicationForm() {
       <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
         <button
           type="submit"
-          disabled={pending}
           aria-disabled={pending}
           style={{
             display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600,

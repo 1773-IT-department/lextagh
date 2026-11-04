@@ -16,7 +16,7 @@ export function psql(sql, vars = {}) {
   return new Promise((resolve) => {
     const argv = ["-X", "-q", "-A", "-t", "-v", "ON_ERROR_STOP=1"];
     for (const [k, v] of Object.entries(vars)) argv.push("-v", `${k}=${v}`);
-    const child = spawn("psql", argv, { stdio: ["pipe", "pipe", "pipe"] });
+    const child = spawn("psql", argv, { stdio: ["pipe", "pipe", "pipe"], env: { ...process.env, PGCLIENTENCODING: "UTF8" } });
     let out = "";
     let err = "";
     child.stdout.on("data", (d) => (out += d));

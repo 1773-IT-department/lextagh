@@ -2,7 +2,8 @@
 
 import { useActionState, useState, type CSSProperties, type ReactNode } from "react";
 import { submitContactForm } from "@/app/actions/forms";
-import { FieldError, FormMessage, Honeypot, idleState, invalidProps } from "@/components/forms/FormParts";
+import { FieldError, FormMessage, Honeypot, idleState, invalidProps, choiceCardReset, useServerForm, visuallyHidden } from "@/components/forms/FormParts";
+import fx from "@/components/forms/forms.module.css";
 import type { FormState } from "@/lib/forms/core";
 import { reasons, regions } from "./data";
 
@@ -34,10 +35,12 @@ function Field({ state, name, label, style, children }: { state: FormState; name
  * complaints tracker (LX case number), every other reason a lead in the CRM. Without JavaScript the form still posts.
  */
 export default function Enquiry() {
-  const [selected, setSelected] = useState(0);
-  const active = reasons[selected];
   const [state, formAction, pending] = useActionState(submitContactForm, idleState);
   const v = state.values ?? {};
+  // After a post without JavaScript the page comes back with the reason that was sent.
+  const [selected, setSelected] = useState(() => Math.max(0, reasons.findIndex((r) => r.key === v.reason)));
+  const active = reasons[selected];
+  const { ref, onSubmit } = useServerForm(state, formAction, pending);
   const inv = (name: string) => invalidProps(state, name, `contact-${name}-error`);
 
   return (
@@ -49,20 +52,29 @@ export default function Enquiry() {
           Choose the reason for your enquiry and we route it straight to the responsible team, with the detail they need to respond properly the first time.
         </p>
 
-        <div role="group" aria-label="Reason for your enquiry" style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 26 }}>
+        {/* Each card is a label around a real radio of the form below (form attribute), so the reason is sent even
+            without JavaScript. The cards keep the look of the prototype's buttons. */}
+        <div role="radiogroup" aria-label="Reason for your enquiry" style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 26 }}>
           {reasons.map((r, i) => {
             const on = i === selected;
             return (
-              <button
+              <label
                 key={r.key}
-                type="button"
-                aria-pressed={on}
-                onClick={() => setSelected(i)}
+                className={fx.choice}
                 style={{
-                  width: "100%", textAlign: "left", cursor: "pointer", border: `1px solid ${on ? "#12a3c4" : "rgba(18,163,196,.2)"}`,
+                  ...choiceCardReset, width: "100%", textAlign: "left", cursor: "pointer", border: `1px solid ${on ? "#12a3c4" : "rgba(18,163,196,.2)"}`,
                   background: on ? "#f0f9fc" : "#fff", borderRadius: 12, padding: "18px 20px", display: "flex", alignItems: "center", gap: 16,
                 }}
               >
+                <input
+                  type="radio"
+                  name="reason"
+                  value={r.key}
+                  form="contact-enquiry"
+                  defaultChecked={on}
+                  onChange={() => setSelected(i)}
+                  style={visuallyHidden}
+                />
                 <span
                   aria-hidden="true"
                   style={{
@@ -77,20 +89,22 @@ export default function Enquiry() {
                   <span style={{ display: "block", marginTop: 4, fontSize: 12, lineHeight: 1.7, color: "#5d7883" }}>{r.desc}</span>
                 </span>
                 <span aria-hidden="true" style={{ flex: "0 0 auto", fontSize: 13, fontWeight: 700, color: "#12a3c4" }}>{on ? "✓" : ""}</span>
-              </button>
+              </label>
             );
           })}
         </div>
       </div>
 
       <form
+        id="contact-enquiry"
+        ref={ref}
         action={formAction}
+        onSubmit={onSubmit}
         aria-label="Send a message"
         style={{ position: "relative", background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}
       >
         <div aria-live="polite" style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>{active.formTitle}</div>
         <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>{active.formNote}</p>
-        <input type="hidden" name="reason" value={active.key} />
         <Honeypot />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginTop: 22 }}>
           <Field state={state} name="name" label="Full name">
@@ -125,7 +139,6 @@ export default function Enquiry() {
         </Field>
         <button
           type="submit"
-          disabled={pending}
           aria-disabled={pending}
           style={{ marginTop: 20, width: "100%", border: 0, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "14px 20px", borderRadius: 7, cursor: pending ? "progress" : "pointer", opacity: pending ? 0.75 : 1 }}
         >
