@@ -1,7 +1,7 @@
 import "server-only";
 
 /** What changed, so a site only refreshes the pages that show it. */
-export type SiteDataTag = "products" | "stockists";
+export type SiteDataTag = "products" | "stockists" | "jobs";
 
 /**
  * Tells every website to refresh the pages that show this data ("edit once, sites update").
