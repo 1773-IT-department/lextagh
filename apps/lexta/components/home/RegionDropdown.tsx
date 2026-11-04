@@ -68,6 +68,7 @@ export default function RegionDropdown() {
         data-dd-toggle="1"
         aria-haspopup="listbox"
         aria-expanded={open}
+        aria-label={`Your region: ${value}`}
         onClick={() => setOpen((o) => !o)}
         className={s.ddToggle}
         style={{

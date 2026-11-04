@@ -197,7 +197,7 @@ export default function OpenRoles() {
             Try widening your search, or send us a general application and we will keep you in mind when something opens.
           </p>
           <a href="#general" style={{ marginTop: 20, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-            Send a general application <span style={{ fontSize: 14 }}>→</span>
+            Send a general application <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
           </a>
         </div>
       )}

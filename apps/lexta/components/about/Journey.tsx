@@ -189,7 +189,7 @@ export default function Journey() {
                 <p style={{ margin: "16px 0 0", fontSize: 15, lineHeight: 1.9, color: "#5d7883" }}>{m.text}</p>
                 {m.link && (
                   <Link href={m.link.href} style={{ marginTop: 24, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-                    {m.link.label} <span style={{ fontSize: 14 }}>→</span>
+                    {m.link.label} <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
                   </Link>
                 )}
               </div>

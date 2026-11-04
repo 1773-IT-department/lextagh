@@ -6,7 +6,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import { isCurrent, mobileLinks, portalUrl } from "./site-links";
 
 /**
- * Mobile top bar and slide-in drawer. React port of the prototype's site-mobile-nav.js,
+ * Mobile top bar and slide-in drawer. React port of the retired prototype's mobile nav script,
  * same sizes, colours and timings. The bar is display:none until globals.css shows it under 900px.
  */
 export default function MobileNav() {
@@ -44,6 +44,7 @@ export default function MobileNav() {
     <>
       <div
         data-lxm-bar="1"
+        role="banner"
         style={{
           display: "none", position: "fixed", top: 0, left: 0, right: 0, height: 58, zIndex: 200, background: "#fff",
           boxShadow: "0 1px 0 rgba(10,55,70,.1)", alignItems: "center", justifyContent: "space-between", padding: "0 16px",

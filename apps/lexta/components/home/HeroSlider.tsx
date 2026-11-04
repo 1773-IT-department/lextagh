@@ -177,7 +177,7 @@ export default function HeroSlider() {
                       ) : (
                         <Link key={c.label} href={c.href} style={ctaSolid}>
                           {c.label}
-                          <span style={ctaArrow}>→</span>
+                          <span aria-hidden="true" style={ctaArrow}>→</span>
                         </Link>
                       ),
                     )}

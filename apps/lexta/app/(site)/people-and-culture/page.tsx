@@ -52,6 +52,7 @@ const photos = {
   stall: { src: "/pasted-1788863589556-0-mtsj6zlp-gm1a.png", w: 640, h: 457 },
 };
 
+// Stand-in outreach photos; `placeholder` names the staff photo Lexta should supply, alt says what is shown.
 const peoplePhotos: Photo[] = [
   { placeholder: "Team member at work", ...photos.hygieneDay, alt: "Yazz team at a Menstrual Hygiene Day event" },
   { placeholder: "Colleagues in discussion", ...photos.schoolTalk, alt: "Yazz team speaking to students at a school" },
@@ -66,6 +67,11 @@ const pillars = [
   { n: "05", title: "Results", text: "We set high standards, we measure honestly, and we celebrate together when we hit them. Effort matters. Outcomes matter more." },
 ];
 
+/*
+ * [PLACEHOLDER: one photo per area of work from Lexta]. Until then each card borrows a Lexta photo that does not show
+ * that work (for example "Quality assurance" shows a family at a kitchen table). No visible caption describes the photo,
+ * and each alt says what the photo really shows; `placeholder` names the photo Lexta should supply.
+ */
 const roles: (Photo & { title: string; text: string })[] = [
   {
     placeholder: "Production line photo", ...photos.campus, alt: "Lexta staff outside the Lexta facility", title: "Manufacturing and production",
@@ -138,7 +144,7 @@ export default function PeopleAndCulturePage() {
               We make products that hundreds of thousands of Ghanaian households depend on. That work is done by people, and how we treat them shows up in what leaves the factory.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
-              <ArrowButton href="#openings" padding="12px 12px 12px 20px">View current openings</ArrowButton>
+              <ArrowButton href="/careers#openings" padding="12px 12px 12px 20px">View current openings</ArrowButton>
               <a href="#roles" style={ghostBtn}>Learn about our work</a>
             </div>
           </div>
@@ -321,7 +327,7 @@ export default function PeopleAndCulturePage() {
               href="/corporate-social-responsibility"
               style={{ marginTop: 24, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}
             >
-              See our CSR programmes <span style={{ fontSize: 14 }}>→</span>
+              See our CSR programmes <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
             </Link>
           </div>
         </div>
@@ -353,7 +359,8 @@ export default function PeopleAndCulturePage() {
         </div>
       </section>
 
-      {/* "View current openings" buttons point here (#openings), as in the prototype. Job listings live on Careers. */}
+      {/* The prototype's "View current openings" buttons jumped to this section, which lists no jobs; they now go to /careers#openings.
+          The id stays so old links to /people-and-culture#openings still land somewhere sensible. */}
       <section id="openings" data-reveal="1" data-screen-label="Flexible paths" className={p.pad78} style={{ background: "#fff" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 44, alignItems: "center" }}>
           <div>
@@ -377,7 +384,7 @@ export default function PeopleAndCulturePage() {
                 </span>
               ))}
             </div>
-            <ArrowButton href="#openings" padding="12px 12px 12px 20px" style={{ marginTop: 26 }}>View current openings</ArrowButton>
+            <ArrowButton href="/careers#openings" padding="12px 12px 12px 20px" style={{ marginTop: 26 }}>View current openings</ArrowButton>
           </div>
         </div>
       </section>
@@ -405,7 +412,7 @@ export default function PeopleAndCulturePage() {
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               See open roles
-              <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
+              <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </Link>
             <Link href="/careers#general" style={ghostBtn}>Send a general application</Link>
           </div>

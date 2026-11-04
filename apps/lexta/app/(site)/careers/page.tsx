@@ -151,7 +151,7 @@ export default function CareersPage() {
             ))}
           </div>
           <Link href="/people-and-culture" style={{ marginTop: 32, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-            Read about life at Lexta <span style={{ fontSize: 14 }}>→</span>
+            Read about life at Lexta <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
           </Link>
         </div>
       </section>

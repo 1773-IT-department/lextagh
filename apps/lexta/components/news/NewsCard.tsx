@@ -25,7 +25,7 @@ export default function NewsCard({ article: a }: { article: CardArticle }) {
         </div>
         <div style={{ marginTop: 12, fontSize: 17, lineHeight: 1.32, fontWeight: 700, letterSpacing: "-.015em", color: "#12313d", textWrap: "pretty" }}>{a.title}</div>
         <p style={{ margin: "11px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883", textWrap: "pretty" }}>{a.excerpt}</p>
-        <span style={{ marginTop: "auto", paddingTop: 18, fontSize: 12, fontWeight: 600, color: "#12a3c4" }}>Read more →</span>
+        <span style={{ marginTop: "auto", paddingTop: 18, fontSize: 12, fontWeight: 600, color: "#12a3c4" }}>Read more <span aria-hidden="true">→</span></span>
       </div>
     </Link>
   );

@@ -63,7 +63,7 @@ export default function PartnerPage() {
                 style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "13px 13px 13px 22px", borderRadius: 8 }}
               >
                 Start an application
-                <span style={{ ...arrowBadge, width: 24, height: 24, background: "rgba(255,255,255,.25)" }}>→</span>
+                <span aria-hidden="true" style={{ ...arrowBadge, width: 24, height: 24, background: "rgba(255,255,255,.25)" }}>→</span>
               </a>
               <Link
                 href="/our-brands"
@@ -194,7 +194,7 @@ export default function PartnerPage() {
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               Contact us
-              <span style={{ ...arrowBadge, background: "#12a3c4", color: "#fff" }}>→</span>
+              <span aria-hidden="true" style={{ ...arrowBadge, background: "#12a3c4", color: "#fff" }}>→</span>
             </Link>
             <Link
               href="/our-brands"

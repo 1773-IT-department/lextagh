@@ -1,4 +1,5 @@
-/* Lexta site base styles, ported from the prototype's <style> block and site-responsive.css. Do not restyle. */
+/* Lexta site base styles, ported from the approved prototype's <style> block and its responsive stylesheet (the prototype files
+   are retired; this file is now the only copy). Do not restyle. */
 
 * { box-sizing: border-box; }
 body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: #14313d; background: #fff; -webkit-font-smoothing: antialiased; }

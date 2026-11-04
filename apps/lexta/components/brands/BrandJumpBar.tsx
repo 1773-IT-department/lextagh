@@ -74,7 +74,7 @@ export default function BrandJumpBar() {
         {brands.map((b) => (
           <a key={b.id} data-jump="1" href={`#${b.id}`} onClick={jump(b.id)} style={pill}>{b.label}</a>
         ))}
-        <a href="#standard" style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4", marginLeft: "auto" }}>What holds them together →</a>
+        <a href="#standard" style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4", marginLeft: "auto" }}>What holds them together <span aria-hidden="true">→</span></a>
       </nav>
     </div>
   );

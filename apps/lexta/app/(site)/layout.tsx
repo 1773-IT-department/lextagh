@@ -10,7 +10,8 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
     <>
       <SiteFrame>
         <SiteHeader />
-        {children}
+        {/* Plain block wrapper (no styles) so every page has a main landmark for screen readers and skip navigation. */}
+        <main id="main">{children}</main>
         <SiteFooter />
       </SiteFrame>
       <MobileNav />

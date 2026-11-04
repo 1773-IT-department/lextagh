@@ -1,7 +1,7 @@
 /*
  * Prototype values that must NOT sit in an inline style.
  *
- * site-responsive.css (ported into globals.css) has rules that match inline style TEXT, for example
+ * The responsive rules in globals.css (ported from the retired prototype stylesheet) match inline style TEXT, for example
  * [style*="padding:76px 28px"] or [style*="grid-row:span"]. On the approved prototype those rules never
  * matched, because its client-side runtime writes style attributes with spaces ("padding: 76px 28px").
  * React's server HTML has no spaces, so the same values inline would trigger the rules and change the

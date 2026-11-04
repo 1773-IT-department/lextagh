@@ -53,7 +53,7 @@ export default function ApplicationForm() {
           style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 8 }}
         >
           Submit application
-          <span style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
+          <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
         </a>
         <span style={{ fontSize: 11.5, color: "#5d7883" }}>We reply within two working days.</span>
       </div>

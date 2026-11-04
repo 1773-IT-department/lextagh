@@ -1,3 +1,5 @@
+import type { TextLink } from "../LinkedText";
+
 /* Copy and routing taken from contact-us.html (REASONS and FAQS in its page script). */
 
 export type Reason = {
@@ -53,11 +55,11 @@ export const reasons: Reason[] = [
 
 export const regions = ["Greater Accra", "Ashanti", "Western", "Eastern", "Central", "Volta", "Northern", "Outside Ghana"];
 
-export const faqs = [
+export const faqs: { q: string; a: string; links?: TextLink[] }[] = [
   { q: "How do I become a Lexta distributor?", a: "Write to sales@lextagh.com with your business name, trading location, current product lines and the volumes you handle. Our regional sales manager for your area will contact you to discuss coverage, credit and merchandising support. Appointments are made on territory need, so we will be straight with you about whether your area is already covered." },
   { q: "Where can I buy your products?", a: "Yazz, Linzzy, Crox and Softcare are stocked in supermarkets, pharmacies, open markets and general trade outlets across Ghana, and through selected distributors in Liberia. If you cannot find a product near you, send us your location and we will tell you the nearest stockist." },
   { q: "I have a concern about a product I bought. What should I do?", a: "Contact consumer care on support@lextagh.com or +233 (0) 302 235 296 with the product name, the batch code printed on the pack, where you bought it and the date. The batch code lets our quality team trace the exact production run, and we will come back to you with what we find." },
   { q: "Do you supply institutions, hotels and hospitals directly?", a: "Yes. Institutional and hospitality volumes are handled by our key accounts team. Send your requirement and delivery schedule to sales@lextagh.com for a quotation, including whether you need scheduled recurring deliveries." },
   { q: "Can I visit the factory?", a: "Visits are possible by appointment. Because our lines run to hygiene and safety standards, factory access needs prior clearance and protective equipment we provide on site. Write to support@lextagh.com at least a week ahead with your preferred date and the size of your group." },
-  { q: "How do I apply for a job?", a: "All current openings are listed on our Careers page with full briefs and reference numbers. Apply through the role itself, or send a general application if nothing open fits. We keep general applications on file and go back to them first when a role opens." },
+  { q: "How do I apply for a job?", a: "All current openings are listed on our Careers page with full briefs and reference numbers. Apply through the role itself, or send a general application if nothing open fits. We keep general applications on file and go back to them first when a role opens.", links: [{ phrase: "Careers page", href: "/careers" }] },
 ];
