@@ -543,20 +543,16 @@ begin
   raise notice 'PASS: the honeypot saved nothing; the daily limit rolls';
 end $$;
 
--- Site wide: 200 an hour.
+-- No site wide cap on applications (tickets limit them): application 201 in an hour still goes through.
 do $$
 begin
   insert into public.job_applications (reference, full_name, email, interest)
   select 'LX-APP-2090-' || lpad(g::text, 4, '0'), 'Flood ' || g, 'flood' || g || '@test.local', 'x' from generate_series(1, 191) g;
   set local role anon;
-  begin
-    perform public.submit_job_application(jsonb_build_object('name', 'Late', 'email', 'late@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('rate-6'), 'consent', true));
-    raise exception 'FAIL: application 201 in an hour was accepted';
-  exception when sqlstate 'PT429' then null;
-  end;
+  perform public.submit_job_application(jsonb_build_object('name', 'Late', 'email', 'late@test.local', 'interest', 'Sales', 'cv_path', pg_temp.cv('rate-6'), 'consent', true));
   reset role;
-  delete from public.job_applications where reference like 'LX-APP-2090-%';
-  raise notice 'PASS: at most 200 website applications an hour site wide';
+  delete from public.job_applications where reference like 'LX-APP-2090-%' or email = 'late@test.local';
+  raise notice 'PASS: no site wide cap on applications; tickets and the per email limit do the limiting';
 end $$;
 
 -- Signed in people cannot use the website intake.
@@ -772,13 +768,24 @@ reset role;
 -- CV files: who reads and removes, and the cleanup list.
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('stale-1'), 1000, 'application/pdf', interval '2 days'); end $$;
 do $$ begin perform pg_temp.put_cv(pg_temp.cv('fresh-1'), 1000, 'application/pdf', interval '2 hours'); end $$;
+do $$ begin perform pg_temp.put_cv(pg_temp.cv('just-now'), 1000, 'application/pdf', interval '5 minutes'); end $$;
 update storage.objects set created_at = now() - interval '3 days' where name = pg_temp.cv('kofi');
 set local role authenticated;
 do $$
 declare n int; listed text;
 begin
   perform set_config('request.jwt.claim.sub', pg_temp.u('hr')::text, true);
-  -- Every unclaimed upload is listed, whatever its age; claimed ones never are.
+  -- Outsiders learn nothing from the helper the delete policy uses.
+  perform set_config('request.jwt.claim.sub', pg_temp.u('rep')::text, true);
+  if public.job_cv_unclaimed(pg_temp.cv('stale-1')) then raise exception 'FAIL: job_cv_unclaimed answered a sales rep'; end if;
+  perform set_config('request.jwt.claim.sub', pg_temp.u('hr')::text, true);
+  if not public.job_cv_unclaimed(pg_temp.cv('stale-1')) then raise exception 'FAIL: job_cv_unclaimed did not answer hr'; end if;
+  -- By default the list waits an hour (someone may be applying right now); interval '0' lists every one.
+  if exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('just-now'))
+     or not exists (select 1 from public.unclaimed_job_cvs(interval '0') where name = pg_temp.cv('just-now')) then
+    raise exception 'FAIL: the one hour grace period did not hold';
+  end if;
+  -- Unclaimed uploads over an hour old are listed; claimed ones never are.
   if not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('stale-1'))
      or not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('fresh-1'))
      or not exists (select 1 from public.unclaimed_job_cvs() where name = pg_temp.cv('crowd-1'))
@@ -797,6 +804,10 @@ begin
   if n <> 2 then raise exception 'FAIL: hr could not remove unclaimed CVs of any age'; end if;
   delete from storage.objects where bucket_id = 'job-cvs' and name in (select u.name from public.unclaimed_job_cvs() u);
   if exists (select 1 from public.unclaimed_job_cvs()) then raise exception 'FAIL: hr could not clear every unclaimed upload'; end if;
+  -- Staff may still remove a newer one by hand (any age).
+  delete from storage.objects where bucket_id = 'job-cvs' and name = pg_temp.cv('just-now');
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'FAIL: hr could not remove a new unclaimed upload'; end if;
   perform set_config('request.jwt.claim.sub', pg_temp.u('admin')::text, true);
   delete from storage.objects where bucket_id = 'job-cvs' and name = pg_temp.cv('kofi');
   get diagnostics n = row_count;
@@ -804,7 +815,7 @@ begin
   delete from public.job_applications where reference = (select ref from refs where label = 'kofi');
   get diagnostics n = row_count;
   if n <> 1 then raise exception 'FAIL: admin could not delete an application'; end if;
-  raise notice 'PASS: staff list and remove unclaimed uploads of any age; only admins remove claimed CVs and delete applications';
+  raise notice 'PASS: staff list unclaimed uploads over an hour old (any age on request) and remove them; only admins remove claimed CVs and delete applications';
 end $$;
 reset role;
 

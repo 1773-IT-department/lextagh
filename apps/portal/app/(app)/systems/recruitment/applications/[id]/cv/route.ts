@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { JOB_CV_TYPES, JOB_CVS_BUCKET } from "@lexta/db";
+import { getRecruitmentAccess } from "@/lib/recruitment";
 import { createClient } from "@/lib/supabase/server";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -18,7 +19,7 @@ function cvDisposition(name: string): string {
 
 /**
  * Downloads an applicant's CV. The application and the file are read with the person's own session, so Row Level
- * Security decides who may open them (admin, management, hr); no link to the file ever leaves the server.
+ * Security decides who may open them (admin, management, hr), after a role check here; no link to the file ever leaves the server.
  */
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -26,6 +27,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.redirect(new URL("/login", req.url));
+  // Row Level Security decides as well; this refuses everyone outside recruitment before any read.
+  const access = await getRecruitmentAccess();
+  if (!access.canView) return new NextResponse("Not found", { status: 404 });
   const { data: app } = await supabase.from("job_applications").select("cv_path, cv_file_name, cv_mime_type").eq("id", id).maybeSingle();
   if (!app?.cv_path) return new NextResponse("Not found", { status: 404 });
   const { data, error } = await supabase.storage.from(JOB_CVS_BUCKET).download(app.cv_path as string);

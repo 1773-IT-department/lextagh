@@ -19,10 +19,11 @@ export async function submitNewsletterForm(_prev: FormState, formData: FormData)
 }
 
 /**
- * The Careers application, CV included. The visitor's address is the first x-forwarded-for value, which Vercel sets
- * to the connecting client (good enough for per visitor upload limits; a visitor behind a shared network shares them).
+ * The Careers application, CV included. The visitor's address: x-real-ip, which Vercel sets to the connecting
+ * client, else the first x-forwarded-for value. Without either, a CV upload is refused (see handleApplication).
  */
 export async function submitApplicationForm(_prev: FormState, formData: FormData): Promise<FormState> {
-  const ip = (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ?? "";
+  const h = await headers();
+  const ip = h.get("x-real-ip")?.trim() || h.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
   return handleApplication(formData, { ip });
 }

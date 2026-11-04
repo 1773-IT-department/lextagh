@@ -7,7 +7,7 @@
 // to Storage themselves. Here the file's size, type and first bytes are checked, then the server signs a request
 // for a one time upload ticket with RECRUITMENT_INTAKE_SECRET (shared only with the database; never sent to the
 // browser): HMAC SHA-256 over "<new uuid>.<unix seconds>.<visitor IP hash>". The IP hash is an HMAC of the visitor's
-// address with the same secret, so the raw address is never stored. The database checks the signature and the per
+// address (IPv6 grouped by /64) with the same secret, so the raw address is never stored. The database checks the signature and the per
 // visitor limits and answers with the path the upload may use; the server uploads there with the publishable key and
 // the content type it worked out, and public.submit_job_application claims the upload and returns the LX-APP
 // reference. A filled honeypot gets a thank you with a reference shaped like a real one, and nothing is uploaded or
@@ -106,14 +106,54 @@ const intakeSecret = () => {
   return s.length >= 32 ? s : null;
 };
 
+/** Expands an IPv6 address to its 8 groups of four hex digits, or null when it is not one. */
+function ipv6Groups(ip: string): string[] | null {
+  if (!/^[0-9a-f:.]+$/i.test(ip) || !ip.includes(":")) return null;
+  let text = ip.toLowerCase();
+  // A dotted IPv4 tail (::ffff:1.2.3.4) becomes two groups.
+  const tail = /(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(text);
+  if (tail) {
+    const b = tail.slice(1).map(Number);
+    if (b.some((x) => x > 255)) return null;
+    text = text.slice(0, tail.index) + ((b[0] << 8) | b[1]).toString(16) + ":" + ((b[2] << 8) | b[3]).toString(16);
+  }
+  const halves = text.split("::");
+  if (halves.length > 2) return null;
+  const head = halves[0] ? halves[0].split(":") : [];
+  const rest = halves.length === 2 && halves[1] ? halves[1].split(":") : [];
+  const missing = 8 - head.length - rest.length;
+  if (halves.length === 1 ? head.length !== 8 : missing < 1) return null;
+  const groups = [...head, ...Array(halves.length === 2 ? missing : 0).fill("0"), ...rest];
+  if (groups.some((g) => !/^[0-9a-f]{1,4}$/.test(g))) return null;
+  return groups.map((g) => g.padStart(4, "0"));
+}
+
 /**
- * The signed ticket request for one upload. ip is the visitor's address as the server saw it (on Vercel the first
- * x-forwarded-for value); it is hashed with the secret here and never sent anywhere.
+ * The visitor key the upload limits count by: an IPv4 address as it is, an IPv6 address by its /64 network (one
+ * household or phone usually holds a whole /64), an IPv4 address written as IPv6 (::ffff:1.2.3.4) as IPv4. Null when
+ * there is no usable address, and then no upload is made: everyone without an address must not share one limit.
  */
-export function signTicketRequest(secret: string, ip: string, fileName: string, now = Date.now()) {
+export function visitorKey(raw: string): string | null {
+  let ip = (raw ?? "").trim().replace(/^\[|\](:\d+)?$/g, "").replace(/%.*$/, "");
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) return ip.split(".").every((x) => Number(x) <= 255) ? `v4:${ip}` : null;
+  const groups = ipv6Groups(ip);
+  if (!groups) return null;
+  if (groups.slice(0, 5).every((g) => g === "0000") && groups[5] === "ffff") {
+    const n = parseInt(groups[6] + groups[7], 16);
+    ip = [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join(".");
+    return `v4:${ip}`;
+  }
+  return `v6:${groups.slice(0, 4).join(":")}::/64`;
+}
+
+/**
+ * The signed ticket request for one upload. visitor is visitorKey() of the visitor's address; it is hashed with the
+ * secret here and never sent anywhere.
+ */
+export function signTicketRequest(secret: string, visitor: string, fileName: string, now = Date.now()) {
   const nonce = randomUUID();
   const issuedAt = Math.floor(now / 1000);
-  const ipHash = createHmac("sha256", secret).update(`ip:${ip || "unknown"}`).digest("hex");
+  const ipHash = createHmac("sha256", secret).update(`ip:${visitor}`).digest("hex");
   const signature = createHmac("sha256", secret).update(`${nonce}.${issuedAt}.${ipHash}`).digest("hex");
   return { nonce, issuedAt, ipHash, signature, fileName };
 }
@@ -201,9 +241,14 @@ export async function handleApplication(fd: FormData, ctx: { ip: string } = { ip
     if (file) {
       const ext = jobCvExtension(file.name);
       if (!ext) return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { cv: CV_MESSAGES.type }, values: keep(values, false) };
+      const visitor = visitorKey(ctx.ip);
+      if (!visitor) {
+        console.warn("[careers] no visitor address on an application with a CV; upload refused");
+        return { status: "error", message: msgGeneric(CAREERS_EMAIL), values: keep(values, false) };
+      }
       const bytes = await file.arrayBuffer();
       // Stored with the type that matches the checked bytes, whatever the browser called the file.
-      const up = await uploadJobCv(signTicketRequest(secret, ctx.ip, file.name), bytes, JOB_CV_TYPES[ext]);
+      const up = await uploadJobCv(signTicketRequest(secret, visitor, file.name), bytes, JOB_CV_TYPES[ext]);
       if (!up.ok) {
         if (up.reason === "rejected") return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { cv: CV_MESSAGES.upload }, values: keep(values, false) };
         if (up.reason === "rate_limited") return { status: "error", message: MSG_UPLOAD_RATE_LIMITED, values: keep(values, false) };

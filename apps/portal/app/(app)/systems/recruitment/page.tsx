@@ -174,8 +174,8 @@ export default async function RecruitmentPage({ searchParams }: { searchParams: 
           {unclaimed === null
             ? "We could not check for unclaimed uploads just now."
             : unclaimed === 0
-              ? "None. CVs uploaded with an application that was never sent (a visitor who gave up, or a refused application) appear here."
-              : `${unclaimed} ${unclaimed === 1 ? "CV upload has" : "CV uploads have"} not become an application. Removing them is safe; someone applying this very minute would be asked to attach their CV again.`}
+              ? "None. CVs uploaded with an application that was never sent (a visitor who gave up, or a refused application) appear here after an hour."
+              : `${unclaimed} ${unclaimed === 1 ? "CV upload" : "CV uploads"} older than an hour never became an application. They are safe to remove.`}
         </p>
         <CleanupForm count={unclaimed ?? 0} />
       </section>

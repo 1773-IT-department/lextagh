@@ -203,6 +203,25 @@ try {
     check(other.status === "success", "another address is not affected", other);
   }
   {
+    // IPv6: one /64 network counts as one visitor; the next /64 is someone else.
+    const results = [];
+    for (let i = 0; i < 6; i += 1) results.push(await apply(fd({ ...base(`v6n${i}`), cv: file(PDF, `v6n${i}.pdf`) }), `2001:db8:abcd:12:${i + 1}::${i + 7}`));
+    check(results.slice(0, 5).every((r) => r.status === "success") && results[5].message === careers.MSG_UPLOAD_RATE_LIMITED,
+      "IPv6 addresses in one /64 share the 5 an hour limit", results.map((r) => r.message));
+    const next64 = await apply(fd({ ...base("v6other"), cv: file(PDF, "v6o.pdf") }), "2001:db8:abcd:13::1");
+    check(next64.status === "success", "the next /64 is not affected", next64);
+    check(careers.visitorKey("::ffff:203.0.113.9") === "v4:203.0.113.9" && careers.visitorKey("[2001:db8::1]:443") === "v6:2001:0db8:0000:0000::/64",
+      "IPv4 written as IPv6 counts as IPv4; brackets and ports are ignored");
+  }
+  {
+    // No usable address: no upload, a friendly message, never a shared "unknown" limit.
+    const objs = await objects();
+    const results = [];
+    for (const ip of ["", "unknown", "999.1.1.1"]) results.push(await apply(fd({ ...base(`noip${results.length}`), cv: file(PDF, "n.pdf") }), ip));
+    check(results.every((r) => r.status === "error" && r.message === careers.msgGeneric("support@lextagh.com") && r.values?.email)
+      && (await objects()) === objs, "without a visitor address the CV is not uploaded and the visitor gets the friendly fallback", results.map((r) => r.message));
+  }
+  {
     // No JavaScript role list: an empty choice is a general application even if the hidden field had a role.
     const s = await apply(fd({ ...base("yaw"), opening: "LX-QA-051", opening_choice: "", cv: file(PDF, "yaw.pdf") }));
     const row = s.reference ? await q(`select coalesce(opening_id::text, 'none') from public.job_applications where reference = '${s.reference}'`) : "";

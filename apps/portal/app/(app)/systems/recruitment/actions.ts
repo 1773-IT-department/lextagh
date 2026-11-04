@@ -210,8 +210,9 @@ export async function deleteApplication(id: string): Promise<void> {
 }
 
 /**
- * Removes CV uploads nobody claimed within a day (visitors who gave up, or bots). The database lists them
- * (public.unclaimed_job_cvs) and its storage policy only lets recruitment staff remove exactly those.
+ * Removes CV uploads no application claimed within an hour (visitors who gave up, refused applications). The
+ * database lists them (public.unclaimed_job_cvs, one hour grace period by default) and its storage policy only lets
+ * recruitment staff remove unclaimed ones.
  */
 export async function cleanUnclaimedUploads(_prev: CrmFormState, _form: FormData): Promise<CrmFormState> {
   const access = await getRecruitmentAccess();

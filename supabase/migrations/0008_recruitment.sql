@@ -27,8 +27,8 @@
 -- applies the per email and phone limits. Without the secret nobody can get a ticket, so nobody can upload or apply
 -- by calling the API directly. The bucket enforces 4 MB and the three types too.
 -- Cleanup: uploads nobody claimed (a visitor who gave up, or refused applications) can be removed by recruitment
--- staff at any age: public.unclaimed_job_cvs() lists them and the portal's "Remove unclaimed uploads" button removes
--- them through the Storage API. A scheduled job can do the same later with the service role (not set up here).
+-- staff at any age; public.unclaimed_job_cvs() lists those over an hour old by default and the portal's "Remove
+-- unclaimed uploads" button removes them through the Storage API. A scheduled job can do the same later with the service role (not set up here).
 --
 -- Application references come from the database: LX-APP-<year>-0001, counting from 1 again each year.
 -- Stages: new, screening, shortlisted, interview, offer, hired, rejected, withdrawn; any stage may move to any other.
@@ -567,7 +567,9 @@ begin
      or signature is null or signature !~ '^[0-9a-f]{64}$' then
     raise exception 'invalid field: signature' using errcode = '22023';
   end if;
-  if encode(extensions.hmac(nonce::text || '.' || issued_at::text || '.' || ip_hash, v_secret, 'sha256'), 'hex') <> signature then
+  -- Compared as HMACs of both values, so the time the comparison takes says nothing about the expected signature.
+  if extensions.hmac(encode(extensions.hmac(nonce::text || '.' || issued_at::text || '.' || ip_hash, v_secret, 'sha256'), 'hex'), v_secret, 'sha256')
+     <> extensions.hmac(signature, v_secret, 'sha256') then
     raise exception 'invalid field: signature' using errcode = '22023';
   end if;
   if issued_at < extract(epoch from now())::bigint - 300 or issued_at > extract(epoch from now())::bigint + 60 then
@@ -605,7 +607,7 @@ begin
   end if;
   select count(*) into recent from public.job_cv_upload_tickets t where t.created_at > now() - interval '1 day';
   if recent >= 2000 then
-    raise warning 'recruitment: CV upload circuit breaker on, % upload tickets in the last day', recent;
+    raise warning 'LEXTA RECRUITMENT CIRCUIT BREAKER: CV uploads stopped, % upload tickets in the last day (limit 2000)', recent;
     raise exception 'too many uploads, please try again later' using errcode = 'PT429';
   end if;
 
@@ -637,7 +639,8 @@ $$;
 revoke all on function public.job_cv_ticket_open(text) from public, authenticated;
 grant execute on function public.job_cv_ticket_open(text) to anon;
 
--- An upload no application claimed: recruitment staff may remove it at any age.
+-- An upload no application claimed: recruitment staff may remove it at any age (the portal button waits an hour,
+-- see unclaimed_job_cvs). False for everyone else, so it tells nobody else anything.
 create or replace function public.job_cv_unclaimed(object_name text)
 returns boolean
 language sql
@@ -645,7 +648,7 @@ stable
 security definer
 set search_path = ''
 as $$
-  select exists (
+  select public.recruitment_staff_role() and exists (
     select 1 from storage.objects o
     where o.bucket_id = 'job-cvs' and o.name = object_name
       and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
@@ -655,11 +658,12 @@ $$;
 revoke all on function public.job_cv_unclaimed(text) from public, anon;
 grant execute on function public.job_cv_unclaimed(text) to authenticated;
 
--- The cleanup list: unclaimed uploads older than older_than (default: all of them), oldest first. Recruitment staff
+-- The cleanup list: unclaimed uploads older than older_than (default 1 hour, so someone applying right now is never
+-- caught; pass interval '0' for every unclaimed upload), oldest first. Recruitment staff
 -- and the service role only. Remove the files through the Storage API (supabase.storage.from('job-cvs')
 -- .remove(names)); deleting rows from storage.objects directly would leave the bytes behind. The portal's
 -- "Remove unclaimed uploads" button does exactly that; a scheduled job can do the same later (not set up here).
-create or replace function public.unclaimed_job_cvs(older_than interval default interval '0')
+create or replace function public.unclaimed_job_cvs(older_than interval default interval '1 hour')
 returns table (name text, created_at timestamptz, size_bytes bigint)
 language plpgsql
 stable
@@ -674,7 +678,7 @@ begin
     select o.name, o.created_at, nullif(o.metadata ->> 'size', '')::bigint
     from storage.objects o
     where o.bucket_id = 'job-cvs'
-      and o.created_at <= now() - greatest(coalesce(older_than, interval '0'), interval '0')
+      and o.created_at <= now() - greatest(coalesce(older_than, interval '1 hour'), interval '0')
       and not exists (select 1 from public.job_applications a where a.cv_path = o.name)
     order by o.created_at
     limit 1000;
@@ -768,7 +772,7 @@ grant execute on function public.set_job_application_owner(uuid, uuid) to authen
 --              100 characters before the extension, which always comes from cv_path
 --   consent    boolean, must be true: Lexta may keep the details for this and future roles
 -- Errors: 22023 invalid input (the message names the field), PT429 too many applications (3 per email or phone in
--- a day, 200 site wide in an hour; PostgREST answers HTTP 429).
+-- a day; PostgREST answers HTTP 429).
 create or replace function public.submit_job_application(payload jsonb)
 returns text
 language plpgsql
@@ -885,7 +889,8 @@ begin
   v_cv_name := btrim(left(v_cv_name, 100), ' ._-');
   v_cv_name := coalesce(nullif(v_cv_name, ''), 'cv') || '.' || v_ext;
 
-  -- Abuse guard: at most 3 applications per email or phone number in a day, and 200 site wide in an hour.
+  -- Abuse guard: at most 3 applications per email or phone number in a day. There is no site wide cap here: every
+  -- application needs a ticketed upload, and tickets are limited per visitor and by the circuit breaker.
   v_phone_key := public.crm_phone_key(v_phone);
   perform pg_advisory_xact_lock(65, hashtext(v_email));
   if v_phone_key is not null then
@@ -896,10 +901,6 @@ begin
      and (lower(a.email) = v_email or (v_phone_key is not null and public.crm_phone_key(a.phone) = v_phone_key));
   if recent >= 3 then
     raise exception 'too many applications, please try again tomorrow' using errcode = 'PT429';
-  end if;
-  select count(*) into recent from public.job_applications a where a.created_at > now() - interval '1 hour';
-  if recent >= 200 then
-    raise exception 'too many applications, please try again later' using errcode = 'PT429';
   end if;
 
   v_ref := public.next_job_application_reference(extract(year from now() at time zone 'Africa/Accra')::integer);
