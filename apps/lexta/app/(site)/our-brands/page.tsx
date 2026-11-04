@@ -5,7 +5,8 @@ import ImageSlot from "@/components/ImageSlot";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import BrandJumpBar from "@/components/brands/BrandJumpBar";
 import ProductCardView from "@/components/brands/ProductCardView";
-import { hoochProducts, linzzyProducts, yazzProducts, type ProductCard } from "@/components/brands/data";
+import type { ProductCard } from "@/components/brands/data";
+import { getBrandRanges } from "@/components/brands/live";
 import p from "@/components/proto.module.css";
 
 const title = "Our Brands | Yazz, Linzzy and Hooch by Lexta Ghana";
@@ -17,6 +18,12 @@ export const metadata: Metadata = {
   description,
   openGraph: { title, description, type: "website" },
 };
+
+/**
+ * Product cards come live from Product Management. The page is rebuilt when the portal saves a product
+ * (/api/revalidate clears the "products" tag and this path) and at the latest every hour.
+ */
+export const revalidate = 3600;
 
 /* ---------- Shared prototype styles (values copied from our-brands.html) ---------- */
 
@@ -59,11 +66,13 @@ function Points({ items, style }: { items: { title: string; text: string }[]; st
 }
 
 function Range({ label, products, variant }: { label: string; products: ProductCard[]; variant: "raised" | "outlined" }) {
+  // A brand with nothing published (or switched off) shows its story without an empty range.
+  if (products.length === 0) return null;
   return (
     <>
       <h3 style={{ ...rangeLabel, marginBottom: 0 }}>{label}</h3>
       <div style={rangeGrid}>
-        {products.map((pr) => <ProductCardView key={pr.name} product={pr} variant={variant} />)}
+        {products.map((pr) => <ProductCardView key={pr.slug} product={pr} variant={variant} />)}
       </div>
     </>
   );
@@ -80,7 +89,8 @@ function BrandButton({ href, children }: { href: string; children: ReactNode }) 
   return external ? <a href={href} style={brandBtn}>{inner}</a> : <Link href={href} style={brandBtn}>{inner}</Link>;
 }
 
-export default function OurBrandsPage() {
+export default async function OurBrandsPage() {
+  const ranges = await getBrandRanges();
   return (
     <>
       <RevealOnScroll />
@@ -168,7 +178,7 @@ export default function OurBrandsPage() {
             />
           </div>
 
-          <Range label="The Yazz range" products={yazzProducts} variant="raised" />
+          <Range label="The Yazz range" products={ranges.yazz} variant="raised" />
 
           <BrandButton href="https://yazzproducts.com">Visit yazzproducts.com</BrandButton>
         </div>
@@ -200,7 +210,7 @@ export default function OurBrandsPage() {
             />
           </div>
 
-          <Range label="The Linzzy range" products={linzzyProducts} variant="outlined" />
+          <Range label="The Linzzy range" products={ranges.linzzy} variant="outlined" />
 
           <BrandButton href="https://linzzyproducts.com">Visit linzzyproducts.com</BrandButton>
         </div>
@@ -239,7 +249,7 @@ export default function OurBrandsPage() {
             />
           </div>
 
-          <Range label="The Hooch range" products={hoochProducts} variant="raised" />
+          <Range label="The Hooch range" products={ranges.hooch} variant="raised" />
 
           <BrandButton href="#hooch">Explore Hooch</BrandButton>
         </div>
@@ -282,7 +292,7 @@ export default function OurBrandsPage() {
         </div>
       </section>
 
-      {/* Where to find them: static until the Stockists data is wired (item 20). */}
+      {/* Where to find them: the stockist finder itself is the Where to Buy section of the Home page. */}
       <section data-screen-label="Where to find them" data-reveal="1" style={{ background: "#f7fcfe", padding: "74px 28px", borderTop: "1px solid rgba(18,163,196,.14)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "center" }}>
           <div>
@@ -293,7 +303,7 @@ export default function OurBrandsPage() {
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
               <Link
-                href="/contact-us"
+                href="/#where-to-buy"
                 style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
               >
                 Find a stockist

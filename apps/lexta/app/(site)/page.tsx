@@ -6,11 +6,12 @@ import ArrowText from "@/components/ArrowText";
 import ImageSlot from "@/components/ImageSlot";
 import CountUp from "@/components/CountUp";
 import HeroSlider from "@/components/home/HeroSlider";
-import RegionDropdown from "@/components/home/RegionDropdown";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import StockistFinder from "@/components/home/StockistFinder";
 import StoriesCarousel from "@/components/home/StoriesCarousel";
 import SubscribeForm from "@/components/home/SubscribeForm";
 import VideoModule from "@/components/home/VideoModule";
+import { getWhereToBuyRegions } from "@/components/home/where-to-buy";
 import s from "@/components/home/home.module.css";
 
 const title = "Lexta Ghana Limited | Home Care, Personal Care & Food Manufacturer";
@@ -22,6 +23,9 @@ export const metadata: Metadata = {
   description,
   openGraph: { title, description, type: "website" },
 };
+
+/** Where to Buy reads its regions from the database: rebuilt when staff save a stockist, at the latest hourly. */
+export const revalidate = 3600;
 
 /* ---------- Shared prototype styles (values copied from index.html) ---------- */
 
@@ -164,7 +168,8 @@ const perks = [
 
 const twoLines = (l: string[]) => <>{l[0]}<br />{l[1]}</>;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const regions = await getWhereToBuyRegions();
   return (
     <>
       <RevealOnScroll />
@@ -382,7 +387,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section data-screen-label="Where to buy" data-reveal="1" style={{ background: "#f6fbfd", padding: "70px 28px", position: "relative", zIndex: 40 }}>
+      <section id="where-to-buy" data-screen-label="Where to buy" data-reveal="1" style={{ background: "#f6fbfd", padding: "70px 28px", position: "relative", zIndex: 40 }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "minmax(0,1.1fr) minmax(0,1fr)", gap: 48, alignItems: "center" }}>
           <div>
             <div style={eyebrow}>Where to Buy</div>
@@ -392,19 +397,7 @@ export default function HomePage() {
             </p>
           </div>
           <div style={{ background: "#fff", borderRadius: 12, boxShadow: "0 14px 34px rgba(11,60,78,.1)", padding: 26, position: "relative", zIndex: 41 }}>
-            <div style={smallLabel}>Your region</div>
-            <RegionDropdown />
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
-              <Link
-                href="/contact-us"
-                style={{ display: "inline-flex", alignItems: "center", gap: 10, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "11px 18px", borderRadius: 7 }}
-              >
-                Find a stockist
-              </Link>
-              <Link href="/partner-with-us" className={s.outlineHover} style={{ ...outlineBtn, gap: 10, padding: "11px 18px" }}>
-                Stock our products
-              </Link>
-            </div>
+            <StockistFinder regions={regions} />
           </div>
         </div>
       </section>

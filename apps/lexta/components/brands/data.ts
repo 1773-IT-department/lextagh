@@ -1,8 +1,10 @@
 /**
  * Our Brands product content, exactly as in the approved prototype.
  *
- * Static for now. Item 20 (Product Management) can replace these arrays with rows from Supabase:
- * the page only needs a list of ProductCard per brand.
+ * The page now reads the products live from Product Management (see ./live.ts). These arrays stay as:
+ *  - the fallback when the database cannot be reached, so the page never breaks;
+ *  - layout hints for the seeded products, matched by slug: the local pack shots the database has no image for yet,
+ *    the before/after strip, and the one-off image sizes the prototype editor left behind.
  * Remote image URLs are the ones the prototype uses (existing brand sites and retailer listings).
  */
 
@@ -14,9 +16,11 @@ export type ProductImage = { src: string; alt: string };
 export type ProductMedia =
   | { kind: "single"; image: ProductImage; /** prototype one-off inline style for this image */ imgStyle?: CSSProperties; imgSize?: { width: number; height: number } }
   | { kind: "grid"; columns: 2 | 3; images: ProductImage[] }
-  | { kind: "photo"; placeholder: string; src: string; alt: string; w: number; h: number; /** prototype slot size override */ size?: { width: number; height: number } };
+  | { kind: "photo"; placeholder: string; /** without it the card shows the empty photo slot */ src?: string; alt: string; w: number; h: number; /** prototype slot size override */ size?: { width: number; height: number } };
 
 export type ProductCard = {
+  /** Product slug in Product Management (for the Tissue card, the slug of its first product). */
+  slug: string;
   name: string;
   description: string;
   media: ProductMedia;
@@ -26,11 +30,13 @@ export type ProductCard = {
 
 export const yazzProducts: ProductCard[] = [
   {
+    slug: "sanitary-pads-and-panty-liners",
     name: "Sanitary pads and panty liners",
     description: "Winged, high absorbency pads engineered for security and comfort through a full day. Available across regular, heavy flow and extra long formats, with panty liners for everyday freshness.",
     media: { kind: "single", image: { src: "https://yazzproducts.com/wp-content/uploads/2026/07/Yazz-sanitary-pad-Extra-Long.png", alt: "Yazz sanitary pads" } },
   },
   {
+    slug: "toothpaste",
     name: "Toothpaste",
     description: "The new Yazz range comes in three variants: Charcoal, Herbal and Fluoride. Formulated with calcium carbonate, fluoride and sodium to strengthen enamel and guard against plaque, cavities, bleeding gums and bad breath. The Herbal variant carries a blend of herbs that soothes the gums.",
     media: {
@@ -42,11 +48,13 @@ export const yazzProducts: ProductCard[] = [
     },
   },
   {
+    slug: "toothbrushes",
     name: "Toothbrushes",
     description: "Designed to pair with the range, built to last longer than the month you bought them for.",
     media: { kind: "photo", placeholder: "Yazz toothbrush pack shot", src: "/pasted-1788770223184-0-mtqzltnh-58d1.png", alt: "Yazz toothbrush packs", w: 1080, h: 1080 },
   },
   {
+    slug: "washing-powder",
     name: "Washing powder",
     description: "Active enzymes formulated to lift the toughest stains, with perfumed blue speckles that leave clothes smelling fresh. Clinically tested to be gentle on hands. Tough on stains, kind on fabric.",
     media: {
@@ -61,6 +69,7 @@ export const yazzProducts: ProductCard[] = [
     },
   },
   {
+    slug: "baby-wipes",
     name: "Baby wipes",
     description: "Alcohol free, gently scented wipes that clean and care for delicate skin, leaving it fresh and smooth. Available in three variants.",
     media: {
@@ -72,11 +81,13 @@ export const yazzProducts: ProductCard[] = [
     },
   },
   {
+    slug: "baby-diapers",
     name: "Baby diapers",
     description: "Absorbent, secure and comfortable, for the long nights and the longer days.",
     media: { kind: "single", image: { src: "https://melcom.com/media/catalog/product/cache/8757aa1374eaaf34b9fd32f9e760ba0b/7/0/7018.png", alt: "Yazz baby diapers, large" } },
   },
   {
+    slug: "tissue",
     name: "Tissue and kitchen towels",
     description: "Pocket tissues, toilet rolls, and Mama Yazz, our two ply kitchen towel, named for the number of jobs it ends up doing in a Ghanaian kitchen.",
     media: {
@@ -90,11 +101,13 @@ export const yazzProducts: ProductCard[] = [
 
 export const linzzyProducts: ProductCard[] = [
   {
+    slug: "sanitary-napkins",
     name: "Sanitary napkins",
     description: "A full portfolio including Cool Mint, Heavy Flow and Extra Long, each with clinical anti leak barriers and structured absorption designed for a specific need rather than an average one.",
     media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Your-trusted-partner-copy.jpg.jpeg", alt: "Linzzy sanitary napkins" } },
   },
   {
+    slug: "baby-wipes",
     name: "Baby wipes",
     description: "Ultra mild, fragrance free wipes in 80 piece packs, formulated for sensitive skin and built to hold up to the job.",
     media: {
@@ -106,6 +119,7 @@ export const linzzyProducts: ProductCard[] = [
     },
   },
   {
+    slug: "baby-care",
     name: "Baby care",
     description: "A growing range of everyday essentials for the youngest members of the household.",
     media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Baby-Diaper-copy.jpg-1.jpeg", alt: "Linzzy baby care" } },
@@ -114,17 +128,20 @@ export const linzzyProducts: ProductCard[] = [
 
 export const hoochProducts: ProductCard[] = [
   {
+    slug: "super-crunchy-corn-flakes",
     name: "Super Crunchy Corn Flakes",
     description: "Traditional, crisp, sun ripened corn flakes toasted for a crunch that survives the milk, fortified with essential vitamins.",
     media: { kind: "single", image: { src: "https://www.chopboxonline.com/wp-content/uploads/2022/08/NewBookImages-53-1.png", alt: "Hooch Super Crunchy Corn Flakes, 375g" } },
   },
   {
+    slug: "frosted-flakes",
     name: "Frosted Flakes",
     description: "A measured balance of sweetness and high energy grain, low in fat, made for active mornings and small people with strong opinions.",
     // The prototype editor left a fixed 390 x 248 size on this photo slot; kept so the card looks as approved.
     media: { kind: "photo", placeholder: "Hooch Frosted Flakes pack shot", src: "/pasted-1788770879108-0-mtqzzvrf-xf3v.png", alt: "Hooch Frosted Flakes pack", w: 1080, h: 1080, size: { width: 390, height: 248 } },
   },
   {
+    slug: "choco-flakes",
     name: "Choco Flakes",
     description: "The same fortified grain base, finished with cocoa. Available in 375g.",
     media: { kind: "single", image: { src: "https://www.chopboxonline.com/wp-content/uploads/2022/08/18-7.png", alt: "Hooch Choco Flakes, 375g" } },

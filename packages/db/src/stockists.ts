@@ -104,3 +104,20 @@ export async function getStockists(filter: StockistFilter = {}, client?: Supabas
     .sort((a, b) => a.sortRegion - b.sortRegion || a.town.localeCompare(b.town) || a.name.localeCompare(b.name))
     .map(({ sortRegion: _sortRegion, ...s }) => s);
 }
+
+/** A region as the websites show it in Where to Buy. */
+export type PublicRegion = { slug: string; name: string; isInGhana: boolean };
+
+/**
+ * Every region for the Where to Buy picker, in the order staff set (Ghana first, then outside Ghana).
+ * Uses the publishable key and is cached under the "stockists" tag like the stockists themselves.
+ */
+export async function getRegions(client?: SupabaseClient): Promise<PublicRegion[]> {
+  const supabase = client ?? createPublicClient({ cacheTags: [STOCKISTS_CACHE_TAG], revalidateSeconds: 3600 });
+  const { data, error } = await supabase.from("regions").select("slug, name, is_in_ghana, sort_order").order("sort_order").order("name");
+  if (error) throw new Error(`Could not load regions: ${error.message}`);
+  type RegionRow = { slug: string; name: string; is_in_ghana: boolean; sort_order: number };
+  return ((data ?? []) as RegionRow[])
+    .sort((a, b) => Number(b.is_in_ghana) - Number(a.is_in_ghana) || a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+    .map((r) => ({ slug: r.slug, name: r.name, isInGhana: r.is_in_ghana }));
+}

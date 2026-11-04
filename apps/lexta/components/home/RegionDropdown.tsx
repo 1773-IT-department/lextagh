@@ -3,16 +3,20 @@
 import { useEffect, useRef, useState, type CSSProperties, type FocusEvent, type KeyboardEvent } from "react";
 import s from "./home.module.css";
 
-/** Static region list from the prototype. Live stockist data arrives with the Where to Buy card. */
-const regions = [
-  "Greater Accra", "Ashanti", "Western", "Central", "Eastern", "Volta", "Northern", "Upper East", "Upper West", "Bono",
-  "Liberia (Monrovia)",
-];
+export type RegionOption = { slug: string; name: string };
 
-/** "Your region" picker, ported from the prototype's custom dropdown. */
-export default function RegionDropdown() {
+/**
+ * "Your region" picker, ported from the prototype's custom dropdown. The regions come from the database
+ * (see where-to-buy.ts); the parent keeps the chosen region so Where to Buy can list its stockists.
+ */
+export default function RegionDropdown({ regions, value: selectedSlug, onChange }: {
+  regions: RegionOption[];
+  value: string;
+  onChange: (slug: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(regions[0]);
+  const selectedIndex = Math.max(0, regions.findIndex((r) => r.slug === selectedSlug));
+  const value = regions[selectedIndex]?.name ?? "";
   const box = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
   const optionEls = useRef<(HTMLButtonElement | null)[]>([]);
@@ -48,8 +52,8 @@ export default function RegionDropdown() {
       toggle.current?.focus();
       return;
     }
-    if (e.key === "ArrowDown") next = current < 0 ? regions.indexOf(value) : Math.min(last, current + 1);
-    else if (e.key === "ArrowUp") next = current < 0 ? regions.indexOf(value) : Math.max(0, current - 1);
+    if (e.key === "ArrowDown") next = current < 0 ? selectedIndex : Math.min(last, current + 1);
+    else if (e.key === "ArrowUp") next = current < 0 ? selectedIndex : Math.max(0, current - 1);
     else if (open && e.key === "Home") next = 0;
     else if (open && e.key === "End") next = last;
     else return;
@@ -104,10 +108,10 @@ export default function RegionDropdown() {
         } as CSSProperties}
       >
         {regions.map((r, k) => {
-          const selected = r === value;
+          const selected = k === selectedIndex;
           return (
             <button
-              key={r}
+              key={r.slug}
               ref={(node) => { optionEls.current[k] = node; }}
               tabIndex={-1}
               type="button"
@@ -115,14 +119,14 @@ export default function RegionDropdown() {
               role="option"
               aria-selected={selected}
               className={s.ddOpt}
-              onClick={() => { setValue(r); setOpen(false); toggle.current?.focus(); }}
+              onClick={() => { onChange(r.slug); setOpen(false); toggle.current?.focus(); }}
               style={{
                 width: "100%", textAlign: "left", border: 0, background: "transparent", borderRadius: 7, padding: "11px 12px",
                 fontSize: 13, fontWeight: selected ? 600 : 500, color: selected ? "#12a3c4" : "#3f5b66", cursor: "pointer",
                 transition: "background .15s,color .15s",
               }}
             >
-              {r}
+              {r.name}
             </button>
           );
         })}
