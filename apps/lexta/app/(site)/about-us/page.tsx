@@ -507,7 +507,7 @@ export default function AboutUsPage() {
               <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </Link>
             <Link href="/contact-us" style={ghostBtn}>Request a bulk quote</Link>
-            <Link href="/people-and-culture" style={ghostBtn}>View current openings</Link>
+            <Link href="/careers#openings" style={ghostBtn}>View current openings</Link>
             <Link href="/contact-us" style={ghostBtn}>Contact us</Link>
           </div>
         </div>

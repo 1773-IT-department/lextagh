@@ -27,7 +27,7 @@ export const faqGroups: FaqGroup[] = [
   ] },
   { kicker: "Working here", title: "Careers and people", items: [
     { q: "How do I apply for a role?", a: "Open roles are listed on the Careers page with an apply link on each. If nothing fits, send a general application and we keep it on file for six months.", links: [{ phrase: "Careers page", href: "/careers" }] },
-    { q: "Do you take interns or national service personnel?", a: "Yes, across production, quality, sales and finance. Applications open ahead of each intake, so send a general application to be notified.", links: [{ phrase: "general application", href: "/careers#openings" }] },
+    { q: "Do you take interns or national service personnel?", a: "Yes, across production, quality, sales and finance. Applications open ahead of each intake, so send a general application to be notified.", links: [{ phrase: "general application", href: "/careers#general" }] },
     { q: "Does Lexta ever charge for recruitment?", a: "Never. We do not charge candidates at any stage. Treat any request for payment as fraudulent and report it to sales@lextagh.com." },
   ] },
 ];
