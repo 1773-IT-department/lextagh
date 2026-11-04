@@ -301,10 +301,13 @@ $$;
 
 revoke all on function public.recruitment_staff_name(uuid) from public, anon, authenticated;
 
--- Keeps the database set fields database set, and checks the owner.
+-- Keeps the database set fields database set, and checks the owner. Security definer: it calls
+-- recruitment_is_owner_candidate, which signed in people may not call themselves (Postgres checks that right whenever
+-- the trigger's expression is first prepared in a transaction, even when the owner did not change).
 create or replace function public.check_job_application()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $$
 begin

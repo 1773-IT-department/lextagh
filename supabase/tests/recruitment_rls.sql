@@ -660,3 +660,44 @@ begin
 end $$;
 
 rollback;
+
+-- Staff work in a transaction of their own, as on Supabase (one request, one transaction). Postgres checks function
+-- rights when a trigger's expressions are first prepared in a transaction, so a check that only ever runs after the
+-- database owner has used the same triggers can miss a missing right. Set up and commit, act as hr alone, clean up.
+begin;
+insert into auth.users (id, email, raw_app_meta_data, raw_user_meta_data) values
+  ('00000000-0000-0000-0000-000000000e01', 'rc.fresh.hr@test.local', '{"role":"hr"}', '{"full_name":"Fresh HR"}');
+insert into storage.objects (bucket_id, name, metadata)
+values ('job-cvs', 'incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf', '{"size": 2048, "mimetype": "application/pdf"}');
+set local role anon;
+create temp table if not exists fresh_ref as
+  select public.submit_job_application('{"name":"Fresh Applicant","email":"fresh.applicant@test.local","interest":"Sales","consent":true,"cv_path":"incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf"}') as ref;
+reset role;
+commit;
+
+begin;
+set local role authenticated;
+do $$
+declare
+  app_id uuid;
+begin
+  perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000e01', true);
+  app_id := (select id from public.job_applications where email = 'fresh.applicant@test.local');
+  if app_id is null then raise exception 'FAIL: fresh hr cannot see the application'; end if;
+  update public.job_applications set staff_notes = 'First look' where id = app_id;
+  perform public.set_job_application_stage(app_id, 'screening', 'Fresh transaction');
+  perform public.set_job_application_owner(app_id, '00000000-0000-0000-0000-000000000e01');
+  if (select stage || '|' || owner_id || '|' || staff_notes from public.job_applications where id = app_id)
+     <> 'screening|00000000-0000-0000-0000-000000000e01|First look' then
+    raise exception 'FAIL: fresh hr changes not saved';
+  end if;
+  raise notice 'PASS: hr changes notes, stage and owner in a transaction of their own';
+end $$;
+commit;
+
+begin;
+delete from public.job_applications where email = 'fresh.applicant@test.local';
+delete from storage.objects where name = 'incoming/00000000-0000-0000-0000-000000000e02/fresh.pdf';
+delete from auth.users where id = '00000000-0000-0000-0000-000000000e01';
+drop table if exists fresh_ref;
+commit;

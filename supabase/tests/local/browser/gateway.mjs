@@ -18,7 +18,7 @@ const SECRET = randomUUID();
 const PASSWORD = process.env.GATEWAY_PASSWORD || "harness-password";
 const CORS = {
   "access-control-allow-origin": "*",
-  "access-control-allow-headers": "authorization, apikey, content-type, prefer, accept, range, x-client-info, x-upsert, accept-profile, content-profile",
+  "access-control-allow-headers": "authorization, apikey, content-type, prefer, accept, range, x-client-info, x-upsert, cache-control, x-metadata, accept-profile, content-profile",
   "access-control-allow-methods": "GET, POST, PATCH, DELETE, OPTIONS, HEAD",
   "access-control-expose-headers": "content-range",
 };
