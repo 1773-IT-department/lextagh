@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, type CSSProperties } from "react";
+import { useActionState, useState, type CSSProperties, type ReactNode } from "react";
+import { submitContactForm } from "@/app/actions/forms";
+import { FieldError, FormMessage, Honeypot, idleState, invalidProps } from "@/components/forms/FormParts";
+import type { FormState } from "@/lib/forms/core";
 import { reasons, regions } from "./data";
 
 /* Values copied from contact-us.html. */
@@ -10,16 +13,32 @@ const field: CSSProperties = {
   background: "#fff", minWidth: 0, fontFamily: "inherit",
 };
 
+/** A labelled field with its inline error underneath (outside the label, so the label stays the field's name). */
+function Field({ state, name, label, style, children }: { state: FormState; name: string; label: ReactNode; style?: CSSProperties; children: ReactNode }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0, ...style }}>
+      <label style={fieldLabel}>
+        {label}
+        {children}
+      </label>
+      <FieldError id={`contact-${name}-error`} message={state.fieldErrors?.[name]} />
+    </div>
+  );
+}
+
 /**
  * "What is this about?": the six enquiry routes and the enquiry form that changes with them (title, note,
  * fourth field, message hint and the routing email), as in the prototype.
  *
- * The form is visually identical to the prototype but NOT wired yet: item 19 sends it into the CRM and
- * complaints tracker. Until then "Send message" does nothing; the prototype's fake "Message sent" label is dropped.
+ * Sending (item 19) goes through the submitContactForm server action: Consumer care becomes a complaint in the
+ * complaints tracker (LX case number), every other reason a lead in the CRM. Without JavaScript the form still posts.
  */
 export default function Enquiry() {
   const [selected, setSelected] = useState(0);
   const active = reasons[selected];
+  const [state, formAction, pending] = useActionState(submitContactForm, idleState);
+  const v = state.values ?? {};
+  const inv = (name: string) => invalidProps(state, name, `contact-${name}-error`);
 
   return (
     <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 48, alignItems: "start" }}>
@@ -64,53 +83,59 @@ export default function Enquiry() {
         </div>
       </div>
 
-      <div style={{ background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}>
+      <form
+        action={formAction}
+        aria-label="Send a message"
+        style={{ position: "relative", background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}
+      >
         <div aria-live="polite" style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>{active.formTitle}</div>
         <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>{active.formNote}</p>
         <input type="hidden" name="reason" value={active.key} />
+        <Honeypot />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginTop: 22 }}>
-          <label style={fieldLabel}>
-            Full name
-            <input type="text" name="name" autoComplete="name" placeholder="Your name" style={field} />
-          </label>
-          <label style={fieldLabel}>
-            Email
-            <input type="email" name="email" autoComplete="email" placeholder="you@example.com" style={field} />
-          </label>
-          <label style={fieldLabel}>
-            Phone
-            <input type="tel" name="phone" autoComplete="tel" placeholder="+233" style={field} />
-          </label>
-          <label style={fieldLabel}>
-            {active.extraLabel}
-            <input type="text" name="detail" placeholder={active.extraPlaceholder} style={field} />
-          </label>
+          <Field state={state} name="name" label="Full name">
+            <input type="text" name="name" autoComplete="name" placeholder="Your name" required maxLength={120} defaultValue={v.name} {...inv("name")} style={field} />
+          </Field>
+          <Field state={state} name="email" label="Email">
+            <input type="email" name="email" autoComplete="email" placeholder="you@example.com" maxLength={254} defaultValue={v.email} {...inv("email")} style={field} />
+          </Field>
+          <Field state={state} name="phone" label="Phone">
+            <input type="tel" name="phone" autoComplete="tel" placeholder="+233" maxLength={24} defaultValue={v.phone} {...inv("phone")} style={field} />
+          </Field>
+          <Field state={state} name="detail" label={active.extraLabel}>
+            <input type="text" name="detail" placeholder={active.extraPlaceholder} maxLength={300} defaultValue={v.detail} {...inv("detail")} style={field} />
+          </Field>
         </div>
-        <label style={{ ...fieldLabel, marginTop: 14 }}>
-          Region
-          <select name="region" style={field}>
+        <Field state={state} name="region" label="Region" style={{ marginTop: 14 }}>
+          <select name="region" defaultValue={v.region ?? regions[0]} {...inv("region")} style={field}>
             {regions.map((o) => <option key={o}>{o}</option>)}
           </select>
-        </label>
-        <label style={{ ...fieldLabel, marginTop: 14 }}>
-          Your message
+        </Field>
+        <Field state={state} name="message" label="Your message" style={{ marginTop: 14 }}>
           <textarea
             name="message"
             rows={5}
             placeholder={active.messagePlaceholder}
+            required
+            maxLength={3000}
+            defaultValue={v.message}
+            {...inv("message")}
             style={{ ...field, lineHeight: 1.7, resize: "vertical", minWidth: undefined }}
           />
-        </label>
+        </Field>
         <button
-          type="button"
-          style={{ marginTop: 20, width: "100%", border: 0, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "14px 20px", borderRadius: 7, cursor: "pointer" }}
+          type="submit"
+          disabled={pending}
+          aria-disabled={pending}
+          style={{ marginTop: 20, width: "100%", border: 0, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "14px 20px", borderRadius: 7, cursor: pending ? "progress" : "pointer", opacity: pending ? 0.75 : 1 }}
         >
-          Send message
+          {pending ? "Sending..." : "Send message"}
         </button>
+        <FormMessage state={state} style={{ marginTop: 14 }} />
         <div style={{ marginTop: 12, fontSize: 11, lineHeight: 1.7, color: "#8fa8b2" }}>
           Your details are used only to answer this enquiry. Enquiries go to {active.email}.
         </div>
-      </div>
+      </form>
     </div>
   );
 }

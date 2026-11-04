@@ -6,6 +6,9 @@
 #
 # Usage: bash supabase/tests/local/run.sh            (all tests)
 #        bash supabase/tests/local/run.sh products_rls (only tests whose file name contains the word)
+#        HARNESS_THEN="command" bash supabase/tests/local/run.sh [filter]
+#          also runs the command while the database is still up, with PGHOST, PGPORT, PGUSER and PGDATABASE set
+#          (used by supabase/tests/local/forms/run.sh for the website forms test). Its failure fails the run.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
@@ -71,6 +74,16 @@ for t in "$ROOT"/supabase/tests/*.sql; do
   if [ "$status" != "0" ]; then failed=$((failed + 1)); echo "FAILED: $(basename "$t")"; fi
 done
 
+if [ -n "${HARNESS_THEN:-}" ]; then
+  echo "Running: $HARNESS_THEN"
+  set +e
+  PGHOST="$SOCK" PGPORT="$PORT" PGUSER=postgres PGDATABASE=postgres bash -c "$HARNESS_THEN"
+  status="$?"
+  set -e
+  ran=$((ran + 1))
+  if [ "$status" != "0" ]; then failed=$((failed + 1)); echo "FAILED: $HARNESS_THEN"; fi
+fi
+
 if [ "$ran" = "0" ]; then echo "No test files matched"; exit 1; fi
-if [ "$failed" != "0" ]; then echo "$failed of $ran test files failed"; exit 1; fi
-echo "All $ran test files passed"
+if [ "$failed" != "0" ]; then echo "$failed of $ran test runs failed"; exit 1; fi
+echo "All $ran test runs passed"
