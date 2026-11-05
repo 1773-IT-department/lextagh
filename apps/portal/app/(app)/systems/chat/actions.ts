@@ -116,7 +116,9 @@ export async function makeLead(_prev: CrmFormState, form: FormData): Promise<Crm
   if (error) return { error: dbError(error, "make lead") };
   afterChange(id);
   revalidatePath("/systems/crm", "layout");
-  redirect(`${BASE}/${id}?made=lead&ref=${encodeURIComponent(String(data ?? ""))}`);
+  // Only a lead id the database gave back (a uuid) goes into the address.
+  const leadId = typeof data === "string" && UUID.test(data) ? data : "";
+  redirect(`${BASE}/${id}?made=lead${leadId ? `&lead=${leadId}` : ""}`);
 }
 
 export async function makeComplaint(_prev: CrmFormState, form: FormData): Promise<CrmFormState> {

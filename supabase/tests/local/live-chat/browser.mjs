@@ -208,11 +208,42 @@ try {
   const panelBox = await m.locator("#lx-chat-panel").boundingBox();
   check(scroll && panelBox.x >= 8 && panelBox.x + panelBox.width <= 382 && panelBox.y >= 58, "390: the panel fits the screen under the top bar, no sideways scroll", panelBox);
   await m.screenshot({ path: `${OUT}/site-390-form.png` });
+  // Lost answers: the next start or send reaches the server, then the browser sees a timeout. Trying again reuses
+  // the same id, so nothing is saved twice.
+  let dropNext = 0;
+  await m.route("**/api/chat", async (route) => {
+    const body = route.request().postDataJSON();
+    if (dropNext > 0 && body?.action !== "read") {
+      dropNext -= 1;
+      await route.fetch();
+      return route.abort("timedout");
+    }
+    return route.continue();
+  });
   await m.getByLabel("Your name").fill("Kofi Mensah");
   await m.getByLabel("Phone (optional)").fill("024 555 0202");
   await m.getByLabel("How can we help?").fill("My Hooch pack was opened when I bought it.");
+  dropNext = 1;
+  await m.getByRole("button", { name: "Start chat" }).click();
+  await m.getByText("Sorry, that did not go through").waitFor();
   await m.getByRole("button", { name: "Start chat" }).click();
   await m.getByRole("log").getByText("Hooch pack").waitFor();
+  const firstLine = await m.getByRole("log").innerText();
+  check(!firstLine.includes("Sending..."), "390: the first message shows as sent once the chat starts", firstLine);
+  check(await q("select count(*) from public.chat_conversations where visitor_name = 'Kofi Mensah'") === "1",
+    "390: retrying a start after a lost answer makes one chat");
+  dropNext = 1;
+  await m.getByLabel("Your message").fill("The batch code is 2611A");
+  await m.keyboard.press("Enter");
+  await m.getByText("Sorry, that did not go through").waitFor();
+  check(await m.getByLabel("Your message").inputValue() === "The batch code is 2611A", "390: a failed send keeps the message in the box");
+  await m.keyboard.press("Enter");
+  await m.getByRole("log").getByText("2611A").first().waitFor();
+  await sleep(4500);
+  check(await q("select count(*) from public.chat_messages where body = 'The batch code is 2611A'") === "1"
+    && await m.getByRole("log").getByText("The batch code is 2611A").count() === 1,
+    "390: retrying a send after a lost answer saves and shows it once");
+  await m.unroute("**/api/chat");
   await m.screenshot({ path: `${OUT}/site-390-thread.png` });
   await m.keyboard.press("Escape");
   await sleep(150);
@@ -250,7 +281,7 @@ try {
   check(await pm.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "390: the thread has no sideways scroll");
   await pm.screenshot({ path: `${OUT}/portal-390-thread.png`, fullPage: true });
   await m.getByRole("button", { name: "Chat with the Lexta team" }).click();
-  await m.getByRole("log").getByText("batch code").waitFor({ timeout: 15000 });
+  await m.getByRole("log").getByText("send the batch code").waitFor({ timeout: 15000 });
   const adminName = await m.getByRole("log").innerText();
   check(adminName.includes("Akua, Lexta"), "390: the visitor sees the admin's first name", adminName);
   await m.screenshot({ path: `${OUT}/site-390-reply.png` });

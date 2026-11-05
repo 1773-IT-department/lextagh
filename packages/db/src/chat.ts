@@ -103,6 +103,7 @@ export type ChatStartPayload = {
 /** A message as the visitor sees it: staff replies carry a first name only, internal notes never come back. */
 export type ChatVisitorMessage = {
   id: string;
+  /** Position in this conversation (1, 2, 3...), never the site wide number. */
   seq: number;
   sender: ChatSender;
   body: string;

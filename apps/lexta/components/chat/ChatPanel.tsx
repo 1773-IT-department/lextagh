@@ -75,6 +75,14 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
   const [draft, setDraft] = useState("");
   const [ended, setEnded] = useState(false);
   const lastSeq = useRef(0);
+  // The id of a start or message that has not gone through yet, with what it carried. Trying the same thing again
+  // (after a timeout or a server error) reuses the id, so the database recognises the retry and never saves twice;
+  // anything changed gets a new id.
+  const attempt = useRef<{ key: string; id: string } | null>(null);
+  const idFor = (key: string) => {
+    if (attempt.current?.key !== key) attempt.current = { key, id: newId() };
+    return attempt.current.id;
+  };
   const panel = useRef<HTMLDivElement>(null);
   const firstField = useRef<HTMLInputElement>(null);
   const composer = useRef<HTMLTextAreaElement>(null);
@@ -165,21 +173,24 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     setBusy(true);
     setError("");
     setFieldErrors({});
-    const r = await api<{ conversationId: string; token: string; reference: string }>({
+    const fields = {
       action: "start", name: get("name"), email: get("email"), phone: get("phone"), message: get("message"),
       website: get("website"), page: window.location.pathname,
-    });
+    };
+    const id = idFor(JSON.stringify(fields));
+    const r = await api<{ conversationId: string; token: string; reference: string }>({ ...fields, id });
     setBusy(false);
     if (!r.ok) {
       setError(r.message);
       setFieldErrors(r.fieldErrors ?? {});
       return;
     }
+    attempt.current = null;
     const next = { id: r.conversationId, token: r.token };
     saveSession(next);
     setEnded(false);
     lastSeq.current = 0;
-    setLines([{ id: "first", seq: 0, sender: "visitor", body: get("message").trim(), created_at: new Date().toISOString(), staff_name: null, pending: true }]);
+    setLines([{ id: "first", seq: 0, sender: "visitor", body: get("message").trim(), created_at: new Date().toISOString(), staff_name: null }]);
     setSession(next);
   }
 
@@ -189,7 +200,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     const body = draft.trim();
     if (!body) return;
     if (body.length > CHAT_LIMITS.message) { setError(`Messages can be at most ${CHAT_LIMITS.message} characters.`); return; }
-    const id = newId();
+    const id = idFor(`send:${session.id}:${body}`);
     setBusy(true);
     setError("");
     setDraft("");
@@ -197,6 +208,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     const r = await api<{ id: string; seq: number; createdAt: string }>({ action: "send", conversationId: session.id, token: session.token, id, body });
     setBusy(false);
     if (r.ok) {
+      attempt.current = null;
       setStatus("open");
       setLines((prev) => prev.map((l) => (l.id === id ? { ...l, seq: r.seq, created_at: r.createdAt || l.created_at, pending: false } : l))
         .sort((a, b) => (a.pending ? 1 : 0) - (b.pending ? 1 : 0) || a.seq - b.seq));

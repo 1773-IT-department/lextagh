@@ -109,11 +109,27 @@ try {
     const expected = createHmac("sha256", SECRET).update("chat-ip:v4:203.0.113.7").digest("hex");
     check(!events.includes("203.0.113.7") && events.includes(expected), "the visitor address is only kept as an HMAC with the secret");
   }
+  // A retried start (the widget sends the same id again after a timeout) gets the same chat and token, once.
+  {
+    const id = randomUUID();
+    const fields = { id, name: "Retry Visitor", message: "Is anyone there?" };
+    const a = await start(fields, "192.0.2.200");
+    const b = await start(fields, "192.0.2.200");
+    const rows = await q("select count(*) from public.chat_conversations where id = :'id'", { id });
+    const events = await q("select count(*) from public.chat_rate_events where kind = 'start' and ip_hash = :'h'",
+      { h: createHmac("sha256", SECRET).update("chat-ip:v4:192.0.2.200").digest("hex") });
+    check(a.status === 200 && b.status === 200 && a.body.conversationId === id && a.body.token === b.body.token && rows === "1" && events === "1",
+      "a retried start with the same id returns the same chat and token, saved and counted once", { a: a.body, b: b.body, rows, events });
+    const thief = await start(fields, "192.0.2.201");
+    check(thief.status === 400 && !thief.body.ok && !JSON.stringify(thief.body).includes(a.body.token), "the same id from another address gets nothing", thief.body);
+  }
+
   let firstSeq = 0;
   {
     const r = await read(conv, ip);
     firstSeq = r.body.messages?.[0]?.seq ?? 0;
-    check(r.status === 200 && r.body.messages.length === 1 && r.body.messages[0].body === "Hello there" && r.body.status === "open", "the visitor reads their first message back", r);
+    check(r.status === 200 && r.body.messages.length === 1 && r.body.messages[0].body === "Hello there" && r.body.messages[0].seq === 1 && r.body.status === "open",
+      "the visitor reads their first message back, numbered 1 in their own chat", r);
   }
 
   // Staff answer in the inbox (as the database sees a portal call), with a note the visitor must never see.

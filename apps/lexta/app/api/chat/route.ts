@@ -24,6 +24,8 @@ export async function POST(request: Request) {
   let body: unknown;
   try { body = JSON.parse(text); } catch { body = null; }
   // The visitor's address: x-real-ip, which Vercel sets to the connecting client, else the first x-forwarded-for value.
+  // This assumes the site runs on Vercel with no other proxy or CDN in front; behind one, every visitor would share
+  // the proxy's address and its limits. Many real visitors share an address anyway (mobile CGNAT), see 0009.
   const ip = request.headers.get("x-real-ip")?.trim() || request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
   const result = await handleChat(body, { ip });
   return Response.json(result.body, { status: result.status, headers: noStore });

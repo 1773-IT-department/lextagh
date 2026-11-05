@@ -33,7 +33,9 @@
 -- "chat.<new uuid>.<unix seconds>.<visitor IP hash>". The IP hash is an HMAC of the visitor's address (IPv6 grouped
 -- by /64) with the same secret, made on the server, so the raw address never leaves it. Without the secret nobody
 -- can start, send or read by calling the API directly. The nonce becomes the new conversation's or message's id,
--- so a retried call can never save twice.
+-- so a retried call can never save twice: a retried start (same nonce, same address, same details, within 15
+-- minutes) returns the same conversation and token without counting against the limits. The token is an HMAC of
+-- the conversation id with the shared secret, so it can be given again without being stored.
 --
 -- Limits (all refused with PT429, which PostgREST answers as HTTP 429):
 --   per visitor address (IP hash)   10 new conversations an hour and 30 a day; 200 visitor messages an hour. A
@@ -41,6 +43,14 @@
 --   per token (one conversation)    8 visitor messages a minute and 60 an hour; 300 visitor messages in all.
 --   site wide circuit breaker       300 new conversations an hour, 3000 visitor messages an hour (logged as a
 --                                   warning). One address cannot reach these alone: its own limits stop it first.
+--                                   The message breaker only stops chats no staff member has replied in yet (and
+--                                   new chats): a conversation the team is already answering carries on, still
+--                                   under its per token and per address limits.
+--   shared addresses                Many visitors in Ghana share one public IPv4 address (mobile carrier CGNAT,
+--                                   offices, cafes), so the per address limits are set for a shared address, not for
+--                                   one person, and they only ever slow that address down. The address is the
+--                                   x-real-ip header Vercel sets for the connecting client: correct only while the
+--                                   site runs on Vercel with no other proxy or CDN in front of it.
 --   input                           name 1 to 80, email up to 254, phone up to 24, message 1 to 2000 characters,
 --                                   page path up to 300, the whole start payload up to 6000 bytes, unknown fields
 --                                   refused, and a honeypot field (anything in it: a reply shaped like a real one,
@@ -158,6 +168,8 @@ create table public.chat_conversations (
   brand_id uuid not null references public.brands (id) on delete restrict,
   -- SHA-256 (hex) of the visitor's token. The token itself is never stored.
   token_hash text not null unique check (token_hash ~ '^[0-9a-f]{64}$'),
+  -- SHA-256 of the start request (address hash and details), only to recognise a retried start. Staff cannot read it.
+  start_fingerprint text check (start_fingerprint is null or start_fingerprint ~ '^[0-9a-f]{64}$'),
   visitor_name text not null check (length(btrim(visitor_name)) between 1 and 80),
   visitor_email text check (visitor_email is null or (length(visitor_email) <= 254 and visitor_email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$')),
   visitor_phone text check (visitor_phone is null or visitor_phone ~ '^\+?[0-9][0-9 ()-]{5,22}$'),
@@ -471,7 +483,9 @@ $$;
 revoke all on function public.chat_clean_body(text) from public, anon, authenticated;
 
 -- The visitor address limits and the site wide breaker for one kind of event. Raises PT429 when over.
-create or replace function public.chat_check_limits(kind text, ip_hash text)
+-- Addresses are often shared (CGNAT on mobile networks, offices): see "shared addresses" at the top.
+-- apply_breaker: false for a message in a chat staff have already replied in (the team is answering it).
+create or replace function public.chat_check_limits(kind text, ip_hash text, apply_breaker boolean)
 returns void
 language plpgsql
 volatile
@@ -505,6 +519,9 @@ begin
   if recent >= 200 then
     raise exception 'too many messages, please try again later' using errcode = 'PT429';
   end if;
+  if not apply_breaker then
+    return;
+  end if;
   select count(*) into recent from public.chat_rate_events e
    where e.kind = 'message' and e.created_at > now() - interval '1 hour';
   if recent >= 3000 then
@@ -514,7 +531,22 @@ begin
 end;
 $$;
 
-revoke all on function public.chat_check_limits(text, text) from public, anon, authenticated;
+revoke all on function public.chat_check_limits(text, text, boolean) from public, anon, authenticated;
+
+-- A message's position among the messages the visitor sees in its conversation (1, 2, 3...). The visitor gets
+-- these instead of the global seq, so gaps never show how busy the rest of the site is.
+create or replace function public.chat_position(conversation_id uuid, seq bigint)
+returns bigint
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select count(*) from public.chat_messages m
+  where m.conversation_id = chat_position.conversation_id and not m.is_internal and m.seq <= chat_position.seq;
+$$;
+
+revoke all on function public.chat_position(uuid, bigint) from public, anon, authenticated;
 
 -- Starts a conversation. payload (text fields; unknown fields are refused; at most 6000 bytes):
 --   honeypot  leave empty; anything in it means a bot: a reply shaped like a real one comes back, nothing is saved
@@ -524,7 +556,8 @@ revoke all on function public.chat_check_limits(text, text) from public, anon, a
 --   phone     optional, up to 24
 --   message   required, 1 to 2000 (the first message)
 --   page      optional, the path the chat started on, up to 300, starting with /
--- Returns { conversation_id, token, reference }. The token is shown once, here; only its hash is kept.
+-- Returns { conversation_id, token, reference }. Only the token's hash is kept; a retried start (see above) gets
+-- the same token again.
 create or replace function public.chat_start(nonce uuid, issued_at bigint, ip_hash text, signature text, payload jsonb)
 returns jsonb
 language plpgsql
@@ -543,6 +576,9 @@ declare
   v_brand uuid;
   v_token text;
   v_ref text;
+  v_fingerprint text;
+  v_secret text;
+  v_existing record;
 begin
   perform public.chat_check_request(nonce, issued_at, ip_hash, signature);
   if payload is null or jsonb_typeof(payload) <> 'object' then
@@ -595,21 +631,33 @@ begin
 
   -- One at a time per visitor address, so parallel requests cannot slip past the counts.
   perform pg_advisory_xact_lock(91, hashtext(ip_hash));
-  perform public.chat_check_limits('start', ip_hash);
-  if exists (select 1 from public.chat_conversations c where c.id = nonce) then
-    raise exception 'invalid field: nonce' using errcode = '22023';
+  select s.secret into v_secret from private.chat_intake_secret s where s.id;
+  -- The same start again (a retry after a lost answer): the same address and details within 15 minutes get the
+  -- same conversation and token back, and nothing is counted again. Anything else with a used nonce is refused, so
+  -- knowing a conversation id is never enough to get its token.
+  v_fingerprint := encode(extensions.digest(ip_hash || '.' || payload::text, 'sha256'), 'hex');
+  select c.id, c.reference, c.start_fingerprint, c.created_at into v_existing from public.chat_conversations c where c.id = nonce;
+  if found then
+    if v_existing.start_fingerprint is distinct from v_fingerprint or v_existing.created_at < now() - interval '15 minutes' then
+      raise exception 'invalid field: nonce' using errcode = '22023';
+    end if;
+    return jsonb_build_object('conversation_id', nonce,
+      'token', encode(extensions.hmac('chat-token.' || nonce::text, v_secret, 'sha256'), 'hex'), 'reference', v_existing.reference);
   end if;
+  perform public.chat_check_limits('start', ip_hash, true);
   -- The events are only for the limits; old rows are not needed.
   delete from public.chat_rate_events e where e.created_at < now() - interval '2 days';
 
-  v_token := encode(extensions.gen_random_bytes(32), 'hex');
+  v_token := encode(extensions.hmac('chat-token.' || nonce::text, v_secret, 'sha256'), 'hex');
   loop
     v_ref := 'LC-' || upper(encode(extensions.gen_random_bytes(4), 'hex'));
     exit when not exists (select 1 from public.chat_conversations c where c.reference = v_ref);
   end loop;
 
-  insert into public.chat_conversations (id, reference, brand_id, token_hash, visitor_name, visitor_email, visitor_phone, start_page)
-  values (nonce, v_ref, v_brand, encode(extensions.digest(v_token, 'sha256'), 'hex'), v_name, v_email, v_phone, v_page);
+  insert into public.chat_conversations (id, reference, brand_id, token_hash, start_fingerprint, visitor_name, visitor_email,
+                                         visitor_phone, start_page)
+  values (nonce, v_ref, v_brand, encode(extensions.digest(v_token, 'sha256'), 'hex'), v_fingerprint, v_name, v_email,
+          v_phone, v_page);
   insert into public.chat_messages (conversation_id, sender, body) values (nonce, 'visitor', v_message);
   insert into public.chat_rate_events (kind, ip_hash) values ('start', ip_hash), ('message', ip_hash);
 
@@ -621,7 +669,7 @@ revoke all on function public.chat_start(uuid, bigint, text, text, jsonb) from p
 grant execute on function public.chat_start(uuid, bigint, text, text, jsonb) to anon;
 
 -- Sends a visitor message. The nonce becomes the message id: the same nonce twice returns the first message.
--- Returns { id, seq, created_at }.
+-- Returns { id, seq, created_at }; seq is the message's position in this conversation (see chat_read).
 create or replace function public.chat_send(nonce uuid, issued_at bigint, ip_hash text, signature text,
                                             conversation_id uuid, token text, body text)
 returns jsonb
@@ -634,15 +682,18 @@ declare
   v_conv uuid;
   v_body text;
   v_count integer;
+  v_staff_at timestamptz;
   recent integer;
   v_msg record;
+  v_pos bigint;
 begin
   perform public.chat_check_request(nonce, issued_at, ip_hash, signature);
   v_conv := public.chat_conversation_for(conversation_id, token);
   v_body := public.chat_clean_body(body);
 
   -- One at a time per conversation, then per address (always in that order, so two calls cannot deadlock).
-  select c.visitor_message_count into v_count from public.chat_conversations c where c.id = v_conv for update;
+  select c.visitor_message_count, c.last_staff_message_at into v_count, v_staff_at
+    from public.chat_conversations c where c.id = v_conv for update;
   perform pg_advisory_xact_lock(91, hashtext(ip_hash));
 
   select m.id, m.seq, m.created_at, m.conversation_id into v_msg from public.chat_messages m where m.id = nonce;
@@ -650,7 +701,7 @@ begin
     if v_msg.conversation_id <> v_conv then
       raise exception 'invalid field: nonce' using errcode = '22023';
     end if;
-    return jsonb_build_object('id', v_msg.id, 'seq', v_msg.seq, 'created_at', v_msg.created_at);
+    return jsonb_build_object('id', v_msg.id, 'seq', public.chat_position(v_conv, v_msg.seq), 'created_at', v_msg.created_at);
   end if;
 
   if v_count >= 300 then
@@ -666,20 +717,22 @@ begin
   if recent >= 60 then
     raise exception 'too many messages, please try again later' using errcode = 'PT429';
   end if;
-  perform public.chat_check_limits('message', ip_hash);
+  perform public.chat_check_limits('message', ip_hash, v_staff_at is null);
 
   insert into public.chat_messages (id, conversation_id, sender, body) values (nonce, v_conv, 'visitor', v_body)
   returning id, seq, created_at into v_msg;
   insert into public.chat_rate_events (kind, ip_hash) values ('message', ip_hash);
-  return jsonb_build_object('id', v_msg.id, 'seq', v_msg.seq, 'created_at', v_msg.created_at);
+  return jsonb_build_object('id', v_msg.id, 'seq', public.chat_position(v_conv, v_msg.seq), 'created_at', v_msg.created_at);
 end;
 $$;
 
 revoke all on function public.chat_send(uuid, bigint, text, text, uuid, text, text) from public, authenticated;
 grant execute on function public.chat_send(uuid, bigint, text, text, uuid, text, text) to anon;
 
--- Reads a visitor's own conversation: messages after after_seq (0 for all), at most 200, oldest first. Internal
--- notes are never included; a staff reply carries only the staff member's first name.
+-- Reads a visitor's own conversation: messages after position after_seq (0 for all), at most 200, oldest first.
+-- seq here is the message's position in this conversation (1, 2, 3...), never the global number, so the visitor
+-- learns nothing about other chats. Internal notes are never included (and leave no gaps); a staff reply carries
+-- only the staff member's first name.
 -- Returns { reference, status, messages: [{ id, seq, sender, body, created_at, staff_name }] }.
 create or replace function public.chat_read(nonce uuid, issued_at bigint, ip_hash text, signature text,
                                             conversation_id uuid, token text, after_seq bigint)
@@ -700,13 +753,17 @@ begin
     'status', c.status,
     'messages', coalesce((
       select jsonb_agg(jsonb_build_object(
-        'id', m.id, 'seq', m.seq, 'sender', m.sender, 'body', m.body, 'created_at', m.created_at,
+        'id', m.id, 'seq', m.pos, 'sender', m.sender, 'body', m.body, 'created_at', m.created_at,
         'staff_name', case when m.sender = 'staff' then public.chat_staff_first_name(m.author_id) end
-      ) order by m.seq)
+      ) order by m.pos)
       from (
-        select * from public.chat_messages m
-        where m.conversation_id = v_conv and not m.is_internal and m.seq > greatest(coalesce(after_seq, 0), 0)
-        order by m.seq limit 200
+        select v.* from (
+          select x.id, x.sender, x.body, x.created_at, x.author_id, row_number() over (order by x.seq) as pos
+          from public.chat_messages x
+          where x.conversation_id = v_conv and not x.is_internal
+        ) v
+        where v.pos > greatest(coalesce(after_seq, 0), 0)
+        order by v.pos limit 200
       ) m
     ), '[]'::jsonb)
   ) into v_out

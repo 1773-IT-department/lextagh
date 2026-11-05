@@ -169,7 +169,7 @@ begin
       'select public.chat_create_lead(gen_random_uuid())', 'select public.chat_delete(gen_random_uuid())', $q$select public.chat_create_complaint(gen_random_uuid(), 'other')$q$,
       'select public.chat_transcript(gen_random_uuid(), 100)', 'select public.chat_contact_for(gen_random_uuid())',
       'select public.chat_staff_first_name(gen_random_uuid())', 'select public.chat_is_agent(gen_random_uuid())',
-      $q$select public.chat_check_request(gen_random_uuid(), 1, 'x', 'y')$q$, $q$select public.chat_check_limits('start', 'x')$q$,
+      $q$select public.chat_check_request(gen_random_uuid(), 1, 'x', 'y')$q$, $q$select public.chat_check_limits('start', 'x', true)$q$, 'select public.chat_position(gen_random_uuid(), 1)',
       $q$select public.chat_conversation_for(gen_random_uuid(), 'x')$q$, $q$select public.chat_clean_body('x')$q$,
       'select count(*) from private.chat_intake_secret'] loop
     begin
@@ -375,6 +375,51 @@ begin
   raise notice 'PASS: a token opens only its own conversation; wrong, swapped, malformed and missing tokens get PT403; sends are trimmed, checked and idempotent';
 end $$;
 
+-- A retried start returns the same chat and token and counts nothing; a used nonce is useless to anyone else ------
+do $$
+declare
+  n uuid := gen_random_uuid();
+  t bigint := pg_temp.now_s();
+  p jsonb := '{"name":"Retry","message":"Did this arrive?","honeypot":""}';
+  a jsonb;
+  b jsonb;
+  bad record;
+begin
+  perform pg_temp.as_user('anon');
+  a := public.chat_start(n, t, pg_temp.ip('retry'), pg_temp.sig(n, t, pg_temp.ip('retry')), p);
+  b := public.chat_start(n, t + 1, pg_temp.ip('retry'), pg_temp.sig(n, t + 1, pg_temp.ip('retry')), p);
+  if a <> b then raise exception 'FAIL: a retried start gave % then %', a, b; end if;
+  perform pg_temp.read('retry', n, b ->> 'token');
+  for bad in select * from (values
+      ('other-address', p),
+      ('retry', '{"name":"Retry","message":"Different text","honeypot":""}'::jsonb),
+      ('retry', '{"name":"Someone else","message":"Did this arrive?","honeypot":""}'::jsonb)
+    ) as x(ip_tag, payload) loop
+    begin
+      perform public.chat_start(n, t, pg_temp.ip(bad.ip_tag), pg_temp.sig(n, t, pg_temp.ip(bad.ip_tag)), bad.payload);
+      raise exception 'FAIL: a used nonce gave a token to a different request (%)', bad.ip_tag;
+    exception when sqlstate '22023' then null;
+    end;
+  end loop;
+  perform pg_temp.as_user('owner');
+  if (select count(*) from public.chat_conversations where id = n) <> 1
+     or (select count(*) from public.chat_messages where conversation_id = n) <> 1
+     or (select count(*) from public.chat_rate_events where ip_hash = pg_temp.ip('retry')) <> 2 then
+    raise exception 'FAIL: a retried start saved or counted twice';
+  end if;
+  -- An old start is not handed out again.
+  update public.chat_conversations set created_at = now() - interval '20 minutes' where id = n;
+  perform pg_temp.as_user('anon');
+  begin
+    perform public.chat_start(n, t, pg_temp.ip('retry'), pg_temp.sig(n, t, pg_temp.ip('retry')), p);
+    raise exception 'FAIL: a start older than 15 minutes was handed out again';
+  exception when sqlstate '22023' then null;
+  end;
+  perform pg_temp.as_user('owner');
+  delete from public.chat_conversations where id = n;
+  raise notice 'PASS: a retried start (same nonce, address and details, within 15 minutes) returns the same chat and token, saves and counts once; any other use of the nonce is refused';
+end $$;
+
 -- Staff: who sees what ------------------------------------------------------------------------------------------------
 do $$
 declare
@@ -392,6 +437,11 @@ begin
     begin
       perform token_hash from public.chat_conversations;
       raise exception 'FAIL: % read token hashes', who;
+    exception when insufficient_privilege then null;
+    end;
+    begin
+      perform start_fingerprint from public.chat_conversations;
+      raise exception 'FAIL: % read start fingerprints', who;
     exception when insufficient_privilege then null;
     end;
     begin
@@ -527,6 +577,17 @@ begin
   perform pg_temp.as_user('anon');
   r := pg_temp.read('visitor-1', ama.id, ama.token);
   if r -> 'messages' -> -1 ->> 'staff_name' <> 'Lexta team' then raise exception 'FAIL: nameless staff shown as %', r -> 'messages' -> -1; end if;
+  -- The visitor gets positions in their own chat (1, 2, 3...), with no gaps from notes or other chats.
+  if (select string_agg(x ->> 'seq', ',' order by ord) from jsonb_array_elements(r -> 'messages') with ordinality as e(x, ord))
+     <> (select string_agg(g::text, ',' order by g) from generate_series(1, jsonb_array_length(r -> 'messages')) g) then
+    raise exception 'FAIL: visitor message numbers are not 1..n: %', r -> 'messages';
+  end if;
+  if (pg_temp.send('visitor-1', ama.id, ama.token, 'Numbered') ->> 'seq')::int <> jsonb_array_length(r -> 'messages') + 1 then
+    raise exception 'FAIL: chat_send did not return the next position';
+  end if;
+  if jsonb_array_length(pg_temp.read('visitor-1', ama.id, ama.token, jsonb_array_length(r -> 'messages')) -> 'messages') <> 1 then
+    raise exception 'FAIL: reading after a position';
+  end if;
   perform pg_temp.as_user('owner');
   raise notice 'PASS: staff reply and add internal notes as themselves only; the visitor sees replies with a first name only, never notes, emails or full names; statuses and unread follow the messages';
 end $$;
@@ -859,6 +920,9 @@ begin
   insert into public.chat_rate_events (kind, ip_hash)
   select 'message', pg_temp.ip('flood-' || g) from generate_series(1, 3000 - have) g;
   perform pg_temp.as_user('anon');
+  -- A chat staff are already answering carries on (Ama has staff replies)...
+  perform pg_temp.send('visitor-1', (select id from convs where label = 'ama'), (select token from convs where label = 'ama'), 'answered chats carry on');
+  -- ...one nobody has replied in yet waits (Kofi only has internal notes).
   begin
     perform pg_temp.send('visitor-2', (select id from convs where label = 'kofi'), (select token from convs where label = 'kofi'), 'flooded');
     raise exception 'FAIL: send accepted during a message flood';
@@ -869,7 +933,7 @@ begin
   perform pg_temp.read('visitor-2', (select id from convs where label = 'kofi'), (select token from convs where label = 'kofi'));
   perform pg_temp.as_user('owner');
   delete from public.chat_rate_events where ip_hash in (select pg_temp.ip('flood-' || g) from generate_series(1, 3000) g);
-  raise notice 'PASS: site wide breaker at 300 new chats and 3000 messages an hour; ongoing chats carry on and reads still work';
+  raise notice 'PASS: site wide breaker at 300 new chats and 3000 messages an hour; chats staff already replied in carry on, unanswered ones wait; reads still work';
 end $$;
 
 -- New leads can use the live chat source from the portal too, and the old sources still work.

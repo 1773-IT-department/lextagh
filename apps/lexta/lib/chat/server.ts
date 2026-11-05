@@ -109,7 +109,8 @@ export function checkStart(body: Record<string, unknown>) {
 }
 
 /**
- * One chat call from the widget. body: { action: "start", name, email?, phone?, message, page?, website? (honeypot) }
+ * One chat call from the widget. body: { action: "start", id (a new uuid per start), name, email?, phone?, message,
+ * page?, website? (honeypot) }
  * or { action: "send", conversationId, token, id (a new uuid per message, so a retry never saves twice), body }
  * or { action: "read", conversationId, token, after }. ip: the visitor's address. Never shows database details.
  */
@@ -135,18 +136,20 @@ export async function handleChat(raw: unknown, ctx: { ip: string }): Promise<Res
   const token = str(body.token);
   if (action !== "start" && (!UUID_RE.test(conversationId) || !TOKEN_RE.test(token))) return err(404, "not_found", CHAT_MESSAGES.ended);
   let message = "";
-  let messageId = "";
+  // The widget sends a new uuid with each start and each message and sends the same one again when it retries, so
+  // a retry after a lost answer never saves twice (the database recognises the nonce).
+  let nonce = str(body.id);
+  if (!UUID_RE.test(nonce)) nonce = randomUUID();
   if (action === "send") {
     message = str(body.body);
     if (!message || message.length > CHAT_LIMITS.message) return err(400, "invalid", CHAT_MESSAGES.check, { message: CHAT_FIELD_MESSAGES.message });
-    messageId = str(body.id);
-    if (!UUID_RE.test(messageId)) messageId = randomUUID();
   }
   const after = Number.isSafeInteger(body.after) && (body.after as number) > 0 ? (body.after as number) : 0;
 
   const secret = chatSecret();
   if (!secret || !configured()) return err(503, "unavailable", CHAT_MESSAGES.unavailable);
   const visitor = visitorKey(ctx.ip);
+  // Shared addresses (mobile CGNAT, offices) share one set of limits; see 0009_live_chat.sql.
   if (!visitor) {
     // Everyone without an address must not share one limit, so nothing goes through without one.
     console.warn("[chat] no visitor address; chat call refused");
@@ -156,14 +159,14 @@ export async function handleChat(raw: unknown, ctx: { ip: string }): Promise<Res
   try {
     if (action === "start" && start) {
       const v = start.values;
-      const r = await chatStart(signChatRequest(secret, visitor), {
+      const r = await chatStart(signChatRequest(secret, visitor, nonce), {
         brand: "lexta", name: v.name, email: v.email || undefined, phone: v.phone || undefined, message: v.message, page: v.page || undefined,
       });
       if (!r.ok) return fromFailure(r);
       return { status: 200, body: { ok: true, conversationId: r.conversationId, token: r.token, reference: r.reference } };
     }
     if (action === "send") {
-      const r = await chatSend(signChatRequest(secret, visitor, messageId), conversationId, token, message);
+      const r = await chatSend(signChatRequest(secret, visitor, nonce), conversationId, token, message);
       if (!r.ok) return fromFailure(r);
       return { status: 200, body: { ok: true, id: r.id, seq: r.seq, createdAt: r.createdAt } };
     }
