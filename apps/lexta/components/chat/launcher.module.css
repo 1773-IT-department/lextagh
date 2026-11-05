@@ -1,0 +1,55 @@
+/* Live chat button, in the site's colours (primary #12a3c4, hover #0d8ba8) and Poppins. Sits under the mobile
+   bar (z-index 200) and drawer (220), so the menu always covers it. */
+.launcher {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 150;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 52px;
+  padding: 0 20px 0 16px;
+  border: 0;
+  border-radius: 26px;
+  background: #12a3c4;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(6, 32, 42, 0.22);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.launcher:hover { background: #0d8ba8; transform: translateY(-1px); }
+.launcher:focus-visible { outline: 3px solid #12313d; outline-offset: 3px; }
+.launcher[hidden] { display: none; }
+.icon { width: 22px; height: 22px; fill: currentColor; flex: none; }
+
+.loading {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 150;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #fff;
+  color: #14313d;
+  font-size: 13px;
+  box-shadow: 0 10px 28px rgba(6, 32, 42, 0.22);
+}
+
+/* Phones: a round icon button, so it does not cover page text. */
+@media (max-width: 640px) {
+  .launcher { width: 56px; height: 56px; padding: 0; justify-content: center; border-radius: 50%; }
+  .label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+  .icon { width: 26px; height: 26px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launcher { transition: none; }
+  .launcher:hover { transform: none; }
+}
