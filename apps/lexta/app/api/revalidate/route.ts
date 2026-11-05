@@ -1,17 +1,18 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { PRODUCTS_CACHE_TAG, STOCKISTS_CACHE_TAG } from "@lexta/db";
+import { JOBS_CACHE_TAG, PRODUCTS_CACHE_TAG, STOCKISTS_CACHE_TAG } from "@lexta/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
  * Pages that show each kind of data. Add brand pages and Where to Buy pages here as they are converted.
- * The Home page has a Where to Buy section, so stockist changes refresh "/".
+ * The Home page has a Where to Buy section, so stockist changes refresh "/". Open roles show on Careers.
  */
 const TARGETS: ReadonlyMap<string, readonly string[]> = new Map([
   [PRODUCTS_CACHE_TAG, ["/our-brands"]],
   [STOCKISTS_CACHE_TAG, ["/"]],
+  [JOBS_CACHE_TAG, ["/careers"]],
 ]);
 
 function sameSecret(given: string, expected: string) {
@@ -37,9 +38,9 @@ async function requestedTags(request: Request): Promise<string[]> {
 }
 
 /**
- * Called by the portal after a product or stockist is saved, so the site shows the change right away.
+ * Called by the portal after a product, stockist or job opening is saved, so the site shows the change right away.
  * Requires the x-revalidate-secret header to equal REVALIDATE_SECRET.
- * Optional JSON body: { "tags": ["products"] } or { "tags": ["stockists"] }.
+ * Optional JSON body: { "tags": ["products"] }, { "tags": ["stockists"] } or { "tags": ["jobs"] }.
  */
 export async function POST(request: Request) {
   const expected = process.env.REVALIDATE_SECRET;

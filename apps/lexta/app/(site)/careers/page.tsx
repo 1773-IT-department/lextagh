@@ -4,8 +4,9 @@ import type { CSSProperties } from "react";
 import ArrowButton from "@/components/ArrowButton";
 import ImageSlot from "@/components/ImageSlot";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import ApplicationForm from "@/components/careers/ApplicationForm";
 import OpenRoles from "@/components/careers/OpenRoles";
-import { jobs } from "@/components/careers/data";
+import { getCareersJobs } from "@/components/careers/live";
 import p from "@/components/proto.module.css";
 
 // Title and description from careers.html.
@@ -18,6 +19,13 @@ export const metadata: Metadata = {
   openGraph: { title, description, type: "website" },
 };
 
+/**
+ * Open roles come live from the Recruitment system. The page is rebuilt when the portal saves or opens or closes a
+ * role (/api/revalidate clears the "jobs" tag and this path) and at the latest every hour, so a role drops off within
+ * the hour after its closing day (applications are refused by the database from then on anyway).
+ */
+export const revalidate = 3600;
+
 /* ---------- Shared prototype styles (values copied from careers.html) ---------- */
 
 const fill: CSSProperties = { position: "absolute", inset: 0 };
@@ -26,18 +34,7 @@ const h2: CSSProperties = { margin: "14px 0 0", fontSize: 34, lineHeight: 1.15, 
 const body: CSSProperties = { margin: "16px 0 0", fontSize: 14, lineHeight: 1.9, color: "#5d7883" };
 const statNum: CSSProperties = { fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-.03em" };
 const statLabel: CSSProperties = { marginTop: 4, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,.75)" };
-const fieldLabel: CSSProperties = { display: "flex", flexDirection: "column", gap: 7, fontSize: 12, fontWeight: 600, color: "#12313d" };
-const field: CSSProperties = {
-  border: "1px solid rgba(18,163,196,.35)", borderRadius: 7, padding: "12px 14px", fontSize: 13, color: "#12313d",
-  background: "#fff", minWidth: 0, fontFamily: "inherit",
-};
 
-const stats = [
-  { value: String(jobs.length), label: "Roles open today", accent: true },
-  { value: "6", label: "Departments hiring" },
-  { value: "2 wks", label: "Typical time to first reply" },
-  { value: "4", label: "Locations across Ghana" },
-];
 
 const benefits = [
   { title: "Health cover", text: "Medical cover for you, extended to dependants for permanent staff, plus on-site first aid and periodic screening." },
@@ -64,7 +61,16 @@ const interests = [
   "Finance, HR and administration",
 ];
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const jobs = await getCareersJobs();
+  // Counted from the live roles, so the hero never claims roles that are not open.
+  const stats = [
+    { value: String(jobs.length), label: "Roles open today", accent: true },
+    { value: String(new Set(jobs.map((j) => j.department)).size), label: "Departments hiring" },
+    { value: "2 wks", label: "Typical time to first reply" },
+    { value: "4", label: "Locations across Ghana" },
+  ];
+
   return (
     <>
       <RevealOnScroll />
@@ -112,7 +118,7 @@ export default function CareersPage() {
 
       <section id="openings" data-screen-label="Open roles" style={{ background: "#fff", padding: "66px 28px 78px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <OpenRoles />
+          <OpenRoles jobs={jobs} />
         </div>
       </section>
 
@@ -174,57 +180,7 @@ export default function CareersPage() {
             </div>
           </div>
 
-          {/*
-            General application form: visually identical to the prototype but NOT wired yet.
-            Item 21 (recruitment tracker) stores applications with CV upload; item 19 wires the site forms.
-            Until then the submit button does nothing (no fake "sent" message).
-          */}
-          <div style={{ background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}>
-            <div style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>General application</div>
-            <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>Takes about two minutes. We read every one.</p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginTop: 22 }}>
-              <label style={fieldLabel}>
-                Full name
-                <input type="text" name="name" autoComplete="name" placeholder="Your name" style={field} />
-              </label>
-              <label style={fieldLabel}>
-                Email
-                <input type="email" name="email" autoComplete="email" placeholder="you@example.com" style={field} />
-              </label>
-              <label style={fieldLabel}>
-                Phone
-                <input type="tel" name="phone" autoComplete="tel" placeholder="+233" style={field} />
-              </label>
-              <label style={fieldLabel}>
-                Area of interest
-                <select name="interest" style={field}>
-                  {interests.map((o) => <option key={o}>{o}</option>)}
-                </select>
-              </label>
-            </div>
-            <label style={{ ...fieldLabel, marginTop: 14 }}>
-              Tell us briefly why Lexta
-              <textarea
-                name="message"
-                rows={4}
-                placeholder="A few sentences on your experience and what you are looking for."
-                style={{ ...field, lineHeight: 1.7, resize: "vertical", minWidth: undefined }}
-              />
-            </label>
-            <div style={{ marginTop: 16, border: "1px dashed rgba(18,163,196,.45)", borderRadius: 9, padding: 18, textAlign: "center", background: "#fff" }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: "#12313d" }}>Attach your CV</div>
-              <div style={{ marginTop: 5, fontSize: 11, color: "#8fa8b2" }}>PDF or Word, up to 5 MB</div>
-            </div>
-            <button
-              type="button"
-              style={{ marginTop: 20, width: "100%", border: 0, background: "#12a3c4", color: "#fff", fontSize: 13, fontWeight: 600, padding: "14px 20px", borderRadius: 7, cursor: "pointer" }}
-            >
-              Submit application
-            </button>
-            <div style={{ marginTop: 12, fontSize: 11, lineHeight: 1.7, color: "#8fa8b2" }}>
-              Lexta Ghana is an equal opportunity employer. We consider every application on merit, regardless of gender, background or physical ability.
-            </div>
-          </div>
+          <ApplicationForm roles={jobs.map((j) => ({ reference: j.reference, title: j.title }))} interests={interests} />
         </div>
       </section>
     </>
