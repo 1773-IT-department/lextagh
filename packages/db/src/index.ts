@@ -6,3 +6,4 @@ export * from "./crm";
 export * from "./complaints";
 export * from "./recruitment";
 export * from "./chat";
+export * from "./orders";

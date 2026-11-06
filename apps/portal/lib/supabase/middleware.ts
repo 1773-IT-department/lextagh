@@ -4,9 +4,22 @@ import { supabaseEnv } from "./env";
 
 const PUBLIC_PATHS = ["/login", "/forgot-password"];
 
+/** Request header with the path being opened, for server components (they cannot read the URL themselves). */
+export const PATH_HEADER = "x-lexta-path";
+
 /** Refreshes the Supabase session cookie on every request and sends signed out people to /login. */
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  // The path travels to the signed in shell, which keeps distributors inside their ordering area (app/(app)/layout.tsx).
+  // Built from the request's current headers each time, so refreshed session cookies go along too.
+  // Server action requests are left out: their response may render another page (after a redirect), so their own path
+  // says nothing about the page shown. A value sent by the browser is never trusted.
+  const next = () => {
+    const headers = new Headers(request.headers);
+    headers.delete(PATH_HEADER);
+    if (!request.headers.has("next-action")) headers.set(PATH_HEADER, request.nextUrl.pathname);
+    return NextResponse.next({ request: { headers } });
+  };
+  let response = next();
   const env = supabaseEnv();
   if (!env) return response;
 
@@ -15,7 +28,7 @@ export async function updateSession(request: NextRequest) {
       getAll: () => request.cookies.getAll(),
       setAll: (toSet) => {
         toSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        response = next();
         toSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
     },
