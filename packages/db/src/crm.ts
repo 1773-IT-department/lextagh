@@ -7,7 +7,7 @@ type Timestamps = { created_at: string; updated_at: string };
 export type CrmOrgKind =
   | "distributor" | "retailer" | "supermarket_chain" | "pharmacy" | "institution" | "partner" | "media" | "supplier" | "other";
 export type CrmLeadSource =
-  | "website_contact_form" | "website_partner_form" | "website_newsletter" | "complaint_escalation" | "field_visit"
+  | "website_contact_form" | "website_partner_form" | "website_newsletter" | "website_live_chat" | "complaint_escalation" | "field_visit"
   | "phone" | "email" | "walk_in" | "referral" | "event" | "other";
 export type CrmStage = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost";
 export type CrmChannel = "phone" | "whatsapp" | "sms" | "email" | "in_person";
@@ -32,6 +32,7 @@ export const CRM_SOURCES: readonly Option<CrmLeadSource>[] = [
   { value: "website_contact_form", label: "Website contact form" },
   { value: "website_partner_form", label: "Website partner form" },
   { value: "website_newsletter", label: "Website newsletter" },
+  { value: "website_live_chat", label: "Website live chat" },
   { value: "complaint_escalation", label: "Complaint escalation" },
   { value: "field_visit", label: "Field visit" },
   { value: "phone", label: "Phone" },

@@ -1,6 +1,6 @@
-// A tiny stand in for Supabase's REST API (PostgREST), for local tests only. It answers the three website intake
-// calls the Lexta site makes, POST /rest/v1/rpc/submit_website_enquiry, /rest/v1/rpc/submit_complaint and
-// /rest/v1/rpc/submit_job_application and begin_job_cv_upload, by running the real database functions in the local harness database as the
+// A tiny stand in for Supabase's REST API (PostgREST), for local tests only. It answers the website intake
+// calls the Lexta site makes, POST /rest/v1/rpc/submit_website_enquiry, /rest/v1/rpc/submit_complaint,
+// /rest/v1/rpc/submit_job_application, begin_job_cv_upload and the live chat calls chat_start, chat_send and chat_read, by running the real database functions in the local harness database as the
 // anon role, and answers errors the way PostgREST does ({ code, message } with HTTP 400 or 429). Connection settings
 // come from PGHOST, PGPORT, PGUSER, PGDATABASE.
 // It also answers the website reads (Our Brands products, Where to Buy regions and stockists, Careers open roles),
@@ -20,6 +20,19 @@ const CALLS = {
   begin_job_cv_upload: {
     args: ["nonce", "issued_at", "ip_hash", "signature", "file_name"],
     sql: "select public.begin_job_cv_upload(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', :'file_name');",
+  },
+  // Live chat (item 22): these return jsonb, sent back as JSON like PostgREST does.
+  chat_start: {
+    args: ["nonce", "issued_at", "ip_hash", "signature", "payload"], json: true,
+    sql: "select public.chat_start(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', :'payload'::jsonb);",
+  },
+  chat_send: {
+    args: ["nonce", "issued_at", "ip_hash", "signature", "conversation_id", "token", "body"], json: true,
+    sql: "select public.chat_send(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', nullif(:'conversation_id', 'null')::uuid, :'token', :'body');",
+  },
+  chat_read: {
+    args: ["nonce", "issued_at", "ip_hash", "signature", "conversation_id", "token", "after_seq"], json: true,
+    sql: "select public.chat_read(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', nullif(:'conversation_id', 'null')::uuid, :'token', :'after_seq'::bigint);",
   },
 };
 
@@ -279,7 +292,7 @@ export function startShim(port = 0) {
     const delay = Number(process.env.SHIM_DELAY_MS ?? 0);
     if (delay > 0) await new Promise((r) => setTimeout(r, delay));
     const r = await psql("set role anon;\n" + call.sql, vars);
-    if (r.code === 0) return send(200, r.out);
+    if (r.code === 0) return send(200, call.json ? JSON.parse(r.out || "null") : r.out);
     const e = /ERROR:\s+([0-9A-Z]{5}):\s+([^\n]*)/.exec(r.err);
     const code = e?.[1] ?? "XX000";
     send(code === "PT429" ? 429 : code === "XX000" ? 500 : 400, { code, message: e?.[2] ?? "error", details: null, hint: null });

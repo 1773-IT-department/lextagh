@@ -34,14 +34,17 @@ export default async function LeadPage({ params, searchParams }: {
   if (error) throw new Error("Could not load the lead");
   if (!lead) notFound();
 
-  const [activitiesRes, contactRes, orgRes, contacts, organisations] = await Promise.all([
+  const [activitiesRes, contactRes, orgRes, contacts, organisations, chatRes] = await Promise.all([
     supabase.from("crm_activities").select("id, type, body, occurred_at, created_by").eq("lead_id", id).order("occurred_at", { ascending: false }).limit(200),
     lead.contact_id ? supabase.from("crm_contacts").select("id, full_name, email, phone, preferred_channel").eq("id", lead.contact_id).maybeSingle() : Promise.resolve({ data: null, error: null }),
     lead.organisation_id ? supabase.from("crm_organisations").select("id, name, town").eq("id", lead.organisation_id).maybeSingle() : Promise.resolve({ data: null, error: null }),
     contactOptions(supabase, lead.contact_id),
     organisationOptions(supabase, lead.organisation_id),
+    // The live chat this lead was made from, for people who can read the chat inbox (empty for everyone else).
+    supabase.from("chat_conversations").select("id, reference").eq("lead_id", id).limit(1),
   ]);
   if (activitiesRes.error) throw new Error("Could not load the timeline");
+  const fromChat = ((chatRes.data ?? []) as { id: string; reference: string }[])[0] ?? null;
   const contact = contactRes.data as { id: string; full_name: string | null; email: string | null; phone: string | null } | null;
   const org = orgRes.data as { id: string; name: string; town: string | null } | null;
 
@@ -64,6 +67,7 @@ export default async function LeadPage({ params, searchParams }: {
             <span className={`badge stage s-${lead.stage}`}>{crmStageLabel(lead.stage)}</span>{" "}
             {brandName ?? "No brand"}, {crmSourceLabel(lead.source)}
             {lead.intake_reference && <>, website reference <span className="mono">{lead.intake_reference}</span></>}
+            {fromChat && <>, from live chat <Link href={`/systems/chat/${fromChat.id}`} className="mono">{fromChat.reference}</Link></>}
           </p>
         </div>
         <OwnerControl

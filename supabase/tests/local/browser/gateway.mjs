@@ -4,7 +4,7 @@
 //
 //   /auth/v1    password sign in (every harness user's password is GATEWAY_PASSWORD, default "harness-password"),
 //               refresh, user and logout, with HS256 tokens signed by a secret made at start
-//   /rest/v1    a small PostgREST: select (columns, aliases, "rel(count)" embeds), filters (eq, neq, is, in, gt, gte,
+//   /rest/v1    a small PostgREST: select (columns, aliases, "rel(count)" embeds, "alias:table!fk(cols)" many to one embeds), filters (eq, neq, is, in, gt, gte,
 //               lt, lte, like, ilike, or), order, offset and limit, exact counts, single objects, insert, update,
 //               delete and rpc. Every statement runs through psql as anon or as the signed in person (role
 //               authenticated, request.jwt.claim.sub set), so Row Level Security, grants and triggers decide as on
@@ -102,9 +102,20 @@ const EMBED_FK = { "job_openings.job_applications": "opening_id" };
 function selectList(table, select) {
   const cols = [];
   for (const raw of splitTop((select || "*").replace(/\s+/g, ""))) {
-    const m = /^(?:([a-z_]+):)?([a-z_*]+)(?:\((.*)\))?$/.exec(raw);
+    const m = /^(?:([a-z_]+):)?([a-z_*]+(?:![a-z_]+)?)(?:\((.*)\))?$/.exec(raw);
     if (!m) throw Object.assign(new Error(`gateway: select ${raw}`), { status: 400 });
     const [, alias, name, inner] = m;
+    // A many to one embed through a named foreign key, "alias:target!<table>_<column>_fkey(col, col)": the target
+    // row as an object (null when the link is empty or Row Level Security hides it), like PostgREST.
+    const fkEmbed = /^([a-z_]+)!([a-z_]+)_fkey$/.exec(name);
+    if (inner !== undefined && fkEmbed) {
+      const [, target, fk] = fkEmbed;
+      if (!fk.startsWith(`${table}_`)) throw Object.assign(new Error(`gateway: embed ${raw}`), { status: 400 });
+      const col = fk.slice(table.length + 1);
+      const innerCols = inner.split(",").map((c) => `e.${ident(c)}`).join(", ");
+      cols.push(`(select row_to_json(x) from (select ${innerCols} from public.${ident(target)} e where e.id = t.${ident(col)}) x) as ${ident(alias || target)}`);
+      continue;
+    }
     if (inner !== undefined) {
       const fk = EMBED_FK[`${table}.${name}`];
       if (!fk || inner !== "count") throw Object.assign(new Error(`gateway: embed ${raw}`), { status: 400 });

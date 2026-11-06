@@ -50,7 +50,7 @@ export default async function ComplaintPage({ params, searchParams }: {
   // Closed is read only (notes, calls and emails still go in); reopen to change anything else.
   const closed = c.status === "closed";
   const canEdit = access.works && !closed;
-  const [eventsRes, filesRes, contactRes, orgRes, productRes, skuRes, stockistRes, pickers, stockists, organisations] = await Promise.all([
+  const [eventsRes, filesRes, contactRes, orgRes, productRes, skuRes, stockistRes, pickers, stockists, organisations, chatRes] = await Promise.all([
     supabase.from("complaint_events").select("id, type, body, occurred_at, created_by").eq("complaint_id", id).order("occurred_at", { ascending: false }).limit(300),
     supabase.from("complaint_files").select("id, file_name, mime_type, size_bytes, created_at").eq("complaint_id", id).order("created_at"),
     supabase.from("crm_contacts").select("id, full_name, email, phone").eq("id", c.contact_id).maybeSingle(),
@@ -61,7 +61,10 @@ export default async function ComplaintPage({ params, searchParams }: {
     canEdit ? productPickers(supabase) : Promise.resolve({ products: [], skus: [] }),
     canEdit ? stockistOptions(supabase, c.stockist_id) : Promise.resolve([]),
     canEdit ? organisationOptions(supabase, c.organisation_id) : Promise.resolve([]),
+    // The live chat this complaint was logged from, for people who can read the chat inbox (empty for everyone else).
+    supabase.from("chat_conversations").select("id, reference").eq("complaint_id", id).limit(1),
   ]);
+  const fromChat = ((chatRes.data ?? []) as { id: string; reference: string }[])[0] ?? null;
   if (eventsRes.error) throw new Error("Could not load the timeline");
   if (filesRes.error) throw new Error("Could not load the files");
   const contact = contactRes.data as { id: string; full_name: string | null; email: string | null; phone: string | null } | null;
@@ -94,6 +97,7 @@ export default async function ComplaintPage({ params, searchParams }: {
             <span className={`badge sev-${c.severity}`}>{complaintSeverityLabel(c.severity)}</span>{" "}
             {brandName}, {complaintCategoryLabel(c.category)}
             {overdue && <>, <span className="overdue">overdue</span></>}
+            {fromChat && <>, from live chat <Link href={`/systems/chat/${fromChat.id}`} className="mono">{fromChat.reference}</Link></>}
           </p>
         </div>
         <OwnerControl
