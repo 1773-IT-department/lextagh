@@ -233,6 +233,27 @@ try {
   }
   const exp = await dist.request.get(`${PORTAL}/systems/orders/export`);
   check(exp.status() === 403, "a distributor cannot export the staff CSV", exp.status());
+  // A Next-Action header on a page request does not get past the guard (only a POST is a server action).
+  const spoof = await dist.request.get(`${PORTAL}/systems/crm/leads`, { headers: { "Next-Action": "x" }, maxRedirects: 0 });
+  check([303, 307, 308].includes(spoof.status()) && new URL(spoof.headers().location ?? "", PORTAL).pathname === "/systems/orders",
+    "a distributor's GET of /systems/crm/leads with a Next-Action header is redirected to their orders",
+    { status: spoof.status(), location: spoof.headers().location });
+  // A made up server action posted from another system's page does not render that page either.
+  const fake = await dist.request.post(`${PORTAL}/systems/crm/leads`, { headers: { "Next-Action": "x" }, maxRedirects: 0 });
+  const fakeBody = await fake.text();
+  check(!/Your role does not include the CRM|New lead/.test(fakeBody), "a made up server action from a CRM address renders nothing of the CRM",
+    { status: fake.status(), body: fakeBody.slice(0, 200) });
+  // Signing in with a "next" outside the ordering area still lands a distributor on their orders.
+  const nextCtx = await context(390);
+  const viaNext = await nextCtx.newPage();
+  await viaNext.goto(`${PORTAL}/login?next=%2Fsystems%2Fcrm`);
+  await viaNext.getByLabel("Email").fill("kofi@accrastar.test");
+  await viaNext.getByLabel("Password").fill("harness-password");
+  await viaNext.getByRole("button", { name: /sign in/i }).click();
+  await viaNext.waitForURL(`${PORTAL}/systems/orders`);
+  await viaNext.getByRole("heading", { name: "My orders" }).waitFor();
+  check(true, "signing in with next=/systems/crm lands a distributor on My orders");
+  await nextCtx.close();
   const exp2 = await dist.request.get(`${PORTAL}/systems/recruitment/export`);
   check(exp2.status() === 403, "a distributor cannot export recruitment data", exp2.status());
   await go(dist, `${PORTAL}/systems/orders/${amaOrder}`);
@@ -272,12 +293,24 @@ try {
   await rep.getByRole("button", { name: "Cancel order" }).click();
   await rep.getByText("Give the reason for cancelling.").first().waitFor();
   check(true, "staff cannot cancel without a reason");
+  const netlog = []; const t0 = Date.now();
+  globalThis.__netlog = netlog;
+  rep.on("request", (r) => netlog.push(`${Date.now() - t0}ms -> ${r.method()} ${r.url().slice(22, 90)} ${r.headers()["next-action"] ? "ACTION" : ""}${r.headers()["rsc"] ? "RSC" : ""}`));
+  rep.on("response", (r) => netlog.push(`${Date.now() - t0}ms <- ${r.status()} ${r.request().method()} ${r.url().slice(22, 90)}`));
+  rep.on("requestfinished", (r) => netlog.push(`${Date.now() - t0}ms done ${r.method()} ${r.url().slice(22, 90)}`));
+  rep.on("requestfailed", (r) => netlog.push(`${Date.now() - t0}ms FAILED ${r.method()} ${r.url().slice(22, 90)} ${r.failure()?.errorText}`));
+  rep.on("console", (m) => netlog.push(`console ${m.type()} ${m.text().slice(0, 200)}`));
+  rep.on("pageerror", (e) => netlog.push(`pageerror ${String(e).slice(0, 200)}`));
   await rep.reload();
+  await settle(rep);
+  await rep.waitForLoadState("networkidle");
   for (const [step, done] of [["Confirm order", "Confirmed"], ["Mark dispatched", "Dispatched"], ["Mark delivered", "Delivered"]]) {
     await rep.getByText(step, { exact: true }).click();
     if (step === "Mark dispatched") await rep.getByLabel("Note for the distributor (optional)").fill("On the Tuesday truck.");
     await rep.getByRole("button", { name: step }).click();
     await rep.locator(".page-head .badge.ostatus", { hasText: done }).waitFor();
+    // Let the refreshed page finish streaming before the next click, as a person would.
+    await rep.waitForLoadState("networkidle");
     if (step === "Confirm order") await rep.screenshot({ path: `${OUT}/staff-1440-order-confirmed.png`, fullPage: true });
   }
   check(await rep.getByText("There is nothing more to do").isVisible(), "staff confirm, dispatch and deliver");
@@ -331,6 +364,8 @@ try {
 } catch (e) {
   failures += 1;
   console.log(`  FAIL: ${e?.stack ?? e}`);
+  for (const l of (globalThis.__netlog ?? []).filter((x) => !x.includes("_next/static"))) console.log(`  [net] ${l}`);
+  try { console.log("  [db]", await q("select reference, status from public.distributor_orders order by reference")); } catch (err) { console.log(String(err)); }
   for (const [who, page] of opened) {
     try { await page.screenshot({ path: `${OUT}/failure-${who.split("@")[0]}.png`, fullPage: true }); } catch { /* closed */ }
   }

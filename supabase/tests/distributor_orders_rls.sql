@@ -644,6 +644,56 @@ begin
   raise notice 'PASS: only admin deletes orders (with lines, history and notes)';
 end $$;
 
+-- Deleting a region used on a submitted order ---------------------------------------------------------------------------
+insert into public.regions (id, slug, name, sort_order) values ('00000000-0000-0000-0000-00000000de01', 'test-region', 'Test Region', 999);
+do $$ begin perform pg_temp.login('dist_b'); end $$;
+insert into ids values ('o_region', public.save_distributor_order(null, jsonb_build_object(
+  'delivery_region_id', '00000000-0000-0000-0000-00000000de01',
+  'lines', jsonb_build_array(jsonb_build_object('sku_id', pg_temp.u('s_hooch'), 'quantity', 2))), true));
+do $$
+begin
+  perform pg_temp.ok(pg_temp.fails(format('update public.distributor_orders set delivery_region_id = null where id = %L', pg_temp.id('o_region')), '23514'),
+    'the distributor still cannot clear the region of a submitted order');
+end $$;
+reset role;
+do $$
+begin
+  delete from public.regions where id = '00000000-0000-0000-0000-00000000de01';
+  perform pg_temp.ok((select delivery_region_id is null and status = 'submitted' from public.distributor_orders where id = pg_temp.id('o_region')),
+    'deleting a region clears it on a submitted order and changes nothing else');
+  raise notice 'PASS: a region used on a submitted order can be deleted';
+end $$;
+
+-- Deleting people who placed orders, linked logins, moved orders or wrote notes ----------------------------------------
+do $$
+begin
+  perform pg_temp.login('rep_yazz');
+  insert into public.distributor_order_staff_notes (order_id, body) values (pg_temp.id('o2'), 'Note by the Yazz rep');
+  perform set_config('role', 'postgres', true);
+  perform pg_temp.ok((select updated_by from public.distributor_orders where id = pg_temp.id('o2')) = pg_temp.u('rep_yazz'), 'set up: the rep last moved o2');
+  perform pg_temp.ok((select created_by from public.distributor_accounts where profile_id = pg_temp.u('dist_a')) = pg_temp.u('rep_yazz'), 'set up: the rep linked dist_a');
+
+  -- A staff user who linked a login, moved an order and wrote a note.
+  delete from auth.users where id = pg_temp.u('rep_yazz');
+  perform pg_temp.ok(not exists (select 1 from public.profiles where id = pg_temp.u('rep_yazz')), 'the sales rep is deleted');
+  perform pg_temp.ok((select created_by is null from public.distributor_accounts where profile_id = pg_temp.u('dist_a')), 'their link authorship is cleared');
+  perform pg_temp.ok((select updated_by is null from public.distributor_orders where id = pg_temp.id('o2')), 'their order edits are cleared');
+  perform pg_temp.ok((select created_by is null from public.distributor_order_staff_notes where body = 'Note by the Yazz rep'), 'their notes stay, without author');
+  perform pg_temp.ok(not exists (select 1 from public.distributor_order_events where created_by = pg_temp.u('rep_yazz')), 'their history entries stay, without author');
+
+  -- A distributor who placed orders.
+  delete from auth.users where id = pg_temp.u('dist_a');
+  perform pg_temp.ok(not exists (select 1 from public.profiles where id = pg_temp.u('dist_a')), 'the distributor is deleted');
+  perform pg_temp.ok((select count(*) from public.distributor_orders where organisation_id = pg_temp.u('org_a') and created_by is null) >= 3,
+    'their orders stay for the organisation, without author');
+  perform pg_temp.ok(not exists (select 1 from public.distributor_accounts where profile_id = pg_temp.u('dist_a')), 'their link goes with them');
+
+  -- The admin who linked dist_b and moved orders.
+  delete from auth.users where id = pg_temp.u('admin');
+  perform pg_temp.ok((select created_by is null from public.distributor_accounts where profile_id = pg_temp.u('dist_b')), 'the admin''s link authorship is cleared');
+  raise notice 'PASS: deleting staff and distributors who linked, ordered, moved orders or wrote notes works and keeps the records';
+end $$;
+
 -- Helper functions are closed to website visitors.
 do $$
 declare f text;

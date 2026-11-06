@@ -42,6 +42,22 @@ export const ROLE_LABELS: Record<AppRole, string> = {
 export const DISTRIBUTOR_HOME = "/systems/orders";
 export const isDistributorPath = (path: string) => path === DISTRIBUTOR_HOME || path.startsWith(`${DISTRIBUTOR_HOME}/`);
 
+/**
+ * May the signed in shell render for a distributor, given the path header the middleware set? Fails closed.
+ *   a page request             only inside the ordering area
+ *   a server action            only one sent from the ordering area (its redirects stay there) or from /login (sign in,
+ *                              which always sends a distributor to their orders)
+ *   no header or anything else  no
+ */
+export function distributorMayRender(header: string | null, actionPrefix: string): boolean {
+  if (!header) return false;
+  if (header.startsWith(actionPrefix)) {
+    const from = header.slice(actionPrefix.length);
+    return isDistributorPath(from) || from === "/login";
+  }
+  return isDistributorPath(header);
+}
+
 /** A distributor's menu: their ordering area only. */
 export const DISTRIBUTOR_NAV = [
   { href: "/systems/orders", label: "My orders" },

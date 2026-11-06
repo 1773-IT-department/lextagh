@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/safe-next";
-import { DISTRIBUTOR_HOME } from "@/lib/systems";
+import { DISTRIBUTOR_HOME, isDistributorPath } from "@/lib/systems";
 
 export type FormState = { error?: string; message?: string; email?: string };
 
@@ -18,9 +18,9 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: "That email and password do not match. Please try again or reset your password.", email };
   const next = safeNext(form.get("next"));
-  // A distributor's home is their ordering area: go there directly (a second redirect from the home page inside this
-  // action's response leaves the browser on an empty page).
-  if (next === "/" && data.user) {
+  // A distributor only ever goes to their ordering area: straight there (a second redirect inside this action's
+  // response leaves the browser on an empty page), whatever "next" asks for outside it.
+  if (!isDistributorPath(next) && data.user) {
     const { data: profile } = await supabase.from("profiles").select("role, is_active").eq("id", data.user.id).maybeSingle();
     if (profile?.is_active && profile.role === "distributor") redirect(DISTRIBUTOR_HOME);
   }

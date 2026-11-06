@@ -82,6 +82,22 @@ revoke all on function public.order_staff_sees(uuid[]) from public, anon;
 grant execute on function public.order_staff_role() to authenticated;
 grant execute on function public.order_staff_sees(uuid[]) to authenticated;
 
+-- An author link to keep on an update: the old one while that person still exists, otherwise empty. When a person
+-- is deleted their author links are cleared (on delete set null); the triggers below must not put them back, or
+-- deleting the person fails (same rule as public.set_complaint_authors in 0007). Security definer to see the profile.
+create function public.order_author_kept(target_profile uuid)
+returns uuid
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select p.id from public.profiles p where p.id = target_profile;
+$$;
+
+revoke all on function public.order_author_kept(uuid) from public, anon;
+grant execute on function public.order_author_kept(uuid) to authenticated;
+
 -- Distributor accounts ------------------------------------------------------------------------------------
 create table public.distributor_accounts (
   id uuid primary key default gen_random_uuid(),
@@ -129,7 +145,7 @@ begin
   if tg_op = 'INSERT' then
     new.created_by := (select auth.uid());
   else
-    new.created_by := old.created_by;
+    new.created_by := public.order_author_kept(old.created_by);
   end if;
   return new;
 end;
@@ -471,7 +487,7 @@ begin
 
   -- Fixed once made, for everyone.
   new.organisation_id := old.organisation_id;
-  new.created_by := old.created_by;
+  new.created_by := public.order_author_kept(old.created_by);
   new.brand_ids := old.brand_ids;
   new.status_changed_at := old.status_changed_at;
   new.submitted_at := old.submitted_at;
@@ -479,12 +495,16 @@ begin
   new.dispatched_at := old.dispatched_at;
   new.delivered_at := old.delivered_at;
   new.cancelled_at := old.cancelled_at;
-  new.updated_by := coalesce(me, old.updated_by);
+  -- Checked too: the person being deleted may be the one signed in.
+  new.updated_by := coalesce(public.order_author_kept(me), public.order_author_kept(old.updated_by));
 
   is_distributor := public.distributor_org() is not distinct from old.organisation_id and public.distributor_org() is not null;
   is_staff := public.order_staff_role() and old.submitted_at is not null and public.order_staff_sees(old.brand_ids);
 
-  if new.delivery_region_id is distinct from old.delivery_region_id
+  -- A delivery region going empty because that region was deleted is not a change of details (on delete set null).
+  if (new.delivery_region_id is distinct from old.delivery_region_id
+      and not (new.delivery_region_id is null
+               and not exists (select 1 from public.regions r where r.id = old.delivery_region_id)))
      or new.delivery_address is distinct from old.delivery_address
      or new.distributor_notes is distinct from old.distributor_notes then
     if old.status <> 'draft' then
@@ -611,8 +631,9 @@ begin
     if new.sku_id is not null and new.sku_id is distinct from old.sku_id then
       raise exception 'a line keeps its product; remove it and add the other one' using errcode = '23514';
     end if;
+    -- The order row is locked (for share) while checked, so it cannot be submitted between the check and this write.
     if new.quantity is distinct from old.quantity
-       and not exists (select 1 from public.distributor_orders d where d.id = old.order_id and d.status = 'draft') then
+       and not exists (select 1 from public.distributor_orders d where d.id = old.order_id and d.status = 'draft' for share) then
       raise exception 'lines can only change while the order is a draft' using errcode = '23514';
     end if;
     return new;
@@ -622,7 +643,10 @@ begin
   if (select auth.uid()) is not null and not public.distributor_can_edit_order(new.order_id) then
     raise exception 'not allowed to change this order' using errcode = '42501';
   end if;
-  select d.status, d.organisation_id into o from public.distributor_orders d where d.id = new.order_id;
+  -- Lock the order row (for share) before checking it: a submit running at the same time waits for this line, or
+  -- this line waits for the submit and then sees the order is no longer a draft. So the brands set at submit always
+  -- match the lines.
+  select d.status, d.organisation_id into o from public.distributor_orders d where d.id = new.order_id for share;
   if o.status is distinct from 'draft' then
     raise exception 'lines can only change while the order is a draft' using errcode = '23514';
   end if;
@@ -655,7 +679,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  if exists (select 1 from public.distributor_orders d where d.id = old.order_id and d.status <> 'draft') then
+  if exists (select 1 from public.distributor_orders d where d.id = old.order_id and d.status <> 'draft' for share) then
     raise exception 'lines can only change while the order is a draft' using errcode = '23514';
   end if;
   return old;
@@ -677,7 +701,7 @@ begin
   if tg_op = 'INSERT' then
     new.created_by := (select auth.uid());
   else
-    new.created_by := old.created_by;
+    new.created_by := public.order_author_kept(old.created_by);
   end if;
   return new;
 end;

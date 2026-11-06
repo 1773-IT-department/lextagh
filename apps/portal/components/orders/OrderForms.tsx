@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { orderStatusLabel, type OrderStatus } from "@lexta/db";
 import { addStaffNote, linkDistributor, setOrderStatus, unlinkDistributor } from "@/app/(app)/systems/orders/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -14,11 +14,16 @@ const ACTION_LABEL: Partial<Record<OrderStatus, string>> = {
 export function StaffStatusForm({ id, status, next }: { id: string; status: OrderStatus; next: OrderStatus[] }) {
   const { state, pending, onSubmit, fe } = useCrmForm(setOrderStatus);
   const [choice, setChoice] = useState<OrderStatus | "">("");
+  const form = useRef<HTMLFormElement>(null);
+  // After a move, start again empty (the same form stays mounted, so a quick next move is never lost).
+  useEffect(() => {
+    if (state.message) { setChoice(""); form.current?.reset(); }
+  }, [state]);
   if (!next.length) {
     return <p className="small">This order is {orderStatusLabel(status).toLowerCase()}. There is nothing more to do.</p>;
   }
   return (
-    <form className="stage-form" noValidate onSubmit={onSubmit} key={state.message ?? "status"}>
+    <form className="stage-form" noValidate onSubmit={onSubmit} ref={form}>
       <FormAlerts state={state} />
       <input type="hidden" name="id" value={id} />
       <p className="small" style={{ margin: 0 }}>Now: <b>{orderStatusLabel(status)}</b>. Next:</p>
@@ -61,8 +66,10 @@ export function DistributorStatusButton({ id, to, label, confirm, danger }: { id
 /** Staff: an internal note. The distributor never sees these. */
 export function StaffNoteForm({ id }: { id: string }) {
   const { state, pending, onSubmit, fe } = useCrmForm(addStaffNote);
+  const form = useRef<HTMLFormElement>(null);
+  useEffect(() => { if (state.message) form.current?.reset(); }, [state]);
   return (
-    <form className="activity-form" noValidate onSubmit={onSubmit} key={state.message ?? "note"}>
+    <form className="activity-form" noValidate onSubmit={onSubmit} ref={form}>
       <FormAlerts state={state} />
       <input type="hidden" name="id" value={id} />
       <div className="field">
