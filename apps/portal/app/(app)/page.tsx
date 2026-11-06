@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/session";
-import { systemsFor } from "@/lib/systems";
+import { DISTRIBUTOR_HOME, systemsFor } from "@/lib/systems";
 
 export default async function Home() {
   const { user, profile } = await requireSession();
   const role = profile?.is_active ? profile.role : null;
+  // A distributor's home is their ordering area.
+  if (role === "distributor") redirect(DISTRIBUTOR_HOME);
   const systems = systemsFor(role);
   const name = profile?.full_name?.split(" ")[0] || user.email;
 

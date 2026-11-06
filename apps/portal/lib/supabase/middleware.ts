@@ -4,9 +4,25 @@ import { supabaseEnv } from "./env";
 
 const PUBLIC_PATHS = ["/login", "/forgot-password"];
 
+/** Request header with the path being opened, for server components (they cannot read the URL themselves). */
+export const PATH_HEADER = "x-lexta-path";
+/** Marks the path header of a server action request: "action:" and the page it was sent from. */
+export const ACTION_PREFIX = "action:";
+
 /** Refreshes the Supabase session cookie on every request and sends signed out people to /login. */
 export async function updateSession(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  // The path travels to the signed in shell, which keeps distributors inside their ordering area (app/(app)/layout.tsx).
+  // Built from the request's current headers each time, so refreshed session cookies go along too. A value sent by the
+  // browser is never trusted. A server action (a POST with a Next-Action header) is marked as such with the page it was
+  // sent from ("action:<path>"): its response may render another page after a redirect, so its own path is not the
+  // page shown. Every other request, whatever its headers, carries its own path.
+  const next = () => {
+    const headers = new Headers(request.headers);
+    const isAction = request.method === "POST" && request.headers.has("next-action");
+    headers.set(PATH_HEADER, `${isAction ? ACTION_PREFIX : ""}${request.nextUrl.pathname}`);
+    return NextResponse.next({ request: { headers } });
+  };
+  let response = next();
   const env = supabaseEnv();
   if (!env) return response;
 
@@ -15,7 +31,7 @@ export async function updateSession(request: NextRequest) {
       getAll: () => request.cookies.getAll(),
       setAll: (toSet) => {
         toSet.forEach(({ name, value }) => request.cookies.set(name, value));
-        response = NextResponse.next({ request });
+        response = next();
         toSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
     },
