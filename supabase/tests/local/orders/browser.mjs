@@ -92,15 +92,22 @@ run(`${ROOT}/apps/portal/node_modules/.bin/next`, ["start", "-p", "3101", "-H", 
 console.log(`started pids ${procs.map((p) => p.pid).join(", ")}`);
 
 const PORTAL = "http://127.0.0.1:3101";
-const browser = await chromium.launch();
+// Outside hosts (product images, fonts) do not resolve, so the check stays local. This is done in the browser's
+// resolver, NOT with context.route(): any route turns on request interception for every request, and intercepted
+// streamed responses (Next's server action and RSC responses) are sometimes cut off, leaving an action pending
+// forever ("Saving..."). Set ORDER_INTERCEPT=1 to put the old route back and see it happen.
+const browser = await chromium.launch({ args: ["--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1"] });
+const actionPosts = { done: 0, failed: 0 };
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
 
 async function context(width) {
   const ctx = await browser.newContext(width < 800
     ? { viewport: { width, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 }
     : { viewport: { width, height: 900 } });
-  // Only the portal and the gateway: outside images and fonts are not fetched in the check.
-  await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.abort());
+  if (process.env.ORDER_INTERCEPT === "1") await ctx.route(/^https?:\/\/(?!127\.0\.0\.1)/, (r) => r.abort());
+  // Count how every server action POST ends: read to the end ("done") or cut off ("failed").
+  ctx.on("requestfinished", (r) => { if (r.method() === "POST" && r.headers()["next-action"]) actionPosts.done += 1; });
+  ctx.on("requestfailed", (r) => { if (r.method() === "POST" && r.headers()["next-action"]) actionPosts.failed += 1; });
   return ctx;
 }
 const opened = [];
@@ -373,5 +380,6 @@ try {
   await browser.close();
   for (const p of procs) { try { process.kill(p.pid); } catch { /* gone */ } }
 }
+console.log(`server action responses: ${actionPosts.done} read to the end, ${actionPosts.failed} cut off`);
 console.log(failures ? `${failures} browser check(s) failed` : "All browser checks passed");
 process.exit(failures ? 1 : 0);
