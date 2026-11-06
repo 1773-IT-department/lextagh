@@ -92,10 +92,8 @@ run(`${ROOT}/apps/portal/node_modules/.bin/next`, ["start", "-p", "3101", "-H", 
 console.log(`started pids ${procs.map((p) => p.pid).join(", ")}`);
 
 const PORTAL = "http://127.0.0.1:3101";
-// Outside hosts (product images, fonts) do not resolve, so the check stays local. This is done in the browser's
-// resolver, NOT with context.route(): any route turns on request interception for every request, and intercepted
-// streamed responses (Next's server action and RSC responses) are sometimes cut off, leaving an action pending
-// forever ("Saving..."). Set ORDER_INTERCEPT=1 to put the old route back and see it happen.
+// Outside hosts (product images, fonts) do not resolve, so the check stays local without intercepting requests.
+// ORDER_INTERCEPT=1 blocks them with context.route() instead (the old way); either way the run should pass.
 const browser = await chromium.launch({ args: ["--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1"] });
 const actionPosts = { done: 0, failed: 0 };
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth);
