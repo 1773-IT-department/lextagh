@@ -811,6 +811,7 @@ revoke all on function public.check_stockist_field_draft() from public, anon, au
 create trigger stockists_field_draft_check before update of is_active on public.stockists
   for each row execute function public.check_stockist_field_draft();
 
+revoke all on public.field_new_shops from anon, authenticated;
 grant select on public.field_new_shops to authenticated;
 grant insert (stockist_id, visit_id) on public.field_new_shops to authenticated;
 alter table public.field_new_shops enable row level security;
