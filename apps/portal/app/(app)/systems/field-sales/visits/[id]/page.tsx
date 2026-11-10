@@ -54,7 +54,7 @@ export default async function VisitPage({ params, searchParams }: { params: Prom
       {sp.error === "delete" && <div className="alert error" role="alert">The visit could not be deleted. Please try again.</div>}
       {row.new_shop && (
         <div className={`alert ${row.shop_is_active ? "ok" : "info"}`} role="status">
-          {row.shop_is_active ? "The rep added this shop during the visit; staff have confirmed it." : "The rep added this shop during the visit. It is not on Where to Buy until staff check it and activate it in Stockists."}
+          {row.shop_is_active ? "The rep added this shop during the visit; it has been checked and switched on." : "The rep added this shop during the visit. It is not on Where to Buy until admin or marketing check it and switch it on in Stockists."}
           {row.stockist_id && access.seesAll && <> <Link href={`/systems/stockists/${row.stockist_id}`}>Open the shop in Stockists</Link></>}
         </div>
       )}

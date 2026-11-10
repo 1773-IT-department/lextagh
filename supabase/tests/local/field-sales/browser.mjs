@@ -10,7 +10,7 @@
 // delete; and roles that see nothing. Screenshots go to FIELD_SCREENSHOTS (default: lexta-field-screens in the temp
 // directory). Every server it starts is stopped by its PID at the end.
 import { spawn } from "node:child_process";
-import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
@@ -91,8 +91,14 @@ async function waitFor(url) {
   throw new Error(`not up: ${url}`);
 }
 
-run("node", [`${ROOT}/supabase/tests/local/browser/gateway.mjs`, "54401"], { env: process.env });
-const env = { ...process.env, NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54401", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_harness" };
+// The photo secret the portal server signs with, the same in the database (test value only).
+const PHOTO_SECRET = "harness-field-photo-secret-0123456789abcdef";
+await q("insert into private.field_photo_secret (secret) values (:'s')", { s: PHOTO_SECRET });
+// Where the gateway keeps uploaded files, so the check can put a file there behind the portal's back.
+const STORE = mkdtempSync(path.join(os.tmpdir(), "lexta-field-store-"));
+run("node", [`${ROOT}/supabase/tests/local/browser/gateway.mjs`, "54401"], { env: { ...process.env, SHIM_STORAGE_DIR: STORE } });
+const env = { ...process.env, NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54401", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_harness",
+  FIELD_PHOTO_SECRET: PHOTO_SECRET };
 run(`${ROOT}/apps/portal/node_modules/.bin/next`, ["start", "-p", "3101", "-H", "127.0.0.1"], { cwd: `${ROOT}/apps/portal`, env });
 console.log(`started pids ${procs.map((p) => p.pid).join(", ")}`);
 
@@ -301,6 +307,20 @@ try {
   });
   check(fake.status() === 415 && await q(`select count(*) from public.field_visit_photos`) === "4", "a file that is not a JPEG, PNG or WebP is refused by its bytes", fake.status());
 
+  // Bytes put straight into Storage under a photo id are never recorded: the portal refuses a file it did not check.
+  const junkId = "00000000-0000-4000-8000-00000000beef";
+  const junkPath = `${v1.id}/${junkId}.jpg`;
+  const photoBytes = (await import("node:fs")).readFileSync(photo);
+  await q(`insert into storage.objects (bucket_id, name, owner, metadata) values ('field-visit-photos', :'n', '00000000-0000-0000-0000-00000000f103',
+    jsonb_build_object('size', ${photoBytes.length}, 'mimetype', 'image/jpeg'))`, { n: junkPath });
+  mkdirSync(path.join(STORE, "field-visit-photos", v1.id), { recursive: true });
+  writeFileSync(path.join(STORE, "field-visit-photos", v1.id, `${junkId}.jpg`), Buffer.concat([Buffer.from([0xff, 0xd8, 0xff]), Buffer.alloc(photoBytes.length - 3, 0x41)]));
+  const junk = await rep.request.post(`${PORTAL}/systems/field-sales/visits/${v1.id}/photos`, {
+    multipart: { photo_id: junkId, file: { name: "shelf.jpg", mimeType: "image/jpeg", buffer: photoBytes } },
+  });
+  check(junk.status() === 409 && await q(`select count(*) from public.field_visit_photos where id = '${junkId}'`) === "0",
+    "a file already in Storage that the portal did not check is never recorded", junk.status());
+
   // Another rep sees none of it.
   const hoochCtx = await context(390, NEAR_OSU);
   const hooch = await login(hoochCtx, "rep.hooch@lexta.test");
@@ -389,11 +409,63 @@ try {
   check((await care.request.get(`${PORTAL}/systems/field-sales/export`)).status() === 403, "customer care cannot export");
   check((await care.request.get(`${PORTAL}/systems/field-sales/visits/${v1.id}/photos/${photoId}`)).status() === 404, "customer care cannot load photos");
 
+  // Two saves of the same visit at the same time (a retry while the first is still running): one visit, one new shop.
+  const region = await q(`select id from public.regions where slug = 'greater-accra'`);
+  const noOrder = await q(`select id from public.field_visit_outcomes where slug = 'no_order'`);
+  const dupBody = {
+    nonce: "00000000-0000-4000-8000-0000000c0c01", outcome_id: noOrder, location: { status: "unavailable" },
+    new_shop: { name: "Concurrent Kiosk", outlet_type: "general_trade", region_id: region, town: "Nungua", brand_ids: [yazzId] },
+  };
+  const both = await Promise.all([0, 1, 2].map(() => rep.request.post(`${PORTAL}/systems/field-sales/visits`, { data: dupBody })));
+  const answers = await Promise.all(both.map((r) => r.json()));
+  check(both.every((r) => r.status() === 200) && answers.filter((a) => a.created).length === 1 && answers.every((a) => a.id === dupBody.nonce),
+    "three saves of one visit at once: all answer ok, one creates it", answers);
+  check(await q(`select count(*) from public.field_visits where id = '${dupBody.nonce}'`) === "1"
+    && await q(`select count(*) from public.stockists where name = 'Concurrent Kiosk'`) === "1", "one visit and one new shop in the database");
+
+  // A rep cannot switch on the shop they added; marketing or admin do it in Stockists.
+  const kiosk = await q(`select id from public.stockists where name = 'Concurrent Kiosk'`);
+  const swRep = await rep.request.post(`${PORTAL}/systems/field-sales/visits`, { data: { ...dupBody, nonce: "00000000-0000-4000-8000-0000000c0c02", new_shop: undefined, stockist_id: kiosk } });
+  check(swRep.status() === 200, "the rep can still log another visit at their draft shop");
+
+  // The session ends: the phone's JSON calls get 401, the phone says so once and does not retry.
+  const anon = await browser.newContext();
+  const a1 = await anon.request.post(`${PORTAL}/systems/field-sales/visits`, { data: dupBody, maxRedirects: 0 });
+  const a2 = await anon.request.get(`${PORTAL}/systems/field-sales/shops`, { maxRedirects: 0 });
+  const a3 = await anon.request.get(`${PORTAL}/systems/field-sales/visits/${v1.id}/photos/${photoId}`, { maxRedirects: 0 });
+  const a4 = await anon.request.post(`${PORTAL}/systems/field-sales/visits/${v1.id}/photos`, { multipart: { photo_id: junkId, file: { name: "a.jpg", mimeType: "image/jpeg", buffer: photoBytes } }, maxRedirects: 0 });
+  check(a1.status() === 401 && (await a1.json()).error === "Your session has ended, please sign in again." && a2.status() === 401 && a3.status() === 401 && a4.status() === 401,
+    "signed out, the JSON routes answer 401 (not the login page)", [a1.status(), a2.status(), a3.status(), a4.status()]);
+  await anon.close();
+  const endCtx = await context(390, NEAR_OSU);
+  const ender = await login(endCtx, "rep.yazz@lexta.test");
+  await go(ender, `${PORTAL}/systems/field-sales/visit`);
+  await ender.locator(".fs-shop", { hasText: "Osu Mini Mart" }).click();
+  await ender.getByText("No order", { exact: true }).click();
+  let visitPosts = 0;
+  ender.on("request", (r) => { if (r.method() === "POST" && new URL(r.url()).pathname === "/systems/field-sales/visits") visitPosts += 1; });
+  await endCtx.clearCookies();
+  await ender.getByRole("button", { name: "Save visit" }).click();
+  await ender.getByText("Your session has ended, please sign in again.").waitFor();
+  await sleep(1500);
+  check(visitPosts === 1 && await ender.getByRole("link", { name: "Sign in" }).getAttribute("href") === "/login?next=%2Fsystems%2Ffield-sales",
+    "390: an ended session is shown once with a sign in link, without retrying", { visitPosts });
+  check(await ender.getByRole("button", { name: "Try again" }).isVisible(), "390: the form stays, ready to try again after signing in");
+  await ender.screenshot({ path: `${OUT}/rep-390-session-ended.png`, fullPage: true });
+
   // The manager view on a phone and the rep's form at 1440, for the record.
   const mgrPhone = await login(await context(390, null), "manager@lexta.test");
   await go(mgrPhone, `${PORTAL}/systems/field-sales`);
   check(await noSideScroll(mgrPhone), "390: the manager view has no sideways scroll");
+  const filtersFit = (page) => page.evaluate(() => [...document.querySelectorAll(".filters")].every((f) =>
+    f.scrollWidth <= f.clientWidth + 1 && [...f.querySelectorAll("input, select, button")].every((el) => el.getBoundingClientRect().right <= f.getBoundingClientRect().right + 1)));
+  check(await filtersFit(mgrPhone), "390: the manager filters fit inside their box");
   await mgrPhone.screenshot({ path: `${OUT}/manager-390-all-visits.png`, fullPage: true });
+  await go(mgr, `${PORTAL}/systems/field-sales`);
+  await mgr.screenshot({ path: `${OUT}/manager-1440-all-visits-final.png`, fullPage: true });
+  await go(mgrPhone, `${PORTAL}/systems/field-sales/history`);
+  check(await noSideScroll(mgrPhone) && await filtersFit(mgrPhone), "390: My visits and its filters fit");
+  await mgrPhone.screenshot({ path: `${OUT}/manager-390-my-visits.png`, fullPage: true });
 } catch (e) {
   failures += 1;
   console.log(`  FAIL: ${e?.stack ?? e}`);
@@ -404,6 +476,7 @@ try {
 } finally {
   await browser.close();
   for (const p of procs) { try { process.kill(p.pid); } catch { /* gone */ } }
+  rmSync(STORE, { recursive: true, force: true });
 }
 console.log(failures ? `${failures} browser check(s) failed` : "All browser checks passed");
 process.exit(failures ? 1 : 0);

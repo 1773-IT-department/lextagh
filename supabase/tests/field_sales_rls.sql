@@ -101,7 +101,7 @@ do $$
 begin
   perform pg_temp.ok(not exists (select 1 from pg_tables where schemaname = 'public' and tablename like 'field_%' and not rowsecurity),
     'every field sales table has Row Level Security on');
-  perform pg_temp.ok((select count(*) from pg_tables where schemaname = 'public' and tablename like 'field_%') = 4, 'four field sales tables');
+  perform pg_temp.ok((select count(*) from pg_tables where schemaname = 'public' and tablename like 'field_%') = 5, 'five field sales tables');
   perform pg_temp.ok(not exists (select 1 from public.field_visits) and not exists (select 1 from public.field_visit_photos)
     and not exists (select 1 from public.field_visit_stock_checks), 'no visits are seeded');
   perform pg_temp.ok((select string_agg(slug, ',' order by sort_order) from public.field_visit_outcomes) = 'order_taken,no_order,follow_up,shop_closed',
@@ -118,7 +118,7 @@ begin
     'saving and reading run as the caller (security invoker)');
   perform pg_temp.ok((select not public and file_size_limit = 5242880 and allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp']
     from storage.buckets where id = 'field-visit-photos'), 'the photo bucket is private, 5 MB, JPEG, PNG and WebP only');
-  raise notice 'PASS: RLS on for the four tables, no visits seeded, four outcomes, search_path set, invoker RPCs, private bucket';
+  raise notice 'PASS: RLS on for the five tables, no visits seeded, four outcomes, search_path set, invoker RPCs, private bucket';
 end $$;
 
 -- Fixtures (as the database owner) -----------------------------------------------------------------------
@@ -366,8 +366,29 @@ begin
     'outcome_id', pg_temp.outcome('no_order'), 'location', '{"status":"unavailable"}', 'new_shop', %L::jsonb))$q$,
     jsonb_set(shop, '{name}', '"Mgmt Shop"') || jsonb_build_object('brand_ids', jsonb_build_array(pg_temp.brand('yazz')))), '42501'),
     'management cannot add stockists (the Stockists rules of 0005 decide)');
+  -- Only admin or marketing switch a field visit draft on; every other stockist works as before (0005).
   perform pg_temp.owner();
-  raise notice 'PASS: a new shop becomes a draft stockist with the rep''s brands, hidden from Where to Buy';
+  perform pg_temp.ok((select visit_id = pg_temp.u('v5') and created_by = pg_temp.u('rep_yazz') and confirmed_at is null
+    from public.field_new_shops where stockist_id = st), 'the draft is listed in field_new_shops');
+  perform pg_temp.login('rep_yazz');
+  perform pg_temp.ok(pg_temp.fails(format('select public.set_stockist_active(%L, true)', st), '42501'), 'the rep who added the shop cannot switch it on');
+  perform pg_temp.ok(pg_temp.fails(format('select public.save_stockist(%L, null, array[%L]::uuid[])', st, pg_temp.brand('yazz'))) is false
+    and (select not is_active from public.stockists where id = st), 'other stockist edits by the rep still work and leave it a draft');
+  perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_new_shops (stockist_id, visit_id) values (%L, %L)$q$,
+    pg_temp.u('st_yazz'), pg_temp.u('v1')), '23514'), 'a listed shop cannot be made a field draft');
+  perform public.set_stockist_active(pg_temp.u('st_yazz'), false);
+  perform public.set_stockist_active(pg_temp.u('st_yazz'), true);
+  perform pg_temp.ok((select is_active from public.stockists where id = pg_temp.u('st_yazz')), 'a rep still switches other shops of their brand off and on (0005)');
+  perform pg_temp.login('mgmt');
+  perform pg_temp.ok(pg_temp.fails(format('select public.set_stockist_active(%L, true)', st), '42501'), 'management cannot switch it on');
+  perform pg_temp.login('mkt');
+  perform public.set_stockist_active(st, true);
+  perform pg_temp.owner();
+  perform pg_temp.ok((select is_active from public.stockists where id = st)
+    and (select confirmed_at is not null and confirmed_by = pg_temp.u('mkt') from public.field_new_shops where stockist_id = st),
+    'marketing switches it on, which confirms it');
+  update public.stockists set is_active = false where id = st;
+  raise notice 'PASS: a new shop becomes a draft stockist with the rep''s brands, hidden from Where to Buy; only admin or marketing switch it on';
 end $$;
 
 -- Who sees what --------------------------------------------------------------------------------------------
@@ -483,77 +504,131 @@ begin
 end $$;
 
 -- Photos and the bucket ------------------------------------------------------------------------------------
+-- The portal's server signs each photo it checked; the harness signs with the same secret.
+create function pg_temp.sig(photo uuid, visit uuid, mime text, size integer, at bigint) returns text language sql immutable as $$
+  select encode(extensions.hmac('field-photo.' || photo || '.' || visit || '.' || mime || '.' || size || '.' || at,
+    'harness-field-photo-secret-0123456789abcdef', 'sha256'), 'hex');
+$$;
+create function pg_temp.now_s() returns bigint language sql stable as $$ select extract(epoch from now())::bigint; $$;
+-- A file in the bucket as the current person, with what Storage records about it.
+create function pg_temp.put(visit uuid, photo uuid, ext text, mime text, size integer) returns void language sql as $$
+  insert into storage.objects (bucket_id, name, owner, metadata)
+  values ('field-visit-photos', visit || '/' || photo || '.' || ext, auth.uid(), jsonb_build_object('mimetype', mime, 'size', size));
+$$;
+create function pg_temp.rec(photo uuid, visit uuid, mime text, size integer) returns boolean language sql as $$
+  select public.record_field_visit_photo(photo, visit, mime, size, pg_temp.now_s(), pg_temp.sig(photo, visit, mime, size, pg_temp.now_s()));
+$$;
+create function pg_temp.pid(n integer) returns uuid language sql immutable as $$
+  select ('00000000-0000-0000-0000-0000000fa0' || lpad(n::text, 2, '0'))::uuid;
+$$;
+
 do $$
 declare
   p1 text := pg_temp.u('v2') || '/' || pg_temp.u('ph1') || '.jpg';
+  who text;
   n integer;
 begin
+  perform pg_temp.owner();
+  perform pg_temp.ok(not has_table_privilege('authenticated', 'public.field_visit_photos', 'insert'), 'people have no insert rights on photo records');
+
+  -- Not set up yet: refused.
   perform pg_temp.login('rep_yazz');
-  insert into storage.objects (bucket_id, name, owner, metadata) values ('field-visit-photos', p1, pg_temp.u('rep_yazz'), '{"mimetype":"image/jpeg"}');
-  insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values (pg_temp.u('ph1'), pg_temp.u('v2'), p1, 'image/jpeg', 120000);
-  perform pg_temp.ok((select created_by = pg_temp.u('rep_yazz') from public.field_visit_photos where id = pg_temp.u('ph1')), 'the rep adds a photo to their visit');
+  perform pg_temp.put(pg_temp.u('v2'), pg_temp.u('ph1'), 'jpg', 'image/jpeg', 120000);
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 120000)$q$, pg_temp.u('ph1'), pg_temp.u('v2')), '55000'),
+    'photos are refused until the secret is set up');
+  perform pg_temp.owner();
+  insert into private.field_photo_secret (secret) values ('harness-field-photo-secret-0123456789abcdef');
+
+  perform pg_temp.login('rep_yazz');
+  perform pg_temp.ok(pg_temp.rec(pg_temp.u('ph1'), pg_temp.u('v2'), 'image/jpeg', 120000), 'the server records a checked photo on the rep''s visit');
+  perform pg_temp.ok((select created_by = pg_temp.u('rep_yazz') and storage_path = p1 from public.field_visit_photos where id = pg_temp.u('ph1')),
+    'the record has the rep and the file''s path');
+  perform pg_temp.ok(not pg_temp.rec(pg_temp.u('ph1'), pg_temp.u('v2'), 'image/jpeg', 120000), 'recording it again (a retry) adds nothing');
   perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values (%L, %L, %L, 'image/jpeg', 100)$q$,
-    pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.jpg'), '42501'), 'a photo record needs its file first');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
-    pg_temp.u('v3') || '/' || pg_temp.u('ph2') || '.jpg'), '42501'), 'a rep cannot upload to another rep''s visit');
+    pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.jpg'), '42501'), 'a rep cannot insert a photo record directly');
+
+  -- Bytes sent straight to the Storage API are never recorded without the server's signature.
+  perform pg_temp.put(pg_temp.u('v2'), pg_temp.u('ph2'), 'png', 'image/png', 2000);
+  perform pg_temp.ok(pg_temp.fails(format($q$select public.record_field_visit_photo(%L, %L, 'image/png', 2000, pg_temp.now_s(), repeat('a', 64))$q$,
+    pg_temp.u('ph2'), pg_temp.u('v2')), '22023'), 'a made up signature is refused');
+  perform pg_temp.ok(pg_temp.fails(format($q$select public.record_field_visit_photo(%L, %L, 'image/png', 2000, pg_temp.now_s() - 3600, pg_temp.sig(%L, %L, 'image/png', 2000, pg_temp.now_s() - 3600))$q$,
+    pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('ph2'), pg_temp.u('v2')), '22023'), 'an old signature is refused');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/png', 2001)$q$, pg_temp.u('ph2'), pg_temp.u('v2')), '23514'),
+    'a size different from the file in Storage is refused');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 2000)$q$, pg_temp.u('ph2'), pg_temp.u('v2')), '23514'),
+    'a type different from the file in Storage is refused');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 100)$q$, pg_temp.u('ph3'), pg_temp.u('v2')), '23514'),
+    'no record without its file');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/gif', 100)$q$, pg_temp.u('ph3'), pg_temp.u('v2')), '22023'),
+    'only JPEG, PNG and WebP');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 100)$q$, pg_temp.u('ph3'), pg_temp.u('v3')), '42501'),
+    'no record on another rep''s visit');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 120000)$q$, pg_temp.u('ph1'), pg_temp.u('v5')), '22023'),
+    'a photo id cannot move to another visit');
+  perform pg_temp.ok(pg_temp.rec(pg_temp.u('ph2'), pg_temp.u('v2'), 'image/png', 2000), 'with the right signature, size and type it is recorded');
+  perform pg_temp.login('admin');
+  perform pg_temp.put(pg_temp.u('v2'), pg_temp.u('ph3'), 'jpg', 'image/jpeg', 500);
+  perform pg_temp.login('rep_yazz');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 500)$q$, pg_temp.u('ph3'), pg_temp.u('v2')), '23514'),
+    'a rep cannot record a file someone else uploaded');
+
+  -- Storage paths.
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.put(%L, %L, 'jpg', 'image/jpeg', 1)$q$, pg_temp.u('v3'), pg_temp.u('vx')), '42501'),
+    'a rep cannot upload to another rep''s visit');
   perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
     pg_temp.u('v2') || '/photo.jpg'), '42501'), 'only <visit>/<photo id>.<ext> paths');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
-    pg_temp.u('v1') || '/' || pg_temp.u('ph2') || '.jpg'), '42501'), 'no photos on a visit older than 24 hours');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
-    pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.gif'), '42501'), 'only jpg, png and webp names');
-  insert into storage.objects (bucket_id, name) values ('field-visit-photos', pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.png');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values (%L, %L, %L, 'image/jpeg', 100)$q$,
-    pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.png'), '23514'), 'the record''s type matches the file name');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values (%L, %L, %L, 'image/png', 100)$q$,
-    pg_temp.u('ph3'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.png'), '23514'), 'the record id matches the file name');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values (%L, %L, %L, 'image/png', 6000000)$q$,
-    pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.png'), '23514'), 'at most 5 MB');
-  insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values
-    (pg_temp.u('ph2'), pg_temp.u('v2'), pg_temp.u('v2') || '/' || pg_temp.u('ph2') || '.png', 'image/png', 2000);
-  perform pg_temp.ok((select photo_count from public.field_visit_list() where id = pg_temp.u('v2')) = 2, 'the list counts photos');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.put(%L, %L, 'jpg', 'image/jpeg', 1)$q$, pg_temp.u('v1'), pg_temp.u('vx')), '42501'),
+    'no uploads to a visit older than 24 hours');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.put(%L, %L, 'gif', 'image/gif', 1)$q$, pg_temp.u('v2'), pg_temp.u('vx')), '42501'),
+    'only jpg, png and webp names');
+  perform pg_temp.ok((select photo_count from public.field_visit_list() where id = pg_temp.u('v2')) = 2, 'the list counts recorded photos only');
   perform pg_temp.ok(pg_temp.fails(format($q$update public.field_visit_photos set size_bytes = 1 where id = %L$q$, pg_temp.u('ph1')), '42501'), 'photos are never changed');
   delete from storage.objects where name = p1;
   delete from public.field_visit_photos where id = pg_temp.u('ph1');
   perform pg_temp.ok(exists (select 1 from storage.objects where name = p1) and exists (select 1 from public.field_visit_photos where id = pg_temp.u('ph1')),
     'a rep cannot remove photos');
 
+  -- Who reads the files.
   perform pg_temp.login('rep_hooch');
   perform pg_temp.ok(not exists (select 1 from storage.objects where bucket_id = 'field-visit-photos'), 'another rep cannot read the photo files');
   perform pg_temp.login('mgmt');
-  perform pg_temp.ok((select count(*) from storage.objects where bucket_id = 'field-visit-photos') = 2 and (select count(*) from public.field_visit_photos) = 2,
+  perform pg_temp.ok((select count(*) from storage.objects where bucket_id = 'field-visit-photos') = 3 and (select count(*) from public.field_visit_photos) = 2,
     'management reads every photo');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
-    pg_temp.u('v2') || '/' || pg_temp.u('ph3') || '.jpg'), '42501'), 'management cannot add photos to a rep''s visit');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.put(%L, %L, 'jpg', 'image/jpeg', 1)$q$, pg_temp.u('v2'), pg_temp.u('vx')), '42501'),
+    'management cannot add photos to a rep''s visit');
   delete from storage.objects where name = p1;
   perform pg_temp.ok(exists (select 1 from storage.objects where name = p1), 'management cannot remove photos');
-  foreach p1 in array array['care', 'mkt', 'hr', 'dist', 'norole', 'rep_off', 'rep_none'] loop
-    perform pg_temp.login(p1);
-    perform pg_temp.ok(not exists (select 1 from storage.objects where bucket_id = 'field-visit-photos'), p1 || ' cannot read the photo files');
+  foreach who in array array['care', 'mkt', 'hr', 'dist', 'norole', 'rep_off', 'rep_none'] loop
+    perform pg_temp.login(who);
+    perform pg_temp.ok(not exists (select 1 from storage.objects where bucket_id = 'field-visit-photos'), who || ' cannot read the photo files');
+    perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/png', 2000)$q$, pg_temp.u('ph2'), pg_temp.u('v2'))), who || ' cannot record photos');
   end loop;
-  p1 := pg_temp.u('v2') || '/' || pg_temp.u('ph1') || '.jpg';
   perform pg_temp.login('anon');
   perform pg_temp.ok(not exists (select 1 from storage.objects where bucket_id = 'field-visit-photos'), 'website visitors cannot read the photo files');
   perform pg_temp.ok(pg_temp.fails(format($q$insert into storage.objects (bucket_id, name) values ('field-visit-photos', %L)$q$,
-    pg_temp.u('v2') || '/' || pg_temp.u('ph3') || '.jpg')), 'website visitors cannot upload');
+    pg_temp.u('v2') || '/' || pg_temp.u('vx') || '.jpg')), 'website visitors cannot upload');
 
-  -- At most 10 photos a visit.
+  -- At most 10 photos a visit, and at most 15 files in its folder.
   perform pg_temp.login('rep_yazz');
   for n in 1..8 loop
-    insert into storage.objects (bucket_id, name) values ('field-visit-photos', pg_temp.u('v2') || '/' || ('00000000-0000-0000-0000-0000000fa0' || lpad(n::text, 2, '0'))::uuid || '.jpg');
-    insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes)
-    values (('00000000-0000-0000-0000-0000000fa0' || lpad(n::text, 2, '0'))::uuid, pg_temp.u('v2'),
-      pg_temp.u('v2') || '/' || ('00000000-0000-0000-0000-0000000fa0' || lpad(n::text, 2, '0'))::uuid || '.jpg', 'image/jpeg', 100);
+    perform pg_temp.put(pg_temp.u('v2'), pg_temp.pid(n), 'jpg', 'image/jpeg', 100 + n);
+    perform pg_temp.rec(pg_temp.pid(n), pg_temp.u('v2'), 'image/jpeg', 100 + n);
   end loop;
-  insert into storage.objects (bucket_id, name) values ('field-visit-photos', pg_temp.u('v2') || '/00000000-0000-0000-0000-0000000fa099.jpg');
-  perform pg_temp.ok(pg_temp.fails(format($q$insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes) values ('00000000-0000-0000-0000-0000000fa099', %L, %L, 'image/jpeg', 100)$q$,
-    pg_temp.u('v2'), pg_temp.u('v2') || '/00000000-0000-0000-0000-0000000fa099.jpg'), '23514'), 'an eleventh photo is refused');
+  perform pg_temp.put(pg_temp.u('v2'), pg_temp.pid(99), 'jpg', 'image/jpeg', 100);
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 100)$q$, pg_temp.pid(99), pg_temp.u('v2')), '23514'),
+    'an eleventh photo is refused');
+  -- 12 files now (10 recorded, the admin's and the eleventh): three more fit, the sixteenth does not.
+  for n in 20..22 loop
+    perform pg_temp.put(pg_temp.u('v2'), pg_temp.pid(n), 'jpg', 'image/jpeg', 100);
+  end loop;
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.put(%L, %L, 'jpg', 'image/jpeg', 100)$q$, pg_temp.u('v2'), pg_temp.pid(23)), '42501'),
+    'unrecorded files are capped at 15 a visit');
 
   perform pg_temp.login('admin');
-  delete from storage.objects where name = pg_temp.u('v2') || '/00000000-0000-0000-0000-0000000fa099.jpg';
-  perform pg_temp.ok(not exists (select 1 from storage.objects where name = pg_temp.u('v2') || '/00000000-0000-0000-0000-0000000fa099.jpg'), 'admin removes photo files');
+  delete from storage.objects where name = pg_temp.u('v2') || '/' || pg_temp.pid(99) || '.jpg';
+  perform pg_temp.ok(not exists (select 1 from storage.objects where name = pg_temp.u('v2') || '/' || pg_temp.pid(99) || '.jpg'), 'admin removes photo files');
   perform pg_temp.owner();
-  raise notice 'PASS: photo bucket: the rep adds to their own visit, staff who see the visit read, only admin removes; records follow';
+  raise notice 'PASS: photos: only server signed, size and type matched files are recorded; bucket rules; 10 photos and 15 files a visit';
 end $$;
 
 -- Deleting what visits point at ----------------------------------------------------------------------------
@@ -575,7 +650,8 @@ begin
     and latitude = 5.6037 and updated_by = pg_temp.u('admin') from public.field_visits where id = pg_temp.u('v1')), 'nothing else about them changes');
   perform pg_temp.ok((select count(*) from public.field_visit_photos where visit_id = pg_temp.u('v2') and created_by is null) = 10, 'their photos stay, without author');
   perform pg_temp.ok((select count(*) from public.field_visit_stock_checks where visit_id = pg_temp.u('v1')) = 1, 'their stock checks stay');
-  perform pg_temp.ok((select created_by is null and updated_by is null and name = 'Mama Esi Provisions' from public.stockists where id = st),
+  perform pg_temp.ok((select created_by is null from public.field_new_shops where stockist_id = st), 'their new shop record stays, without author');
+  perform pg_temp.ok((select created_by is null and name = 'Mama Esi Provisions' from public.stockists where id = st),
     'the shop they added stays, without author (set_stockist_authors keeps only existing authors)');
   perform pg_temp.ok((select a.created_by is null from public.crm_activities a join public.field_visits v on v.crm_activity_id = a.id
     where v.id = pg_temp.u('v1')), 'their CRM activity stays, without author (set_crm_activity_author keeps only existing authors)');
@@ -609,12 +685,12 @@ do $$
 declare f text;
 begin
   foreach f in array array['field_sales_role()', 'field_may_visit_stockist(uuid)', 'field_stockist_mine(uuid)', 'field_visit_can_see(uuid)',
-                           'field_visit_can_edit(uuid)', 'field_photo_uploaded(text)', 'save_field_visit(uuid,jsonb)',
+                           'field_visit_can_edit(uuid)', 'field_photo_room(uuid)', 'record_field_visit_photo(uuid,uuid,text,integer,bigint,text)', 'save_field_visit(uuid,jsonb)',
                            'update_field_visit(uuid,jsonb)', 'delete_field_visit(uuid)', 'field_sales_shops(numeric,numeric,text,integer)',
                            'field_visit_list(uuid,date,date,uuid,uuid,uuid,text,integer,integer,uuid)', 'field_sales_people()'] loop
     perform pg_temp.ok(not has_function_privilege('anon', 'public.' || f, 'execute'), 'anon cannot run ' || f);
   end loop;
-  foreach f in array array['check_field_visit()', 'check_field_visit_stock()', 'check_field_visit_photo()'] loop
+  foreach f in array array['check_field_visit()', 'check_field_visit_stock()', 'check_field_visit_photo()', 'check_field_new_shop()', 'check_stockist_field_draft()'] loop
     perform pg_temp.ok(not has_function_privilege('authenticated', 'public.' || f, 'execute'), 'trigger function ' || f || ' is internal');
   end loop;
   raise notice 'PASS: functions closed to website visitors; trigger functions closed to everyone';

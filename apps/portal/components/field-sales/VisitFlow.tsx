@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FIELD_FACINGS_MAX, FIELD_NOTES_MAX, formatDistance, OUTLET_TYPES, type FieldShop, type FieldVisitPayload } from "@lexta/db";
 import { getJson, newId, postJson, RequestError, uploadPhoto, withRetry } from "./net";
 import PhotoPicker, { type PickedPhoto } from "./PhotoPicker";
+import SessionEnded from "./SessionEnded";
 
 type Option = { id: string; name: string };
 export type StockSkuOption = { id: string; brandId: string; product: string; variant: string | null; pack: string; code: string };
@@ -48,6 +49,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
   const [steps, setSteps] = useState<Step[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [saved, setSaved] = useState<{ id: string; crm: boolean } | null>(null);
+  const [sessionEnded, setSessionEnded] = useState(false);
   const top = useRef<HTMLDivElement>(null);
 
   // Location ---------------------------------------------------------------------------------------------------
@@ -66,6 +68,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
   const pos = geo.state === "captured" ? `${geo.lat.toFixed(5)},${geo.lng.toFixed(5)}` : "";
   const loadShops = useCallback(async (q: string, at: string) => {
     setShopsError("");
+    setSessionEnded(false);
     const sp = new URLSearchParams();
     if (at) { const [lat, lng] = at.split(","); sp.set("lat", lat); sp.set("lng", lng); }
     if (q.trim()) sp.set("q", q.trim());
@@ -73,6 +76,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
       const res = await withRetry(() => getJson<{ shops: FieldShop[] }>(`/systems/field-sales/shops?${sp}`));
       setShops(res.shops);
     } catch (e) {
+      if (e instanceof RequestError && e.auth) { setSessionEnded(true); setShopsError("The shops could not be loaded."); return; }
       setShopsError(e instanceof RequestError ? e.message : "The shops could not be loaded.");
     }
   }, []);
@@ -158,6 +162,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
     if (busy) return;
     if (!saved && !validate()) return;
     setError("");
+    setSessionEnded(false);
     setBusy(true);
     const todo = photos.filter((p) => p.status !== "done");
     setSteps([
@@ -175,7 +180,8 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
         setStep("visit", { status: "done", note: res.crm_logged ? "Also on the shop's CRM timeline." : undefined });
       } catch (e) {
         const err = e instanceof RequestError ? e : new RequestError("The visit could not be saved.", false);
-        setStep("visit", { status: "failed", note: err.message });
+        setStep("visit", { status: "failed", note: err.auth ? "Not saved yet: sign in again." : err.message });
+        if (err.auth) { setSessionEnded(true); setBusy(false); return; }
         setError(err.retry ? "The visit is not saved yet. Check your connection, then press Try again. Nothing will be saved twice." : err.message);
         if (err.field) setFieldError({ [err.field]: err.message });
         setBusy(false);
@@ -183,6 +189,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
       }
     }
     let failed = 0;
+    let ended = false;
     for (const p of todo) {
       setStep(p.id, { status: "working" });
       setPhoto(p.id, { status: "uploading", progress: 0, error: undefined });
@@ -198,9 +205,10 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
         const msg = e instanceof RequestError ? e.message : "The photo could not be uploaded.";
         setPhoto(p.id, { status: "failed", error: msg });
         setStep(p.id, { status: "failed", note: msg });
+        if (e instanceof RequestError && e.auth) { setSessionEnded(true); ended = true; break; }
       }
     }
-    if (failed) setError(`The visit is saved, but ${failed === 1 ? "1 photo did" : `${failed} photos did`} not upload. Press Try again when you have a connection.`);
+    if (failed && !ended) setError(`The visit is saved, but ${failed === 1 ? "1 photo did" : `${failed} photos did`} not upload. Press Try again when you have a connection.`);
     setBusy(false);
   }
 
@@ -229,6 +237,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
   return (
     <div className="fs-flow" ref={top}>
       {location}
+      {sessionEnded && <SessionEnded />}
       {error && <div className="alert error" role="alert">{error}</div>}
 
       {!chosen && (
@@ -282,7 +291,7 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
             </div>
             {adding && (
               <fieldset className="fs-newshop" disabled={locked}>
-                <p className="small">Lexta staff check new shops before they appear on Where to Buy.</p>
+                <p className="small">Admin or marketing check new shops before they appear on Where to Buy.</p>
                 <div className="field">
                   <label htmlFor="ns_name">Shop name</label>
                   <input id="ns_name" value={newShop.name} maxLength={160} onChange={(e) => setNewShop({ ...newShop, name: e.target.value })} aria-invalid={!!fieldError.shop_name} />

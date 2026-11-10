@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { FIELD_FACINGS_MAX, FIELD_NOTES_MAX, OUTLET_TYPES, type FieldVisitPayload } from "@lexta/db";
 import { UUID } from "@/lib/crm";
-import { FIELD_BASE, fieldDbError, getFieldAccess } from "@/lib/field-sales";
+import { FIELD_BASE, fieldApiAccess, fieldDbError, SESSION_ENDED, type FieldAccess } from "@/lib/field-sales";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
@@ -18,7 +18,7 @@ const str = (v: unknown, max: number): string | null => {
 };
 
 /** Checks what the phone sent and turns it into the details public.save_field_visit takes. */
-function check(body: unknown, access: Awaited<ReturnType<typeof getFieldAccess>>): { nonce: string; details: Record<string, unknown> } | Fail {
+function check(body: unknown, access: FieldAccess): { nonce: string; details: Record<string, unknown> } | Fail {
   if (!body || typeof body !== "object") return { error: "The visit could not be read. Reload the page and try again." };
   const b = body as Partial<FieldVisitPayload> & Record<string, unknown>;
   if (typeof b.nonce !== "string" || !UUID.test(b.nonce)) return { error: "The visit could not be read. Reload the page and try again." };
@@ -95,11 +95,13 @@ function check(body: unknown, access: Awaited<ReturnType<typeof getFieldAccess>>
 
 /**
  * Saves a visit from the phone. The nonce the phone made becomes the visit id, so sending the same visit again (after
- * a dropped connection) returns the visit already saved instead of saving it twice. Answers JSON:
+ * a dropped connection) returns the visit already saved instead of saving it twice, also while the first save is still
+ * running (public.save_field_visit waits on a lock per nonce). Answers JSON:
  * 200 {id, created, crm_logged} or 4xx/5xx {error, field?}. The phone retries on 5xx and network errors only.
  */
 export async function POST(req: NextRequest) {
-  const access = await getFieldAccess();
+  const access = await fieldApiAccess();
+  if (!access) return NextResponse.json({ error: SESSION_ENDED, retry: false }, { status: 401 });
   if (!access.canView) return NextResponse.json({ error: "Your role does not include field sales." }, { status: 403 });
   let body: unknown;
   try {

@@ -542,6 +542,7 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .fs-cards .order-card-top b { overflow-wrap: anywhere; }
 .fs-filters { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .fs-filters .filter-actions { align-self: end; }
+.fs-filters .field, .fs-history-filters .field, .fs-filters input, .fs-filters select, .fs-history-filters input, .fs-history-filters select { min-width: 0; max-width: 100%; }
 .fs-history-filters { grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto; }
 .fs-gallery { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 .fs-gallery li { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
@@ -560,7 +561,8 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .fs-full { grid-column: 1 / -1; }
 .fs-full .alert { margin: 0; }
 @media (max-width: 800px) {
-  .fs-filters, .fs-history-filters { grid-template-columns: 1fr 1fr; }
+  .fs-filters, .fs-history-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fs-filters .field:first-child, .fs-history-filters .field:first-child, .fs-filters .filter-actions, .fs-history-filters .filter-actions { grid-column: 1 / -1; }
   .fs-outcomes { grid-template-columns: minmax(0, 1fr); }
   .fs-outcome-edit { grid-template-columns: minmax(0, 1fr) 80px; }
   .fs-outcome-edit .btn { grid-column: 1 / -1; }

@@ -63,6 +63,20 @@ export async function getFieldAccess(): Promise<FieldAccess> {
 
 export const NO_FIELD_ACCESS = "Your role does not include field sales. Ask your Lexta administrator if you need it.";
 
+/** What the JSON routes answer, with status 401, when the session has ended (the phone asks the person to sign in). */
+export const SESSION_ENDED = "Your session has ended, please sign in again.";
+
+/**
+ * For the JSON routes the phone calls (shops, visits, photos): the person's field sales access, or null when nobody is
+ * signed in. Never redirects to the login page, so the phone gets an answer it can read.
+ */
+export async function fieldApiAccess(): Promise<FieldAccess | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  return getFieldAccess();
+}
+
 export const brandNames = (access: FieldAccess, ids: string[]) =>
   ids.map((id) => access.brands.find((b) => b.id === id)?.name).filter(Boolean).join(", ");
 
@@ -156,6 +170,7 @@ export function fieldDbError(error: { code?: string; message?: string }, context
     if (msg.includes("facings")) return "A product that is not on the shelf has no facings.";
     if (msg.includes("location")) return "The location could not be read. Try capturing it again.";
     if (msg.includes("at most 10 photos")) return "A visit has at most 10 photos.";
+    if (msg.includes("missing or different")) return "The photo could not be checked. Please take it again.";
     return "Some details are missing or in the wrong format. Please check and try again.";
   }
   if (error.code === "22P02") return "One of the fields is in the wrong format.";

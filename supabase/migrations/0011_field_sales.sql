@@ -1,9 +1,10 @@
 -- 0011_field_sales: the field sales app (scoreboard item 24). Sales reps log shop visits on their phone: the shop, the
 -- time, where they were, what happened, notes, photos and an optional quick stock check. Managers see every visit.
--- Creates new objects, and replaces two existing trigger functions (set_stockist_authors from 0005 and
--- set_crm_activity_author from 0006, see below) so that deleting a rep who added a shop or logged a visit on the CRM
--- never fails. Nothing is dropped. Nothing is seeded except the four starting visit outcomes (a lookup list like the
--- regions in 0005), which an admin can rename, add to or switch off.
+-- Creates new objects. Changes to existing objects, all listed under "Changes to existing objects" below: two trigger
+-- functions are replaced (set_stockist_authors from 0005, set_crm_activity_author from 0006) so that deleting a rep who
+-- added a shop or logged a visit on the CRM never fails, and one new trigger is added on public.stockists (it only acts
+-- on shops added from a field visit). Nothing is dropped. Nothing is seeded except the four starting visit outcomes (a
+-- lookup list like the regions in 0005), which an admin can rename, add to or switch off.
 --
 -- Tables
 --   field_visit_outcomes       the outcome list (Order taken, No order, Follow up needed, Shop closed). Admin edits it
@@ -11,11 +12,16 @@
 --                              Shop name, town, region and brands are copied from the stockist when the visit is made,
 --                              so the visit still reads correctly if the shop is changed or deleted later
 --   field_visit_stock_checks   optional: which SKUs were on the shelf, with an optional facing count
---   field_visit_photos         photos in the private field-visit-photos bucket
+--   field_visit_photos         photos in the private field-visit-photos bucket. Only the portal's server adds a
+--                              record, after checking the file's first bytes, with a signature only it can make
+--   field_new_shops            shops added from a visit, until admin or marketing confirm them
 --
 -- The shop is a stockist (0005). A shop the rep finds that is not listed yet is added as a draft stockist: inactive,
--- so it is not on Where to Buy, carrying the rep's brands, with a staff note saying it came from a field visit. Staff
--- check it and activate it in Stockists. The visit is marked new_shop so managers see which shops need confirming.
+-- so it is not on Where to Buy, carrying the rep's brands, with a staff note saying it came from a field visit, and
+-- listed in field_new_shops. Only admin or marketing can switch such a shop on in Stockists (the trigger
+-- stockists_field_draft_check refuses anyone else, the rep who added it included); switching it on confirms it. The
+-- visit is marked new_shop so managers see which shops need confirming. Stockists created any other way follow 0005
+-- unchanged.
 -- When a CRM organisation is linked to the stockist (crm_organisations.stockist_id), the visit is also written on that
 -- organisation's CRM timeline as a 'visit' activity, through the CRM's own rules (0006).
 --
@@ -39,7 +45,9 @@
 -- author triggers of both (0005, 0006) put the old author back on every update, so deleting a person who created a
 -- stockist or a CRM activity failed: the on delete set null was undone and the foreign key refused it. They now keep
 -- the old author only while that person still exists, the rule order_author_kept brought in for orders (0010).
--- Nothing else about them changes.
+-- set_stockist_authors also passes updated_by (the signed in person) through order_author_kept, so a person being
+-- deleted is never written back either. Nothing else about them changes. The third change, a new trigger on
+-- public.stockists for draft shops from field visits, is with field_new_shops below.
 create or replace function public.set_stockist_authors()
 returns trigger
 language plpgsql
@@ -305,24 +313,10 @@ as $$
      );
 $$;
 
--- A photo record needs its file in the bucket first.
-create function public.field_photo_uploaded(object_name text)
-returns boolean
-language sql
-stable
-security definer
-set search_path = ''
-as $$
-  select public.field_sales_role()
-     and exists (select 1 from storage.objects o where o.bucket_id = 'field-visit-photos' and o.name = object_name);
-$$;
-
 revoke all on function public.field_visit_can_see(uuid) from public, anon;
 revoke all on function public.field_visit_can_edit(uuid) from public, anon;
-revoke all on function public.field_photo_uploaded(text) from public, anon;
 grant execute on function public.field_visit_can_see(uuid) to authenticated;
 grant execute on function public.field_visit_can_edit(uuid) to authenticated;
-grant execute on function public.field_photo_uploaded(text) to authenticated;
 
 -- Triggers ------------------------------------------------------------------------------------------------------
 -- A new visit: the rep is the signed in person, the time is the database's, the shop details are copied from the
@@ -489,6 +483,8 @@ set search_path = ''
 as $$
 begin
   if tg_op = 'INSERT' then
+    -- Lock the visit first, so two uploads at the same time cannot both pass the count.
+    perform 1 from public.field_visits v where v.id = new.visit_id for update;
     if (select count(*) from public.field_visit_photos p where p.visit_id = new.visit_id) >= 10 then
       raise exception 'at most 10 photos a visit' using errcode = '23514';
     end if;
@@ -526,7 +522,8 @@ grant insert (id, stockist_id, new_shop, location_status, latitude, longitude, a
   on public.field_visits to authenticated;
 grant insert (visit_id, sku_id, on_shelf, facings), update (on_shelf, facings), delete
   on public.field_visit_stock_checks to authenticated;
-grant insert (id, visit_id, storage_path, mime_type, size_bytes), delete on public.field_visit_photos to authenticated;
+-- Photo records: no insert for people. Only public.record_field_visit_photo adds them (see Photos below).
+grant delete on public.field_visit_photos to authenticated;
 
 -- Row Level Security --------------------------------------------------------------------------------------------
 alter table public.field_visit_outcomes enable row level security;
@@ -590,16 +587,31 @@ create policy "read photos of visits you see"
   on public.field_visit_photos for select to authenticated
   using ((select public.field_visit_can_see(visit_id)));
 
-create policy "add photos to visits you may change"
-  on public.field_visit_photos for insert to authenticated
-  with check ((select public.field_visit_can_edit(visit_id)) and (select public.field_photo_uploaded(storage_path)));
-
 create policy "admins delete photo records"
   on public.field_visit_photos for delete to authenticated
   using ((select public.is_admin()));
--- No update policy: a photo is added or removed, never changed.
+-- No insert policy (records come from public.record_field_visit_photo) and no update policy: a photo is added or
+-- removed, never changed.
 
 -- Storage: field-visit-photos bucket ----------------------------------------------------------------------------
+-- A file in the bucket is not a photo of the visit until the portal records it (record_field_visit_photo), and only
+-- recorded photos are ever shown. Files nobody recorded (a failed upload, or someone sending bytes straight to the
+-- Storage API) are limited to 15 files a visit in all: the 10 photos a visit may have and 5 spare for retries. They
+-- can only be added in the visit's first 24 hours, are never shown, and admin can remove them.
+create function public.field_photo_room(target_visit uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select (select count(*) from storage.objects o
+          where o.bucket_id = 'field-visit-photos' and public.field_visit_id_from_path(o.name) = target_visit) < 15;
+$$;
+
+revoke all on function public.field_photo_room(uuid) from public, anon;
+grant execute on function public.field_photo_room(uuid) to authenticated;
+
 -- Private. Photos are only ever served through the portal, which reads them with the person's own session (these
 -- policies decide) and checks the file really is an image. Path: <visit id>/<photo id>.<jpg|png|webp>. JPEG, PNG and
 -- WebP up to 5 MB. No overwriting; only admins remove photos.
@@ -617,11 +629,200 @@ create policy "field sales upload photos to visits they may change"
   with check (
     bucket_id = 'field-visit-photos'
     and (select public.field_visit_can_edit(public.field_visit_id_from_path(name)))
+    and (select public.field_photo_room(public.field_visit_id_from_path(name)))
   );
 
 create policy "admins delete field visit photos"
   on storage.objects for delete to authenticated
   using (bucket_id = 'field-visit-photos' and (select public.is_admin()));
+
+-- Recording photos ----------------------------------------------------------------------------------------------
+-- The portal's shared secret. The portal server (env FIELD_PHOTO_SECRET, never sent to the browser) signs each photo
+-- it has checked by its first bytes and uploaded itself; the database only records a photo with a valid signature.
+-- Kept in the private schema with Row Level Security on and no policies, like private.chat_intake_secret (0009).
+-- One time set up (the same value as FIELD_PHOTO_SECRET on the portal's Vercel project, at least 32 characters):
+--   insert into private.field_photo_secret (secret) values ('<value>')
+--   on conflict (id) do update set secret = excluded.secret, updated_at = now();
+-- Until it is set, visits save but photos are refused and the phone says photo uploads are not set up.
+create schema if not exists private;
+revoke all on schema private from public, anon, authenticated;
+
+create table private.field_photo_secret (
+  id boolean primary key default true check (id),
+  secret text not null check (length(secret) >= 32),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+alter table private.field_photo_secret enable row level security;
+revoke all on private.field_photo_secret from public, anon, authenticated;
+
+-- Records a photo the portal's server checked. The server signs, with the shared secret, the text
+--   field-photo.<photo id>.<visit id>.<mime type>.<size in bytes>.<issued at, unix seconds>
+-- after checking the file's first bytes and uploading it with the person's own session. The database checks the
+-- signature (10 minutes old at most), that the person may still change the visit, and that the file at
+-- <visit id>/<photo id>.<ext> exists, was uploaded by this person and has exactly that size and type in Storage.
+-- Recording the same photo again (a retry) returns false and changes nothing. Security definer because people have
+-- no insert rights on field_visit_photos and cannot read the secret.
+-- Errors: 55000 not set up, 22023 bad signature or time, 42501 not allowed, 23514 file missing or different.
+create function public.record_field_visit_photo(photo_id uuid, visit_id uuid, mime_type text, size_bytes integer,
+  issued_at bigint, signature text)
+returns boolean
+language plpgsql
+volatile
+security definer
+set search_path = ''
+as $$
+declare
+  v_secret text;
+  v_ext text;
+  v_path text;
+  v_existing uuid;
+begin
+  select s.secret into v_secret from private.field_photo_secret s where s.id;
+  if v_secret is null then
+    raise exception 'photo uploads are not set up' using errcode = '55000';
+  end if;
+  if photo_id is null or visit_id is null or issued_at is null or signature is null or signature !~ '^[0-9a-f]{64}$'
+     or size_bytes is null or size_bytes not between 1 and 5242880 then
+    raise exception 'invalid field: signature' using errcode = '22023';
+  end if;
+  v_ext := case mime_type when 'image/jpeg' then 'jpg' when 'image/png' then 'png' when 'image/webp' then 'webp' end;
+  if v_ext is null then
+    raise exception 'invalid field: mime_type' using errcode = '22023';
+  end if;
+  -- Compared as HMACs of both values, so the time the comparison takes says nothing about the expected signature.
+  if extensions.hmac(encode(extensions.hmac('field-photo.' || photo_id::text || '.' || visit_id::text || '.' || mime_type
+       || '.' || size_bytes::text || '.' || issued_at::text, v_secret, 'sha256'), 'hex'), v_secret, 'sha256')
+     <> extensions.hmac(signature, v_secret, 'sha256') then
+    raise exception 'invalid field: signature' using errcode = '22023';
+  end if;
+  if issued_at < extract(epoch from now())::bigint - 600 or issued_at > extract(epoch from now())::bigint + 60 then
+    raise exception 'invalid field: issued_at' using errcode = '22023';
+  end if;
+  if not public.field_visit_can_edit(visit_id) then
+    raise exception 'not allowed to change this visit' using errcode = '42501';
+  end if;
+
+  select p.visit_id into v_existing from public.field_visit_photos p where p.id = photo_id;
+  if v_existing is not null then
+    if v_existing <> visit_id then
+      raise exception 'invalid field: photo_id' using errcode = '22023';
+    end if;
+    return false;
+  end if;
+
+  v_path := visit_id::text || '/' || photo_id::text || '.' || v_ext;
+  if not exists (
+    select 1 from storage.objects o
+    where o.bucket_id = 'field-visit-photos' and o.name = v_path and o.owner = (select auth.uid())
+      and (o.metadata ->> 'size')::bigint = size_bytes and o.metadata ->> 'mimetype' = mime_type
+  ) then
+    raise exception 'the photo file is missing or different' using errcode = '23514';
+  end if;
+
+  insert into public.field_visit_photos (id, visit_id, storage_path, mime_type, size_bytes)
+  values (photo_id, visit_id, v_path, mime_type, size_bytes);
+  return true;
+end;
+$$;
+
+revoke all on function public.record_field_visit_photo(uuid, uuid, text, integer, bigint, text) from public, anon;
+grant execute on function public.record_field_visit_photo(uuid, uuid, text, integer, bigint, text) to authenticated;
+
+-- New shops from field visits ----------------------------------------------------------------------------------
+-- A shop a rep added during a visit stays a draft until admin or marketing switch it on in Stockists. Rows are added by
+-- save_field_visit only; confirmed_at is set by the trigger below when the shop is switched on.
+create table public.field_new_shops (
+  stockist_id uuid primary key references public.stockists (id) on delete cascade,
+  visit_id uuid references public.field_visits (id) on delete set null,
+  created_by uuid references public.profiles (id) on delete set null,
+  confirmed_at timestamptz,
+  confirmed_by uuid references public.profiles (id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index field_new_shops_visit_idx on public.field_new_shops (visit_id);
+create index field_new_shops_created_by_idx on public.field_new_shops (created_by);
+create index field_new_shops_confirmed_by_idx on public.field_new_shops (confirmed_by);
+
+create trigger field_new_shops_set_updated_at before update on public.field_new_shops
+  for each row execute function public.set_updated_at();
+
+-- Only for a draft shop the person just added during their own visit; the author comes from the session. On a change
+-- (only the database changes these rows) the links are kept or cleared, never put back.
+create function public.check_field_new_shop()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if tg_op = 'INSERT' then
+    if (select auth.uid()) is not null and not exists (
+      select 1 from public.field_visits v join public.stockists s on s.id = v.stockist_id
+      where v.id = new.visit_id and v.stockist_id = new.stockist_id and v.new_shop and v.rep_id = (select auth.uid())
+        and not s.is_active and s.created_by = (select auth.uid())
+    ) then
+      raise exception 'only a draft shop you just added is a new shop' using errcode = '23514';
+    end if;
+    new.created_by := (select auth.uid());
+    new.confirmed_at := null;
+    new.confirmed_by := null;
+    return new;
+  end if;
+  new.stockist_id := old.stockist_id;
+  new.created_by := public.order_author_kept(old.created_by);
+  new.confirmed_by := public.order_author_kept(new.confirmed_by);
+  new.created_at := old.created_at;
+  return new;
+end;
+$$;
+
+revoke all on function public.check_field_new_shop() from public, anon, authenticated;
+
+create trigger field_new_shops_check before insert or update on public.field_new_shops
+  for each row execute function public.check_field_new_shop();
+
+-- Change to an existing object: a new trigger on public.stockists. It acts only when a draft shop from a field visit
+-- is switched on: admin and marketing may (and it is then confirmed); anyone else, the rep who added it included, is
+-- refused. Database work without a signed in person is left alone. Every other stockist is untouched.
+create function public.check_stockist_field_draft()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if new.is_active and not old.is_active and (select auth.uid()) is not null
+     and exists (select 1 from public.field_new_shops f where f.stockist_id = new.id and f.confirmed_at is null) then
+    if coalesce(public.current_app_role() in ('admin', 'marketing'), false) then
+      update public.field_new_shops set confirmed_at = now(), confirmed_by = (select auth.uid()) where stockist_id = new.id;
+    else
+      raise exception 'only admin or marketing can switch on a shop added from a field visit' using errcode = '42501';
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+revoke all on function public.check_stockist_field_draft() from public, anon, authenticated;
+
+create trigger stockists_field_draft_check before update of is_active on public.stockists
+  for each row execute function public.check_stockist_field_draft();
+
+grant select on public.field_new_shops to authenticated;
+grant insert (stockist_id, visit_id) on public.field_new_shops to authenticated;
+alter table public.field_new_shops enable row level security;
+
+create policy "field sales and stockist staff read new shops"
+  on public.field_new_shops for select to authenticated
+  using ((select public.field_sales_role()) or (select public.can_view_stockists()));
+
+-- The rest of the rule (the person's own visit and draft) is in check_field_new_shop().
+create policy "field sales record their new shops"
+  on public.field_new_shops for insert to authenticated
+  with check ((select public.field_sales_role()));
 
 -- Saving --------------------------------------------------------------------------------------------------------
 -- Saves a visit in one transaction: the new shop (when there is one), the CRM activity (when the shop has a CRM
@@ -663,6 +864,9 @@ begin
   if not public.field_sales_role() then
     raise exception 'only field sales staff log visits' using errcode = '42501';
   end if;
+  -- One save per nonce at a time: a retry that arrives while the first save is still running waits for it, then finds
+  -- the saved visit below instead of failing on the primary key or the new shop's name.
+  perform pg_advisory_xact_lock(hashtextextended('field_visit:' || nonce::text, 0));
 
   -- A retry of a save that went through: the visit is already there (and only its own rep sees it under Row Level
   -- Security, or a manager; anyone else gets a refusal from the primary key below).
@@ -751,6 +955,10 @@ begin
     insert into public.field_visit_stock_checks (visit_id, sku_id, on_shelf, facings)
     values (nonce, (v_line ->> 'sku_id')::uuid, (v_line ->> 'on_shelf')::boolean, nullif(v_line ->> 'facings', '')::integer);
   end loop;
+
+  if coalesce(jsonb_typeof(v_new_shop) = 'object', false) then
+    insert into public.field_new_shops (stockist_id, visit_id) values (v_stockist, nonce);
+  end if;
 
   return jsonb_build_object('id', nonce, 'created', true, 'stockist_id', v_stockist, 'crm_logged', v_activity is not null);
 end;

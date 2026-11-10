@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getFieldAccess } from "@/lib/field-sales";
+import { fieldApiAccess, SESSION_ENDED } from "@/lib/field-sales";
 import { cleanSearch } from "@/lib/crm";
 import { createClient } from "@/lib/supabase/server";
 
@@ -16,7 +16,8 @@ const coord = (v: string | null, max: number) => {
  * public.field_may_visit_stockist decide which shops come back (a sales rep gets the shops of their brands).
  */
 export async function GET(req: NextRequest) {
-  const access = await getFieldAccess();
+  const access = await fieldApiAccess();
+  if (!access) return NextResponse.json({ error: SESSION_ENDED, retry: false }, { status: 401 });
   if (!access.canView) return NextResponse.json({ error: "Your role does not include field sales." }, { status: 403 });
   const sp = req.nextUrl.searchParams;
   const lat = coord(sp.get("lat"), 90);

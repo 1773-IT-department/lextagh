@@ -80,7 +80,7 @@ async function AllVisits({ access, params }: { access: FieldAccess; params: Sear
       <div className="page-head">
         <div>
           <h1>Field sales</h1>
-          <p className="small">Every shop visit sales reps log on their phones, with photos, location and outcome. New shops reps add wait in Stockists until someone activates them.</p>
+          <p className="small">Every shop visit sales reps log on their phones, with photos, location and outcome. New shops reps add stay off Where to Buy until admin or marketing switch them on in Stockists.</p>
         </div>
         <div className="head-actions">
           <Link className="btn" href="/systems/field-sales/visit">Log a visit</Link>

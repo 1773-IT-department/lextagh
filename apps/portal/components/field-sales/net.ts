@@ -14,8 +14,11 @@ export function newId(): string {
 
 /** An answer the server gave on purpose (do not retry), or a network or server problem (retry). */
 export class RequestError extends Error {
-  constructor(message: string, readonly retry: boolean, readonly field?: string) { super(message); }
+  /** auth: the session has ended; the person must sign in again (never retried). */
+  constructor(message: string, readonly retry: boolean, readonly field?: string, readonly auth = false) { super(message); }
 }
+
+export const SESSION_ENDED = "Your session has ended, please sign in again.";
 
 const NETWORK = "No connection, or the connection is too slow. We will keep trying.";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -37,14 +40,17 @@ export async function withRetry<T>(attempt: () => Promise<T>, onRetry?: (n: numb
 }
 
 async function readError(status: number, text: string): Promise<RequestError> {
+  if (status === 401) return new RequestError(SESSION_ENDED, false, undefined, true);
   let msg = "";
   let field: string | undefined;
+  let told: boolean | undefined;
   try {
-    const j = JSON.parse(text) as { error?: string; field?: string };
+    const j = JSON.parse(text) as { error?: string; field?: string; retry?: boolean };
     msg = j.error ?? "";
     field = j.field;
+    told = typeof j.retry === "boolean" ? j.retry : undefined;
   } catch { /* not JSON */ }
-  const retry = status >= 500 || status === 408 || status === 429;
+  const retry = told ?? (status >= 500 || status === 408 || status === 429);
   return new RequestError(msg || (retry ? "The server did not answer properly. We will keep trying." : "This could not be saved."), retry, field);
 }
 
@@ -60,6 +66,7 @@ export async function postJson<T>(url: string, body: unknown, timeoutMs = 30000)
   } finally {
     clearTimeout(timer);
   }
+  if (res.redirected && new URL(res.url).pathname === "/login") throw new RequestError(SESSION_ENDED, false, undefined, true);
   const text = await res.text().catch(() => "");
   if (!res.ok) throw await readError(res.status, text);
   try { return JSON.parse(text) as T; } catch { throw new RequestError("The server did not answer properly. We will keep trying.", true); }
@@ -77,9 +84,10 @@ export async function getJson<T>(url: string, timeoutMs = 20000): Promise<T> {
   } finally {
     clearTimeout(timer);
   }
+  if (res.redirected && new URL(res.url).pathname === "/login") throw new RequestError(SESSION_ENDED, false, undefined, true);
   const text = await res.text().catch(() => "");
   if (!res.ok) throw await readError(res.status, text);
-  return JSON.parse(text) as T;
+  try { return JSON.parse(text) as T; } catch { throw new RequestError("The server did not answer properly. We will keep trying.", true); }
 }
 
 /** Uploads one photo once, reporting progress from 0 to 1. Throws RequestError. */
@@ -131,3 +139,6 @@ export async function compressPhoto(file: File): Promise<Blob> {
 }
 
 export const sizeLabel = (bytes: number) => (bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`);
+
+/** The sign in link shown when the session has ended. It opens in a new tab, so nothing typed here is lost. */
+export const SIGN_IN_URL = "/login?next=%2Fsystems%2Ffield-sales";

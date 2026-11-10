@@ -8,6 +8,7 @@ import FormAlerts from "@/components/crm/FormAlerts";
 import { useCrmForm } from "@/components/crm/useCrmForm";
 import { RequestError, uploadPhoto, withRetry } from "./net";
 import PhotoPicker, { type PickedPhoto } from "./PhotoPicker";
+import SessionEnded from "./SessionEnded";
 
 /** Change the outcome and notes of a visit. */
 export function VisitEditForm({ id, outcomeId, notes, outcomes }: { id: string; outcomeId: string; notes: string; outcomes: { id: string; label: string }[] }) {
@@ -44,11 +45,13 @@ export function PhotoAdder({ visitId, already }: { visitId: string; already: num
   const [photos, setPhotos] = useState<PickedPhoto[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ended, setEnded] = useState(false);
   const set = (id: string, patch: Partial<PickedPhoto>) => setPhotos((all) => all.map((p) => (p.id === id ? { ...p, ...patch } : p)));
 
   async function send(list: PickedPhoto[]) {
     setBusy(true);
     setError("");
+    setEnded(false);
     let failed = 0;
     for (const p of list) {
       set(p.id, { status: "uploading", progress: 0 });
@@ -58,6 +61,7 @@ export function PhotoAdder({ visitId, already }: { visitId: string; already: num
       } catch (e) {
         failed += 1;
         set(p.id, { status: "failed", error: e instanceof RequestError ? e.message : "Not uploaded" });
+        if (e instanceof RequestError && e.auth) { setEnded(true); break; }
         if (e instanceof RequestError && !e.retry) setError(e.message);
       }
     }
@@ -69,7 +73,8 @@ export function PhotoAdder({ visitId, already }: { visitId: string; already: num
   const failed = photos.filter((p) => p.status === "failed");
   return (
     <div>
-      {error && <div className="alert error" role="alert">{error}</div>}
+      {ended && <SessionEnded />}
+      {error && !ended && <div className="alert error" role="alert">{error}</div>}
       <PhotoPicker photos={photos} already={already} disabled={busy} onError={setError}
         onAdd={(p) => { setPhotos((all) => [...all, ...p]); void send(p); }} />
       {failed.length > 0 && !busy && <button type="button" className="btn light" onClick={() => send(failed)}>Try again</button>}
