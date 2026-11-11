@@ -525,7 +525,7 @@ begin
     where o.bucket_id = 'csr-activity-photos' and o.name = v_path and o.owner = (select auth.uid())
       and (o.metadata ->> 'size')::bigint = size_bytes and o.metadata ->> 'mimetype' = mime_type
       -- The server signs after its upload, so a file put there after the signature (a swap) is refused.
-      and o.created_at <= to_timestamp(issued_at)
+      and o.created_at <= to_timestamp(issued_at) + interval '5 seconds'
   ) then
     raise exception 'the photo file is missing or different' using errcode = '23514';
   end if;
