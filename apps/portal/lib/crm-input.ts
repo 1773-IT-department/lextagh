@@ -63,6 +63,8 @@ export function checkLead(raw: Raw, opts: { isNew: boolean; brandIds: Set<string
   const brand = raw.brand_id || "";
   if (brand && !opts.brandIds.has(brand)) errors.brand_id = "Choose one of your brands, or no brand.";
   if (!CRM_SOURCES.some((s) => s.value === raw.source)) errors.source = "Choose where the lead came from.";
+  // Live chat leads are only made from the chat inbox; an existing one keeps its source when edited.
+  else if (opts.isNew && raw.source === "website_live_chat") errors.source = "Live chat leads are made from the chat inbox. Choose another source.";
   const nextAction = opt(raw.next_action);
   maxLen(errors, "next_action", nextAction, 300, "The next action");
   const nextDate = raw.next_action_date || "";

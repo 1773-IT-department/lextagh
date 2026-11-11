@@ -226,3 +226,33 @@ export async function submitWebsiteEnquiry(input: EnquiryForm, client?: Supabase
   }
   return { ok: false, reason: "error" };
 }
+
+// Website lead managers (0012_website_lead_managers.sql) ---------------------------------------------------------
+
+/** Lead sources that count as "from the website": a new unowned lead from one of these gets the website lead manager. */
+export const CRM_WEBSITE_SOURCES: readonly CrmLeadSource[] = [
+  "website_contact_form", "website_partner_form", "website_newsletter", "website_live_chat",
+] as const;
+
+/** One setting: brand_id null is the default for every brand. manager_id null means not set (the person was deleted). */
+export type CrmWebsiteLeadManager = Timestamps & {
+  id: string;
+  brand_id: string | null;
+  manager_id: string | null;
+  updated_by: string | null;
+};
+
+/** One change, with names as they were at the time. */
+export type CrmWebsiteLeadManagerChange = Timestamps & {
+  id: string;
+  scope: "default" | "brand";
+  brand_id: string | null;
+  brand_name: string | null;
+  old_manager_id: string | null;
+  old_manager_name: string | null;
+  new_manager_id: string | null;
+  new_manager_name: string | null;
+  reason: "changed" | "manager_deleted" | "brand_deleted";
+  changed_by: string | null;
+  changed_by_name: string | null;
+};

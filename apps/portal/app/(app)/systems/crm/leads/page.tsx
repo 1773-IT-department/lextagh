@@ -107,6 +107,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           <p className="small">One shared CRM for Lexta and every brand. You see the leads of the brands you work on, leads with no brand, and leads you own.</p>
         </div>
         <div className="head-actions">
+          {access.isAdmin && <Link className="btn light" href="/systems/crm/settings/website-leads">Website lead managers</Link>}
           <Link className="btn" href="/systems/crm/leads/new">New lead</Link>
         </div>
       </div>
