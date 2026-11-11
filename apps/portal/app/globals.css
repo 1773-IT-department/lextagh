@@ -567,3 +567,28 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .fs-outcome-edit { grid-template-columns: minmax(0, 1fr) 80px; }
   .fs-outcome-edit .btn { grid-column: 1 / -1; }
 }
+
+/* CSR activity tracker */
+.csr-filters { grid-template-columns: minmax(0, 2fr) repeat(5, minmax(0, 1fr)) auto; }
+.csr-filters .field, .csr-filters input, .csr-filters select { min-width: 0; max-width: 100%; }
+.csr-filters .filter-actions { align-self: end; }
+.csr-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.csr-status { display: flex; gap: 8px; flex-wrap: wrap; }
+.csr-status label { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 0 14px; border: 1px solid #cfe3ea; border-radius: 9px; background: #fff; cursor: pointer; font-size: 14px; }
+.csr-status input { width: 18px; height: 18px; margin: 0; flex: none; }
+.csr-status label:has(input:checked) { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(18,163,196,.18); }
+.csr-form .form-actions { position: static; }
+.csr-retry { margin-top: 10px; }
+.csr-programmes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
+.csr-programme { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+.csr-programme:last-child { border-bottom: 0; padding-bottom: 0; }
+.csr-programme fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+@media (max-width: 1300px) {
+  .csr-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .csr-filters .field:first-child, .csr-filters .filter-actions { grid-column: 1 / -1; }
+}
+@media (max-width: 800px) {
+  .csr-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .csr-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .csr-status label { flex: 1 1 0; justify-content: center; }
+}
