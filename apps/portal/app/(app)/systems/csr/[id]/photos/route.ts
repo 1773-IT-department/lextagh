@@ -94,7 +94,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     }
   }
 
-  const issuedAt = Math.floor(Date.now() / 1000);
+  // Rounded up: the database refuses a file stored after this time (a swap between upload and record).
+  const issuedAt = Math.ceil(Date.now() / 1000);
   const { error } = await supabase.rpc("record_csr_activity_photo", {
     photo_id: photoId, activity_id: activityId, mime_type: kind.mime, size_bytes: bytes.byteLength, issued_at: issuedAt,
     signature: sign(secret, photoId, activityId, kind.mime, bytes.byteLength, issuedAt),

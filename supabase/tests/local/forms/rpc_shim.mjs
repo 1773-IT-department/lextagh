@@ -135,7 +135,7 @@ const res200 = (send, body) => send(200, JSON.parse(body));
 // Storage --------------------------------------------------------------------------------------------------
 // Enough of the Supabase Storage API for the CV upload and the portal's signed links: POST /storage/v1/object/<bucket>/
 // <path> (raw body or supabase-js multipart), GET /storage/v1/object/<bucket>/<path> (download as the caller),
-// POST /storage/v1/object/sign/<bucket>/<path>, GET the signed link, and
+// POST /storage/v1/object/sign/<bucket>/<path>, GET the signed link, POST /storage/v1/object/list/<bucket> with { prefix }, and
 // DELETE /storage/v1/object/<bucket> with { prefixes }. Like the real service it checks the bucket's size and type
 // limits itself, writes the storage.objects row as the caller (anon, or the signed in person of a JWT) so the real
 // storage policies decide, and records { size, mimetype } in the metadata. Files are kept in SHIM_STORAGE_DIR.
@@ -181,6 +181,17 @@ export async function answerStorage(req, url, send, who) {
     if (r.code !== 0 || r.out !== "1") return storageError(send, 400, 404, "not_found", "Object not found");
     const token = createHmac("sha256", SIGN_SECRET).update(`${bucket}/${name}`).digest("base64url");
     return send(200, { signedURL: `/object/sign/${bucket}/${rest.map(encodeURIComponent).join("/")}?token=${token}` });
+  }
+  if (req.method === "POST" && p.startsWith("/storage/v1/object/list/")) {
+    // A folder listing as the caller (storage policies decide): the files directly in { prefix }, by name.
+    const bucket = p.slice("/storage/v1/object/list/".length);
+    let body = {};
+    try { body = JSON.parse((await readBody(req)).toString() || "{}"); } catch { /* empty */ }
+    const prefix = String(body.prefix ?? "").replace(/^\/+|\/+$/g, "");
+    const r = await psql(asCaller(who) + "select coalesce(json_agg(json_build_object('name', substr(name, length(:'prefix') + case when :'prefix' = '' then 1 else 2 end), 'id', id, 'metadata', metadata) order by name), '[]') from storage.objects where bucket_id = :'bucket' and (:'prefix' = '' or name like :'prefix' || '/%') and position('/' in substr(name, length(:'prefix') + case when :'prefix' = '' then 1 else 2 end)) = 0;",
+      { bucket, prefix });
+    if (r.code !== 0) return storageError(send, 400, 400, "error", r.err.split("\n")[0]);
+    return send(200, JSON.parse(r.out));
   }
   if (req.method === "GET" && p.startsWith("/storage/v1/object/sign/")) {
     const [bucket, ...rest] = p.slice("/storage/v1/object/sign/".length).split("/");

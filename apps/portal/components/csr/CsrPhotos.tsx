@@ -22,7 +22,8 @@ export function CsrPhotoAdder({ activityId, already }: { activityId: string; alr
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [ended, setEnded] = useState(false);
-  const room = CSR_PHOTO_MAX_PER_ACTIVITY - already - photos.filter((p) => p.status !== "done").length;
+  // Photos in this list are not in `already` yet (it is refreshed only once the list is cleared), uploaded ones included.
+  const room = CSR_PHOTO_MAX_PER_ACTIVITY - already - photos.length;
   const set = (id: string, patch: Partial<Picked>) => setPhotos((all) => all.map((p) => (p.id === id ? { ...p, ...patch } : p)));
 
   async function send(list: Picked[]) {

@@ -17,6 +17,9 @@ export default async function CsrProgrammesPage() {
     counts.set(t.programme_id, Number(t.activities_done) + Number(t.activities_planned));
   }
   const brands = access.brands.map((b) => ({ id: b.id, name: b.name }));
+  // A programme keeps a brand that has since been switched off: it is offered on that programme only, marked as such.
+  const brandsFor = (brandId: string | null) => (!brandId || brands.some((b) => b.id === brandId) ? brands
+    : [...brands, { id: brandId, name: `${access.allBrands.find((b) => b.id === brandId)?.name ?? "Brand"} (switched off)` }]);
   const next = Math.max(0, ...access.programmes.map((p) => p.sort_order)) + 10;
   const toCheck = access.programmes.filter((p) => p.needs_review).length;
   return (
@@ -40,7 +43,7 @@ export default async function CsrProgrammesPage() {
       <section className="panel">
         <ul className="csr-programmes">
           {access.programmes.map((p) => (
-            <ProgrammeRow key={`${p.id}-${p.name}-${p.sort_order}-${p.is_active}-${p.needs_review}-${p.brand_id}`} p={p} brands={brands}
+            <ProgrammeRow key={`${p.id}-${p.name}-${p.sort_order}-${p.is_active}-${p.needs_review}-${p.brand_id}`} p={p} brands={brandsFor(p.brand_id)}
               activityCount={error ? 1 : counts.get(p.id) ?? 0} />
           ))}
         </ul>

@@ -24,7 +24,10 @@ export type CsrAccess = {
   /** Marketing: the brands this person works on (profile_brands). */
   myBrandIds: Set<string>;
   regions: Pick<Region, "id" | "name">[];
+  /** Active brands, for choosing. */
   brands: BrandOption[];
+  /** Every brand this person may read, switched off ones included, for names. */
+  allBrands: (BrandOption & { is_active: boolean })[];
 };
 
 export const NO_CSR_ACCESS = "Your role does not include CSR activities. Ask your Lexta administrator if you need it.";
@@ -41,7 +44,7 @@ export async function getCsrAccess(): Promise<CsrAccess> {
   const canWrite = role === "admin" || role === "marketing";
   const base = { userId: user.id, role, canView, canWrite, isAdmin };
   if (!canView) {
-    return { ...base, canWrite: false, isAdmin: false, programmes: [], writableProgrammeIds: new Set(), myBrandIds: new Set(), regions: [], brands: [] };
+    return { ...base, canWrite: false, isAdmin: false, programmes: [], writableProgrammeIds: new Set(), myBrandIds: new Set(), regions: [], brands: [], allBrands: [] };
   }
 
   const supabase = await createClient();
@@ -49,7 +52,7 @@ export async function getCsrAccess(): Promise<CsrAccess> {
     supabase.from("csr_programmes").select("id, name, brand_id, description, is_active, sort_order, needs_review")
       .order("is_active", { ascending: false }).order("sort_order").order("name"),
     supabase.from("regions").select("id, name").order("sort_order").order("name"),
-    supabase.from("brands").select("id, slug, name").eq("is_active", true).order("is_corporate", { ascending: false }).order("name"),
+    supabase.from("brands").select("id, slug, name, is_active").order("is_corporate", { ascending: false }).order("name"),
     role === "marketing" ? supabase.from("profile_brands").select("brand_id").eq("profile_id", user.id) : Promise.resolve({ data: [], error: null }),
   ]);
   if (programmesRes.error) throw new Error("Could not load CSR programmes");
@@ -57,6 +60,7 @@ export async function getCsrAccess(): Promise<CsrAccess> {
   if (brandsRes.error) throw new Error("Could not load brands");
   if (linksRes.error) throw new Error("Could not load brand access");
   const programmes = (programmesRes.data ?? []) as CsrProgramme[];
+  const allBrands = (brandsRes.data ?? []) as CsrAccess["allBrands"];
   const myBrands = new Set(((linksRes.data ?? []) as { brand_id: string }[]).map((l) => l.brand_id));
   const writableProgrammeIds = new Set(
     programmes
@@ -69,7 +73,8 @@ export async function getCsrAccess(): Promise<CsrAccess> {
     writableProgrammeIds,
     myBrandIds: myBrands,
     regions: (regionsRes.data ?? []) as CsrAccess["regions"],
-    brands: (brandsRes.data ?? []) as BrandOption[],
+    brands: allBrands.filter((b) => b.is_active).map(({ id, slug, name }) => ({ id, slug, name })),
+    allBrands,
   };
 }
 
@@ -82,7 +87,7 @@ export function canEditProgrammeActivity(access: CsrAccess, programmeId: string)
   return p.brand_id === null || access.myBrandIds.has(p.brand_id);
 }
 
-export const brandName = (access: CsrAccess, id: string | null) => (id ? access.brands.find((b) => b.id === id)?.name ?? "" : "");
+export const brandName = (access: CsrAccess, id: string | null) => (id ? access.allBrands.find((b) => b.id === id)?.name ?? "" : "");
 
 // Filters (list and totals share them) --------------------------------------------------------------------------
 

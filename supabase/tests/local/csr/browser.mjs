@@ -230,14 +230,32 @@ try {
   // The add form starts empty again once the new programme is in the list.
   await admin.locator(".csr-programme input[value='GES Cook Art Competition']").waitFor();
   check(await q(`select count(*) from public.csr_programmes where name = 'GES Cook Art Competition' and is_active`) === "1", "1440: admin adds a programme");
+  // A file in the activity's folder that was never recorded (a failed upload): deleting the activity removes it too.
+  await q(`insert into storage.objects (bucket_id, name, owner, metadata) values ('csr-activity-photos', :'n', '00000000-0000-0000-0000-00000000c103', '{"size": 3, "mimetype": "image/jpeg"}')`,
+    { n: `${actId}/00000000-0000-4000-8000-0000000000aa.jpg` });
+  mkdirSync(path.join(STORE, "csr-activity-photos", actId), { recursive: true });
+  writeFileSync(path.join(STORE, "csr-activity-photos", actId, "00000000-0000-4000-8000-0000000000aa.jpg"), Buffer.from([0xff, 0xd8, 0xff]));
   await go(admin, `${PORTAL}/systems/csr/${actId}`);
   const before = files(STORE).length;
   admin.once("dialog", (d) => d.accept());
   await admin.getByRole("button", { name: "Delete activity" }).click();
   await admin.waitForURL(/deleted=1/);
   await admin.getByText("The activity was deleted.").waitFor();
-  check(await q(`select count(*) from public.csr_activities where id = :'id'`, { id: actId }) === "0" && files(STORE).length === before - 1,
-    "1440: admin deletes an activity and its photo file");
+  check(await q(`select count(*) from public.csr_activities where id = :'id'`, { id: actId }) === "0" && files(STORE).length === before - 2
+      && await q(`select count(*) from storage.objects where name like :'p'`, { p: `${actId}/%` }) === "0",
+    "1440: admin deletes an activity, its photo file and a file never recorded");
+
+  // A programme whose brand is switched off keeps it when saved.
+  await q(`update public.brands set is_active = false where slug = 'hooch'`);
+  await go(admin, `${PORTAL}/systems/csr/programmes`);
+  const hoochRow = admin.locator(".csr-programme", { has: admin.locator("input[value='Hooch Community Kitchens']") });
+  check((await hoochRow.locator("select[name=brand_id] option:checked").innerText()) === "Hooch (switched off)", "1440: a switched off brand shows on its programme");
+  await hoochRow.getByLabel("Description (optional)").fill("Community kitchens.");
+  await hoochRow.getByRole("button", { name: "Save", exact: true }).click();
+  await hoochRow.getByText("Programme saved.").waitFor();
+  check(await q(`select (brand_id = (select id from public.brands where slug = 'hooch'))::text from public.csr_programmes where name = 'Hooch Community Kitchens'`) === "true",
+    "1440: saving keeps the switched off brand");
+  await q(`update public.brands set is_active = true where slug = 'hooch'`);
 
   // Customer care ------------------------------------------------------------------------------------------------------
   const care = await login(await context(1440), "care@lexta.test");

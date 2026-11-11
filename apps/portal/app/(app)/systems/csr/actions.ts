@@ -84,9 +84,17 @@ export async function deleteActivity(id: string): Promise<void> {
   const access = await getCsrAccess();
   if (!access.isAdmin || !UUID.test(id)) redirect(`${CSR_BASE}/${id}?error=delete`);
   const supabase = await createClient();
-  // Files first: the records go with the activity.
-  const { data: photos } = await supabase.from("csr_activity_photos").select("storage_path").eq("activity_id", id);
-  const paths = (photos ?? []).map((p) => p.storage_path as string);
+  // Files first: every file in the activity's folder (recorded photos and any upload never recorded); the records go
+  // with the activity. The bucket holds at most 25 files an activity, so one page of the listing covers them.
+  const [{ data: photos }, { data: listed, error: listError }] = await Promise.all([
+    supabase.from("csr_activity_photos").select("storage_path").eq("activity_id", id),
+    supabase.storage.from(CSR_PHOTOS_BUCKET).list(id, { limit: 1000 }),
+  ]);
+  if (listError) redirect(`${CSR_BASE}/${id}?error=delete`);
+  const paths = [...new Set([
+    ...(photos ?? []).map((p) => p.storage_path as string),
+    ...(listed ?? []).filter((o) => o.name).map((o) => `${id}/${o.name}`),
+  ])];
   if (paths.length) {
     const { error: storageError } = await supabase.storage.from(CSR_PHOTOS_BUCKET).remove(paths);
     if (storageError) redirect(`${CSR_BASE}/${id}?error=delete`);
@@ -134,7 +142,9 @@ export async function saveProgramme(_prev: CrmFormState, form: FormData): Promis
   const sort = Number.parseInt(String(form.get("sort_order") ?? "0"), 10);
   const fe: Record<string, string> = {};
   if (!name || name.length > CSR_PROGRAMME_NAME_MAX) fe.name = `1 to ${CSR_PROGRAMME_NAME_MAX} characters.`;
-  if (brand && !access.brands.some((b) => b.id === brand)) fe.brand_id = "Choose a brand from the list.";
+  // A switched off brand stays allowed on a programme that already has it, so saving never drops it silently.
+  const current = id ? access.programmes.find((p) => p.id === id) : undefined;
+  if (brand && !access.brands.some((b) => b.id === brand) && brand !== current?.brand_id) fe.brand_id = "Choose a brand from the list.";
   if (description.length > CSR_PROGRAMME_DESCRIPTION_MAX) fe.description = `At most ${CSR_PROGRAMME_DESCRIPTION_MAX} characters.`;
   if (!Number.isInteger(sort) || Math.abs(sort) > 100000) fe.sort_order = "A whole number.";
   if (Object.keys(fe).length) return { error: "Please check the highlighted fields.", fieldErrors: fe };

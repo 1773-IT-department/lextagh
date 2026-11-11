@@ -296,6 +296,9 @@ begin
   perform pg_temp.ok((select count(*) from public.csr_programme_totals(p_programme => pg_temp.u('pr_hooch'))) = 1, 'totals for one programme');
   perform pg_temp.login('mkt');
   perform pg_temp.ok((select sum(people_reached) from public.csr_programme_totals()) = 660, 'marketing sees the same totals');
+  perform pg_temp.ok(public.csr_person_name(pg_temp.u('mkt')) = 'Ama Marketing', 'a CSR author''s name is shown');
+  perform pg_temp.ok(public.csr_person_name(pg_temp.u('hr')) is null and public.csr_person_name(pg_temp.u('mgmt')) is null,
+    'names of people who authored nothing in CSR are not given out');
   perform pg_temp.owner();
   raise notice 'PASS: list filters and totals per programme (done only, date range, region, programme)';
 end $$;
@@ -306,7 +309,8 @@ language sql immutable as $$
   select encode(extensions.hmac(prefix || photo || '.' || act || '.' || mime || '.' || size || '.' || at,
     'harness-field-photo-secret-0123456789abcdef', 'sha256'), 'hex');
 $$;
-create function pg_temp.now_s() returns bigint language sql stable as $$ select extract(epoch from now())::bigint; $$;
+-- Rounded up, like the portal: the signature's time is never before the upload.
+create function pg_temp.now_s() returns bigint language sql stable as $$ select ceil(extract(epoch from now()))::bigint; $$;
 create function pg_temp.put(act uuid, photo uuid, ext text, mime text, size integer) returns void language sql as $$
   insert into storage.objects (bucket_id, name, owner, metadata)
   values ('csr-activity-photos', act || '/' || photo || '.' || ext, auth.uid(), jsonb_build_object('mimetype', mime, 'size', size));
@@ -361,6 +365,15 @@ begin
     'no record on an activity of a brand marketing does not work on');
   perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/jpeg', 120000)$q$, pg_temp.u('ph1'), pg_temp.act('Kumasi Last Year')), '22023'),
     'a photo id cannot move to another activity');
+  -- A file swapped in after the server signed: same path, size and type, but stored later than the signature.
+  perform pg_temp.owner();
+  update storage.objects set created_at = now() + interval '30 seconds' where name = a || '/' || pg_temp.u('ph2') || '.png';
+  perform pg_temp.login('mkt');
+  perform pg_temp.ok(pg_temp.fails(format($q$select pg_temp.rec(%L, %L, 'image/png', 2000)$q$, pg_temp.u('ph2'), a), '23514'),
+    'a file stored after the signature (a swap) is refused');
+  perform pg_temp.owner();
+  update storage.objects set created_at = now() where name = a || '/' || pg_temp.u('ph2') || '.png';
+  perform pg_temp.login('mkt');
   perform pg_temp.ok(pg_temp.rec(pg_temp.u('ph2'), a, 'image/png', 2000), 'with the right signature, size and type it is recorded');
   perform pg_temp.login('admin');
   perform pg_temp.put(a, pg_temp.u('ph3'), 'jpg', 'image/jpeg', 500);

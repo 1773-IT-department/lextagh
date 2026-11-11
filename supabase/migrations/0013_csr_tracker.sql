@@ -469,7 +469,8 @@ create policy "admins and uploaders delete csr activity photos"
 --   csr-photo.<photo id>.<activity id>.<mime type>.<size in bytes>.<issued at, unix seconds>
 -- after checking the file's first bytes and uploading it with the person's own session. The database checks the
 -- signature (10 minutes old at most), that the person may still change the activity, and that the file at
--- <activity id>/<photo id>.<ext> exists, was uploaded by this person and has exactly that size and type in Storage.
+-- <activity id>/<photo id>.<ext> exists, was uploaded by this person, has exactly that size and type in Storage and
+-- was stored no later than the signature's time (the server rounds that time up to the next second).
 -- Recording the same photo again (a retry) returns false and changes nothing. Security definer because people have
 -- no insert rights on csr_activity_photos and cannot read the secret.
 -- Errors: 55000 not set up, 22023 bad signature or time, 42501 not allowed, 23514 file missing or different.
@@ -523,6 +524,8 @@ begin
     select 1 from storage.objects o
     where o.bucket_id = 'csr-activity-photos' and o.name = v_path and o.owner = (select auth.uid())
       and (o.metadata ->> 'size')::bigint = size_bytes and o.metadata ->> 'mimetype' = mime_type
+      -- The server signs after its upload, so a file put there after the signature (a swap) is refused.
+      and o.created_at <= to_timestamp(issued_at)
   ) then
     raise exception 'the photo file is missing or different' using errcode = '23514';
   end if;
@@ -536,7 +539,8 @@ revoke all on function public.record_csr_activity_photo(uuid, uuid, text, intege
 grant execute on function public.record_csr_activity_photo(uuid, uuid, text, integer, bigint, text) to authenticated;
 
 -- Reading -------------------------------------------------------------------------------------------------------
--- A staff member's display name for "logged by", for CSR roles only (marketing cannot read other people's profiles).
+-- A staff member's display name for "logged by", for CSR roles only (marketing cannot read other people's profiles),
+-- and only for the caller or someone who authored a CSR programme, activity or photo: never a name lookup for anyone.
 create function public.csr_person_name(target_profile uuid)
 returns text
 language sql
@@ -545,7 +549,13 @@ security definer
 set search_path = ''
 as $$
   select coalesce(nullif(btrim(p.full_name), ''), p.email) from public.profiles p
-  where p.id = target_profile and public.csr_role();
+  where p.id = target_profile and public.csr_role()
+    and (
+      p.id = (select auth.uid())
+      or exists (select 1 from public.csr_activities a where a.created_by = p.id or a.updated_by = p.id)
+      or exists (select 1 from public.csr_activity_photos ph where ph.created_by = p.id)
+      or exists (select 1 from public.csr_programmes pr where pr.created_by = p.id or pr.updated_by = p.id)
+    );
 $$;
 
 revoke all on function public.csr_person_name(uuid) from public, anon;
