@@ -269,6 +269,30 @@ begin
   raise notice 'PASS: website enquiries get the brand manager, else the default, else nobody; people who no longer qualify are skipped';
 end $$;
 
+-- Saving the page while a saved manager no longer qualifies ---------------------------------------------------------
+do $$
+declare n integer;
+begin
+  update public.profiles set is_active = false where id = pg_temp.u('rep_hooch');
+  n := (select count(*) from public.crm_website_lead_manager_changes);
+  perform pg_temp.login('admin');
+  -- The page sends every picker back, the Hooch one unchanged.
+  perform pg_temp.save('mgmt', '{"yazz":"rep_yazz","hooch":"rep_hooch","linzzy":null,"lexta":null}');
+  perform pg_temp.ok((select count(*) from public.crm_website_lead_manager_changes) = n, 'an unchanged save succeeds and logs nothing');
+  -- Only the default changes.
+  perform pg_temp.save('admin2', '{"yazz":"rep_yazz","hooch":"rep_hooch","linzzy":null,"lexta":null}');
+  perform pg_temp.ok((select manager_id from public.crm_website_lead_managers where brand_id is null) = pg_temp.u('admin2'), 'changing only the default succeeds');
+  perform pg_temp.ok((select manager_id from public.crm_website_lead_managers where brand_id = pg_temp.brand('hooch')) = pg_temp.u('rep_hooch'),
+    'the unqualified Hooch manager stays saved');
+  perform pg_temp.ok((select count(*) from public.crm_website_lead_manager_changes) = n + 1, 'one change logged');
+  -- Picking that person anew is still refused.
+  perform pg_temp.ok(pg_temp.fails($q$select pg_temp.save('rep_hooch')$q$, '23514'), 'an unqualified person cannot be newly chosen');
+  perform pg_temp.save('mgmt', '{"yazz":"rep_yazz","hooch":"rep_hooch"}');
+  perform pg_temp.owner();
+  update public.profiles set is_active = true where id = pg_temp.u('rep_hooch');
+  raise notice 'PASS: saving the page works while a saved manager no longer qualifies';
+end $$;
+
 -- Live chat leads made by staff, and staff leads ------------------------------------------------------------------
 insert into public.chat_conversations (id, reference, brand_id, token_hash, visitor_name, visitor_email)
 values (pg_temp.u('conv'), 'LC-0000A2C1', pg_temp.brand('hooch'), repeat('a', 64), 'Chat Visitor', 'chat.visitor@example.com');

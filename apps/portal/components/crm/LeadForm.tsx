@@ -97,7 +97,9 @@ export default function LeadForm({
               <label htmlFor="source">Source</label>
               <select id="source" name="source" defaultValue={lead?.source ?? ""} aria-invalid={!!fe.source} required>
                 <option value="" disabled>Where did it come from?</option>
-                {CRM_SOURCES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                {/* Live chat leads are made from the chat inbox (and get the website lead manager), never picked by hand. */}
+                {CRM_SOURCES.filter((s) => s.value !== "website_live_chat" || lead?.source === "website_live_chat")
+                  .map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
               </select>
               {fe.source && <span className="ferr">{fe.source}</span>}
             </div>

@@ -389,6 +389,12 @@ begin
   if target_manager is null then
     delete from public.crm_website_lead_managers m where m.brand_id is not distinct from target_brand;
   else
+    -- Already the one chosen: nothing to write. Checked first because an insert attempt runs the check trigger even
+    -- when it ends in the update below, which would refuse an unchanged manager who no longer qualifies.
+    if exists (select 1 from public.crm_website_lead_managers m
+               where m.brand_id is not distinct from target_brand and m.manager_id = target_manager) then
+      return;
+    end if;
     -- Two admins saving the first setting at once: the second one updates instead of hitting the unique key.
     -- Nothing is written (and nothing logged) when the manager is already the one chosen.
     insert into public.crm_website_lead_managers as m (brand_id, manager_id) values (target_brand, target_manager)
