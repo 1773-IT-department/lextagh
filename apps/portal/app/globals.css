@@ -619,8 +619,10 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .dash-bar-fill { display: block; height: 100%; background: var(--teal); border-radius: 999px; }
 .dash-bar-value { min-width: 2.5em; text-align: right; }
 .dash-empty { margin: 0; }
+.dash-more { margin: 10px 0 0; font-size: 13px; font-weight: 600; }
 @media (max-width: 800px) {
   .dash-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-filters .field:first-child { grid-column: auto; }
   .dash-filters .field:nth-child(3), .dash-filters .filter-actions { grid-column: 1 / -1; }
   .dash-presets .btn { flex: 1 1 0; }
   .dash-bars li { grid-template-columns: minmax(0, 8em) minmax(0, 1fr) auto; }

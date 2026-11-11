@@ -111,7 +111,8 @@ begin
   )
   select jsonb_build_object(
     'open_roles', (select count(*) from public.job_openings o
-      where o.status = 'open' and (o.closes_at is null or o.closes_at >= v_today)),
+      where o.status = 'open' and (o.opens_at is null or o.opens_at <= v_today)
+        and (o.closes_at is null or o.closes_at >= v_today)),
     'applications', (select count(*) from apps),
     'by_stage', coalesce((select jsonb_object_agg(stage, n) from (select stage, count(*) n from apps group by stage) s), '{}'::jsonb),
     'in_progress_now', (select count(*) from public.job_applications a where a.stage not in ('hired', 'rejected', 'withdrawn'))

@@ -170,6 +170,11 @@ try {
   check(await stat(mgr, "crm", "Won in period") === "1" && await stat(mgr, "crm", "Open now") === "0" && await stat(mgr, "orders", "Submitted in period") === "0",
     "1440: the brand filter changes the numbers");
   check(await mgr.getByText("Recruitment is not split by brand").isVisible(), "1440: recruitment says it is not split by brand");
+  check(await mgr.getByText("the inbox itself shows every brand").isVisible(), "1440: live chat says the inbox shows every brand");
+  const brandOptions = await mgr.locator("#brand option").allInnerTexts();
+  check(!brandOptions.includes("Lexta Ghana") && brandOptions.includes("Yazz"), "1440: the corporate brand is not in the brand filter", brandOptions);
+  check((await mgr.locator('section[aria-labelledby="dash_field"] .dash-stat', { hasText: "New shops to confirm" }).getAttribute("href") ?? "").includes("brand="),
+    "1440: the shops to confirm link keeps the brand");
 
   const day = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
   await go(mgr, `${PORTAL}/systems/dashboard?from=${day}&to=${day}`);
@@ -187,6 +192,9 @@ try {
   await go(phone, `${PORTAL}/systems/dashboard`);
   check(await noSideScroll(phone), "390: no sideways scroll");
   check(await fits(phone, ".dash-filters") && await fits(phone, ".dash-tile"), "390: filters and tiles fit the phone");
+  const fromBox = await phone.locator("#from").boundingBox();
+  const toBox = await phone.locator("#to").boundingBox();
+  check(fromBox && toBox && Math.abs(fromBox.y - toBox.y) < 2 && toBox.x > fromBox.x, "390: From and To sit side by side", { fromBox, toBox });
   const presetBox = await phone.getByRole("link", { name: "This month" }).boundingBox();
   check(presetBox && presetBox.height >= 34, "390: presets are touch sized", presetBox);
   await phone.screenshot({ path: `${OUT}/manager-390.png`, fullPage: true });

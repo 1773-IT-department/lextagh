@@ -24,6 +24,7 @@ create function pg_temp.u(label text) returns uuid language sql immutable as $$
     when 'role_open' then '00000000-0000-0000-0000-00000000d201'
     when 'role_past' then '00000000-0000-0000-0000-00000000d202'
     when 'role_closed' then '00000000-0000-0000-0000-00000000d203'
+    when 'role_future' then '00000000-0000-0000-0000-00000000d204'
     when 'shop_new' then '00000000-0000-0000-0000-00000000d301'
     when 'shop_old' then '00000000-0000-0000-0000-00000000d302'
     when 'pr_lexta' then '00000000-0000-0000-0000-00000000d401'
@@ -186,7 +187,8 @@ insert into public.complaints (case_number, brand_id, category, severity, channe
 insert into public.job_openings (id, reference, title, department, location, employment_type, level, summary, status, opens_at, closes_at) values
   (pg_temp.u('role_open'),   'LX-DSH-001', 'Open role',   'Sales', 'Accra', 'full_time', 'Entry', 'Open', 'open',   public.ghana_today() - 10, null),
   (pg_temp.u('role_past'),   'LX-DSH-002', 'Past role',   'Sales', 'Accra', 'full_time', 'Entry', 'Past', 'open',   public.ghana_today() - 40, public.ghana_today() - 1),
-  (pg_temp.u('role_closed'), 'LX-DSH-003', 'Closed role', 'Sales', 'Accra', 'full_time', 'Entry', 'Shut', 'closed', public.ghana_today() - 40, null);
+  (pg_temp.u('role_closed'), 'LX-DSH-003', 'Closed role', 'Sales', 'Accra', 'full_time', 'Entry', 'Shut', 'closed', public.ghana_today() - 40, null),
+  (pg_temp.u('role_future'), 'LX-DSH-004', 'Future role', 'Sales', 'Accra', 'full_time', 'Entry', 'Soon', 'open',   public.ghana_today() + 5, null);
 insert into public.job_applications (reference, opening_id, full_name, email, interest, stage, created_at) values
   ('LX-APP-2026-9001', pg_temp.u('role_open'), 'A One',   'a1@test.local', 'Sales', 'new',       now() - interval '1 day'),
   ('LX-APP-2026-9002', pg_temp.u('role_open'), 'A Two',   'a2@test.local', 'Sales', 'interview', now() - interval '5 days'),
@@ -278,7 +280,9 @@ begin
     "open_by_severity":{"high":1,"normal":1,"critical":1},"open_by_status":{"new":1,"investigating":1,"reopened":1},"overdue_now":2}',
     'complaints: opened, closed, resolved, average days to close, open by severity and status, overdue');
   perform pg_temp.eq(d->'recruitment', jsonb_build_object('open_roles', (select open_roles from base) + 1, 'applications', 3,
-    'by_stage', '{"new":1,"interview":1,"rejected":1}'::jsonb, 'in_progress_now', 2), 'recruitment: open roles (not past closing), applications by stage');
+    'by_stage', '{"new":1,"interview":1,"rejected":1}'::jsonb, 'in_progress_now', 2), 'recruitment: open roles (opened, not past closing), applications by stage');
+  perform pg_temp.ok((select count(*) from public.job_openings where status = 'open') = (select open_roles from base) + 3,
+    'two more roles have status open (one closed by date, one opening in 5 days) and are not counted');
   perform pg_temp.eq(d->'chat', '{"conversations":3,"awaiting_reply_now":2,"never_answered_now":1,"leads_from_chat":1}', 'chat');
   perform pg_temp.eq(d->'orders', '{"orders":3,"by_status":{"submitted":1,"delivered":1,"cancelled":1},"lines":4,"packs":38,"to_confirm_now":1}',
     'orders: drafts never counted, cancelled orders not in packs');

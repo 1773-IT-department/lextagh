@@ -64,8 +64,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   const supabase = await createClient();
   const brandsRes = await supabase.from("brands").select("id, name, is_active, is_corporate")
-    .order("is_corporate", { ascending: false }).order("name");
-  const brands = (brandsRes.data ?? []) as { id: string; name: string; is_active: boolean; is_corporate: boolean }[];
+    .order("name");
+  // Product brands only: the corporate Lexta brand is left out of the filter (every brand still counts it).
+  const brands = ((brandsRes.data ?? []) as { id: string; name: string; is_active: boolean; is_corporate: boolean }[]).filter((b) => !b.is_corporate);
   const f = parseDashboardFilters(params, brands.map((b) => b.id));
   const res = await supabase.rpc("management_dashboard", { p_from: f.from, p_to: f.to, p_brand: f.brand || null });
   if (res.error) console.error("[dashboard] load failed", res.error);
@@ -98,7 +99,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <form className="filters dash-filters" method="get" role="search" aria-label="Dashboard filters">
         <div className="field">
           <label htmlFor="from">From</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} max={f.to} required />
+          <input id="from" name="from" type="date" defaultValue={f.from} required />
         </div>
         <div className="field">
           <label htmlFor="to">To</label>
@@ -131,9 +132,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <Stat value={d.crm.open_now} label="Open now" href={systemHref("/systems/crm/leads", { brand })} />
                 <Stat value={d.crm.won} label="Won in period" href={systemHref("/systems/crm/leads", { stage: "won", brand })} />
                 <Stat value={d.crm.lost} label="Lost in period" href={systemHref("/systems/crm/leads", { stage: "lost", brand })} />
-                <Stat value={d.crm.unassigned_website} label="Website leads with no owner, now" alert={d.crm.unassigned_website > 0}
-                  href={systemHref("/systems/crm/leads", { owner: "unassigned", brand })} />
+                <Stat value={d.crm.unassigned_website} label="Website leads with no owner, now" alert={d.crm.unassigned_website > 0} />
               </div>
+              <p className="dash-more"><Link href={systemHref("/systems/crm/leads", { owner: "unassigned", brand })}>See unassigned leads (every source)</Link></p>
               <Bars title="New leads by source" bars={barsFrom(CRM_SOURCES, d.crm.by_source)} hideZero empty="No new leads in this period." />
               <Bars title="New leads by stage they are at" bars={barsFrom(CRM_STAGES, d.crm.by_stage)} empty="No new leads in this period." />
             </Tile>
@@ -155,7 +156,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               note="Orders carry no prices yet, so value is shown as order lines and packs.">
               <div className="dash-stats">
                 <Stat value={d.orders.orders} label="Submitted in period" />
-                <Stat value={d.orders.lines} label="Order lines" />
+                <Stat value={d.orders.lines} label="Order lines (not cancelled)" />
                 <Stat value={d.orders.packs} label="Packs ordered (not cancelled)" />
                 <Stat value={d.orders.to_confirm_now} label="Waiting to be confirmed, now" alert={d.orders.to_confirm_now > 0}
                   href={systemHref("/systems/orders", { status: "submitted", brand })} />
@@ -169,13 +170,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <Stat value={d.field_sales.reps} label="Reps visiting" />
                 <Stat value={d.field_sales.new_shops_in_period} label="New shops found" />
                 <Stat value={d.field_sales.shops_to_confirm_now} label="New shops to confirm, now" alert={d.field_sales.shops_to_confirm_now > 0}
-                  href={systemHref("/systems/stockists", { status: "inactive" })} />
+                  href={systemHref("/systems/stockists", { status: "inactive", brand })} />
               </div>
               <Bars title="Top reps by visits" bars={d.field_sales.top_reps.map((r) => ({ label: r.name, value: r.visits }))} empty="No visits in this period." />
               <Bars title="Visit outcomes" bars={d.field_sales.outcomes.map((o) => ({ label: o.label, value: o.visits }))} empty="No visits in this period." />
             </Tile>
 
-            <Tile id="chat" title="Live chat" href="/systems/chat" linkLabel="Open inbox">
+            <Tile id="chat" title="Live chat" href="/systems/chat" linkLabel="Open inbox"
+              note={brandName ? "The numbers are for this brand; the inbox itself shows every brand." : undefined}>
               <div className="dash-stats">
                 <Stat value={d.chat.conversations} label="Chats in period" />
                 <Stat value={d.chat.awaiting_reply_now} label="Waiting for a reply, now" alert={d.chat.awaiting_reply_now > 0} href="/systems/chat" />
