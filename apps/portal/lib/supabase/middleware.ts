@@ -3,6 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
 const PUBLIC_PATHS = ["/login", "/forgot-password"];
+/** JSON routes of field sales: shops, saving a visit, adding and showing photos. */
+const FIELD_JSON_ROUTE = /^\/systems\/field-sales\/(shops|visits(\/[0-9a-f-]{36}\/photos(\/[0-9a-f-]{36})?)?)$/;
 
 /** Request header with the path being opened, for server components (they cannot read the URL themselves). */
 export const PATH_HEADER = "x-lexta-path";
@@ -43,6 +45,11 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isPublic = PUBLIC_PATHS.includes(path) || path.startsWith("/auth/");
   if (!user && !isPublic) {
+    // The field sales phone app's JSON routes answer 401 instead of the login page, so the phone can say the session
+    // ended rather than retry a page it cannot read.
+    if (FIELD_JSON_ROUTE.test(path)) {
+      return NextResponse.json({ error: "Your session has ended, please sign in again.", retry: false }, { status: 401, headers: { "Cache-Control": "no-store" } });
+    }
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = path !== "/" ? `?next=${encodeURIComponent(path)}` : "";

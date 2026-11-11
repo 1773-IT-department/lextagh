@@ -105,6 +105,9 @@ export async function setStockistActive(_prev: ActionResult, form: FormData): Pr
   // set_stockist_active raises when no row changed, so a refused change always reaches the person.
   const { error } = await supabase.rpc("set_stockist_active", { target_id: id, active });
   if (error) {
+    if (error.code === "42501" && (error.message ?? "").includes("field visit")) {
+      return { error: "This shop was added from a field visit. Admin or marketing check it and switch it on." };
+    }
     if (error.code === "42501") return { error: NO_PERMISSION };
     console.error("[stockists] activate failed", error);
     return { error: active ? "The stockist could not be reactivated. Please try again." : "The stockist could not be deactivated. Please try again." };
