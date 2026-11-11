@@ -1,8 +1,10 @@
 -- 0012_website_lead_managers: who manages the leads that arrive from the websites.
 -- Owner decision: Lexta's admin chooses, in the portal, who manages website leads. One default manager for every
--- brand, plus an optional manager per brand that overrides the default. A new lead whose source is a website source
--- (website_contact_form, website_partner_form, website_newsletter, website_live_chat) and that has no owner gets
--- the brand's manager, else the default manager, else stays unowned (the behaviour before this migration).
+-- brand, plus an optional manager per brand that overrides the default. A new lead from the website with no owner
+-- (one made by the website forms, source website_contact_form, website_partner_form or website_newsletter, or one
+-- made from a live chat, source website_live_chat) gets the brand's manager, else the default manager, else stays
+-- unowned (the behaviour before this migration). A lead a person creates in the portal with a website form source
+-- stays as they made it.
 --
 -- New objects: two tables, their functions and triggers, and one new BEFORE INSERT trigger on crm_leads.
 -- One change to an existing object, under "Change to an existing object" below: public.set_crm_authors (0006) is
@@ -22,7 +24,7 @@
 -- When a lead arrives and the chosen person no longer qualifies (deactivated, role changed, brand removed), the
 -- next choice down the chain is used: brand manager, then default manager, then nobody.
 --
--- Every change (set, change, clear, and a manager's account being deleted) writes a row in the history, with the
+-- Every change (set, change, clear, a manager's account or a brand being deleted) writes a row in the history, with the
 -- names as they were at that moment, so the history stays readable after people or brands are deleted.
 --
 -- Trigger order on crm_leads: Postgres runs triggers of the same timing in name order. The new trigger,
@@ -32,7 +34,8 @@
 -- refuse it ("only admin and management can assign records to other people"). The new trigger makes its own owner
 -- check instead (same rule as crm_is_staff, plus the brand rule above). Website intake (submit_website_enquiry,
 -- 0006) runs as the database owner with no session, and is unaffected otherwise. Leads that arrive with an owner
--- keep it; leads from any other source are never touched; existing leads are not back filled.
+-- keep it; leads from other sources, and leads people create in the portal with a website form source, are never
+-- touched; existing leads are not back filled.
 -- No CRM activity and no notification is written: owner changes are not logged on the timeline anywhere in the CRM
 -- today, and email is out of scope until it is set up.
 
@@ -129,14 +132,17 @@ create trigger crm_website_lead_managers_set_updated_at before update on public.
 create table public.crm_website_lead_manager_changes (
   id uuid primary key default gen_random_uuid(),
   scope text not null check (scope in ('default', 'brand')),
-  brand_id uuid references public.brands (id) on delete set null,
+  -- Deliberately not a foreign key: the history keeps the brand's id (and name) after the brand is deleted, so the
+  -- name can still be looked up and older rows still group by brand.
+  brand_id uuid,
   brand_name text,
   old_manager_id uuid references public.profiles (id) on delete set null,
   old_manager_name text,
   new_manager_id uuid references public.profiles (id) on delete set null,
   new_manager_name text,
-  -- 'changed' by a person; 'manager_deleted' when the manager's account was deleted.
-  reason text not null default 'changed' check (reason in ('changed', 'manager_deleted')),
+  -- 'changed' by a person; 'manager_deleted' when the manager's account was deleted; 'brand_deleted' when the brand
+  -- was deleted (its setting goes with it).
+  reason text not null default 'changed' check (reason in ('changed', 'manager_deleted', 'brand_deleted')),
   changed_by uuid references public.profiles (id) on delete set null,
   changed_by_name text,
   created_at timestamptz not null default now(),
@@ -197,6 +203,7 @@ declare
   v_old uuid;
   v_new uuid;
   v_old_name text;
+  v_brand_name text;
   v_me uuid := public.order_author_kept((select auth.uid()));
   v_reason text := 'changed';
 begin
@@ -215,10 +222,27 @@ begin
     return null;
   end if;
 
+  -- The brand's name: from the brand, or, when the brand is being deleted (this row goes with it), from the history.
+  if v_brand is not null then
+    select b.name into v_brand_name from public.brands b where b.id = v_brand;
+    if v_brand_name is null then
+      if tg_op = 'DELETE' then
+        v_reason := 'brand_deleted';
+      end if;
+      select h.brand_name into v_brand_name
+        from public.crm_website_lead_manager_changes h
+       where h.brand_id = v_brand and h.brand_name is not null
+       order by h.created_at desc, h.id desc limit 1;
+      v_brand_name := coalesce(v_brand_name, 'A deleted brand');
+    end if;
+  end if;
+
   -- The old manager's name: from their profile, or, when their account is being deleted, from the last history row.
   v_old_name := public.crm_profile_label(v_old);
   if v_old is not null and v_old_name is null then
-    v_reason := case when tg_op = 'UPDATE' and v_new is null then 'manager_deleted' else 'changed' end;
+    if tg_op = 'UPDATE' and v_new is null then
+      v_reason := 'manager_deleted';
+    end if;
     select h.new_manager_name into v_old_name
       from public.crm_website_lead_manager_changes h
      where h.scope = case when v_brand is null then 'default' else 'brand' end
@@ -231,8 +255,8 @@ begin
                                                        new_manager_id, new_manager_name, reason, changed_by, changed_by_name, created_at)
   values (
     case when v_brand is null then 'default' else 'brand' end,
-    (select b.id from public.brands b where b.id = v_brand),
-    (select b.name from public.brands b where b.id = v_brand),
+    v_brand,
+    v_brand_name,
     public.order_author_kept(v_old),
     v_old_name,
     public.order_author_kept(v_new),
@@ -262,27 +286,40 @@ stable
 security definer
 set search_path = ''
 as $$
-  select coalesce(
+  -- Only answers inside website intake (no signed in person) and for CRM staff (a lead made from a live chat).
+  select case when (select auth.uid()) is null or public.crm_role() then coalesce(
     (select m.manager_id from public.crm_website_lead_managers m
       where target_brand is not null and m.brand_id = target_brand
         and m.manager_id is not null and public.crm_website_lead_manager_ok(m.manager_id, target_brand)),
     (select m.manager_id from public.crm_website_lead_managers m
       where m.brand_id is null
         and m.manager_id is not null and public.crm_website_lead_manager_ok(m.manager_id, null))
-  );
+  ) end;
 $$;
 
-revoke all on function public.crm_website_lead_manager_for(uuid) from public, anon, authenticated;
+-- The live chat path (chat_create_lead) runs as the signed in person, so they need to run it.
+revoke all on function public.crm_website_lead_manager_for(uuid) from public, anon;
+grant execute on function public.crm_website_lead_manager_for(uuid) to authenticated;
 
+-- Only genuine website intake is assigned:
+--   website forms     the lead is made by public.submit_website_enquiry, which runs as the database owner, so the
+--                     role here is not "authenticated". A person who picks a website form source in the portal and
+--                     leaves the owner as Nobody keeps an unowned lead (the owner rules of check_crm_record stand).
+--   live chat         the lead is made by a person from a chat (public.chat_create_lead, runs as that person), so it
+--                     goes by the source 'website_live_chat'.
+-- Security invoker on purpose: current_user is then the caller's role (same as check_crm_record, 0006).
 create function public.set_crm_website_lead_owner()
 returns trigger
 language plpgsql
-security definer
+security invoker
 set search_path = ''
 as $$
 begin
   if new.owner_id is null
-     and new.source in ('website_contact_form', 'website_partner_form', 'website_newsletter', 'website_live_chat') then
+     and (
+       new.source = 'website_live_chat'
+       or (new.source in ('website_contact_form', 'website_partner_form', 'website_newsletter') and current_user <> 'authenticated')
+     ) then
     new.owner_id := public.crm_website_lead_manager_for(new.brand_id);
   end if;
   return new;
@@ -345,25 +382,18 @@ volatile
 security invoker
 set search_path = ''
 as $$
-declare
-  current_manager uuid;
-  found_row boolean;
 begin
   if not coalesce(public.is_admin(), false) then
     raise exception 'only admins can choose website lead managers' using errcode = '42501';
   end if;
-  select true, m.manager_id into found_row, current_manager
-    from public.crm_website_lead_managers m
-   where m.brand_id is not distinct from target_brand
-   for update;
   if target_manager is null then
-    if found_row then
-      delete from public.crm_website_lead_managers m where m.brand_id is not distinct from target_brand;
-    end if;
-  elsif not coalesce(found_row, false) then
-    insert into public.crm_website_lead_managers (brand_id, manager_id) values (target_brand, target_manager);
-  elsif current_manager is distinct from target_manager then
-    update public.crm_website_lead_managers m set manager_id = target_manager where m.brand_id is not distinct from target_brand;
+    delete from public.crm_website_lead_managers m where m.brand_id is not distinct from target_brand;
+  else
+    -- Two admins saving the first setting at once: the second one updates instead of hitting the unique key.
+    -- Nothing is written (and nothing logged) when the manager is already the one chosen.
+    insert into public.crm_website_lead_managers as m (brand_id, manager_id) values (target_brand, target_manager)
+    on conflict on constraint crm_website_lead_managers_brand_key
+    do update set manager_id = excluded.manager_id where m.manager_id is distinct from excluded.manager_id;
   end if;
 end;
 $$;

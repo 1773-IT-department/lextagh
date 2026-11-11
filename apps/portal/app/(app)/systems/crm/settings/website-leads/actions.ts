@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { CrmFormState } from "../../actions";
 
 const PATH = "/systems/crm/settings/website-leads";
+const CONFLICT = "Someone else just saved these settings. Reload and try again.";
 
 /**
  * Saves the default website lead manager and one manager per brand ("" means nobody for the default and "use the
@@ -45,9 +46,31 @@ export async function saveWebsiteLeadManagers(_prev: CrmFormState, form: FormDat
       return { error: "One of the people you picked can no longer manage these leads (they may have been switched off, changed role or lost access to the brand). Reload the page and choose again." };
     }
     if (error.code === "22023") return { error: "Something you picked no longer exists. Reload the page and try again." };
+    if (error.code === "23505") return { error: CONFLICT };
     console.error("[crm] website lead managers save failed", error);
     return { error: "We could not save the managers. Please try again. If it keeps happening, tell the IT team." };
   }
   revalidatePath(PATH);
   return { message: "Saved. New website leads now go to the people you chose." };
+}
+
+/**
+ * Clears the manager of one brand (it then uses the default). Used for brands that are switched off, which have no
+ * picker on the page but whose setting still applies to any lead that arrives with that brand.
+ */
+export async function clearBrandWebsiteLeadManager(_prev: CrmFormState, form: FormData): Promise<CrmFormState> {
+  const access = await getCrmAccess();
+  if (!access.isAdmin) return { error: "Only admins can choose who manages website leads." };
+  const brandId = String(form.get("brand_id") ?? "");
+  if (!UUID.test(brandId)) return { error: "This brand could not be found. Reload the page." };
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("crm_website_lead_manager_put", { target_brand: brandId, target_manager: null });
+  if (error) {
+    if (error.code === "42501") return { error: "Only admins can choose who manages website leads." };
+    if (error.code === "23505") return { error: CONFLICT };
+    console.error("[crm] website lead manager clear failed", error);
+    return { error: "We could not clear the manager. Please try again. If it keeps happening, tell the IT team." };
+  }
+  revalidatePath(PATH);
+  return { message: "Cleared. This brand now uses the default manager." };
 }

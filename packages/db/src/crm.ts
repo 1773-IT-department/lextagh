@@ -252,7 +252,7 @@ export type CrmWebsiteLeadManagerChange = Timestamps & {
   old_manager_name: string | null;
   new_manager_id: string | null;
   new_manager_name: string | null;
-  reason: "changed" | "manager_deleted";
+  reason: "changed" | "manager_deleted" | "brand_deleted";
   changed_by: string | null;
   changed_by_name: string | null;
 };

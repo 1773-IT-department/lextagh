@@ -308,12 +308,33 @@ end $$;
 do $$
 declare lead uuid;
 begin
+  -- Leads people create in the portal with a website form source and owner Nobody stay unowned: only genuine intake
+  -- is assigned, so the owner rules for people stand.
   perform pg_temp.login('rep_yazz');
   lead := public.save_crm_lead(null, jsonb_build_object('title', 'Rep website lead', 'source', 'website_contact_form', 'brand_id', pg_temp.brand('yazz'),
     'contact_id', (select id from public.crm_contacts limit 1)));
-  perform pg_temp.ok((select owner_id from public.crm_leads where id = lead) = pg_temp.u('rep_yazz'), 'an unowned website lead from a rep goes to the manager');
+  perform pg_temp.ok((select owner_id from public.crm_leads where id = lead) is null, 'a rep''s unowned website form lead stays unowned');
+  perform pg_temp.login('care');
+  lead := public.save_crm_lead(null, jsonb_build_object('title', 'Care website lead', 'source', 'website_partner_form', 'brand_id', pg_temp.brand('hooch'),
+    'contact_id', (select id from public.crm_contacts limit 1)));
+  perform pg_temp.ok((select owner_id from public.crm_leads where id = lead) is null, 'customer care''s unowned website form lead stays unowned');
+  perform pg_temp.login('admin');
+  lead := public.save_crm_lead(null, jsonb_build_object('title', 'Admin website lead', 'source', 'website_newsletter', 'brand_id', pg_temp.brand('yazz'),
+    'contact_id', (select id from public.crm_contacts limit 1)));
+  perform pg_temp.ok((select owner_id from public.crm_leads where id = lead) is null, 'an admin''s unowned website form lead stays unowned');
+  -- Live chat goes by its source (the lead is always made by a person, from the chat).
+  lead := public.save_crm_lead(null, jsonb_build_object('title', 'Admin chat lead', 'source', 'website_live_chat', 'brand_id', pg_temp.brand('yazz'),
+    'contact_id', (select id from public.crm_contacts limit 1)));
+  perform pg_temp.ok((select owner_id from public.crm_leads where id = lead) = pg_temp.u('rep_yazz'), 'an unowned live chat lead gets the manager');
+
+  -- The lookup answers only CRM staff (and website intake).
+  perform pg_temp.ok(public.crm_website_lead_manager_for(pg_temp.brand('yazz')) = pg_temp.u('rep_yazz'), 'CRM staff get the manager');
+  perform pg_temp.login('hr');
+  perform pg_temp.ok(public.crm_website_lead_manager_for(pg_temp.brand('yazz')) is null, 'people without a CRM role get nothing');
+  perform pg_temp.login('anon');
+  perform pg_temp.ok(pg_temp.fails(format('select public.crm_website_lead_manager_for(%L)', pg_temp.brand('yazz')), '42501'), 'anon cannot run the lookup');
   perform pg_temp.owner();
-  raise notice 'PASS: live chat leads by customer care get the manager; staff leads keep their owner; other sources and updates untouched';
+  raise notice 'PASS: website intake and live chat leads get the manager; staff leads keep their owner or stay unowned; other sources and updates untouched';
 end $$;
 
 -- Deleting people and brands ------------------------------------------------------------------------------------
@@ -325,7 +346,7 @@ begin
   delete from auth.users where id = pg_temp.u('rep_yazz');
   perform pg_temp.ok((select manager_id is null from public.crm_website_lead_managers where brand_id = pg_temp.brand('yazz')), 'the setting is kept, empty');
   perform pg_temp.ok((select owner_id is null and created_by is null and updated_by is null from public.crm_leads where title = 'Rep website lead'),
-    'the leads they created and owned stay, without them (set_crm_authors keeps only existing authors)');
+    'the leads they created stay, without them (set_crm_authors keeps only existing authors)');
   perform pg_temp.ok((select count(*) from public.crm_leads where source = 'website_contact_form' and intake_reference is not null and owner_id is null) = 3,
     'their Yazz enquiry becomes unowned (with the two that had no manager)');
   perform pg_temp.ok((select count(*) from public.crm_website_lead_manager_changes) = n + 1, 'the deletion writes a history row');
@@ -357,12 +378,18 @@ begin
   insert into public.profile_brands (profile_id, brand_id) values (pg_temp.u('rep_hooch'), pg_temp.brand('wltest'));
   perform pg_temp.login('admin2');
   perform pg_temp.save('admin2', '{"wltest":"rep_hooch"}');
+  perform pg_temp.save('admin2', '{"wltest":"admin2"}');
   perform pg_temp.owner();
+  n := (select count(*) from public.crm_website_lead_manager_changes);
   delete from public.brands where slug = 'wltest';
+  perform pg_temp.ok((select count(*) from public.crm_website_lead_manager_changes) = n + 1, 'deleting the brand writes one history row');
   perform pg_temp.ok(not exists (select 1 from public.crm_website_lead_managers where brand_id is not null and brand_id not in (select id from public.brands)),
     'the brand''s setting goes with it');
-  perform pg_temp.ok(exists (select 1 from public.crm_website_lead_manager_changes where scope = 'brand' and brand_id is null and brand_name = 'WL Test Brand'),
-    'the history keeps the brand''s name');
+  perform pg_temp.ok((select reason = 'brand_deleted' and brand_name = 'WL Test Brand' and brand_id is not null and old_manager_name = 'Second Admin'
+      and new_manager_id is null from public.crm_website_lead_manager_changes order by created_at desc, id desc limit 1),
+    'the brand deletion is logged as brand_deleted with the brand''s name');
+  perform pg_temp.ok((select count(*) from public.crm_website_lead_manager_changes where brand_name = 'WL Test Brand' and brand_id is not null) = 3,
+    'older rows of that brand keep its id and name');
   raise notice 'PASS: deleting a manager, an admin or a brand never fails; history keeps names';
 end $$;
 
@@ -370,10 +397,10 @@ end $$;
 do $$
 declare f text;
 begin
-  foreach f in array array['save_crm_website_lead_managers(uuid,jsonb)', 'crm_website_lead_manager_put(uuid,uuid)'] loop
+  foreach f in array array['save_crm_website_lead_managers(uuid,jsonb)', 'crm_website_lead_manager_put(uuid,uuid)', 'crm_website_lead_manager_for(uuid)'] loop
     perform pg_temp.ok(not has_function_privilege('anon', 'public.' || f, 'execute'), 'anon cannot run ' || f);
   end loop;
-  foreach f in array array['crm_website_lead_manager_ok(uuid,uuid)', 'crm_profile_label(uuid)', 'crm_website_lead_manager_for(uuid)',
+  foreach f in array array['crm_website_lead_manager_ok(uuid,uuid)', 'crm_profile_label(uuid)',
                            'check_crm_website_lead_manager()', 'log_crm_website_lead_manager()', 'set_crm_website_lead_owner()'] loop
     perform pg_temp.ok(not has_function_privilege('anon', 'public.' || f, 'execute') and not has_function_privilege('authenticated', 'public.' || f, 'execute'),
       f || ' is internal');
