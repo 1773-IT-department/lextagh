@@ -592,3 +592,36 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .csr-counts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .csr-status label { flex: 1 1 0; justify-content: center; }
 }
+
+/* Management dashboard */
+.dash-presets { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.dash-presets .btn[aria-current="page"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.dash-filters { grid-template-columns: repeat(3, minmax(0, 1fr)) auto; }
+.dash-filters .field, .dash-filters input, .dash-filters select { min-width: 0; max-width: 100%; }
+.dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 16px; align-items: start; }
+.dash-tile { margin: 0; min-width: 0; }
+.dash-tile-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.dash-tile-head h2 { margin: 0; }
+.dash-tile-head h2 a { color: var(--ink); }
+.dash-open { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.panel > .dash-note { margin: -4px 0 12px; }
+.dash-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 8px; }
+.dash-stat { min-width: 0; }
+.dash-stat span { overflow-wrap: anywhere; }
+.dash-stat.dash-alert { border-top-color: #8a4b00; }
+.dash-stat.dash-alert b { color: #8a4b00; }
+.dash-bars { margin-top: 14px; }
+.dash-bars h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin: 0 0 8px; }
+.dash-bars ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.dash-bars li { display: grid; grid-template-columns: minmax(0, 11em) minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+.dash-bar-label { overflow-wrap: anywhere; }
+.dash-bar-track { height: 10px; background: var(--soft); border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.dash-bar-fill { display: block; height: 100%; background: var(--teal); border-radius: 999px; }
+.dash-bar-value { min-width: 2.5em; text-align: right; }
+.dash-empty { margin: 0; }
+@media (max-width: 800px) {
+  .dash-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dash-filters .field:nth-child(3), .dash-filters .filter-actions { grid-column: 1 / -1; }
+  .dash-presets .btn { flex: 1 1 0; }
+  .dash-bars li { grid-template-columns: minmax(0, 8em) minmax(0, 1fr) auto; }
+}
