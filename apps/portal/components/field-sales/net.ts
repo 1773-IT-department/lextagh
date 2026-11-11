@@ -92,9 +92,14 @@ export async function getJson<T>(url: string, timeoutMs = 20000): Promise<T> {
 
 /** Uploads one photo once, reporting progress from 0 to 1. Throws RequestError. */
 export function uploadPhoto(visitId: string, photoId: string, blob: Blob, onProgress: (p: number) => void, timeoutMs = 120000): Promise<void> {
+  return uploadPhotoTo(`/systems/field-sales/visits/${visitId}/photos`, photoId, blob, onProgress, timeoutMs);
+}
+
+/** Uploads one photo once to a photo route (field sales visits, CSR activities). Throws RequestError. */
+export function uploadPhotoTo(url: string, photoId: string, blob: Blob, onProgress: (p: number) => void, timeoutMs = 120000): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `/systems/field-sales/visits/${visitId}/photos`);
+    xhr.open("POST", url);
     xhr.timeout = timeoutMs;
     xhr.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(e.loaded / e.total); };
     xhr.onload = async () => {
