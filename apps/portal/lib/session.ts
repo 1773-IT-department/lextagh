@@ -23,6 +23,11 @@ function tokenSubject(token: string): string | null {
  * the same time instead of after it. The profile read carries the same token, so the database checks it as well, and
  * its answer is used only when getClaims accepted that token and its subject is the id that was read. The role always
  * comes from the profiles table, never from the token.
+ *
+ * With asymmetric signing keys, revoked sessions and banned or deleted users are caught only by the middleware's
+ * getUser (getClaims trusts a validly signed token until it expires). So requireSession must never be reached on a
+ * path the middleware matcher in middleware.ts leaves out: if a page or route that uses it is ever excluded there,
+ * call getUser here instead.
  */
 export const requireSession = cache(async () => {
   const supabase = await createClient();
