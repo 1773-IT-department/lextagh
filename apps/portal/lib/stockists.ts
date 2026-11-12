@@ -34,20 +34,22 @@ export async function getStockistAccess(): Promise<StockistAccess> {
   if (!canView) return { ...base, canCreate: false, allBrands: [], myBrands: [], regions: [] };
 
   const supabase = await createClient();
-  const [brandsRes, regionsRes] = await Promise.all([
+  const linked = canCreate && role !== "admin";
+  // Brands, regions and this person's brand links in one round trip.
+  const [brandsRes, regionsRes, linksRes] = await Promise.all([
     supabase.from("brands").select("id, slug, name").eq("is_active", true).eq("is_corporate", false).order("name"),
     supabase.from("regions").select("id, slug, name, is_in_ghana").order("sort_order").order("name"),
+    linked ? supabase.from("profile_brands").select("brand_id").eq("profile_id", user.id) : Promise.resolve({ data: [], error: null }),
   ]);
   if (brandsRes.error) throw new Error("Could not load brands");
   if (regionsRes.error) throw new Error("Could not load regions");
+  if (linksRes.error) throw new Error("Could not load brand access");
   const allBrands = (brandsRes.data ?? []) as BrandOption[];
 
   let myBrands: BrandOption[] = [];
   if (role === "admin") myBrands = allBrands;
-  else if (canCreate) {
-    const { data: links, error } = await supabase.from("profile_brands").select("brand_id").eq("profile_id", user.id);
-    if (error) throw new Error("Could not load brand access");
-    const ids = new Set((links ?? []).map((l) => l.brand_id as string));
+  else if (linked) {
+    const ids = new Set(((linksRes.data ?? []) as { brand_id: string }[]).map((l) => l.brand_id));
     myBrands = allBrands.filter((b) => ids.has(b.id));
   }
   return { ...base, allBrands, myBrands, regions: (regionsRes.data ?? []) as StockistAccess["regions"] };
