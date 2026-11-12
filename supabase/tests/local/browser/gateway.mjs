@@ -4,9 +4,11 @@
 //
 //   /auth/v1    password sign in (every harness user's password is GATEWAY_PASSWORD, default "harness-password"),
 //               refresh, user and logout, with HS256 tokens signed by a secret made at start
-//   /rest/v1    a small PostgREST: select (columns, aliases, "rel(count)" embeds, "alias:table!fk(cols)" many to one embeds), filters (eq, neq, is, in, gt, gte,
-//               lt, lte, like, ilike, or), order, offset and limit, exact counts, single objects, insert, update,
-//               delete and rpc. Every statement runs through psql as anon or as the signed in person (role
+//   /rest/v1    a small PostgREST: select (columns, aliases, and embeds found through single column foreign keys:
+//               "target(cols)" and "alias:target(cols)" many to one as an object or one to many as an array, nested,
+//               "target(count)", "target!<fk name>(cols)" and "target!inner(cols)"), filters (eq, neq, is, in, gt, gte,
+//               lt, lte, like, ilike, or, and on an "!inner" embed's column such as "region.slug"), order, offset and
+//               limit, exact counts, single objects, insert, update, delete and rpc (JSON arrays become Postgres arrays). Every statement runs through psql as anon or as the signed in person (role
 //               authenticated, request.jwt.claim.sub set), so Row Level Security, grants and triggers decide as on
 //               Supabase. Enough for the portal screens, not a full PostgREST.
 //   /storage/v1 the Storage stand in of ../forms/rpc_shim.mjs (upload, signed links, remove), as the caller
@@ -99,44 +101,87 @@ function splitTop(s) {
 /** Embedded counts the portal uses: parent table and child table to the child's foreign key column. */
 const EMBED_FK = { "job_openings.job_applications": "opening_id" };
 
-function selectList(table, select) {
+// Single column foreign keys of the public schema, read once: { table, col, target, name }.
+let FKS = [];
+async function loadFks() {
+  const r = await psql(`select coalesce(json_agg(json_build_object('table', c.relname, 'col', a.attname, 'target', f.relname, 'name', k.conname)), '[]')
+    from pg_constraint k join pg_class c on c.oid = k.conrelid join pg_class f on f.oid = k.confrelid
+    join pg_namespace n on n.oid = c.relnamespace join pg_attribute a on a.attrelid = k.conrelid and a.attnum = k.conkey[1]
+    where k.contype = 'f' and n.nspname = 'public' and array_length(k.conkey, 1) = 1;`);
+  if (r.code !== 0 || !r.out) throw new Error(`gateway: could not read the foreign keys: ${r.err}`);
+  FKS = JSON.parse(r.out);
+}
+
+/**
+ * How an embed "target" hangs off "table": many to one (table.col points at target.id) or one to many (target.col
+ * points at table.id), like PostgREST's own lookup. A hint ("!<fk name>" or "!inner") picks or narrows it.
+ */
+function relation(table, target, hint) {
+  const named = hint && hint !== "inner" ? FKS.filter((f) => f.name === hint) : FKS;
+  const up = named.filter((f) => f.table === table && f.target === target);
+  if (up.length === 1) return { kind: "one", col: up[0].col };
+  const down = named.filter((f) => f.table === target && f.target === table);
+  if (down.length === 1) return { kind: "many", col: down[0].col };
+  const legacy = EMBED_FK[`${table}.${target}`];
+  if (legacy) return { kind: "many", col: legacy };
+  return null;
+}
+
+let aliasNo = 0;
+/**
+ * The select list for one table read as alias "a". Embeds (many to one as an object, one to many as an array or
+ * [{ count }]) nest as deep as asked. Each "!inner" embed and its name are noted in "embeds" so filters such as
+ * "region.slug=eq.x" and the inner join can be applied to the parent rows.
+ */
+function selectList(table, select, a = "t", embeds = null) {
   const cols = [];
   for (const raw of splitTop((select || "*").replace(/\s+/g, ""))) {
-    const m = /^(?:([a-z_]+):)?([a-z_*]+(?:![a-z_]+)?)(?:\((.*)\))?$/.exec(raw);
+    const m = /^(?:([a-z_]+):)?([a-z_*]+)(?:!([a-z_]+))?(?:\((.*)\))?$/.exec(raw);
     if (!m) throw Object.assign(new Error(`gateway: select ${raw}`), { status: 400 });
-    const [, alias, name, inner] = m;
-    // A many to one embed through a named foreign key, "alias:target!<table>_<column>_fkey(col, col)": the target
-    // row as an object (null when the link is empty or Row Level Security hides it), like PostgREST.
-    const fkEmbed = /^([a-z_]+)!([a-z_]+)_fkey$/.exec(name);
-    if (inner !== undefined && fkEmbed) {
-      const [, target, fk] = fkEmbed;
-      if (!fk.startsWith(`${table}_`)) throw Object.assign(new Error(`gateway: embed ${raw}`), { status: 400 });
-      const col = fk.slice(table.length + 1);
-      const innerCols = inner.split(",").map((c) => `e.${ident(c)}`).join(", ");
-      cols.push(`(select row_to_json(x) from (select ${innerCols} from public.${ident(target)} e where e.id = t.${ident(col)}) x) as ${ident(alias || target)}`);
+    const [, alias, name, hint, inner] = m;
+    if (inner === undefined) {
+      if (name === "*") cols.push(`${a}.*`);
+      else cols.push(`${a}.${ident(name)}${alias ? ` as ${ident(alias)}` : ""}`);
       continue;
     }
-    if (inner !== undefined) {
-      const fk = EMBED_FK[`${table}.${name}`];
-      if (!fk || inner !== "count") throw Object.assign(new Error(`gateway: embed ${raw}`), { status: 400 });
-      cols.push(`(select json_build_array(json_build_object('count', count(*))) from public.${ident(name)} e where e.${ident(fk)} = t.id) as ${ident(alias || name)}`);
-    } else if (name === "*") cols.push("t.*");
-    else cols.push(`t.${ident(name)}${alias ? ` as ${ident(alias)}` : ""}`);
+    const rel = relation(table, name, hint);
+    if (!rel) throw Object.assign(new Error(`gateway: embed ${raw}`), { status: 400 });
+    const e = `e${(aliasNo += 1)}`;
+    const join = rel.kind === "one" ? `${e}.id = ${a}.${ident(rel.col)}` : `${e}.${ident(rel.col)} = ${a}.id`;
+    const key = alias || name;
+    if (embeds) embeds[key] = { target: name, join, e, inner: hint === "inner" };
+    if (inner === "count" && rel.kind === "many") {
+      cols.push(`(select json_build_array(json_build_object('count', count(*))) from public.${ident(name)} ${e} where ${join}) as ${ident(key)}`);
+      continue;
+    }
+    const innerCols = selectList(name, inner, e);
+    // /*filters:eN*/ is replaced by the embed's own filters once the query string has been read (see embedFilters).
+    cols.push(rel.kind === "one"
+      ? `(select row_to_json(x) from (select ${innerCols} from public.${ident(name)} ${e} where ${join}/*filters:${e}*/) x) as ${ident(key)}`
+      : `(select coalesce(json_agg(x), '[]') from (select ${innerCols} from public.${ident(name)} ${e} where ${join}/*filters:${e}*/) x) as ${ident(key)}`);
   }
   return cols.join(", ");
 }
 
-function condition(col, expr) {
+function condition(col, expr, embeds = {}) {
   const m = /^(not\.)?(eq|neq|is|in|gt|gte|lt|lte|like|ilike)\.(.*)$/s.exec(expr);
   if (!m) throw Object.assign(new Error(`gateway: filter ${col}=${expr}`), { status: 400 });
   const [, not, op, val] = m;
-  const c = `t.${ident(col)}`;
+  // A filter on an embedded column ("region.slug"): the parent rows whose embedded row matches.
+  const dot = col.indexOf(".");
+  const emb = dot > 0 ? embeds[col.slice(0, dot)] : null;
+  if (dot > 0 && !emb) throw Object.assign(new Error(`gateway: filter ${col}`), { status: 400 });
+  // PostgREST filters the parent rows by an embedded column only for "!inner" embeds; anything else is not supported here.
+  if (emb && !emb.inner) throw Object.assign(new Error(`gateway: filter ${col} needs an !inner embed`), { status: 400 });
+  const c = emb ? `${emb.e}.${ident(col.slice(dot + 1))}` : `t.${ident(col)}`;
   let sql;
   if (op === "is") sql = `${c} is ${{ null: "null", true: "true", false: "false" }[val] ?? "null"}`;
   else if (op === "in") sql = `${c}::text in (${splitTop(val.replace(/^\(|\)$/g, "")).map((v) => lit(v.replace(/^"|"$/g, ""))).join(", ") || "null"})`;
   else if (op === "like" || op === "ilike") sql = `${c}::text ${op} ${lit(val.replace(/\*/g, "%"))}`;
   else sql = `${c} ${{ eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<", lte: "<=" }[op]} ${lit(val)}`;
-  return not ? `not (${sql})` : sql;
+  if (not) sql = `not (${sql})`;
+  if (emb) (emb.filters ??= []).push(sql);
+  return emb ? `exists (select 1 from public.${ident(emb.target)} ${emb.e} where ${emb.join} and ${sql})` : sql;
 }
 
 function orGroup(expr, joiner) {
@@ -148,12 +193,21 @@ function orGroup(expr, joiner) {
   }).join(` ${joiner} `)})`;
 }
 
-function whereOf(params) {
+/** An "!inner" embed filtered on its own column keeps only the matching embedded rows too, like PostgREST. */
+function embedFilters(cols, embeds) {
+  let out = cols;
+  for (const emb of Object.values(embeds)) out = out.replace(`/*filters:${emb.e}*/`, (emb.filters ?? []).map((f) => ` and ${f}`).join(""));
+  return out.replace(/\/\*filters:e\d+\*\//g, "");
+}
+
+function whereOf(params, embeds = {}) {
   const parts = [];
+  // "!inner" embeds keep only the parent rows that have one.
+  for (const emb of Object.values(embeds)) if (emb.inner) parts.push(`exists (select 1 from public.${ident(emb.target)} ${emb.e} where ${emb.join})`);
   for (const [k, v] of params) {
     if (["select", "order", "offset", "limit", "columns", "on_conflict"].includes(k)) continue;
     if (k === "or" || k === "and") parts.push(orGroup(v.replace(/^\(|\)$/g, ""), k));
-    else parts.push(condition(k, v));
+    else parts.push(condition(k, v, embeds));
   }
   return parts.length ? `where ${parts.join(" and ")}` : "";
 }
@@ -198,7 +252,12 @@ async function answerRest(req, url, body, send, who) {
     const info = await procInfo(name);
     if (!info) return send(404, { code: "PGRST202", message: "function not found" });
     const args = info.args.filter((a) => body && a.name in body)
-      .map((a) => `${ident(a.name)} => ${body[a.name] === null ? "null" : lit(typeof body[a.name] === "object" ? JSON.stringify(body[a.name]) : body[a.name])}::${a.type}`);
+      .map((a) => {
+        const v = body[a.name];
+        // A JSON array for an array argument (uuid[], text[]) becomes a Postgres array, as PostgREST does.
+        if (Array.isArray(v) && a.type.endsWith("[]")) return `${ident(a.name)} => array[${v.map((x) => (x === null ? "null" : lit(typeof x === "object" ? JSON.stringify(x) : x))).join(", ")}]::${a.type}`;
+        return `${ident(a.name)} => ${v === null ? "null" : lit(typeof v === "object" ? JSON.stringify(v) : v)}::${a.type}`;
+      });
     const call = `public.${ident(name)}(${args.join(", ")})`;
     const sql = info.set ? `select coalesce(json_agg(t), '[]') from ${call} t;`
       : info.void ? `select ${call} \\g /dev/null\nselect 'null';` : `select coalesce(to_json(${call}), 'null'::json);`;
@@ -207,8 +266,10 @@ async function answerRest(req, url, body, send, who) {
   }
 
   const table = `public.${ident(name)}`;
-  const where = whereOf(params);
-  const cols = selectList(name, params.get("select"));
+  const embeds = {};
+  const selected = selectList(name, params.get("select"), "t", embeds);
+  const where = whereOf(params, embeds);
+  const cols = embedFilters(selected, embeds);
   let sql;
   let countSql = null;
   if (req.method === "GET" || req.method === "HEAD") {
@@ -281,4 +342,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 const port = Number(process.argv[2] ?? 54401);
+await loadFks();
 server.listen(port, "127.0.0.1", () => console.log(`gateway listening on http://127.0.0.1:${port}`));
