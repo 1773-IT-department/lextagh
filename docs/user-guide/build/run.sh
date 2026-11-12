@@ -10,6 +10,7 @@
 #      bash docs/user-guide/build/run.sh
 # 3. Make the Word document:
 #      python3 docs/user-guide/build/make_docx.py
+# The short videos (docs/user-guide/videos) are recorded separately, with both apps built: see record.sh.
 # The filter below matches no SQL test file, so only the screenshot script runs once the database is up.
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
