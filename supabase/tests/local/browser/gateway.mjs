@@ -3,7 +3,7 @@
 //   node supabase/tests/local/browser/gateway.mjs <port>
 //
 //   /auth/v1    password sign in (every harness user's password is GATEWAY_PASSWORD, default "harness-password"),
-//               refresh, user and logout, with HS256 tokens signed by a secret made at start
+//               refresh, user and logout, with HS256 tokens signed by a secret made at start (or ES256, see Tokens)
 //   /rest/v1    a small PostgREST: select (columns, aliases, and embeds found through single column foreign keys:
 //               "target(cols)" and "alias:target(cols)" many to one as an object or one to many as an array, nested,
 //               "target(count)", "target!<fk name>(cols)" and "target!inner(cols)"), filters (eq, neq, is, in, gt, gte,
@@ -12,7 +12,8 @@
 //               authenticated, request.jwt.claim.sub set), so Row Level Security, grants and triggers decide as on
 //               Supabase. Enough for the portal screens, not a full PostgREST.
 //   /storage/v1 the Storage stand in of ../forms/rpc_shim.mjs (upload, signed links, remove), as the caller
-import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import { createHmac, createSign, createVerify, generateKeyPairSync, randomUUID, timingSafeEqual } from "node:crypto";
+import { appendFileSync } from "node:fs";
 import http from "node:http";
 import { answerStorage, callerOf, psql } from "../forms/rpc_shim.mjs";
 
@@ -26,18 +27,32 @@ const CORS = {
 };
 
 // Tokens ------------------------------------------------------------------------------------------------
+// HS256 by default. GATEWAY_JWT_ALG=ES256 signs with an asymmetric key instead (with a kid, public key served at
+// /auth/v1/.well-known/jwks.json), like a project on Supabase's asymmetric signing keys, where getClaims checks a token
+// without calling Auth.
+const ES256 = process.env.GATEWAY_JWT_ALG === "ES256";
+const KID = randomUUID();
+const EC = ES256 ? generateKeyPairSync("ec", { namedCurve: "P-256" }) : null;
+const JWKS = EC ? { keys: [{ ...EC.publicKey.export({ format: "jwk" }), kid: KID, alg: "ES256", use: "sig", key_ops: ["verify"] }] } : { keys: [] };
 const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
 function sign(claims) {
-  const head = b64({ alg: "HS256", typ: "JWT" });
+  const head = b64(ES256 ? { alg: "ES256", typ: "JWT", kid: KID } : { alg: "HS256", typ: "JWT" });
   const body = b64(claims);
-  return `${head}.${body}.${createHmac("sha256", SECRET).update(`${head}.${body}`).digest("base64url")}`;
+  const sig = ES256
+    ? createSign("SHA256").update(`${head}.${body}`).sign({ key: EC.privateKey, dsaEncoding: "ieee-p1363" }).toString("base64url")
+    : createHmac("sha256", SECRET).update(`${head}.${body}`).digest("base64url");
+  return `${head}.${body}.${sig}`;
 }
 function verify(token) {
   const [h, b, s] = token.split(".");
   if (!h || !b || !s) return false;
-  const want = createHmac("sha256", SECRET).update(`${h}.${b}`).digest();
   const got = Buffer.from(s, "base64url");
-  if (want.length !== got.length || !timingSafeEqual(want, got)) return false;
+  if (ES256) {
+    if (!createVerify("SHA256").update(`${h}.${b}`).verify({ key: EC.publicKey, dsaEncoding: "ieee-p1363" }, got)) return false;
+  } else {
+    const want = createHmac("sha256", SECRET).update(`${h}.${b}`).digest();
+    if (want.length !== got.length || !timingSafeEqual(want, got)) return false;
+  }
   const claims = JSON.parse(Buffer.from(b, "base64url").toString());
   return claims.exp > Date.now() / 1000;
 }
@@ -80,6 +95,7 @@ async function answerAuth(req, url, body, send) {
     return user ? send(200, user) : send(403, { code: 403, error_code: "user_not_found", msg: "User not found" });
   }
   if (url.pathname === "/auth/v1/logout") return send(204, "");
+  if (req.method === "GET" && url.pathname === "/auth/v1/.well-known/jwks.json") return send(200, JWKS);
   return send(404, { msg: "gateway: unknown auth call" });
 }
 
@@ -317,6 +333,10 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(status, { "content-type": "application/json", ...CORS, ...headers });
     res.end(status === 204 || payload === "" ? undefined : Buffer.isBuffer(payload) ? payload : JSON.stringify(payload));
   };
+  // GATEWAY_LOG=<file> writes one line per request (method and path), to count Supabase calls per portal screen.
+  // GATEWAY_DELAY_MS=<ms> holds every answer that long, to stand in for the distance to the real project.
+  if (process.env.GATEWAY_LOG) appendFileSync(process.env.GATEWAY_LOG, `${req.method} ${(req.url ?? "").split("?")[0]}\n`);
+  if (Number(process.env.GATEWAY_DELAY_MS) > 0) await new Promise((r) => setTimeout(r, Number(process.env.GATEWAY_DELAY_MS)));
   try {
     if (req.method === "OPTIONS") return send(204, "");
     const url = new URL(req.url ?? "/", "http://gateway");
