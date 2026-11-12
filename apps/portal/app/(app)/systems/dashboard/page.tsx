@@ -102,7 +102,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <Link key={p.value} className="btn small light" href={dashboardHref({ range: p.value, brand: f.brand })} aria-current={f.range === p.value ? "page" : undefined}>{p.label}</Link>
         ))}
       </nav>
-      <form className="filters dash-filters" method="get" role="search" aria-label="Dashboard filters">
+      {/* Keyed on the filters: the inputs are uncontrolled (defaultValue), so without a new key a client side change of
+          address (Clear, a preset) would leave the old brand and dates showing. */}
+      <form key={`${f.from}|${f.to}|${f.brand}`} className="filters dash-filters" method="get" role="search" aria-label="Dashboard filters">
         <div className="field">
           <label htmlFor="from">From</label>
           <input id="from" name="from" type="date" defaultValue={f.from} required />
