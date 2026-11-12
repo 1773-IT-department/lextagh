@@ -211,7 +211,7 @@ export default async function ComplaintsPage({ searchParams }: { searchParams: P
             {filtered
               ? "Try another search or clear the filters."
               : access.works
-                ? "Log one with Log a complaint. Website complaints will also land here once the website form is connected."
+                ? "Log one with Log a complaint. Website complaints land here automatically."
                 : "Nothing to follow up for your brands right now."}
           </span>
         </div>
