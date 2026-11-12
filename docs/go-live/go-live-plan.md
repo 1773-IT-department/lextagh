@@ -43,12 +43,13 @@ Upgrade "Lexta Gh" (ref `euqirakpychkhpwoszos`, eu-west-1) to Pro (itinerary 21)
 
 | Setting | Value at launch |
 |---|---|
-| Site URL | `https://portal.lextagh.com` (or the chosen portal address). The invite and reset email templates build their links from it. |
+| Site URL | `https://portal.lextagh.com` (or the chosen portal address), but **only on launch day**, in section 3.5, after `portal.lextagh.com` shows Valid Configuration in Vercel. Until then keep the current preview Site URL: the invite and reset emails build their links from `{{ .SiteURL }}`, so changing it earlier sends every link to an address that does not work yet. |
 | Redirect URLs | Add `https://portal.lextagh.com/**`. Keep the lexta-portal preview pattern so previews keep working `[TO CONFIRM: the exact preview entries already listed]`. |
 | Allow new users to sign up | Off. Logins are invite only (migration 0001). `[TO CONFIRM: already off]` |
 | Leaked password protection | On. It needs the Pro plan, so do it after 2.2. |
 | Minimum password length | 10, to match the portal's own rule on Set password. |
-| Email templates | Invite: link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/set-password`. Reset password: the same with `type=recovery`. This is what `apps/portal/app/auth/confirm/route.ts` expects. Lexta wording and logo `[TO CONFIRM: template text agreed]`. |
+| Email templates | Invite: link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=invite&next=/set-password`. Reset password: the same with `type=recovery`. This is what `apps/portal/app/auth/confirm/route.ts` expects. Optional: the reset template can link to `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=recovery` instead. The portal asks for the reset with its own address plus `/auth/confirm?next=/set-password`, so a reset asked for on a preview stays on that preview and one asked for on the live portal stays live. This needs the preview entries kept in Redirect URLs, or Supabase falls back to the Site URL. Lexta wording and logo `[TO CONFIRM: template text agreed]`. |
+| JWT Signing Keys | Check which key signs the tokens (Project Settings, JWT Keys) and consider moving to asymmetric keys (the recommended ECC key, through a standby key, then rotate). With an asymmetric key the portal checks each session token itself with `getClaims`, which saves one call to Supabase Auth on every page. Existing sessions keep working through the rotation. `[TO CONFIRM: Desmond agrees; current key type]` |
 | Custom SMTP | Required. Supabase's built in sender only delivers to members of the Supabase organisation and only a few emails an hour, so staff would not get invites or resets without it. Use the provider and from address chosen in section 1. The provider will ask for SPF and DKIM records on lextagh.com (section 3.4). |
 | Email rate limit | Raise from the default once custom SMTP is on, enough for inviting the whole staff list in one sitting. |
 
@@ -157,7 +158,7 @@ Take care:
 
 ### 3.5 Supabase Auth URLs
 
-On the day, after `portal.lextagh.com` works: confirm the Site URL and the redirect URL from 2.3 are in, then test a password reset end to end before inviting staff.
+On the day, and not before: once `portal.lextagh.com` shows Valid Configuration with a certificate in Vercel, change the Site URL from the preview address to `https://portal.lextagh.com` and confirm the redirect URL from 2.3 is in. Then test a password reset end to end before inviting staff. Until this step the Site URL stays on the preview, so invite and reset links keep working.
 
 ### 3.6 Redirects from old addresses
 
@@ -216,8 +217,8 @@ T is launch day. Dates follow once Desmond sets T.
 |---|---|---|
 | Now | Agree this plan and the decisions in section 1 | Desmond |
 | T-14 | Send content, photos, chat hours, stockist list, staff list, old URL list | Lexta |
-| T-14 | Supabase Pro, advisors, leaked password protection | Desmond |
-| T-10 | Choose email provider; set custom SMTP and templates; add SPF and DKIM | Desmond (Lexta for DNS access) |
+| T-14 | Supabase Pro, advisors, leaked password protection; check JWT Signing Keys (2.3) | Desmond |
+| T-10 | Choose email provider; set custom SMTP and templates; add SPF and DKIM. Leave the Site URL on the preview: it changes on launch day (3.5) | Desmond (Lexta for DNS access) |
 | T-10 | Put in content and old URL redirects; region move to dub1 merged | Build team |
 | T-7 | Generate and set the three secrets (Vercel and database) | Desmond |
 | T-7 | Check live database for test data and clean up | Desmond, build team prepares the queries |
