@@ -151,7 +151,7 @@ insert into public.complaint_events (complaint_id, type, body, occurred_at, crea
 insert into public.field_visits (id, rep_id, stockist_id, new_shop, shop_name, region_id, town, brand_ids, visited_at, location_status, latitude, longitude, accuracy_m, outcome_id, notes) values
   (gen_random_uuid(), '${U.rep}', '00000000-0000-0000-0000-00000000b002', false, 'Demo Pharmacy Osu', ${region("greater-accra")}, 'Osu', array[${brand("yazz")}],
     ${today(90)}, 'captured', 5.556100, -0.182100, 14, ${outcome("follow_up")}, 'Pharmacist wants posters for the counter.'),
-  (gen_random_uuid(), '${U.rep}', '00000000-0000-0000-0000-00000000b005', true, 'Demo Provisions Madina', ${region("greater-accra")}, 'Madina', array[${brand("yazz")}],
+  ('00000000-0000-0000-0000-00000000bb05', '${U.rep}', '00000000-0000-0000-0000-00000000b005', true, 'Demo Provisions Madina', ${region("greater-accra")}, 'Madina', array[${brand("yazz")}],
     now() - interval '1 day', 'captured', 5.668000, -0.166000, 20, ${outcome("order_taken")}, null),
   (gen_random_uuid(), '${U.rep}', '00000000-0000-0000-0000-00000000b004', false, 'Demo Supermarket Tema', ${region("greater-accra")}, 'Tema', array[${brand("yazz")}],
     now() - interval '2 days', 'denied', null, null, null, ${outcome("no_order")}, null),
@@ -159,6 +159,9 @@ insert into public.field_visits (id, rep_id, stockist_id, new_shop, shop_name, r
     now() - interval '1 day', 'captured', 6.697200, -1.620300, 9, ${outcome("order_taken")}, 'Took an order for 6 cartons.'),
   (gen_random_uuid(), '${U.rep2}', '00000000-0000-0000-0000-00000000b004', false, 'Demo Supermarket Tema', ${region("greater-accra")}, 'Tema', array[${brand("hooch")}],
     now() - interval '3 days', 'captured', 5.669100, -0.016200, 30, ${outcome("shop_closed")}, null);
+
+insert into public.field_new_shops (stockist_id, visit_id, created_by, created_at) values
+  ('00000000-0000-0000-0000-00000000b005', '00000000-0000-0000-0000-00000000bb05', '${U.rep}', now() - interval '1 day');
 
 insert into public.csr_activities (programme_id, activity_date, status, region_id, place, people_reached, partners, notes, created_at, created_by) values
   (${programme("The Dignity Project")}, current_date - 20, 'done', ${region("volta")}, 'Demo Girls SHS, Ho', 320, 'Ghana Education Service (demo)', 'Talk on menstrual health and free packs for every girl.', now() - interval '19 days', '${U.marketing}'),
@@ -399,7 +402,10 @@ try {
   await shot(mkt, "60-products");
   const toothpaste = (await q(`select id from public.products where slug = 'toothpaste'`)).trim();
   await go(mkt, `/systems/products/${toothpaste}`);
-  await shot(mkt, "61-product-edit", { full: true, maxHeight: 1600 });
+  // Above the sticky Save bar, so it covers nothing.
+  await mkt.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+  await mkt.screenshot({ path: path.join(OUT, "61-product-edit.png"), clip: { x: 0, y: 0, width: 1280, height: 715 } });
+  shots.push("61-product-edit");
 
   // 8. Stockists ------------------------------------------------------------------------------------------------------------
   await go(mkt, "/systems/stockists");

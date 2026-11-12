@@ -315,7 +315,7 @@ Managers can also log visits with **Log a visit**. Admin can change the outcome 
 
 **No shops are listed.** You are not linked to a brand yet, or no shops of your brands are listed. Ask your admin to add your brands; add the shop as a new shop.
 
-**I picked the wrong shop.** Before saving, tap **Change shop**. After saving, ask your admin.
+**I picked the wrong shop.** Before saving, tap **Change shop**. The shop of a saved visit cannot be changed: ask your admin to delete the visit, then log it again.
 
 ---
 
@@ -392,7 +392,7 @@ A sales rep or marketer can only manage a brand they work on. If nobody is chose
 
 ### Common questions
 
-**I cannot change the brand of a lead.** Sales reps and marketing must own the lead first: tap **Assign to me**.
+**I cannot change the brand of a lead.** Sales reps and marketing must own the lead first: tap **Assign to me**. This only works on a lead nobody owns; if a colleague owns it, ask them or a manager.
 
 **I cannot see a lead a colleague mentioned.** It is for a brand you do not work on. Ask its owner or a manager.
 
@@ -461,7 +461,7 @@ You can also close straight away; closing needs **How it was resolved**.
 
 **Who can use it:** admin and marketing (change); management (read only).
 
-**What it is for:** one place for every product, its pack sizes (SKUs) and images. Edit a product once and the websites show the change.
+**What it is for:** one place for every product, its pack sizes (SKUs) and images. Edit a product once and the Lexta website shows the change (the brand sites will too, once they are built).
 
 ![The product list](images/60-products.png)
 
@@ -539,7 +539,7 @@ Rules for the file: outlet_type is supermarket, pharmacy, open market, general t
 1. Open the stockist.
 2. Tap **Deactivate** to take it off Where to Buy (it stays in the system), or **Reactivate** to show it again.
 
-New shops added by sales reps in Field sales start deactivated. Filter **Status: Deactivated** to find them, check them, then tap **Reactivate**.
+New shops added by sales reps in Field sales start deactivated. Filter **Status: Deactivated** to find them, check them, then tap **Reactivate**. Only admin or marketing can switch these new shops on.
 
 ### Good to know
 
