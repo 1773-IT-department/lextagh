@@ -144,6 +144,7 @@ async function checkPage(sess, base, url, kind, label, { as = "" } = {}) {
   if (info.evalError) rec.problems.push(`eval: ${info.evalError}`);
   if (info.scrollWidth > info.innerWidth) rec.problems.push(`horizontal scroll ${info.scrollWidth} > ${info.innerWidth}: ${info.wide?.join(", ")}`);
   if (info.errorBoundary) rec.problems.push(`error text: ${info.errorBoundary}`);
+  if (info.dashes?.length) rec.problems.push(`em dash, en dash or spaced hyphen in the copy: ${info.dashes.join(" / ")}`);
   if (info.noAlt?.length) rec.problems.push(`img without alt: ${info.noAlt.join(", ")}`);
   const errs = drain();
   rec.problems.push(...errs);
@@ -191,6 +192,7 @@ try {
       }
       void rec;
     }
+    if (kind === "phone") flow("site", "the News page links to its articles", newsSlugs.length > 0, String(newsSlugs.length));
     for (const s of newsSlugs) await checkPage(sess, SITE, s, kind, s);
     // Old .html bookmarks redirect.
     const r = await page.goto(`${SITE}/about-us.html`);
@@ -235,7 +237,9 @@ try {
       await btn.click();
       await sleep(2500);
       const txt = (await finder.innerText().catch(() => "")) || "";
-      flow("site", `${kind}: Where to Buy search on home shows results`, /Demo/.test(txt) || /no shop|not found|none/i.test(txt), txt.slice(0, 300));
+      // Greater Accra has three active demo shops; Demo Provisions Madina is inactive and must not show.
+      const shown = ["Demo Shop Adabraka", "Demo Pharmacy Osu", "Demo Supermarket Tema"].every((n) => txt.includes(n)) && !txt.includes("Demo Provisions Madina");
+      flow("site", `${kind}: Where to Buy on home lists the 3 active Greater Accra demo shops`, shown, txt.slice(0, 300));
       const errs = drain();
       if (errs.length) flow("site", `${kind}: Where to Buy no console errors`, false, errs.join(" | "));
       if (!/Demo/.test(txt)) await page.screenshot({ path: `${SHOTS}/site-${kind}-where-to-buy.png` });
@@ -299,7 +303,7 @@ try {
     await nf.locator("button[type=submit]").click();
     await nf.locator("[data-form-message]").first().waitFor({ timeout: 20000 }).catch(() => {});
     const nm = await nf.locator("[data-form-message]").first().innerText().catch(() => "");
-    flow("site-forms", "desktop: home newsletter sign up thanks the visitor", nm.length > 0 && !/wrong|could not/i.test(nm), nm);
+    flow("site-forms", "desktop: home newsletter sign up thanks the visitor with an NWS reference", /NWS-/.test(nm), nm);
     const e = drain(); if (e.length) flow("site-forms", "partner/newsletter no console errors", false, e.join(" | "));
     await ctx.close();
   }
@@ -315,7 +319,7 @@ try {
     await nf.locator("button[type=submit]").click();
     await nf.locator("[data-form-message]").first().waitFor({ timeout: 20000 }).catch(() => {});
     const nm = await nf.locator("[data-form-message]").first().innerText().catch(() => "");
-    flow("site-forms", "phone: news page newsletter sign up thanks the visitor", nm.length > 0 && !/wrong|could not/i.test(nm), nm);
+    flow("site-forms", "phone: news page newsletter sign up thanks the visitor with an NWS reference", /NWS-/.test(nm), nm);
     const e = drain(); if (e.length) flow("site-forms", "news newsletter no console errors", false, e.join(" | "));
     await ctx.close();
   }
@@ -461,7 +465,7 @@ try {
     const nav = await s.page.evaluate(() => [...document.querySelectorAll("aside a")].map((a) => new URL(a.href).pathname));
     const expected = Object.entries(SYS).filter(([, r]) => r.includes(role)).map(([k]) => `/systems/${k}`);
     const navSystems = nav.filter((n) => n.startsWith("/systems/"));
-    const menuOk = role === "distributor" ? navSystems.every((n) => n.startsWith("/systems/orders")) : expected.every((e) => navSystems.includes(e)) && navSystems.every((n) => expected.includes(n));
+    const menuOk = role === "distributor" ? navSystems.includes("/systems/orders") && navSystems.every((n) => n.startsWith("/systems/orders")) : expected.every((e) => navSystems.includes(e)) && navSystems.every((n) => expected.includes(n));
     const tiles = await s.page.evaluate(() => [...document.querySelectorAll("main a")].map((a) => new URL(a.href).pathname).filter((p) => p.startsWith("/systems/")));
     const tilesOk = role === "distributor" ? true : tiles.every((t) => expected.some((e) => t.startsWith(e)));
     const refused = [];
@@ -683,14 +687,14 @@ try {
   {
     await admin.page.goto(`${PORTAL}/systems/crm/leads`);
     let t = await admin.page.locator("main").innerText();
-    flow("site-forms", "contact and partner forms reach the CRM leads list", t.includes(`QA Contact ${ts}`) || t.includes("QA test") || t.includes(`QA Traders ${ts}`), t.slice(0, 400));
-    flow("site-forms", "partner form lead appears in the CRM leads list", t.includes(`QA Traders ${ts}`) || /Become a .*partner|QA Partner/i.test(t), "");
+    flow("site-forms", "contact form lead appears in the CRM leads list", t.includes(`QA Contact ${ts}`), t.slice(0, 400));
+    flow("site-forms", "partner form lead appears in the CRM leads list", t.includes(`QA Traders ${ts}`), t.slice(0, 400));
     await admin.page.goto(`${PORTAL}/systems/complaints`);
     t = await admin.page.locator("main").innerText();
-    flow("site-forms", "consumer care complaint reaches the Complaints list", t.includes(`QA Complaint ${ts}`) || /torn pack/i.test(t), t.slice(0, 300));
+    flow("site-forms", "consumer care complaint reaches the Complaints list", t.includes(`QA Complaint ${ts}`), t.slice(0, 300));
     await admin.page.goto(`${PORTAL}/systems/crm/contacts`);
     t = await admin.page.locator("main").innerText();
-    flow("site-forms", "newsletter sign up reaches the CRM contacts list", t.includes(`qa.news.${ts}@example.com`) || t.includes(`qa.news2.${ts}`), t.slice(0, 300));
+    flow("site-forms", "newsletter sign up reaches the CRM contacts list", t.includes(`qa.news.${ts}@example.com`) && t.includes(`qa.news2.${ts}@example.com`), t.slice(0, 300));
     await admin.page.goto(`${PORTAL}/systems/chat?status=all`);
     t = await admin.page.locator("main").innerText();
     flow("site-forms", "website chat reaches the Live chat inbox", t.includes(`QA Visitor ${ts}`));
