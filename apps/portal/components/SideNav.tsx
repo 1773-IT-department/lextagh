@@ -1,7 +1,18 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
+
+/** The label of a menu link, marked while the page it opens is loading (the click answers at once). */
+function NavLabel({ label }: { label: string }) {
+  const { pending } = useLinkStatus();
+  return (
+    <>
+      {label}
+      <span className={`nav-pending${pending ? " on" : ""}`} aria-hidden="true" />
+    </>
+  );
+}
 
 export default function SideNav({ items }: { items: { href: string; label: string }[] }) {
   const pathname = usePathname();
@@ -11,7 +22,7 @@ export default function SideNav({ items }: { items: { href: string; label: strin
   return (
     <nav aria-label="Systems">
       {items.map((i) => (
-        <Link key={i.href} href={i.href} aria-current={i.href === current ? "page" : undefined}>{i.label}</Link>
+        <Link key={i.href} href={i.href} aria-current={i.href === current ? "page" : undefined}><NavLabel label={i.label} /></Link>
       ))}
     </nav>
   );

@@ -627,3 +627,18 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .dash-presets .btn { flex: 1 1 0; }
   .dash-bars li { grid-template-columns: minmax(0, 8em) minmax(0, 1fr) auto; }
 }
+
+/* Page change feedback (components/NavProgress.tsx and SideNav.tsx): a thin bar along the top and a dot on the menu
+   link that was clicked, shown from the click until the new page arrives. */
+.nav-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1000; pointer-events: none; opacity: 0; transition: opacity .2s; }
+.nav-progress span { display: block; height: 100%; width: 0; background: var(--teal); box-shadow: 0 0 6px rgba(18,163,196,.6); }
+.nav-progress.on { opacity: 1; transition: none; }
+.nav-progress.on span { animation: nav-progress 8s cubic-bezier(.1, .7, .2, 1) forwards; }
+@keyframes nav-progress { 0% { width: 0; } 10% { width: 35%; } 100% { width: 92%; } }
+.nav-pending { display: none; }
+.nav-pending.on { display: inline-block; width: 7px; height: 7px; margin-left: 8px; vertical-align: middle; border-radius: 50%; background: var(--teal); animation: nav-pulse 1s ease-in-out infinite alternate; }
+@keyframes nav-pulse { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress.on span { animation: none; width: 100%; opacity: .8; }
+  .nav-pending.on { animation: none; }
+}
