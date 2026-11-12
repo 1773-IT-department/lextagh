@@ -63,12 +63,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   }
 
   const supabase = await createClient();
-  const brandsRes = await supabase.from("brands").select("id, name, is_active, is_corporate")
-    .order("name");
+  // The brand list and the numbers in one round trip: the numbers are asked for with the brand from the address, and
+  // asked again for every brand only in the rare case that brand turns out not to be in the list.
+  const loadNumbers = (brand: string, from: string, to: string) => supabase.rpc("management_dashboard", { p_from: from, p_to: to, p_brand: brand || null });
+  const guess = parseDashboardFilters(params, params.brand ? [params.brand] : []);
+  const [brandsRes, first] = await Promise.all([
+    supabase.from("brands").select("id, name, is_active, is_corporate").order("name"),
+    loadNumbers(guess.brand, guess.from, guess.to),
+  ]);
   // Product brands only: the corporate Lexta brand is left out of the filter (every brand still counts it).
   const brands = ((brandsRes.data ?? []) as { id: string; name: string; is_active: boolean; is_corporate: boolean }[]).filter((b) => !b.is_corporate);
   const f = parseDashboardFilters(params, brands.map((b) => b.id));
-  const res = await supabase.rpc("management_dashboard", { p_from: f.from, p_to: f.to, p_brand: f.brand || null });
+  const res = f.brand === guess.brand && f.from === guess.from && f.to === guess.to ? first : await loadNumbers(f.brand, f.from, f.to);
   if (res.error) console.error("[dashboard] load failed", res.error);
   const d = res.error ? null : (res.data as Dashboard);
   const brandName = f.brand ? brands.find((b) => b.id === f.brand)?.name ?? "" : "";
@@ -96,7 +102,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <Link key={p.value} className="btn small light" href={dashboardHref({ range: p.value, brand: f.brand })} aria-current={f.range === p.value ? "page" : undefined}>{p.label}</Link>
         ))}
       </nav>
-      <form className="filters dash-filters" method="get" role="search" aria-label="Dashboard filters">
+      {/* Keyed on the filters: the inputs are uncontrolled (defaultValue), so without a new key a client side change of
+          address (Clear, a preset) would leave the old brand and dates showing. */}
+      <form key={`${f.from}|${f.to}|${f.brand}`} className="filters dash-filters" method="get" role="search" aria-label="Dashboard filters">
         <div className="field">
           <label htmlFor="from">From</label>
           <input id="from" name="from" type="date" defaultValue={f.from} required />

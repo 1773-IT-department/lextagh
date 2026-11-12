@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
+import NavProgress from "@/components/NavProgress";
 import "./globals.css";
 
 export const metadata: Metadata = { title: "Lexta Business System", robots: { index: false, follow: false } };
@@ -13,7 +14,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       </head>
-      <body>{children}</body>
+      <body>
+        {/* Suspense: the bar reads the address (useSearchParams), which must not hold back a static page. */}
+        <Suspense fallback={null}><NavProgress /></Suspense>
+        {children}
+      </body>
     </html>
   );
 }

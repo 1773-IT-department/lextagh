@@ -176,10 +176,24 @@ try {
   check((await mgr.locator('section[aria-labelledby="dash_field"] .dash-stat', { hasText: "New shops to confirm" }).getAttribute("href") ?? "").includes("brand="),
     "1440: the shops to confirm link keeps the brand");
 
+  // Clear is a client side link: the form must reset with the address, not keep the brand and dates it had.
+  const defaultTo = new Date().toISOString().slice(0, 10);
+  const defaultFrom = new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10);
+  await mgr.getByRole("link", { name: "Clear" }).click();
+  await mgr.waitForURL((u) => u.pathname === "/systems/dashboard" && !u.search);
+  await mgr.waitForFunction(() => !document.querySelector(".nav-progress.on"));
+  const cleared = { brand: await mgr.locator("#brand").inputValue(), from: await mgr.locator("#from").inputValue(), to: await mgr.locator("#to").inputValue() };
+  check(cleared.brand === "" && cleared.from === defaultFrom && cleared.to === defaultTo, "1440: Clear resets the brand and dates in the form", cleared);
+
   const day = new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10);
   await go(mgr, `${PORTAL}/systems/dashboard?from=${day}&to=${day}`);
   check(await stat(mgr, "crm", "New in period") === "1", "1440: a custom one day range");
   check(await mgr.getByLabel("From").inputValue() === day, "1440: the custom range stays in the form");
+  await mgr.getByRole("link", { name: "Clear" }).click();
+  await mgr.waitForURL((u) => u.pathname === "/systems/dashboard" && !u.search);
+  await mgr.waitForFunction(() => !document.querySelector(".nav-progress.on"));
+  check(await mgr.locator("#from").inputValue() === new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10)
+    && await mgr.locator("#to").inputValue() === new Date().toISOString().slice(0, 10), "1440: Clear after a custom range resets the dates in the form");
 
   await go(mgr, `${PORTAL}/systems/dashboard`);
   await mgr.getByRole("link", { name: "Overdue now" }).click();
