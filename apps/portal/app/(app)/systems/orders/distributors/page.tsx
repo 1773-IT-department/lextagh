@@ -9,7 +9,7 @@ export const metadata = { title: "Distributor logins | Lexta Business System" };
 
 /**
  * Staff: link each distributor login to the CRM organisation it orders for. Logins are invited with the distributor
- * role under Users and access; the organisation and the brands it carries come from the CRM.
+ * role by an admin; the organisation and the brands it carries come from the CRM.
  */
 export default async function DistributorLoginsPage() {
   const access = await getOrdersAccess();
@@ -35,13 +35,13 @@ export default async function DistributorLoginsPage() {
           <h1>Distributor logins</h1>
           <p className="small">
             Link each distributor login to its organisation in the CRM. The distributor then orders the brands that organisation carries
-            and sees only that organisation&apos;s orders. Invite new distributor logins under Users and access with the Distributor role.
+            and sees only that organisation&apos;s orders. Ask your admin to invite new distributor logins with the Distributor role.
           </p>
         </div>
       </div>
       <OrderTabs active="distributors" />
       {logins.length === 0 ? (
-        <div className="tile empty"><b>No distributor logins yet</b><span>Invite a distributor under Users and access with the Distributor role, then link them here.</span></div>
+        <div className="tile empty"><b>No distributor logins yet</b><span>Ask your admin to invite new distributor logins with the Distributor role, then link them here.</span></div>
       ) : (
         <ul className="login-list">
           {logins.map((l) => (

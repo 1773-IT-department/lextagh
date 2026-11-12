@@ -182,7 +182,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
           <span>
             {filtered
               ? "Try another search or clear the filters."
-              : "Add one with New lead. Website enquiries will also land here once the website forms are connected."}
+              : "Add one with New lead. Website enquiries land here automatically."}
           </span>
         </div>
       ) : (

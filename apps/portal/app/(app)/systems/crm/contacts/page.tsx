@@ -95,7 +95,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
       ) : rows.length === 0 ? (
         <div className="tile empty">
           <b>{filtered ? "No contacts match" : "No contacts yet"}</b>
-          <span>{filtered ? "Try another search or clear the filters." : "Add one with New contact. Website enquiries and newsletter sign ups will also appear here once the forms are connected."}</span>
+          <span>{filtered ? "Try another search or clear the filters." : "Add one with New contact. Website enquiries and newsletter sign ups land here automatically."}</span>
         </div>
       ) : (
         <>
