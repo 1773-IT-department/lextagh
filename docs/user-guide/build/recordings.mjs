@@ -42,6 +42,12 @@ const HAS_FFMPEG = spawnSync("ffmpeg", ["-version"]).status === 0;
 const { q, PHOTO_SECRET } = await import(`${ROOT}/supabase/tests/local/browser/demo-seed.mjs`);
 const CHAT_SECRET = "guide-video-chat-secret-0123456789abcdef0123456789";
 const REC_SECRET = "guide-video-recruit-secret-0123456789abcdef01234567";
+// The demo seed moves the counters to 50; set them back to the highest seeded number so a new complaint is
+// LX-2026-0005 and a new application LX-APP-2026-0004 in the videos.
+await q(`update public.complaint_case_counters c set last_number = coalesce((select max(substring(case_number from '(\\d+)$')::int)
+    from public.complaints where case_number like 'LX-' || c.year || '-%'), 0);
+  update public.job_application_counters c set last_number = coalesce((select max(substring(reference from '(\\d+)$')::int)
+    from public.job_applications where reference like 'LX-APP-' || c.year || '-%'), 0);`);
 await q(`insert into private.chat_intake_secret (secret) values ('${CHAT_SECRET}')`);
 await q(`insert into private.recruitment_intake_secret (secret) values ('${REC_SECRET}')`);
 
@@ -169,8 +175,24 @@ async function signedIn(email) {
 }
 
 /** Shows a caption and waits long enough to read it. */
+/** Throws if any frame shows a load error, or a "Saving..." that does not go away within a few seconds. */
+async function checkScreen(page) {
+  for (const f of page.frames()) {
+    if (await f.getByText(/We could not load/).count().catch(() => 0)) {
+      throw new Error(`the screen shows "We could not load" (${f.url()})`);
+    }
+  }
+  for (let i = 0; ; i += 1) {
+    let saving = 0;
+    for (const f of page.frames()) saving += await f.getByText(/^\s*Saving\.\.\.\s*$/).count().catch(() => 0);
+    if (!saving) return;
+    if (i >= 10) throw new Error(`"Saving..." is still showing after 5 seconds (${page.url()})`);
+    await sleep(500);
+  }
+}
 async function say(page, text, ms) {
   if (/[\u2013\u2014]| - /.test(text)) throw new Error(`caption has a dash: ${text}`);
+  await checkScreen(page);
   await page.evaluate((t) => window.__guideCaption?.(t), text).catch(() => {});
   await sleep(ms ?? Math.max(1800, 900 + text.length * 45));
 }
@@ -315,7 +337,9 @@ video("01", "sign-in", async () => {
   await sleep(500);
   await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Users and access" }));
   await sleep(600);
-  await say(page, "Tap a system to open it, for example Complaints", 1500);
+  await say(page, "Tap a system to open it, for example Complaints", 300);
+  await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Complaints" }));
+  await sleep(1300);
   await click(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Complaints" }));
   await settle(page);
   await sleep(1500);
@@ -621,8 +645,11 @@ video("07", "stockists", async () => {
   await click(page, page.getByRole("button", { name: "Add stockist" }));
   await page.waitForURL((u) => !u.pathname.endsWith("/new"), { timeout: 20000 });
   await settle(page);
-  await sleep(800);
-  await say(page, "Saved. An active stockist shows on Where to Buy straight away", 2600);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  await sleep(900);
+  const saved = page.locator("main .alert.ok").first();
+  await point(page, (await saved.count()) ? saved : page.locator("main h1"));
+  await say(page, "Saved. An active stockist shows on Where to Buy straight away", 2800);
 
   await page.goto(`${SITE}/`);
   await settle(page);
@@ -757,7 +784,7 @@ video("10", "csr", async () => {
   await choose(page, page.getByLabel("Region"), { label: "Central" });
   await type(page, page.getByLabel("Town or place"), "Demo Girls SHS, Cape Coast");
   await type(page, page.getByLabel("People reached"), "280", { clear: true });
-  await type(page, page.getByLabel("Notes (optional)"), "Talk on menstrual health and free Linzzy packs.", { delay: 30 });
+  await type(page, page.getByLabel("Notes (optional)"), "Talk on menstrual health and free Yazz pads.", { delay: 30 });
   await say(page, "Tap Save activity", 900);
   await click(page, page.getByRole("button", { name: "Save activity" }));
   await page.waitForURL((u) => !u.pathname.endsWith("/new"), { timeout: 20000 });
@@ -774,6 +801,7 @@ video("10", "csr", async () => {
   await sleep(1200);
   await scrollTo(page, page.locator("main img").first());
   await say(page, "The photo is saved with the activity", 2600);
+  await say(page, "Open CSR activities again to see the totals", 600);
   await page.goto(`${PORTAL}/systems/csr`);
   await settle(page);
   await say(page, "Back on CSR activities, the new activity and the totals are updated", 3200);
@@ -811,9 +839,12 @@ video("11", "dashboard", async () => {
   await say(page, "Tap a number or a tile title to open the records behind it", 2600);
   await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
   await sleep(1000);
-  // Clear is not acted out: after Clear the Brand drop down still shows the old brand (reported), which would confuse.
-  await point(page, page.getByRole("link", { name: "Clear" }).first());
-  await say(page, "Tap Clear to go back to every brand and the last 30 days", 2800);
+  await say(page, "Tap Clear to go back to every brand and the last 30 days", 300);
+  await click(page, page.getByRole("link", { name: "Clear" }).first());
+  await settle(page);
+  await sleep(800);
+  await point(page, page.getByLabel("Brand"));
+  await say(page, "The Brand box is back to Every brand, and the dates to the last 30 days", 3000);
   await finish("11-dashboard", [page]);
 });
 

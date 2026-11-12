@@ -27,21 +27,21 @@ Short videos of the main tasks are listed under [Videos](#videos).
 
 ## Videos
 
-Each video shows one task from start to finish, with a caption bar that says what is happening. They were recorded with the same made up demo data as the pictures, so your screens will show your own records. They have no sound. The files are in the `videos` folder next to this guide and play in any browser or media player.
+Each video shows one task from start to finish, with a caption bar that says what is happening. They were recorded with the same made up demo data as the pictures, so your screens will show your own records. Product pictures show as grey boxes in the videos because the demo data has no product images. They have no sound. The files are in the `videos` folder next to this guide and play in any browser or media player.
 
 | Video | What it shows | Length |
 |---|---|---|
 | [Signing in and finding your way around](videos/01-sign-in.mp4) | Sign in, the Home tiles, the menu and signing out | 44 seconds |
 | [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) | A Contact Us message arrives as a lead; set the owner, move the stage and log a call | 63 seconds |
-| [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) | Log a phone complaint, acknowledge it, log the call back and resolve it | 74 seconds |
-| [Recruitment: an application from Careers](videos/04-recruitment.mp4) | A visitor applies on the Careers page; HR takes it, downloads the CV and moves the stage | 66 seconds |
+| [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) | Log a phone complaint, acknowledge it, log the call back and resolve it | 73 seconds |
+| [Recruitment: an application from Careers](videos/04-recruitment.mp4) | A visitor applies on the Careers page; HR takes it, downloads the CV and moves the stage | 64 seconds |
 | [Live chat: reply to a visitor](videos/05-live-chat.mp4) | The website chat and the staff inbox side by side: assign the chat and reply | 40 seconds |
 | [Product management: edit a product](videos/06-products.mp4) | Change a product's description and see it on the Our Brands page | 29 seconds |
-| [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 46 seconds |
+| [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 47 seconds |
 | [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 57 seconds |
 | [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) | Start a visit, pick the shop, take a photo, choose the outcome and save | 33 seconds |
-| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 42 seconds |
-| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand | 36 seconds |
+| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 41 seconds |
+| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand, then clear the filters | 37 seconds |
 
 To record them again after the screens change, see `build/record.sh`.
 
@@ -135,7 +135,7 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 
 **What it is for:** the headline numbers from every system on one page: leads, complaints, distributor orders, shop visits, live chat, recruitment, CSR and the product catalogue.
 
-**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (36 seconds).
+**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (37 seconds).
 
 ![The management dashboard](images/10-dashboard.png)
 
@@ -436,7 +436,7 @@ A sales rep or marketer can only manage a brand they work on. If nobody is chose
 
 **What it is for:** every consumer complaint gets a case number (for example LX-2026-0001), an owner, a severity with target times, a status and a timeline until it is closed.
 
-**Video:** [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) (74 seconds).
+**Video:** [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) (73 seconds).
 
 Status goes: **New**, **Acknowledged**, **Investigating**, **Awaiting customer**, then **Resolved** and **Closed**. A closed case can be **Reopened**.
 
@@ -545,7 +545,7 @@ You can also close straight away; closing needs **How it was resolved**.
 
 **What it is for:** the list of shops, supermarkets, pharmacies, markets and distributors that sell Yazz, Linzzy and Hooch. Active stockists show on the website's **Where to Buy**.
 
-**Video:** [Stockists: add a shop](videos/07-stockists.mp4) (46 seconds).
+**Video:** [Stockists: add a shop](videos/07-stockists.mp4) (47 seconds).
 
 ![The stockist list](images/70-stockists.png)
 
@@ -593,7 +593,7 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** record every CSR activity: the programme, date, place, people reached, partners, notes and photos, with totals per programme.
 
-**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (42 seconds).
+**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (41 seconds).
 
 ![CSR activities and totals](images/80-csr.png)
 
@@ -635,7 +635,7 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** the job roles shown on the Careers page of the Lexta website, and the applications that come from it, each with the CV, a stage and an owner.
 
-**Video:** [Recruitment: an application from Careers](videos/04-recruitment.mp4) (66 seconds).
+**Video:** [Recruitment: an application from Careers](videos/04-recruitment.mp4) (64 seconds).
 
 ### How the Careers page feeds it
 
