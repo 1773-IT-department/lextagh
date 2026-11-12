@@ -23,6 +23,28 @@ If something in this guide does not match what you see, or a step does not work,
 13. [Who to ask](#13-who-to-ask)
 14. [Glossary](#14-glossary)
 
+Short videos of the main tasks are listed under [Videos](#videos).
+
+## Videos
+
+Each video shows one task from start to finish, with a caption bar that says what is happening. They were recorded with the same made up demo data as the pictures, so your screens will show your own records. Product pictures show as grey boxes in the videos because the demo data has no product images. They have no sound. The files are in the `videos` folder next to this guide and play in any browser or media player.
+
+| Video | What it shows | Length |
+|---|---|---|
+| [Signing in and finding your way around](videos/01-sign-in.mp4) | Sign in, the Home tiles, the menu and signing out | 44 seconds |
+| [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) | A Contact Us message arrives as a lead; set the owner, move the stage and log a call | 63 seconds |
+| [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) | Log a phone complaint, acknowledge it, log the call back and resolve it | 73 seconds |
+| [Recruitment: an application from Careers](videos/04-recruitment.mp4) | A visitor applies on the Careers page; HR takes it, downloads the CV and moves the stage | 64 seconds |
+| [Live chat: reply to a visitor](videos/05-live-chat.mp4) | The website chat and the staff inbox side by side: assign the chat and reply | 40 seconds |
+| [Product management: edit a product](videos/06-products.mp4) | Change a product's description and see it on the Our Brands page | 29 seconds |
+| [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 47 seconds |
+| [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 57 seconds |
+| [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) | Start a visit, pick the shop, take a photo, choose the outcome and save | 33 seconds |
+| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 41 seconds |
+| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand, then clear the filters | 37 seconds |
+
+To record them again after the screens change, see `build/record.sh`.
+
 ---
 
 ## 1. Getting started
@@ -32,6 +54,8 @@ If something in this guide does not match what you see, or a step does not work,
 The Lexta Business System is one website where Lexta staff and distributors do their daily work: orders, shop visits, leads, complaints, products, stockists, CSR, recruitment and the website chat. You sign in once and see only the parts your job needs.
 
 It works on a computer and on a phone. You do not need to install anything; you open it in your web browser (Chrome works well).
+
+**Video:** [Signing in and finding your way around](videos/01-sign-in.mp4) (44 seconds).
 
 ### Signing in
 
@@ -111,6 +135,8 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 
 **What it is for:** the headline numbers from every system on one page: leads, complaints, distributor orders, shop visits, live chat, recruitment, CSR and the product catalogue.
 
+**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (37 seconds).
+
 ![The management dashboard](images/10-dashboard.png)
 
 ### Look at a period
@@ -150,6 +176,8 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 **Who can use it:** admin, management and sales reps (the staff side); distributors (their own orders only).
 
 **What it is for:** distributors place orders in the portal and follow them. Lexta staff confirm, dispatch and mark them delivered. The distributor sees each step.
+
+**Video:** [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) (57 seconds).
 
 An order goes: **Draft** (only the distributor sees it), **Submitted**, **Confirmed**, **Dispatched**, **Delivered**. It can also be **Cancelled**.
 
@@ -252,6 +280,8 @@ Your menu shows **My orders**, **New order** and **Catalogue** only.
 
 **What it is for:** log every shop visit with the shop, a photo, what happened, notes and your location. Managers see every visit.
 
+**Video:** [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) (33 seconds).
+
 ### For sales reps (on your phone)
 
 Your Field sales screen shows a big **Start visit** button, your visits today, and the **My history** tab.
@@ -324,6 +354,8 @@ Managers can also log visits with **Log a visit**. Admin can change the outcome 
 **Who can use it:** admin, management, sales reps, marketing and customer care.
 
 **What it is for:** one shared list of leads (possible sales), contacts (people) and organisations (distributors, retailers, institutions, partners, media, suppliers), each with a timeline of calls, visits and notes.
+
+**Video:** [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) (63 seconds).
 
 Leads move through stages: **New**, **Contacted**, **Qualified**, **Proposal**, **Won** or **Lost**.
 
@@ -404,6 +436,8 @@ A sales rep or marketer can only manage a brand they work on. If nobody is chose
 
 **What it is for:** every consumer complaint gets a case number (for example LX-2026-0001), an owner, a severity with target times, a status and a timeline until it is closed.
 
+**Video:** [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) (73 seconds).
+
 Status goes: **New**, **Acknowledged**, **Investigating**, **Awaiting customer**, then **Resolved** and **Closed**. A closed case can be **Reopened**.
 
 ![The complaints list](images/50-complaints-list.png)
@@ -463,6 +497,8 @@ You can also close straight away; closing needs **How it was resolved**.
 
 **What it is for:** one place for every product, its pack sizes (SKUs) and images. Edit a product once and the Lexta website shows the change (the brand sites will too, once they are built).
 
+**Video:** [Product management: edit a product](videos/06-products.mp4) (29 seconds).
+
 ![The product list](images/60-products.png)
 
 ### Change a product
@@ -508,6 +544,8 @@ You can also close straight away; closing needs **How it was resolved**.
 **Who can use it:** admin, sales reps and marketing (add and change); management and customer care (read only).
 
 **What it is for:** the list of shops, supermarkets, pharmacies, markets and distributors that sell Yazz, Linzzy and Hooch. Active stockists show on the website's **Where to Buy**.
+
+**Video:** [Stockists: add a shop](videos/07-stockists.mp4) (47 seconds).
 
 ![The stockist list](images/70-stockists.png)
 
@@ -555,6 +593,8 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** record every CSR activity: the programme, date, place, people reached, partners, notes and photos, with totals per programme.
 
+**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (41 seconds).
+
 ![CSR activities and totals](images/80-csr.png)
 
 ### Log an activity
@@ -594,6 +634,8 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 **Who can use it:** admin, management and HR.
 
 **What it is for:** the job roles shown on the Careers page of the Lexta website, and the applications that come from it, each with the CV, a stage and an owner.
+
+**Video:** [Recruitment: an application from Careers](videos/04-recruitment.mp4) (64 seconds).
 
 ### How the Careers page feeds it
 
@@ -640,6 +682,8 @@ Stages: **New**, **Screening**, **Shortlisted**, **Interview**, **Offer**, **Hir
 **Who can use it:** admin, management and customer care.
 
 **What it is for:** answer website visitors who use the chat on the website, all in one inbox. Every answer comes from a person; there is no chatbot. Today the chat is on the Lexta website; the brand sites will use the same inbox when they are built.
+
+**Video:** [Live chat: reply to a visitor](videos/05-live-chat.mp4) (40 seconds).
 
 Chat status: **Open** (the visitor is waiting for you), **Waiting for visitor** (you replied), **Closed**.
 
