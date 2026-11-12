@@ -1,6 +1,6 @@
 # Full check: website and all 8 systems, phone and desktop (item 28)
 
-Date: 12 November 2026. Branch `claude/blissful-hawking-fra180` (from `nextjs` at 40e4920). Tester: Claude (QA).
+Date: 12 November 2026. Branch `claude/blissful-hawking-fra180` (from `nextjs` at 9f7b556, synced in 40e4920). Tester: Claude (QA).
 
 ## How it was run
 
@@ -18,7 +18,7 @@ Date: 12 November 2026. Branch `claude/blissful-hawking-fra180` (from `nextjs` a
 - Forms were sent end to end and looked up in the portal list they should land in. Every role signed in, and its menu,
   home tiles and refusals were checked. One create or save per system had to show its success message (no stuck "Saving...").
 
-Result of the final run: 156 page visits (78 pages and screens x 2 widths), 75 flow checks, 199 distinct internal links,
+Result of the final run: 156 page visits (78 pages and screens x 2 widths), 76 flow checks, 199 distinct internal links,
 **0 issues**.
 
 ## A. Website (apps/lexta)
@@ -51,13 +51,13 @@ Result of the final run: 156 page visits (78 pages and screens x 2 widths), 75 f
 | Flow | Phone | Desktop | Notes |
 |---|---|---|---|
 | Header and footer links, including the "Staff login" link | Pass | Pass | Staff login points at the portal and opens its sign in page. Old `/about-us.html` redirects to `/about-us`. |
-| Phone menu | Pass | n/a | Opens and lists every page, Contact Us and Staff login. |
-| Where to Buy (Home): pick region, Find | Pass | Pass | Greater Accra lists the 3 active demo shops. `/api/stockists?region=greater-accra` answers 200. |
+| Phone menu | Pass | n/a | Opens; Contact Us and Staff login are in it (checked). |
+| Where to Buy (Home): pick region, Find | Pass | Pass | Greater Accra lists the 3 active demo shops by name and not the inactive one. `/api/stockists?region=greater-accra` answers 200. |
 | Where to Buy updates after a portal save | n/a | Pass | Stockist added in the portal shows in `/api/stockists` straight after (portal calls `/api/revalidate`). |
-| Contact form, General enquiry | Pass | n/a | Thank you with ENQ reference; lead in CRM with source "website contact form"; visible in CRM Leads. |
-| Contact form, Consumer care (complaint) | Pass | n/a | Thank you with LX-2026-NNNN case number; complaint in Complaints list. |
+| Contact form, General enquiry | Pass | n/a | Thank you with ENQ reference; lead in CRM with source "website contact form"; the sender's name shows in CRM Leads. |
+| Contact form, Consumer care (complaint) | Pass | n/a | Thank you with LX-2026-NNNN case number; the sender's name shows in the Complaints list. |
 | Partner With Us form | n/a | Pass | Thank you with PTN reference; lead in CRM Leads (source "website partner form"). |
-| Newsletter (Home and News) | Pass (News) | Pass (Home) | Thank you with NWS reference; contacts with marketing consent in CRM Contacts. |
+| Newsletter (Home and News) | Pass (News) | Pass (Home) | Thank you with NWS reference; both contacts saved with marketing consent and both shown in CRM Contacts. |
 | Careers: general application with PDF CV | Pass | n/a | LX-APP reference; in Recruitment list. |
 | Careers: "Apply for this role" with PDF CV | n/a | Pass | Role filled on the form; application linked to the opening; HR downloads the CV (200, application/pdf). |
 | Live chat: visitor starts a chat, staff assigns and replies, visitor sees reply | Pass (visitor) | Pass (staff) | Panel fits the phone width; chat appears in the Live chat inbox. |
@@ -163,7 +163,7 @@ One main flow per system (success message checked, no stuck "Saving..."):
 
 | System | Flow | Width | Result | Success message |
 |---|---|---|---|---|
-| Management dashboard | Management opens it with figures | Desktop | Pass | Headline numbers for the last 30 days. |
+| Management dashboard | Management opens it | Desktop | Pass | Page shows order and complaint figures (observed: the last 30 days, every brand). |
 | Distributor ordering | Distributor adds a product, reviews and submits | Phone | Pass | "Order submitted" with LX-ORD reference. |
 | Distributor ordering | Rep confirms that order | Desktop | Pass | Status badge "Confirmed". |
 | Field sales | Rep starts a visit, location captured, picks a shop, outcome, saves | Phone | Pass | "Visit saved". |
@@ -220,7 +220,7 @@ Portal (apps/portal), visible text:
 
 ## Copy check (em dashes, en dashes, spaced hyphens)
 
-- Rendered text of every page and screen above at both widths: no em dash, no en dash, no spaced hyphen.
+- Rendered text of every page and screen above at both widths: no em dash, no en dash, no spaced hyphen (each one found would count as an issue in the full check).
 - Source of both apps (`app`, `components`, `content`, `lib`): no em or en dash; every spaced hyphen found is arithmetic in code, not copy.
 
 ## Test suites
@@ -239,5 +239,5 @@ Portal (apps/portal), visible text:
 | `dashboard/run.sh` | Pass, 39 checks (before and after) |
 | `csr/run.sh` | Pass, 44 checks (before and after) |
 | `docs/user-guide/build/run.sh` (guide screenshots) | Pass, 35 screenshots |
-| `full-check/run.sh` (new, this report) | Pass: 156 page visits, 75 flows, 199 links, 0 issues |
+| `full-check/run.sh` (new, this report) | Pass: 156 page visits, 76 flows, 199 links, 0 issues (rerun after the PR 30 review fixes) |
 | Deployed nextjs website preview, read only | Not run: proxy refuses `*.vercel.app` (403) |
