@@ -4,9 +4,11 @@
 //
 //   /auth/v1    password sign in (every harness user's password is GATEWAY_PASSWORD, default "harness-password"),
 //               refresh, user and logout, with HS256 tokens signed by a secret made at start
-//   /rest/v1    a small PostgREST: select (columns, aliases, "rel(count)" embeds, "alias:table!fk(cols)" many to one embeds), filters (eq, neq, is, in, gt, gte,
-//               lt, lte, like, ilike, or), order, offset and limit, exact counts, single objects, insert, update,
-//               delete and rpc. Every statement runs through psql as anon or as the signed in person (role
+//   /rest/v1    a small PostgREST: select (columns, aliases, and embeds found through single column foreign keys:
+//               "target(cols)" and "alias:target(cols)" many to one as an object or one to many as an array, nested,
+//               "target(count)", "target!<fk name>(cols)" and "target!inner(cols)"), filters (eq, neq, is, in, gt, gte,
+//               lt, lte, like, ilike, or, and on an "!inner" embed's column such as "region.slug"), order, offset and
+//               limit, exact counts, single objects, insert, update, delete and rpc (JSON arrays become Postgres arrays). Every statement runs through psql as anon or as the signed in person (role
 //               authenticated, request.jwt.claim.sub set), so Row Level Security, grants and triggers decide as on
 //               Supabase. Enough for the portal screens, not a full PostgREST.
 //   /storage/v1 the Storage stand in of ../forms/rpc_shim.mjs (upload, signed links, remove), as the caller
@@ -106,7 +108,8 @@ async function loadFks() {
     from pg_constraint k join pg_class c on c.oid = k.conrelid join pg_class f on f.oid = k.confrelid
     join pg_namespace n on n.oid = c.relnamespace join pg_attribute a on a.attrelid = k.conrelid and a.attnum = k.conkey[1]
     where k.contype = 'f' and n.nspname = 'public' and array_length(k.conkey, 1) = 1;`);
-  if (r.code === 0 && r.out) FKS = JSON.parse(r.out);
+  if (r.code !== 0 || !r.out) throw new Error(`gateway: could not read the foreign keys: ${r.err}`);
+  FKS = JSON.parse(r.out);
 }
 
 /**
@@ -152,9 +155,10 @@ function selectList(table, select, a = "t", embeds = null) {
       continue;
     }
     const innerCols = selectList(name, inner, e);
+    // /*filters:eN*/ is replaced by the embed's own filters once the query string has been read (see embedFilters).
     cols.push(rel.kind === "one"
-      ? `(select row_to_json(x) from (select ${innerCols} from public.${ident(name)} ${e} where ${join}) x) as ${ident(key)}`
-      : `(select coalesce(json_agg(x), '[]') from (select ${innerCols} from public.${ident(name)} ${e} where ${join}) x) as ${ident(key)}`);
+      ? `(select row_to_json(x) from (select ${innerCols} from public.${ident(name)} ${e} where ${join}/*filters:${e}*/) x) as ${ident(key)}`
+      : `(select coalesce(json_agg(x), '[]') from (select ${innerCols} from public.${ident(name)} ${e} where ${join}/*filters:${e}*/) x) as ${ident(key)}`);
   }
   return cols.join(", ");
 }
@@ -167,6 +171,8 @@ function condition(col, expr, embeds = {}) {
   const dot = col.indexOf(".");
   const emb = dot > 0 ? embeds[col.slice(0, dot)] : null;
   if (dot > 0 && !emb) throw Object.assign(new Error(`gateway: filter ${col}`), { status: 400 });
+  // PostgREST filters the parent rows by an embedded column only for "!inner" embeds; anything else is not supported here.
+  if (emb && !emb.inner) throw Object.assign(new Error(`gateway: filter ${col} needs an !inner embed`), { status: 400 });
   const c = emb ? `${emb.e}.${ident(col.slice(dot + 1))}` : `t.${ident(col)}`;
   let sql;
   if (op === "is") sql = `${c} is ${{ null: "null", true: "true", false: "false" }[val] ?? "null"}`;
@@ -174,6 +180,7 @@ function condition(col, expr, embeds = {}) {
   else if (op === "like" || op === "ilike") sql = `${c}::text ${op} ${lit(val.replace(/\*/g, "%"))}`;
   else sql = `${c} ${{ eq: "=", neq: "<>", gt: ">", gte: ">=", lt: "<", lte: "<=" }[op]} ${lit(val)}`;
   if (not) sql = `not (${sql})`;
+  if (emb) (emb.filters ??= []).push(sql);
   return emb ? `exists (select 1 from public.${ident(emb.target)} ${emb.e} where ${emb.join} and ${sql})` : sql;
 }
 
@@ -184,6 +191,13 @@ function orGroup(expr, joiner) {
     const i = part.indexOf(".");
     return condition(part.slice(0, i), part.slice(i + 1));
   }).join(` ${joiner} `)})`;
+}
+
+/** An "!inner" embed filtered on its own column keeps only the matching embedded rows too, like PostgREST. */
+function embedFilters(cols, embeds) {
+  let out = cols;
+  for (const emb of Object.values(embeds)) out = out.replace(`/*filters:${emb.e}*/`, (emb.filters ?? []).map((f) => ` and ${f}`).join(""));
+  return out.replace(/\/\*filters:e\d+\*\//g, "");
 }
 
 function whereOf(params, embeds = {}) {
@@ -253,8 +267,9 @@ async function answerRest(req, url, body, send, who) {
 
   const table = `public.${ident(name)}`;
   const embeds = {};
-  const cols = selectList(name, params.get("select"), "t", embeds);
+  const selected = selectList(name, params.get("select"), "t", embeds);
   const where = whereOf(params, embeds);
+  const cols = embedFilters(selected, embeds);
   let sql;
   let countSql = null;
   if (req.method === "GET" || req.method === "HEAD") {

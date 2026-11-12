@@ -201,8 +201,6 @@ await asUser(U.rep, `select public.set_distributor_order_status('${firstOrder}',
 await asUser(U.rep, `insert into public.distributor_order_staff_notes (order_id, body) values ('${firstOrder}', 'Credit limit checked with finance.')`);
 
 // The photo secret the portal signs with, the same in the database (a test value for this throwaway database only).
-
-// The photo secret the portal signs with, the same in the database (a test value for this throwaway database only).
 const PHOTO_SECRET = "guide-demo-photo-secret-0123456789abcdef0123456789";
 await q("insert into private.field_photo_secret (secret) values (:'s')", { s: PHOTO_SECRET });
 // The complaints and applications above carry LX-2026-000N and LX-APP-2026-000N written with triggers off, so the
