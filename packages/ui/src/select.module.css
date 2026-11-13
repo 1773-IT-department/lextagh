@@ -1,9 +1,14 @@
 /*
  * Lexta dropdown (see Select.tsx). Brand tokens from the approved Lexta site: teal #12a3c4 (hover #0d8ba8), ink #12313d,
  * pale teal #f1fbfe, panel border #e2eff4, panel shadow 0 22px 44px rgba(11,60,78,.18), Poppins (inherited).
- * An app can tune it with these custom properties (the portal does, in its globals.css):
+ * An app can tune it with these custom properties (the portal does, in its globals.css; a brand site sets its own
+ * colours with them, e.g. apps/yazz). Each defaults to the Lexta value, so an app that sets none keeps the Lexta look:
  *   --lx-select-accent, --lx-select-accent-dark, --lx-select-ink, --lx-select-muted, --lx-select-danger,
- *   --lx-select-option-size, --lx-select-outline, --lx-select-ring.
+ *   --lx-select-option-size, --lx-select-outline, --lx-select-ring,
+ *   --lx-select-soft (hover and active row), --lx-select-option-color, --lx-select-option-disabled,
+ *   --lx-select-panel-border, --lx-select-panel-shadow, --lx-select-scroll, --lx-select-scroll-track,
+ *   --lx-select-tint (region caret and date button hover), --lx-select-region-hover-shadow,
+ *   --lx-select-tint-border, --lx-select-day-disabled and --lx-select-line (the date field's calendar).
  * Many selects carry inline styles (the website's fields), so the state rules below use !important, as the prototype's
  * own hover rules did.
  */
@@ -35,13 +40,13 @@
 /* The Where to Buy region look: the round caret of the approved prototype. */
 .wrap[data-variant="region"] .chevron {
   right: 14px; width: 22px; height: 22px; margin-top: -11px; border-radius: 50%;
-  background: rgba(18, 163, 196, .12); color: #12a3c4;
+  background: var(--lx-select-tint, rgba(18, 163, 196, .12)); color: var(--lx-select-accent, #12a3c4);
   display: flex; align-items: center; justify-content: center; font-size: 10px; line-height: 1;
 }
 
 /* States, drawn on the face. */
 .wrap:hover > .select:not(:disabled):not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
-.wrap[data-variant="region"]:hover > .select { background: #fff !important; box-shadow: 0 6px 18px rgba(18, 163, 196, .14) !important; }
+.wrap[data-variant="region"]:hover > .select { background: #fff !important; box-shadow: var(--lx-select-region-hover-shadow, 0 6px 18px rgba(18, 163, 196, .14)) !important; }
 .wrap[data-open] > .select:not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
 .select:focus-visible,
 .wrap[data-focus-visible] > .select {
@@ -64,19 +69,19 @@
 /* The open list. It lives at the end of the page (a portal) so no panel or table can clip it. */
 .panel {
   position: fixed; z-index: 1000; box-sizing: border-box; margin: 0; padding: 6px; list-style: none;
-  background: #fff; border: 1px solid #e2eff4; border-radius: 12px;
-  box-shadow: 0 22px 44px rgba(11, 60, 78, .18), 0 2px 6px rgba(11, 60, 78, .06);
+  background: #fff; border: 1px solid var(--lx-select-panel-border, #e2eff4); border-radius: 12px;
+  box-shadow: var(--lx-select-panel-shadow, 0 22px 44px rgba(11, 60, 78, .18), 0 2px 6px rgba(11, 60, 78, .06));
   overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin; scrollbar-color: #bfe3ee #fff;
+  scrollbar-width: thin; scrollbar-color: var(--lx-select-scroll, #bfe3ee) #fff;
   font-family: inherit; color: var(--lx-select-ink, #12313d); outline: none;
   animation: lxSelectIn .16s cubic-bezier(.3, .7, .2, 1);
 }
 .panel[data-up] { animation-name: lxSelectInUp; }
 .panel[data-measuring] { visibility: hidden; animation: none; }
 .panel::-webkit-scrollbar { width: 8px; }
-.panel::-webkit-scrollbar-track { background: #f6fbfd; border-radius: 8px; }
-.panel::-webkit-scrollbar-thumb { background: #bfe3ee; border-radius: 8px; }
-.panel::-webkit-scrollbar-thumb:hover { background: #12a3c4; }
+.panel::-webkit-scrollbar-track { background: var(--lx-select-scroll-track, #f6fbfd); border-radius: 8px; }
+.panel::-webkit-scrollbar-thumb { background: var(--lx-select-scroll, #bfe3ee); border-radius: 8px; }
+.panel::-webkit-scrollbar-thumb:hover { background: var(--lx-select-accent, #12a3c4); }
 @keyframes lxSelectIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 @keyframes lxSelectInUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
@@ -93,13 +98,13 @@
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   min-height: 40px; padding: 9px 12px; border-radius: 8px;
   font-size: var(--lx-select-option-size, 13px); font-weight: 500; line-height: 1.45;
-  color: #3f5b66; cursor: pointer; user-select: none;
+  color: var(--lx-select-option-color, #3f5b66); cursor: pointer; user-select: none;
   transition: background-color .12s, color .12s;
 }
-.option[data-active] { background: #f1fbfe; color: var(--lx-select-accent-dark, #0d8ba8); }
+.option[data-active] { background: var(--lx-select-soft, #f1fbfe); color: var(--lx-select-accent-dark, #0d8ba8); }
 .option[data-checked] { font-weight: 600; color: var(--lx-select-accent, #12a3c4); }
 .option[data-checked][data-active] { color: var(--lx-select-accent-dark, #0d8ba8); }
-.option[aria-disabled="true"] { color: #a9bcc4; cursor: not-allowed; background: transparent; }
+.option[aria-disabled="true"] { color: var(--lx-select-option-disabled, #a9bcc4); cursor: not-allowed; background: transparent; }
 .option .tick { flex: none; width: 16px; height: 16px; color: var(--lx-select-accent, #12a3c4); }
 .optionText { min-width: 0; overflow-wrap: anywhere; }
 @media (pointer: coarse) { .option { min-height: 44px; } }
