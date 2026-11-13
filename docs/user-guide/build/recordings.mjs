@@ -192,8 +192,10 @@ async function checkScreen(page) {
 }
 async function say(page, text, ms) {
   if (/[\u2013\u2014]| - /.test(text)) throw new Error(`caption has a dash: ${text}`);
-  await checkScreen(page);
+  // The new caption goes up straight away (the last one must not linger while a save finishes), then the screen is
+  // checked, then there is time to read it.
   await page.evaluate((t) => window.__guideCaption?.(t), text).catch(() => {});
+  await checkScreen(page);
   await sleep(ms ?? Math.max(1800, 900 + text.length * 45));
 }
 const pointer = new WeakMap();
@@ -230,6 +232,10 @@ async function click(page, loc, { pause = 350 } = {}) {
   await sleep(pause);
   const [x, y] = pointer.get(page) ?? [0, 0];
   await page.evaluate(([a, b]) => window.__guideTap?.(a, b), [x, y]).catch(() => {});
+  // A save (a submit button) clears the caption, so the last one does not stay up over the saving and the next screen.
+  if (await loc.evaluate((el) => (el instanceof HTMLButtonElement || el instanceof HTMLInputElement) && el.type === "submit").catch(() => false)) {
+    await page.evaluate(() => window.__guideCaption?.("")).catch(() => {});
+  }
   await loc.click();
   await sleep(400);
 }
@@ -240,12 +246,65 @@ async function type(page, loc, text, { delay = 45, clear = false } = {}) {
   await loc.pressSequentially(text, { delay });
   await sleep(350);
 }
-/** Points at a drop down and picks an option (the open list of a native drop down does not show in recordings). */
+/**
+ * Picks an option in a Lexta dropdown the way a person does: the pointer opens it, moves down the branded list and
+ * clicks the option. On the phone (and before a page runs) the select keeps the phone's own picker, whose open list
+ * does not show in recordings, so there the pointer rests on the field while the option is chosen.
+ * `loc` is the field by its label; `option` is { label }, { value } or a value.
+ */
 async function choose(page, loc, option) {
-  await point(page, loc);
-  await sleep(300);
-  await loc.selectOption(option);
-  await sleep(700);
+  const combo = loc.and(page.locator("[data-lx-select-combo]"));
+  if (!(await combo.count())) {
+    await point(page, loc);
+    await sleep(300);
+    await loc.selectOption(option);
+    await sleep(700);
+    return;
+  }
+  const value = typeof option === "string" ? option : option.value;
+  const text = typeof option === "object" && option.label ? option.label
+    : await combo.locator("xpath=..").locator("select").evaluate((s, v) => [...s.options].find((o) => o.value === v)?.text.replace(/\s+/g, " ").trim() ?? "", value);
+  await click(page, combo, { pause: 250 });
+  const list = page.locator(`[role=listbox]#${await combo.getAttribute("aria-controls")}`);
+  await list.waitFor();
+  await sleep(450);
+  const opt = list.getByRole("option", { name: text, exact: true });
+  await opt.evaluate((el) => el.scrollIntoView({ block: "nearest" }));
+  const b = await opt.boundingBox();
+  if (b) await moveTo(page, b.x + Math.min(b.width / 2, 80), b.y + b.height / 2);
+  await sleep(500);
+  const [x, y] = pointer.get(page) ?? [0, 0];
+  await page.evaluate(([a, c]) => window.__guideTap?.(a, c), [x, y]).catch(() => {});
+  await opt.click();
+  await list.waitFor({ state: "detached" });
+  await sleep(600);
+}
+/**
+ * Picks a date in a Lexta date field: the pointer opens the calendar from the field's icon and clicks the day `days`
+ * from today (on the phone, or before a page runs, the date is typed into the field instead).
+ */
+async function pickDate(page, loc, days) {
+  const n = new Date();
+  const day = new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) + days * 86400000);
+  const trigger = page.locator("[data-lx-date]", { has: loc }).locator("[data-lx-date-trigger]");
+  if (!(await trigger.count())) {
+    await point(page, loc);
+    await loc.fill(day.toISOString().slice(0, 10));
+    await sleep(600);
+    return;
+  }
+  await click(page, trigger, { pause: 250 });
+  const dialog = page.locator("[data-lx-date-dialog]");
+  await dialog.waitFor();
+  await sleep(500);
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const name = `${day.getUTCDate()} ${MONTHS[day.getUTCMonth()]} ${day.getUTCFullYear()}`;
+  if ((await dialog.getByRole("heading").innerText()) !== `${MONTHS[day.getUTCMonth()]} ${day.getUTCFullYear()}`) {
+    await click(page, dialog.getByRole("button", { name: days < 0 ? "Previous month" : "Next month" }), { pause: 200 });
+  }
+  await click(page, dialog.getByRole("button", { name, exact: true }), { pause: 300 });
+  await dialog.waitFor({ state: "detached" });
+  await sleep(500);
 }
 async function scrollTo(page, loc, block = "center") {
   await loc.evaluate((el, b) => el.scrollIntoView({ behavior: "smooth", block: b }), block);
@@ -321,22 +380,23 @@ video("01", "sign-in", async () => {
   await page.goto(`${PORTAL}/login`);
   await settle(page);
   await say(page, "Open the Business System and sign in with the email your admin invited");
-  await type(page, page.getByLabel("Email"), "admin@demo.test");
+  await type(page, page.getByLabel("Email"), "marketing@demo.test");
   await say(page, "Type your password", 1200);
   await type(page, page.getByLabel("Password"), "harness-password", { delay: 30 });
   await click(page, page.getByRole("button", { name: /sign in/i }));
   await page.waitForURL((u) => !u.pathname.startsWith("/login"));
   await settle(page);
   await say(page, "Home shows a tile for each system your role can use");
-  for (const name of ["Management dashboard", "CRM", "Complaints", "Live chat inbox"]) {
+  for (const name of ["CRM", "Complaints", "Product management", "CSR activities"]) {
     await point(page, page.locator("main").getByRole("link", { name: new RegExp(`^${name}`) }));
     await sleep(700);
   }
-  await say(page, "The menu on the left lists the same systems. Admin sees all of them", 3000);
+  await say(page, "The menu on the left lists the same systems", 2200);
   await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Home" }));
   await sleep(500);
-  await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Users and access" }));
+  await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "CSR activities" }));
   await sleep(600);
+  await say(page, "Admin and management land on the Management overview instead, and see every system", 2800);
   await say(page, "Tap a system to open it, for example Complaints", 300);
   await point(page, page.getByRole("navigation", { name: "Systems" }).getByRole("link", { name: "Complaints" }));
   await sleep(1300);
@@ -653,12 +713,10 @@ video("07", "stockists", async () => {
 
   await page.goto(`${SITE}/`);
   await settle(page);
-  const toggle = page.getByRole("button", { name: /^Your region:/ });
+  const toggle = page.getByRole("combobox", { name: "Your region" });
   await scrollTo(page, toggle);
   await say(page, "On the Lexta website home page, a shopper uses Where to Buy", 1600);
-  await click(page, toggle);
-  await sleep(500);
-  await click(page, page.getByRole("option", { name: "Central" }));
+  await choose(page, toggle, { label: "Central" });
   await click(page, page.getByRole("button", { name: "Find a stockist" }));
   const res = page.locator("#stockist-results");
   await res.getByText("Demo Store Cape Coast").waitFor({ timeout: 20000 });
@@ -775,10 +833,7 @@ video("10", "csr", async () => {
   await settle(page);
   await say(page, "Choose the programme and the date, and tick Done", 1300);
   await choose(page, page.getByLabel("Programme"), { label: "The Dignity Project" });
-  const yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  await point(page, page.getByLabel("Date"));
-  await page.getByLabel("Date").fill(yday);
-  await sleep(600);
+  await pickDate(page, page.getByLabel("Date"), -1);
   await click(page, page.getByRole("radio", { name: "Done" }));
   await say(page, "Choose the region and type the place and the people reached", 1300);
   await choose(page, page.getByLabel("Region"), { label: "Central" });
@@ -812,39 +867,46 @@ video("11", "dashboard", async () => {
   const mgr = await signedIn("manager@demo.test");
   const ctx = await context("desktop", { storageState: mgr });
   const page = await ctx.newPage();
-  await page.goto(`${PORTAL}/systems/dashboard`);
+  await page.goto(`${PORTAL}/management`);
   await settle(page);
-  await say(page, "The Management dashboard shows the last 30 days for every brand at first", 2800);
-  await say(page, "Tap This month or This year to change the period", 1300);
-  await click(page, page.getByRole("navigation", { name: "Period" }).getByRole("link", { name: "This month" }));
-  await settle(page);
-  await sleep(1200);
+  await say(page, "Management and admin land on the Management overview, a read only view of every system", 3000);
+  await point(page, page.locator(".mgmt-attention"));
+  await say(page, "Needs attention lists what is waiting now. Tap one to open that list in its system", 3000);
+  await scrollTo(page, page.locator(".mgmt-system").first());
+  await say(page, "Key figures for each system, with the change on the period before", 2600);
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+  await sleep(900);
+  await say(page, "Change the period with This month, This year or your own dates", 1500);
   await click(page, page.getByRole("navigation", { name: "Period" }).getByRole("link", { name: "This year" }));
   await settle(page);
-  await sleep(1500);
-  await say(page, "Or set your own dates in From and To", 1300);
-  const first = `${new Date().getUTCFullYear()}-${String(new Date().getUTCMonth() + 1).padStart(2, "0")}-01`;
-  await point(page, page.getByLabel("From"));
-  await page.getByLabel("From").fill(first);
-  await sleep(700);
+  await sleep(1000);
   await say(page, "Choose a brand to see only its numbers, then tap Apply", 1300);
-  await choose(page, page.getByLabel("Brand"), { label: "Yazz" });
+  await choose(page, page.getByLabel("Brand", { exact: true }), { label: "Yazz" });
   await click(page, page.getByRole("button", { name: "Apply" }));
+  await page.waitForURL(/brand=/);
   await settle(page);
-  await page.locator("main p").first().waitFor();
-  await sleep(800);
   await point(page, page.locator("main p").first());
   await say(page, "The line under the title says which dates and brand you are looking at", 2600);
-  for (const y of [500, 500, 500]) { await page.mouse.wheel(0, y); await sleep(1100); }
-  await say(page, "Tap a number or a tile title to open the records behind it", 2600);
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-  await sleep(1000);
+  await say(page, "The tabs keep the same period and brand. Open Activity", 1300);
+  await click(page, page.locator("nav.mgmt-tabs").getByRole("link", { name: "Activity" }));
+  await page.waitForURL(/\/management\/activity/);
+  await settle(page);
+  await point(page, page.locator(".mgmt-feed-row").first());
+  await say(page, "Activity is the latest events across the systems, newest first. Tap a row to open its record", 3200);
+  await say(page, "Each system has its own tab. Open CRM", 1200);
+  await click(page, page.locator("nav.mgmt-tabs").getByRole("link", { name: "CRM" }));
+  await page.waitForURL(/\/management\/crm/);
+  await settle(page);
+  await sleep(600);
   await say(page, "Tap Clear to go back to every brand and the last 30 days", 300);
   await click(page, page.getByRole("link", { name: "Clear" }).first());
+  await page.waitForURL((u) => !u.search.includes("brand="));
   await settle(page);
   await sleep(800);
-  await point(page, page.getByLabel("Brand"));
-  await say(page, "The Brand box is back to Every brand, and the dates to the last 30 days", 3000);
+  const latest = page.locator("section[aria-labelledby=sec_latest]");
+  await scrollTo(page, latest);
+  await point(page, latest.getByRole("link", { name: /^Website enquiry / }).first());
+  await say(page, "Latest leads show website leads by their kind and reference, never the visitor's name", 3400);
   await finish("11-dashboard", [page]);
 });
 

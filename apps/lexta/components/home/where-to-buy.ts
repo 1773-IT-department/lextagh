@@ -5,7 +5,7 @@
  * which the portal clears through /api/revalidate after every stockist save.
  */
 import { getRegions } from "@lexta/db";
-import type { RegionOption } from "./RegionDropdown";
+import type { RegionOption } from "./StockistFinder";
 
 /** The prototype's order: the busiest regions first, Greater Accra selected. Other regions follow. */
 const PROTOTYPE_ORDER = [

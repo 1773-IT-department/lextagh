@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { employmentTypeLabel, JOB_OPENING_STATUSES, jobOpeningStatusLabel, type JobOpening } from "@lexta/db";
 import RecruitmentTabs from "@/components/recruitment/RecruitmentTabs";
@@ -48,10 +49,10 @@ export default async function RolesPage({ searchParams }: { searchParams: Promis
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={status}>
+          <Select id="status" name="status" defaultValue={status}>
             <option value="">Any status</option>
             {JOB_OPENING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field" aria-hidden="true" />
         <div className="filter-actions">

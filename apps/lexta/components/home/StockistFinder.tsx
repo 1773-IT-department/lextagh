@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import RegionDropdown, { type RegionOption } from "./RegionDropdown";
+import { Select } from "@lexta/ui";
 import s from "./home.module.css";
+
+export type RegionOption = { slug: string; name: string };
 
 /** One shop as /api/stockists returns it. */
 export type StockistItem = {
@@ -31,6 +33,11 @@ const findBtn: CSSProperties = {
 const outlineBtn: CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: 10, border: "1px solid rgba(18,163,196,.5)", color: "#12a3c4",
   fontSize: 13, fontWeight: 600, padding: "11px 18px", borderRadius: 7,
+};
+/* The approved prototype's region toggle, now the face of the shared Lexta dropdown (packages/ui). */
+const regionFace: CSSProperties = {
+  display: "block", width: "100%", height: 48, margin: 0, border: "1px solid #dceaef", borderRadius: 9, padding: "0 14px",
+  fontSize: 13.5, fontWeight: 600, color: "#12313d", background: "#fbfeff", fontFamily: "inherit", lineHeight: "normal",
 };
 const note: CSSProperties = { margin: 0, fontSize: 13, lineHeight: 1.75, color: "#4d6a75" };
 const contactLink: CSSProperties = { color: "#0b6d88", fontWeight: 600, textDecoration: "underline" };
@@ -84,7 +91,10 @@ export default function StockistFinder({ regions }: { regions: RegionOption[] })
       }}
     >
       <div style={smallLabel}>Your region</div>
-      <RegionDropdown regions={regions} value={region} onChange={setRegion} />
+      <Select variant="region" nativeOnTouch={false} aria-label="Your region" value={region} onChange={(e) => setRegion(e.target.value)}
+        style={regionFace} wrapperStyle={{ marginTop: 10 }}>
+        {regions.map((r) => <option key={r.slug} value={r.slug}>{r.name}</option>)}
+      </Select>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 18 }}>
         <button type="submit" style={findBtn} aria-controls="stockist-results">
           Find a stockist

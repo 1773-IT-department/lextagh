@@ -25,6 +25,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const OUT = process.env.FIELD_SCREENSHOTS || path.join(os.tmpdir(), "lexta-field-screens");
 mkdirSync(OUT, { recursive: true });
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -267,7 +268,7 @@ try {
   await repNo.locator(".fs-shop").first().waitFor();
   await repNo.getByRole("button", { name: "Shop not listed? Add a new shop" }).click();
   await repNo.getByLabel("Shop name").fill("Mama Esi Provisions");
-  await repNo.getByLabel("Region").selectOption({ label: "Greater Accra" });
+  await choose(repNo, "Region", "Greater Accra");
   await repNo.getByLabel("Town").fill("Teshie");
   await repNo.getByLabel("Shop phone (optional)").fill("024 555 0101");
   check(await repNo.getByRole("checkbox", { name: "Yazz", exact: true }).isChecked(), "390: a rep with one brand has it ticked for the new shop");
@@ -351,7 +352,7 @@ try {
   const yazzId = await q(`select id from public.brands where slug = 'yazz'`);
   const hoochId = await q(`select id from public.brands where slug = 'hooch'`);
   const follow = await q(`select id from public.field_visit_outcomes where slug = 'follow_up'`);
-  await mgr.getByLabel("Outcome").selectOption({ label: "Follow up needed" });
+  await choose(mgr, "Outcome", "Follow up needed");
   await mgr.getByRole("button", { name: "Apply" }).click();
   await mgr.waitForURL(/outcome=/);
   await mgr.locator("main h1").waitFor();

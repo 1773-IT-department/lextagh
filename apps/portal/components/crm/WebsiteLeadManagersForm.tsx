@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { saveWebsiteLeadManagers } from "@/app/(app)/systems/crm/settings/website-leads/actions";
 import FormAlerts from "./FormAlerts";
 import { useCrmForm } from "./useCrmForm";
@@ -35,10 +36,10 @@ export default function WebsiteLeadManagersForm({
           <p className="small">Gets every new website lead, for every brand, unless the brand has its own manager below.</p>
           <div className="field">
             <label htmlFor="default_manager">Default manager</label>
-            <select id="default_manager" name="default_manager" defaultValue={defaultCurrent} aria-invalid={!!fe.default_manager}>
+            <Select id="default_manager" name="default_manager" defaultValue={defaultCurrent} aria-invalid={!!fe.default_manager}>
               <option value="">Nobody (website leads stay unassigned)</option>
               {defaultOptions.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-            </select>
+            </Select>
             {defaultWarning && <span className="ferr">{defaultWarning}</span>}
             {fe.default_manager && <span className="ferr">{fe.default_manager}</span>}
           </div>
@@ -53,10 +54,10 @@ export default function WebsiteLeadManagersForm({
               return (
                 <div className="field" key={b.id}>
                   <label htmlFor={key}>{b.name}</label>
-                  <select id={key} name={key} defaultValue={b.current} aria-invalid={!!fe[key]}>
+                  <Select id={key} name={key} defaultValue={b.current} aria-invalid={!!fe[key]}>
                     <option value="">Use default</option>
                     {b.options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  </Select>
                   {b.warning && <span className="ferr">{b.warning}</span>}
                   {fe[key] && <span className="ferr">{fe[key]}</span>}
                 </div>

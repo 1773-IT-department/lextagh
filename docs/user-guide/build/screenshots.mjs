@@ -136,6 +136,23 @@ try {
   await shot(manager, "11-management-activity", { full: true, maxHeight: 1300 });
   await go(manager, "/management/complaints");
   await shot(manager, "12-management-section", { full: true, maxHeight: 1500 });
+  // The CRM tab's latest leads: website leads by their kind and reference, never the visitor's name.
+  await go(manager, "/management/crm");
+  const latest = manager.locator("section[aria-labelledby=sec_latest]");
+  await latest.evaluate((el) => window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 24));
+  await manager.waitForTimeout(300);
+  await shot(manager, "13-management-crm-latest");
+  // A Lexta dropdown open: the brand filter, with the chosen option ticked and the next one highlighted.
+  await go(manager, "/management");
+  const brand = manager.locator("[data-lx-select-combo]").and(manager.getByRole("combobox", { name: "Brand", exact: true }));
+  await brand.waitFor();
+  await brand.click();
+  await manager.keyboard.press("ArrowDown");
+  await manager.waitForTimeout(400);
+  await manager.screenshot({ path: path.join(OUT, "05-dropdown.png"), clip: { x: 250, y: 0, width: 1030, height: 520 } });
+  shots.push("05-dropdown");
+  console.log("  saved 05-dropdown.png");
+  await manager.keyboard.press("Escape");
 
   // 3. Distributor ordering ---------------------------------------------------------------------------------------------
   const rep = await login("rep@demo.test");

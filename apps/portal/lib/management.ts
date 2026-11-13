@@ -120,6 +120,24 @@ export function recordHref(item: Pick<FeedItem, "kind" | "record_id">): string {
   }
 }
 
+/**
+ * What a lead is called outside its own record. Website and live chat leads are titled with the visitor's name, so
+ * they show a fixed label (and the intake reference when there is one) instead; staff typed titles stay as they are.
+ * The same mapping as the lead events in public.management_activity (0015_management_overview.sql), kept in step.
+ */
+export const WEBSITE_LEAD_LABELS: Record<string, string> = {
+  website_contact_form: "Website enquiry",
+  website_partner_form: "Partner enquiry",
+  website_newsletter: "Newsletter sign up",
+  website_live_chat: "Live chat lead",
+};
+export function leadDisplayTitle(lead: { title?: unknown; source?: unknown; intake_reference?: unknown }): string {
+  const source = String(lead.source ?? "");
+  const base = WEBSITE_LEAD_LABELS[source] ?? String(lead.title ?? "");
+  const ref = source.startsWith("website_") && lead.intake_reference ? ` ${String(lead.intake_reference)}` : "";
+  return `${base}${ref}`;
+}
+
 const label = (options: readonly { value: string; label: string }[], v: string) => options.find((o) => o.value === v)?.label ?? v;
 const orderStatus = (v: string) => label(ORDER_STATUSES, v);
 const stage = (v: string) => label(JOB_APPLICATION_STAGES, v);

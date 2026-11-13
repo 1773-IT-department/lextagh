@@ -1,3 +1,4 @@
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import { DASHBOARD_PRESETS, formatRangeDay } from "@/lib/dashboard";
 import { MANAGEMENT_TABS, managementHref, type ManagementFilters } from "@/lib/management";
@@ -41,18 +42,18 @@ export default function ManagementHeader({ path, title, intro, f, brands, keep =
         {Object.entries(keep).map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}
         <div className="field">
           <label htmlFor="from">From</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} required />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} required />
         </div>
         <div className="field">
           <label htmlFor="to">To</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} required />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} required />
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={f.brand}>
+          <Select id="brand" name="brand" defaultValue={f.brand}>
             <option value="">Every brand</option>
             {brands.map((b) => <option key={b.id} value={b.id}>{b.name}{b.is_active ? "" : " (switched off)"}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

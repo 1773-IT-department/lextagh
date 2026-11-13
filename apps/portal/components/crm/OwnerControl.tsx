@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { setOwner } from "@/app/(app)/systems/crm/actions";
 import FormAlerts from "./FormAlerts";
 import { useCrmForm } from "./useCrmForm";
@@ -36,10 +37,10 @@ export default function OwnerControl({
           <input type="hidden" name="kind" value={kind} />
           <input type="hidden" name="id" value={id} />
           <label className="sr-only" htmlFor={`owner-${id}`}>Owner</label>
-          <select id={`owner-${id}`} name="owner" defaultValue={ownerId ?? "none"} disabled={pending}>
+          <Select id={`owner-${id}`} name="owner" defaultValue={ownerId ?? "none"} disabled={pending}>
             <option value="none">Nobody</option>
             {staff.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-          </select>
+          </Select>
           <button className="btn small light" type="submit" disabled={pending}>{pending ? "Saving..." : "Set owner"}</button>
         </form>
       )}

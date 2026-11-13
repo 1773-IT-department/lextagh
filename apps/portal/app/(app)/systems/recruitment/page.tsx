@@ -1,3 +1,4 @@
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import { JOB_APPLICATION_STAGES, jobApplicationStageLabel, type JobApplication } from "@lexta/db";
 import { CleanupForm } from "@/components/recruitment/NotesForms";
@@ -82,36 +83,36 @@ export default async function RecruitmentPage({ searchParams }: { searchParams: 
         </div>
         <div className="field">
           <label htmlFor="opening">Role</label>
-          <select id="opening" name="opening" defaultValue={f.opening}>
+          <Select id="opening" name="opening" defaultValue={f.opening}>
             <option value="">Any role</option>
             <option value="general">General applications</option>
             {roles.map((r) => <option key={r.id} value={r.id}>{r.title} ({r.reference})</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="stage">Stage</label>
-          <select id="stage" name="stage" defaultValue={f.stage}>
+          <Select id="stage" name="stage" defaultValue={f.stage}>
             <option value="">Any stage</option>
             <option value="active">Still in play</option>
             {JOB_APPLICATION_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="owner">Owner</label>
-          <select id="owner" name="owner" defaultValue={f.owner}>
+          <Select id="owner" name="owner" defaultValue={f.owner}>
             <option value="">Anyone</option>
             <option value="mine">Mine</option>
             <option value="unassigned">Unassigned</option>
             {owners.filter((s) => s.id !== access.userId).map((s) => <option key={s.id} value={s.id}>{s.display_name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="from">Received from</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} />
         </div>
         <div className="field">
           <label htmlFor="to">Received to</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} />
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

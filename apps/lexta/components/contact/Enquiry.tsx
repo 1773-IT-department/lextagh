@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useActionState, useState, type CSSProperties, type ReactNode } from "react";
 import { submitContactForm } from "@/app/actions/forms";
 import { FieldError, FormMessage, Honeypot, idleState, invalidProps, choiceCardReset, useServerForm, visuallyHidden } from "@/components/forms/FormParts";
@@ -13,6 +14,8 @@ const field: CSSProperties = {
   border: "1px solid rgba(18,163,196,.35)", borderRadius: 7, padding: "12px 14px", fontSize: 13, color: "#12313d",
   background: "#fff", minWidth: 0, fontFamily: "inherit",
 };
+/* The dropdown's face (packages/ui Select): the native select's 47 px height, set so it holds while the font loads. */
+const selectField: CSSProperties = { ...field, lineHeight: "21px" };
 
 /** A labelled field with its inline error underneath (outside the label, so the label stays the field's name). */
 function Field({ state, name, label, style, children }: { state: FormState; name: string; label: ReactNode; style?: CSSProperties; children: ReactNode }) {
@@ -121,9 +124,9 @@ export default function Enquiry() {
           </Field>
         </div>
         <Field state={state} name="region" label="Region" style={{ marginTop: 14 }}>
-          <select name="region" defaultValue={v.region ?? regions[0]} {...inv("region")} style={field}>
+          <Select name="region" defaultValue={v.region ?? regions[0]} {...inv("region")} style={selectField}>
             {regions.map((o) => <option key={o}>{o}</option>)}
-          </select>
+          </Select>
         </Field>
         <Field state={state} name="message" label="Your message" style={{ marginTop: 14 }}>
           <textarea

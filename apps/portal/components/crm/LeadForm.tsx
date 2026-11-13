@@ -1,5 +1,6 @@
 "use client";
 
+import { DateInput, Select } from "@lexta/ui";
 import { useState } from "react";
 import { CRM_SOURCES, CRM_STAGES, type CrmLead } from "@lexta/db";
 import { saveLead } from "@/app/(app)/systems/crm/actions";
@@ -63,19 +64,19 @@ export default function LeadForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="contact_id">Contact</label>
-              <select id="contact_id" name="contact_id" defaultValue={hiddenContact ? "keep" : lead?.contact_id ?? defaults.contact_id ?? ""} aria-invalid={!!fe.contact_id}>
+              <Select id="contact_id" name="contact_id" defaultValue={hiddenContact ? "keep" : lead?.contact_id ?? defaults.contact_id ?? ""} aria-invalid={!!fe.contact_id}>
                 {hiddenContact ? <option value="keep">Keep the current contact</option> : <option value="">No contact</option>}
                 {contacts.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
-              </select>
+              </Select>
               {hiddenContact && <span className="hint">Linked to a contact you cannot see. It stays linked unless you pick another one.</span>}
               {fe.contact_id && <span className="ferr">{fe.contact_id}</span>}
             </div>
             <div className="field">
               <label htmlFor="organisation_id">Organisation</label>
-              <select id="organisation_id" name="organisation_id" defaultValue={hiddenOrganisation ? "keep" : lead?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
+              <Select id="organisation_id" name="organisation_id" defaultValue={hiddenOrganisation ? "keep" : lead?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
                 {hiddenOrganisation ? <option value="keep">Keep the current organisation</option> : <option value="">No organisation</option>}
                 {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-              </select>
+              </Select>
               {hiddenOrganisation && <span className="hint">Linked to an organisation you cannot see. It stays linked unless you pick another one.</span>}
               {!lead?.organisation_id && lead?.submitted_organisation_name && (
                 <span className="hint">The website form named &ldquo;{lead.submitted_organisation_name}&rdquo;. Check it and link the right organisation.</span>
@@ -86,21 +87,21 @@ export default function LeadForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="brand_id">Brand</label>
-              <select id="brand_id" name={brandLocked ? undefined : "brand_id"} defaultValue={lead?.brand_id ?? ""} disabled={brandLocked} aria-invalid={!!fe.brand_id}>
+              <Select id="brand_id" name={brandLocked ? undefined : "brand_id"} defaultValue={lead?.brand_id ?? ""} disabled={brandLocked} aria-invalid={!!fe.brand_id}>
                 <option value="">No brand (shared with every team)</option>
                 {brands.map((b) => <option key={b.id} value={b.id}>{b.label}</option>)}
-              </select>
+              </Select>
               {brandLocked && <span className="hint">Assign the lead to yourself to change its brand.</span>}
               {fe.brand_id && <span className="ferr">{fe.brand_id}</span>}
             </div>
             <div className="field">
               <label htmlFor="source">Source</label>
-              <select id="source" name="source" defaultValue={lead?.source ?? ""} aria-invalid={!!fe.source} required>
+              <Select id="source" name="source" defaultValue={lead?.source ?? ""} aria-invalid={!!fe.source} required>
                 <option value="" disabled>Where did it come from?</option>
                 {/* Live chat leads are made from the chat inbox (and get the website lead manager), never picked by hand. */}
                 {CRM_SOURCES.filter((s) => s.value !== "website_live_chat" || lead?.source === "website_live_chat")
                   .map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
+              </Select>
               {fe.source && <span className="ferr">{fe.source}</span>}
             </div>
           </div>
@@ -126,7 +127,7 @@ export default function LeadForm({
             </div>
             <div className="field">
               <label htmlFor="next_action_date">By when (optional)</label>
-              <input id="next_action_date" name="next_action_date" type="date" defaultValue={lead?.next_action_date ?? ""} aria-invalid={!!fe.next_action_date} />
+              <DateInput id="next_action_date" name="next_action_date" type="date" defaultValue={lead?.next_action_date ?? ""} aria-invalid={!!fe.next_action_date} />
               {fe.next_action_date && <span className="ferr">{fe.next_action_date}</span>}
             </div>
           </div>
@@ -139,9 +140,9 @@ export default function LeadForm({
               {canPickStage ? (
                 <div className="field">
                   <label htmlFor="stage">Stage</label>
-                  <select id="stage" name="stage" value={stage} onChange={(e) => setStage(e.target.value)} aria-invalid={!!fe.stage}>
+                  <Select id="stage" name="stage" value={stage} onChange={(e) => setStage(e.target.value)} aria-invalid={!!fe.stage}>
                     {CRM_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                  </select>
+                  </Select>
                   {fe.stage && <span className="ferr">{fe.stage}</span>}
                 </div>
               ) : (
@@ -153,9 +154,9 @@ export default function LeadForm({
               )}
               <div className="field">
                 <label htmlFor="owner_id">Owner</label>
-                <select id="owner_id" name="owner_id" defaultValue={defaults.owner ?? "me"} aria-invalid={!!fe.owner_id}>
+                <Select id="owner_id" name="owner_id" defaultValue={defaults.owner ?? "me"} aria-invalid={!!fe.owner_id}>
                   {(ownerOptions ?? []).map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                </select>
+                </Select>
                 {fe.owner_id && <span className="ferr">{fe.owner_id}</span>}
               </div>
             </div>

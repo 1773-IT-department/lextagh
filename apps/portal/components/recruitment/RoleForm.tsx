@@ -1,5 +1,6 @@
 "use client";
 
+import { DateInput, Select } from "@lexta/ui";
 import { EMPLOYMENT_TYPES, JOB_OPENING_STATUSES, type JobOpening } from "@lexta/db";
 import { saveRole } from "@/app/(app)/systems/recruitment/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -56,9 +57,9 @@ export default function RoleForm({ mode, role, departments, locations }: Props) 
           <div className="row2">
             <div className="field">
               <label htmlFor="employment_type">Type</label>
-              <select id="employment_type" name="employment_type" defaultValue={role?.employment_type ?? "full_time"} {...err("employment_type")}>
+              <Select id="employment_type" name="employment_type" defaultValue={role?.employment_type ?? "full_time"} {...err("employment_type")}>
                 {EMPLOYMENT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-              </select>
+              </Select>
               {msg("employment_type")}
             </div>
             <div className="field">
@@ -90,9 +91,9 @@ export default function RoleForm({ mode, role, departments, locations }: Props) 
           <div className="row2">
             <div className="field">
               <label htmlFor="status">Status</label>
-              <select id="status" name="status" defaultValue={role?.status ?? "draft"} {...err("status")}>
+              <Select id="status" name="status" defaultValue={role?.status ?? "draft"} {...err("status")}>
                 {JOB_OPENING_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-              </select>
+              </Select>
               <span className="hint">Open roles show on the Careers page from the opening date to the end of the closing date.</span>
             </div>
             <div className="field">
@@ -105,13 +106,13 @@ export default function RoleForm({ mode, role, departments, locations }: Props) 
           <div className="row2">
             <div className="field">
               <label htmlFor="opens_at">Opening date (shown as Posted)</label>
-              <input id="opens_at" name="opens_at" type="date" defaultValue={role?.opens_at ?? ""} {...err("opens_at")} />
+              <DateInput id="opens_at" name="opens_at" type="date" defaultValue={role?.opens_at ?? ""} {...err("opens_at")} />
               <span className="hint">Left empty, opening the role sets today.</span>
               {msg("opens_at")}
             </div>
             <div className="field">
               <label htmlFor="closes_at">Closing date</label>
-              <input id="closes_at" name="closes_at" type="date" defaultValue={role?.closes_at ?? ""} {...err("closes_at")} />
+              <DateInput id="closes_at" name="closes_at" type="date" defaultValue={role?.closes_at ?? ""} {...err("closes_at")} />
               <span className="hint">Applications are taken through this whole day. Empty: open until you close it.</span>
               {msg("closes_at")}
             </div>

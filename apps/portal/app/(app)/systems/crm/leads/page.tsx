@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { CRM_SOURCES, CRM_STAGES, crmContactName, crmSourceLabel, crmStageLabel, type CrmLeadSource, type CrmStage } from "@lexta/db";
 import CrmTabs from "@/components/crm/CrmTabs";
@@ -131,42 +132,42 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         </div>
         <div className="field">
           <label htmlFor="stage">Stage</label>
-          <select id="stage" name="stage" defaultValue={stage}>
+          <Select id="stage" name="stage" defaultValue={stage}>
             <option value="open">Open leads</option>
             <option value="all">All stages</option>
             {CRM_STAGES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="source">Source</label>
-          <select id="source" name="source" defaultValue={source}>
+          <Select id="source" name="source" defaultValue={source}>
             <option value="">Any source</option>
             {CRM_SOURCES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={brand}>
+          <Select id="brand" name="brand" defaultValue={brand}>
             <option value="">Any brand</option>
             <option value="none">No brand</option>
             {access.allBrands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="owner">Owner</label>
-          <select id="owner" name="owner" defaultValue={owner}>
+          <Select id="owner" name="owner" defaultValue={owner}>
             <option value="">Anyone</option>
             <option value="mine">Mine</option>
             <option value="unassigned">Unassigned</option>
             {access.staff.filter((s) => s.id !== access.userId).map((s) => <option key={s.id} value={s.id}>{s.display_name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="sort">Sort</label>
-          <select id="sort" name="sort" defaultValue={sort}>
+          <Select id="sort" name="sort" defaultValue={sort}>
             <option value="next">Next action</option>
             <option value="newest">Newest first</option>
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

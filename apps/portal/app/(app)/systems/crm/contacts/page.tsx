@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { crmChannelLabel, crmContactName } from "@lexta/db";
 import CrmTabs from "@/components/crm/CrmTabs";
@@ -70,19 +71,19 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
         </div>
         <div className="field">
           <label htmlFor="consent">Marketing consent</label>
-          <select id="consent" name="consent" defaultValue={consent}>
+          <Select id="consent" name="consent" defaultValue={consent}>
             <option value="">Any</option>
             <option value="yes">Agreed</option>
             <option value="no">Not agreed</option>
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="owner">Owner</label>
-          <select id="owner" name="owner" defaultValue={owner}>
+          <Select id="owner" name="owner" defaultValue={owner}>
             <option value="">Anyone</option>
             <option value="mine">Mine</option>
             <option value="unassigned">Unassigned</option>
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

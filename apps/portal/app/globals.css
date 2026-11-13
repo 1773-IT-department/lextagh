@@ -1,5 +1,12 @@
 * { box-sizing: border-box; }
 :root { --navy: #0b2f3d; --ink: #14313d; --muted: #5d7883; --teal: #12a3c4; --teal-dark: #0d8ba8; --line: #e6f1f5; --soft: #f6fbfd; --danger: #b42318; }
+/* The Lexta dropdown (packages/ui Select) in the portal's tokens: a focus ring like the other fields, a larger option text. */
+:root { --lx-select-accent: var(--teal); --lx-select-accent-dark: var(--teal-dark); --lx-select-ink: var(--ink); --lx-select-muted: var(--muted);
+  --lx-select-danger: var(--danger); --lx-select-option-size: 14px; --lx-select-outline: none; --lx-select-ring: 0 0 0 3px rgba(18,163,196,.18); }
+/* Like the other portal fields, a dropdown shows its focus ring on any focus, after a mouse pick too (the website keeps
+   its keyboard only ring). */
+[data-lx-select][data-focus] > select { border-color: var(--teal) !important; box-shadow: 0 0 0 3px rgba(18,163,196,.18) !important; }
+[data-lx-select][data-focus] > select[aria-invalid="true"] { border-color: var(--danger) !important; }
 body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--soft); -webkit-font-smoothing: antialiased; }
 a { color: var(--teal-dark); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -210,6 +217,9 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .owner-box .alert { margin: 0; }
 .owner-form { display: flex; gap: 8px; }
 .owner-form select { flex: 1; min-width: 0; height: 34px; border: 1px solid #cfe3ea; border-radius: 8px; padding: 0 8px; background: #fff; }
+.owner-form [data-lx-select] { flex: 1; min-width: 0; }
+.owner-form [data-lx-select] select { padding-right: 32px !important; }
+.owner-form [data-lx-select] > span[aria-hidden] { right: 10px; }
 .stage-form { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
 .stage-form .field { width: 100%; margin: 0; }
 .stage-pills { display: flex; flex-wrap: wrap; gap: 6px; }

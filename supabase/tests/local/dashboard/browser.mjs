@@ -26,6 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const OUT = process.env.DASHBOARD_SCREENSHOTS || path.join(os.tmpdir(), "lexta-dashboard-screens");
 mkdirSync(OUT, { recursive: true });
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -56,10 +57,10 @@ const SEED = `
 set session_replication_role = replica;
 insert into public.crm_contacts (id, full_name) values ('00000000-0000-0000-0000-00000000d201', 'Dash Customer');
 insert into public.crm_organisations (id, name, kind) values ('00000000-0000-0000-0000-00000000d202', 'Dash Distributors', 'distributor');
-insert into public.crm_leads (id, title, contact_id, brand_id, source, stage, owner_id, created_at, closed_at) values
-  ('00000000-0000-0000-0000-00000000d211', 'L1', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'yazz'), 'website_contact_form', 'new', null, now() - interval '2 days', null),
-  ('00000000-0000-0000-0000-00000000d212', 'L2', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'hooch'), 'phone', 'won', '00000000-0000-0000-0000-00000000d103', now() - interval '3 days', now() - interval '1 day'),
-  ('00000000-0000-0000-0000-00000000d213', 'L3 older', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'yazz'), 'email', 'new', null, now() - interval '40 days', null);
+insert into public.crm_leads (id, title, contact_id, brand_id, source, stage, owner_id, created_at, closed_at, intake_reference) values
+  ('00000000-0000-0000-0000-00000000d211', 'L1', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'yazz'), 'website_contact_form', 'new', null, now() - interval '2 days', null, 'LX-D0DA5B0A11'),
+  ('00000000-0000-0000-0000-00000000d212', 'L2', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'hooch'), 'phone', 'won', '00000000-0000-0000-0000-00000000d103', now() - interval '3 days', now() - interval '1 day', null),
+  ('00000000-0000-0000-0000-00000000d213', 'L3 older', '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'yazz'), 'email', 'new', null, now() - interval '40 days', null, null);
 insert into public.crm_leads (title, contact_id, brand_id, source, stage, created_at)
   select 'Bulk lead ' || g, '00000000-0000-0000-0000-00000000d201', (select id from public.brands where slug = 'linzzy'), 'event', 'new', now() - interval '20 days' - g * interval '1 minute'
   from generate_series(1, 40) g;
@@ -206,7 +207,7 @@ try {
   await mgr.getByRole("link", { name: "This year" }).click();
   await mgr.waitForURL(/range=year/);
   await settle(mgr);
-  await mgr.getByLabel("Brand").selectOption({ label: "Yazz" });
+  await choose(mgr, "Brand", "Yazz");
   await mgr.getByRole("button", { name: "Apply" }).click();
   await mgr.waitForURL(/brand=/);
   await settle(mgr);
@@ -243,7 +244,7 @@ try {
     `1440: Load more brings the other ${total - 30} rows once each, then stops`, { shown: all.length, total });
   check(await mgr.getByText(/all there are for these filters/).isVisible(), "1440: says when everything is shown");
 
-  await mgr.getByLabel("System", { exact: true }).selectOption({ label: "Orders" });
+  await choose(mgr, "System", "Orders");
   await mgr.getByRole("button", { name: "Show" }).click();
   await mgr.waitForURL(/system=orders/);
   await settle(mgr);
@@ -291,6 +292,11 @@ try {
   await mgr.screenshot({ path: `${OUT}/manager-1440-orders.png`, fullPage: true });
   await go(mgr, `${PORTAL}/management/crm`);
   check(await mgr.locator("section[aria-labelledby=sec_latest] .ptable tbody tr").count() === 10, "1440: about ten latest records, no more");
+  const latestLeads = mgr.locator("section[aria-labelledby=sec_latest] .ptable tbody");
+  const leadLinks = await latestLeads.locator("a").allInnerTexts();
+  check(await latestLeads.getByRole("link", { name: "Website enquiry LX-D0DA5B0A11", exact: true }).getAttribute("href") === "/systems/crm/leads/00000000-0000-0000-0000-00000000d211"
+    && !leadLinks.some((t) => /\bL1\b/.test(t)), "1440: latest leads: a website lead shows its fixed label and reference, never its title (the visitor's name)", leadLinks);
+  check(leadLinks.includes("L2") && leadLinks.includes("Bulk lead 1"), "1440: latest leads: staff typed titles stay as they are", leadLinks);
   await go(mgr, `${PORTAL}/management/nothing-here`);
   check(/could not be found/i.test(await mgr.locator("body").innerText()), "1440: an unknown section is not found");
   errors.splice(0, errors.length, ...errors.filter((e) => !/404/.test(e)));

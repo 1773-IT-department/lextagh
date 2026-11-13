@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { CHAT_CONVERSATION_COLUMNS, CHAT_STATUSES, chatStatusLabel, isChatUnread, type ChatConversation } from "@lexta/db";
 import InboxPoller from "@/components/chat/InboxPoller";
@@ -102,18 +103,18 @@ export default async function ChatInboxPage({ searchParams }: { searchParams: Pr
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={status}>
+          <Select id="status" name="status" defaultValue={status}>
             {CHAT_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
             <option value="all">All statuses</option>
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="who">Assigned</label>
-          <select id="who" name="who" defaultValue={who}>
+          <Select id="who" name="who" defaultValue={who}>
             <option value="">Anyone</option>
             <option value="mine">Mine</option>
             <option value="unassigned">Unassigned</option>
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

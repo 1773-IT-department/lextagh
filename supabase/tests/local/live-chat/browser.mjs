@@ -22,6 +22,7 @@ const OUT = process.env.CHAT_SCREENSHOTS || path.join(os.tmpdir(), "lexta-chat-s
 mkdirSync(OUT, { recursive: true });
 const SECRET = "harness-chat-secret-0123456789abcdef0";
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -152,7 +153,7 @@ try {
   await portal.waitForURL(/made=lead/);
   const leadLink = portal.getByRole("link", { name: "Live chat with Ama Owusu" });
   check(await leadLink.isVisible(), "a CRM lead is made from the chat and linked");
-  await portal.getByLabel("What is the complaint about?").selectOption("availability");
+  await choose(portal, "What is the complaint about?", { value: "availability" });
   await portal.getByRole("button", { name: "Log a complaint" }).click();
   await portal.waitForURL(/made=complaint/);
   check(await portal.getByRole("link", { name: /^LX-\d{4}-\d{4}$/ }).isVisible(), "a complaint is logged from the chat and linked");

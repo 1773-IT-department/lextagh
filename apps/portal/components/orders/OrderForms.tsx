@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useEffect, useRef, useState } from "react";
 import { orderStatusLabel, type OrderStatus } from "@lexta/db";
 import { addStaffNote, linkDistributor, setOrderStatus, unlinkDistributor } from "@/app/(app)/systems/orders/actions";
@@ -93,10 +94,10 @@ export function LinkForm({ profileId, name, organisations }: { profileId: string
       <input type="hidden" name="profile_id" value={profileId} />
       <div className="field">
         <label htmlFor={fieldId}>Organisation for {name}</label>
-        <select id={fieldId} name="organisation_id" defaultValue="" aria-invalid={!!fe.organisation_id} disabled={pending}>
+        <Select id={fieldId} name="organisation_id" defaultValue="" aria-invalid={!!fe.organisation_id} disabled={pending}>
           <option value="">Choose an organisation</option>
           {organisations.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
-        </select>
+        </Select>
         {fe.organisation_id && <span className="ferr">{fe.organisation_id}</span>}
       </div>
       <button className="btn small" type="submit" disabled={pending}>{pending ? "Linking..." : "Link"}</button>

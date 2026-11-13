@@ -22,6 +22,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const OUT = process.env.CSR_SCREENSHOTS || path.join(os.tmpdir(), "lexta-csr-screens");
 mkdirSync(OUT, { recursive: true });
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -137,8 +138,8 @@ try {
   await mkt.getByRole("button", { name: "Save activity" }).click();
   await mkt.getByText("Please check the highlighted fields.").waitFor();
   check(await mkt.getByText("Choose a programme.").isVisible() && await mkt.getByText("Choose a region.").isVisible(), "390: missing fields are named");
-  await mkt.getByLabel("Programme").selectOption({ label: "The Dignity Project" });
-  await mkt.getByLabel("Region").selectOption({ label: "Volta" });
+  await choose(mkt, "Programme", "The Dignity Project");
+  await choose(mkt, "Region", "Volta");
   await mkt.getByLabel("Town or place").fill("Mawuko Girls SHS, Ho");
   await mkt.getByLabel("People reached").fill("350");
   await mkt.getByLabel("Partners (optional)").fill("Ghana Education Service");
@@ -197,7 +198,7 @@ try {
   const dignity = mgr.locator(".ptable tr", { hasText: "The Dignity Project" }).first();
   check((await dignity.innerText()).includes("362"), "1440: Dignity Project totals count the done activity only");
   await mgr.screenshot({ path: `${OUT}/manager-1440-csr.png`, fullPage: true });
-  await mgr.getByLabel("Region").selectOption({ label: "Ashanti" });
+  await choose(mgr, "Region", "Ashanti");
   await mgr.getByRole("button", { name: "Apply" }).click();
   await mgr.waitForURL(/region=/);
   await mgr.locator("main h1").waitFor();

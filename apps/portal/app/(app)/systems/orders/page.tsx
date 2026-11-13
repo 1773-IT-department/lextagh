@@ -1,3 +1,4 @@
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import { orderStatusLabel, STAFF_ORDER_STATUSES, type DistributorOrder, type OrderInboxRow } from "@lexta/db";
 import OrderTabs from "@/components/orders/OrderTabs";
@@ -137,33 +138,33 @@ async function Inbox({ access, params }: { access: OrdersAccess; params: Search 
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={f.status}>
+          <Select id="status" name="status" defaultValue={f.status}>
             <option value="">Any status</option>
             <option value="open">Still to do</option>
             {STAFF_ORDER_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={f.brand}>
+          <Select id="brand" name="brand" defaultValue={f.brand}>
             <option value="">Any brand</option>
             {brandChoices.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="org">Distributor</label>
-          <select id="org" name="org" defaultValue={f.org}>
+          <Select id="org" name="org" defaultValue={f.org}>
             <option value="">Any distributor</option>
             {orgs.map((o) => <option key={o.id} value={o.id}>{o.name ?? "Distributor"}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="from">Submitted from</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} />
         </div>
         <div className="field">
           <label htmlFor="to">Submitted to</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} />
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

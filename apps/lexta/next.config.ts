@@ -11,7 +11,7 @@ const convertedPages = [
 ];
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lexta/db"],
+  transpilePackages: ["@lexta/db", "@lexta/ui"],
   // The Careers application form posts the CV (at most 4 MB) to its server action, with or without JavaScript.
   // Server actions take 1 MB by default; allow Vercel's own request limit, 4.5 MB, and no more.
   experimental: { serverActions: { bodySizeLimit: "4.5mb" } },

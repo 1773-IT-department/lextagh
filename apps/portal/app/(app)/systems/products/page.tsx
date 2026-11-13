@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { productImageUrl, type ProductImage } from "@lexta/db";
 import { getProductAccess } from "@/lib/products";
@@ -90,18 +91,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             </div>
             <div className="field">
               <label htmlFor="brand">Brand</label>
-              <select id="brand" name="brand" defaultValue={brandFilter}>
+              <Select id="brand" name="brand" defaultValue={brandFilter}>
                 <option value="">All my brands</option>
                 {access.brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
+              </Select>
             </div>
             <div className="field">
               <label htmlFor="status">Status</label>
-              <select id="status" name="status" defaultValue={status}>
+              <Select id="status" name="status" defaultValue={status}>
                 <option value="">Any</option>
                 <option value="published">On the websites</option>
                 <option value="draft">Draft</option>
-              </select>
+              </Select>
             </div>
             <div className="filter-actions">
               <button className="btn" type="submit">Apply</button>

@@ -1,5 +1,6 @@
 "use client";
 
+import { DateInput, Select } from "@lexta/ui";
 import { useEffect, useRef } from "react";
 import { CRM_ACTIVITY_TYPES } from "@lexta/db";
 import { addActivity } from "@/app/(app)/systems/crm/actions";
@@ -23,14 +24,14 @@ export default function ActivityForm({ kind, id }: { kind: "lead" | "contact" | 
         <div className="row2">
           <div className="field">
             <label htmlFor={`type-${id}`}>Type</label>
-            <select id={`type-${id}`} name="type" defaultValue="note" aria-invalid={!!fe.type}>
+            <Select id={`type-${id}`} name="type" defaultValue="note" aria-invalid={!!fe.type}>
               {CRM_ACTIVITY_TYPES.filter((t) => t.value !== "status_change").map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-            </select>
+            </Select>
             {fe.type && <span className="ferr">{fe.type}</span>}
           </div>
           <div className="field">
             <label htmlFor={`occurred-${id}`}>When (leave empty for now)</label>
-            <input id={`occurred-${id}`} name="occurred_at" type="datetime-local" aria-invalid={!!fe.occurred_at} />
+            <DateInput id={`occurred-${id}`} name="occurred_at" type="datetime-local" aria-invalid={!!fe.occurred_at} />
             {fe.occurred_at && <span className="ferr">{fe.occurred_at}</span>}
           </div>
         </div>
