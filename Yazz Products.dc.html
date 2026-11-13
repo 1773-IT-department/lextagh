@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700;1,800&amp;family=Caveat:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #ffffff; font-family: Poppins, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #0B4FA5; text-decoration: none; }
+  a:hover { color: #ED1B2E; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+<script src="./yazz-articles.js"></script>
+<script src="./yazz-site.js"></script>
+</helmet>
+
+<div style="width:100%;max-width:1440px;margin:0 auto;background:#fff;color:#12243B;overflow:hidden">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 40px;background:#fff;position:relative;z-index:20">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#fff;border-radius:8px;transform:rotate(-6deg);padding:2px 12px 4px;box-shadow:0 1px 0 rgba(0,0,0,0.04)">
+        <span style="font-family:Poppins,sans-serif;font-weight:800;font-style:italic;font-size:38px;letter-spacing:-1px;color:#ED1B2E;-webkit-text-stroke:1.5px #0B4FA5;paint-order:stroke fill">Yazz</span>
+      </div>
+    </div>
+    <nav style="display:flex;align-items:center;gap:30px;font-size:14px;font-weight:500;color:#2A3B52">
+      <a href="./Yazz Home Page.dc.html" style="color:#2A3B52">Home</a>
+      <span style="position:relative;display:inline-flex" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
+        <a href="./Yazz Products.dc.html" style="color:#ED1B2E;font-weight:600;border-bottom:2px solid #ED1B2E;padding-bottom:3px;display:flex;align-items:center;gap:3px">Products <span class="ms" style="font-size:16px">expand_more</span></a>
+        <span style="position:absolute;top:100%;left:-14px;padding-top:12px;display:{{ menuDisplay }};z-index:30">
+          <span style="display:flex;flex-direction:column;min-width:198px;background:#fff;border:1px solid #EAF0F6;border-radius:12px;box-shadow:0 14px 34px rgba(11,46,99,.14);padding:8px;font-size:13px;font-weight:500">
+            <a href="./Yazz Shop.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#F3F8FD;color:#0B4FA5"><span class="ms" style="font-size:16px">storefront</span> All Products</a>
+            <a href="./Yazz Feminine Care.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#FDECF4;color:#EC1B7B"><span class="ms" style="font-size:16px">female</span> Feminine Care</a>
+            <a href="./Yazz Oral Care.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#EAF3FB;color:#0B4FA5"><span class="ms" style="font-size:16px">dentistry</span> Oral Care</a>
+            <a href="./Yazz Home &amp; Tissue.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#F3F8FD;color:#0B4FA5"><span class="ms" style="font-size:16px">cottage</span> Home &amp; Tissues</a>
+          </span>
+        </span>
+      </span>
+      <a href="./Yazz About Us.dc.html" style="color:#2A3B52">About Us</a>
+      <span style="position:relative;display:inline-flex" onMouseEnter="{{ openTips }}" onMouseLeave="{{ closeTips }}">
+        <a href="./Yazz Tips &amp; Articles.dc.html" style="color:#2A3B52;display:flex;align-items:center;gap:3px">Tips &amp; Articles <span class="ms" style="font-size:16px">expand_more</span></a>
+        <span style="position:absolute;top:100%;left:-14px;padding-top:12px;display:{{ tipsDisplay }};z-index:30">
+          <span style="display:flex;flex-direction:column;min-width:214px;background:#fff;border:1px solid #EAF0F6;border-radius:12px;box-shadow:0 14px 34px rgba(11,46,99,.14);padding:8px;font-size:13px;font-weight:500">
+            <a href="./Yazz Tips &amp; Articles.dc.html#just-4-you" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#FDECF4;color:#EC1B7B"><span class="ms" style="font-size:16px">favorite</span> Tips Just 4 You</a>
+            <a href="./Yazz Tips &amp; Articles.dc.html#just-4-parents" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#EAF3FB;color:#0B4FA5"><span class="ms" style="font-size:16px">family_restroom</span> Tips Just 4 Parents</a>
+          </span>
+        </span>
+      </span>
+      <a href="./Yazz CSR.dc.html" style="color:#2A3B52">CSR</a>
+      <a href="./Yazz News.dc.html" style="color:#2A3B52">News</a>
+      <a href="./Yazz Contact Us.dc.html" style="color:#2A3B52">Contact</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:20px">
+      <button data-yazz-search="" aria-label="Search" title="Search (press /)" style="border:0;background:none;padding:0;cursor:pointer;display:flex;color:#2A3B52"><span class="ms" style="font-size:22px">search</span></button>
+      <a href="./Yazz Cart.dc.html" aria-label="Cart" style="position:relative;display:flex;align-items:center;color:#2A3B52">
+        <span class="ms" style="font-size:22px">shopping_cart</span>
+        <span data-cart-count="" style="position:absolute;top:-7px;right:-8px;background:#ED1B2E;color:#fff;font-size:10px;font-weight:600;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center">0</span>
+      </a>
+      <a href="./Yazz Contact Us.dc.html#trade" style="background:#ED1B2E;color:#fff;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px;display:inline-flex;align-items:center;gap:8px">Order in Bulk <span class="ms" style="font-size:16px">arrow_forward</span></a>
+    </div>
+  </header>
+
+  <section data-screen-label="Products Hero" style="position:relative;background:linear-gradient(90deg,#E6F2FB 0%,#E9F4FC 45%,#EAF4FC 100%);border-radius:0 0 22px 22px;overflow:hidden;min-height:300px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:stretch">
+    <div style="padding:46px 24px 40px 40px;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-size:11px;letter-spacing:2.4px;font-weight:600;color:#5A9BD8;margin-bottom:12px">OUR PRODUCTS</div>
+      <h1 style="margin:0;font-size:38px;line-height:1.14;font-weight:800;color:#0B2E63;letter-spacing:-.8px">Everyday Essentials<br><span style="font-family:Caveat,cursive;font-weight:700;font-size:46px;color:#ED1B2E;letter-spacing:0">for a Brighter You.</span></h1>
+      <p style="margin:18px 0 0;font-size:13.5px;line-height:1.7;color:#4D6C90;max-width:330px">From personal care to home essentials, Yazz gives you quality, comfort and confidence — every day.</p>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:34px;max-width:400px">
+        <div style="padding-right:14px;border-right:1px solid #CFE3F4">
+          <span style="width:34px;height:34px;border-radius:11px;background:#D8EAFA;color:#0B4FA5;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500">workspace_premium</span></span>
+          <div style="font-size:11.5px;font-weight:600;color:#0B2E63;margin-top:10px">Quality</div>
+          <div style="font-size:11px;color:#5C7796">Products</div>
+        </div>
+        <div style="padding:0 14px;border-right:1px solid #CFE3F4">
+          <span style="width:34px;height:34px;border-radius:11px;background:#FBDCE8;color:#EC1B7B;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500">verified</span></span>
+          <div style="font-size:11.5px;font-weight:600;color:#0B2E63;margin-top:10px">Trusted</div>
+          <div style="font-size: 11px; color: #5C7796; width: 81px; height: 39px">by Ghanaians</div>
+        </div>
+        <div style="padding:0 14px;border-right:1px solid #CFE3F4">
+          <span style="width:34px;height:34px;border-radius:11px;background:#D8EAFA;color:#0B4FA5;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500">volunteer_activism</span></span>
+          <div style="font-size:11.5px;font-weight:600;color:#0B2E63;margin-top:10px">Value for</div>
+          <div style="font-size:11px;color:#5C7796">Your Family</div>
+        </div>
+        <div style="padding-left:14px">
+          <span style="width:34px;height:34px;border-radius:11px;background:#FBEBD5;color:#B05C10;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:20px;font-variation-settings:'FILL' 1,'wght' 500">storefront</span></span>
+          <div style="font-size:11.5px;font-weight:600;color:#0B2E63;margin-top:10px">Available</div>
+          <div style="font-size:11px;color:#5C7796">Across Ghana</div>
+        </div>
+      </div>
+    </div>
+    <div style="position:relative;min-height:300px;background:#E9F4FC url('./assets/products/hero.png') right center / cover no-repeat">
+      <div style="position:absolute;top:26px;right:34px;text-align:left">
+        <div style="font-family:Caveat,cursive;font-weight:700;font-size:30px;line-height:1.12;color:#0B2E63">Same<br>Quality.<br>More<br>Smiles.</div>
+        <div style="margin-top:6px;color:#ED1B2E;font-size:20px;text-align:right">♥</div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Category Tabs" style="padding:22px 40px 0;background:#fff">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px">
+      <a href="./Yazz Shop.dc.html" style="background:#0B2E63;border-radius:12px;padding:18px 20px 16px;color:#fff;display:block">
+        <span class="ms" style="font-size:22px;color:#8FC4F5">grid_view</span>
+        <div style="font-size:16px;font-weight:700;margin-top:14px;color:#fff">All Products</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px">
+          <span style="font-size:12px;color:#B9D2EE">View our complete range</span>
+          <span class="ms" style="font-size:18px;color:#fff">arrow_forward</span>
+        </div>
+      </a>
+      <a href="./Yazz Feminine Care.dc.html" style="background:#FDE7F1;border-radius:12px;padding:18px 20px 16px;display:block">
+        <span class="ms" style="font-size:22px;color:#EC1B7B">female</span>
+        <div style="font-size:16px;font-weight:700;margin-top:14px;color:#EC1B7B">Feminine Care</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px">
+          <span style="font-size:12px;color:#B4618C">For your everyday comfort</span>
+          <span class="ms" style="font-size:18px;color:#EC1B7B">arrow_forward</span>
+        </div>
+      </a>
+      <a href="./Yazz Oral Care.dc.html" style="background:#E4F1FC;border-radius:12px;padding:18px 20px 16px;display:block">
+        <span class="ms" style="font-size:22px;color:#0B4FA5">dentistry</span>
+        <div style="font-size:16px;font-weight:700;margin-top:14px;color:#0B4FA5">Oral Care</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px">
+          <span style="font-size:12px;color:#5C7796">Healthy smiles, brighter days</span>
+          <span class="ms" style="font-size:18px;color:#0B4FA5">arrow_forward</span>
+        </div>
+      </a>
+      <a href="./Yazz Home &amp; Tissue.dc.html" style="background:#FDEEDA;border-radius:12px;padding:18px 20px 16px;display:block">
+        <span class="ms" style="font-size:22px;color:#D97B14">home</span>
+        <div style="font-size:16px;font-weight:700;margin-top:14px;color:#B05C10">Home &amp; Tissues</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px">
+          <span style="font-size:12px;color:#A3773F">Clean spaces, happier moments</span>
+          <span class="ms" style="font-size:18px;color:#B05C10">arrow_forward</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section id="all" data-screen-label="Complete Range" style="padding:40px 40px 34px;background:#fff">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:30px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:11px;letter-spacing:2.2px;font-weight:600;color:#EC1B7B;margin-bottom:10px">ALL PRODUCTS</div>
+        <h2 style="margin:0;font-size:28px;font-weight:700;color:#0B2E63;letter-spacing:-.5px">Our Complete Range</h2>
+        <p style="margin:12px 0 0;font-size:13px;line-height:1.7;color:#5C7796;max-width:320px">Everything you need, all in one place. Explore our full range of Yazz products, designed for a healthier, happier you.</p>
+      </div>
+      <a href="./Yazz Shop.dc.html" style="font-size:12.5px;font-weight:500;color:#0B4FA5;display:inline-flex;align-items:center;gap:7px">View All Products <span class="ms" style="font-size:15px">arrow_forward</span></a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-top:26px">
+      <div style="border:1px solid #F2E3EC;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#FDF1F7 url('./assets/products/tile-pads.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Sanitary Pads</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">Comfort &amp; protection</div>
+          <a href="./Yazz Feminine Care.dc.html" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+      <div style="border:1px solid #E6EFE1;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#F5FAF2 url('./assets/products/tile-liners.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Panty Liners</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">Freshness, every day</div>
+          <a href="./Yazz Feminine Care.dc.html" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+      <div style="border:1px solid #DFEAF6;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#F1F8FD url('./assets/products/tile-toothpaste.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Toothpaste</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">For a healthier smile</div>
+          <a href="./Yazz Oral Care.dc.html" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+      <div style="border:1px solid #DFEAF6;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#F1F8FD url('./assets/products/tile-toothbrush.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Toothbrushes</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">Clean teeth, fresh breath</div>
+          <a href="./Yazz Oral Care.dc.html" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+      <div style="border:1px solid #E7EDF3;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#F7FAFC url('./assets/products/tile-tissue.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Tissue Papers</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">Soft, strong &amp; reliable</div>
+          <a href="#home" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+      <div style="border:1px solid #DFEAF6;border-radius:12px;overflow:hidden;background:#fff">
+        <div style="height:106px;background:#F1F8FD url('./assets/products/tile-powder.png') center / contain no-repeat"></div>
+        <div style="padding:12px 14px 16px">
+          <div style="font-size:13px;font-weight:600;color:#17293F">Washing Powders</div>
+          <div style="font-size:11.5px;color:#5C7796;margin-top:3px">For a cleaner tomorrow</div>
+          <a href="#home" style="display:inline-flex;align-items:center;gap:7px;margin-top:14px;background:#0B2E63;color:#fff;font-size:11.5px;font-weight:600;padding:8px 14px;border-radius:999px">View Products <span class="ms" style="font-size:14px">arrow_forward</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="feminine" data-screen-label="Feminine Care" style="background:linear-gradient(90deg,#FBDCEA 0%,#FDE8F1 42%,#FDF0F5 100%);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.3fr) minmax(190px,0.75fr);align-items:stretch;min-height:190px">
+    <div style="position:relative;min-height:190px;background:#FBDCEA url('./assets/products/fem-model.png') right center / cover no-repeat">
+      <div style="position:absolute;top:18px;left:14px;background:rgba(253,232,241,.9);border-radius:10px;padding:10px 14px 8px">
+        <div style="font-family:Caveat,cursive;font-weight:700;font-size:24px;line-height:1.2;color:#12243B">Comfort<br>Protection<br>Confidence</div>
+        <div style="color:#ED1B2E;font-size:15px;margin-top:2px">♡ ♥</div>
+      </div>
+    </div>
+    <div style="position:relative;display:flex;align-items:center;gap:14px;padding:26px 14px 26px 22px">
+      <div style="flex:1 1 auto;min-width:0">
+        <div style="font-size:10.5px;letter-spacing:2.2px;font-weight:600;color:#C2477F;margin-bottom:9px">FEMININE CARE</div>
+        <h2 style="margin:0;font-size:23px;font-weight:700;color:#0B2E63;letter-spacing:-.4px">Care for Every You</h2>
+        <p style="margin:10px 0 0;font-size:12.5px;line-height:1.7;color:#7A4A60;max-width:270px">Stay fresh, comfortable and confident with our trusted range of sanitary pads and panty liners.</p>
+        <a href="./Yazz Feminine Care.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#ED1B2E;color:#fff;font-size:12.5px;font-weight:600;padding:11px 20px;border-radius:999px">Explore Feminine Care <span class="ms" style="font-size:15px">arrow_forward</span></a>
+      </div>
+      <div style="flex:0 0 190px;align-self:stretch;background:url('./assets/products/fem-products.png') center bottom / contain no-repeat"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:18px;padding:26px 24px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#FBD3E4;color:#EC1B7B;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">spa</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Sanitary Pads</div><div style="font-size:11.5px;color:#8A5C70">(Regular, Maxi, Night)</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#FBD3E4;color:#EC1B7B;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">water_drop</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Panty Liners</div><div style="font-size:11.5px;color:#8A5C70">(Everyday freshness)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="oral" data-screen-label="Oral Care" style="margin-top:14px;background:linear-gradient(90deg,#DCEEFB 0%,#E7F3FC 42%,#EFF7FD 100%);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.3fr) minmax(190px,0.75fr);align-items:stretch;min-height:190px">
+    <div style="min-height:190px;background:#DCEEFB url('./assets/products/oral-model.png') center / cover no-repeat"></div>
+    <div style="display:flex;align-items:center;gap:14px;padding:26px 14px 26px 22px">
+      <div style="flex:1 1 auto;min-width:0">
+        <div style="font-size:10.5px;letter-spacing:2.2px;font-weight:600;color:#4A7BB5;margin-bottom:9px">ORAL CARE</div>
+        <h2 style="margin:0;font-size:23px;line-height:1.2;font-weight:700;color:#0B2E63;letter-spacing:-.4px">Healthy Smiles.<br>Brighter Days.</h2>
+        <p style="margin:10px 0 0;font-size:12.5px;line-height:1.7;color:#4D6C90;max-width:270px">Keep your mouth fresh and your smile bright with our quality toothpaste and toothbrushes.</p>
+        <a href="./Yazz Oral Care.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#0B3C7E;color:#fff;font-size:12.5px;font-weight:600;padding:11px 20px;border-radius:999px">Explore Oral Care <span class="ms" style="font-size:15px">arrow_forward</span></a>
+      </div>
+      <div style="flex:0 0 200px;align-self:stretch;background:url('./assets/products/oral-products.png') center bottom / contain no-repeat"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:18px;padding:26px 24px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#D2E8FA;color:#0B4FA5;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">dentistry</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Toothpaste</div><div style="font-size:11.5px;color:#5C7796">Cavity protection</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#D2E8FA;color:#0B4FA5;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">cleaning_services</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Toothbrushes</div><div style="font-size:11.5px;color:#5C7796">Gentle &amp; effective</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="home" data-screen-label="Home and Tissues" style="margin-top:14px;background:linear-gradient(90deg,#FBF0DF 0%,#FDF4E7 45%,#FDF7EF 100%);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(190px,0.75fr);align-items:stretch;min-height:190px">
+    <div style="padding:28px 20px 28px 40px;display:flex;flex-direction:column;justify-content:center">
+      <div style="font-size:10.5px;letter-spacing:2.2px;font-weight:600;color:#A3773F;margin-bottom:9px">HOME &amp; TISSUES</div>
+      <h2 style="margin:0;font-size:23px;line-height:1.2;font-weight:700;color:#0B2E63;letter-spacing:-.4px">Clean Spaces.<br>Happier Moments.</h2>
+      <p style="margin:10px 0 0;font-size:12.5px;line-height:1.7;color:#6B5535;max-width:280px">Keep your home fresh and your family comfortable with our range of tissues and washing powders.</p>
+      <a href="./Yazz Home &amp; Tissue.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#0B2E63;color:#fff;font-size:12.5px;font-weight:600;padding:11px 20px;border-radius:999px;align-self:flex-start">Explore Home &amp; Tissues <span class="ms" style="font-size:15px">arrow_forward</span></a>
+    </div>
+    <div style="min-height:190px;background:url('./assets/products/home-products.png') center bottom / contain no-repeat"></div>
+    <div style="display:flex;flex-direction:column;justify-content:center;gap:16px;padding:26px 24px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F6E4C8;color:#B05C10;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">local_laundry_service</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Washing Powders</div><div style="font-size:11.5px;color:#8A7148">(Various sizes)</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F6E4C8;color:#B05C10;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">inventory_2</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Tissue Papers</div><div style="font-size:11.5px;color:#8A7148">(Soft &amp; strong)</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F6E4C8;color:#B05C10;display:flex;align-items:center;justify-content:center"><span class="ms" style="font-size:19px">layers</span></span>
+        <div><div style="font-size:12.5px;font-weight:600;color:#17293F">Toilet Rolls</div><div style="font-size:11.5px;color:#8A7148">(Everyday essentials)</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="Bulk CTA" style="margin-top:14px;background:linear-gradient(90deg,#0B2E63 0%,#0B2E63 52%,#123E7C 100%);border-radius:20px;overflow:hidden;display:grid;grid-template-columns:minmax(0,0.75fr) minmax(0,1fr) minmax(0,1.1fr);align-items:center;min-height:148px">
+    <div style="padding:26px 10px 26px 40px">
+      <div style="font-family:Caveat,cursive;font-weight:700;font-size:28px;line-height:1.14;color:#fff">More<br>Products.<br>More <span style="font-family:Poppins,sans-serif;font-weight:700;font-style:italic;font-size:22px">Smiles.</span></div>
+      <span style="color:#ED1B2E;font-size:15px">♥</span>
+    </div>
+    <div style="padding:26px 20px 26px 0">
+      <h2 style="margin:0;font-size:20px;font-weight:700;color:#fff">Ready to Stock Up?</h2>
+      <p style="margin:9px 0 0;font-size:12.5px;line-height:1.65;color:#C3DAF3;max-width:250px">Get your favourite Yazz products in bulk and enjoy great value.</p>
+      <a href="./Yazz Contact Us.dc.html#trade" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:#ED1B2E;color:#fff;font-size:12.5px;font-weight:600;padding:11px 20px;border-radius:999px">Order in Bulk <span class="ms" style="font-size:15px">arrow_forward</span></a>
+    </div>
+    <div style="align-self:stretch;min-height:148px;background:url('./assets/products/cta-family.png') right center / cover no-repeat;mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 14%,#000 100%);-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 14%,#000 100%)"></div>
+  </section>
+
+  <footer style="margin-top:14px;background:linear-gradient(180deg,#0B3C7E 0%,#09306A 100%);color:#fff">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:30px;padding:34px 40px 26px;align-items:start">
+      <div>
+        <div style="display:inline-block;background:#fff;border-radius:8px;transform:rotate(-6deg);padding:2px 12px 4px">
+          <span style="font-weight:800;font-style:italic;font-size:32px;letter-spacing:-1px;color:#ED1B2E;-webkit-text-stroke:1.5px #0B4FA5;paint-order:stroke fill">Yazz</span>
+        </div>
+        <div style="font-family:Caveat,cursive;font-size:20px;color:#DCEAFA;margin-top:10px">Freshness for a brighter you.</div>
+        <div style="display:flex;gap:4px;margin-top:8px;transform:skewX(-14deg)">
+          <span style="width:24px;height:6px;border-radius:2px;background:#CE1126"></span>
+          <span style="width:24px;height:6px;border-radius:2px;background:#FCD116"></span>
+          <span style="width:24px;height:6px;border-radius:2px;background:#006B3F"></span>
+        </div>
+      </div>
+      <div style="min-height:104px;mix-blend-mode:lighten;background:url('./assets/products/footer-range.png') center / contain no-repeat"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:20px;font-size:12px">
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Shop</div>
+          <div style="display:flex;flex-direction:column;gap:7px"><a href="./Yazz Shop.dc.html" style="color:#B9D2EE">All Products</a><a href="./Yazz Feminine Care.dc.html" style="color:#B9D2EE">Feminine Care</a><a href="./Yazz Oral Care.dc.html" style="color:#B9D2EE">Oral Care</a><a href="./Yazz Home &amp; Tissue.dc.html" style="color:#B9D2EE">Home &amp; Tissues</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">About Us</div>
+          <div style="display:flex;flex-direction:column;gap:7px"><a href="./Yazz About Us.dc.html" style="color:#B9D2EE">Our Story</a><a href="./Yazz CSR.dc.html" style="color:#B9D2EE">Sustainability</a><a href="./Yazz Careers.dc.html" style="color:#B9D2EE">Careers</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Support</div>
+          <div style="display:flex;flex-direction:column;gap:7px"><a href="./Yazz FAQs.dc.html" style="color:#B9D2EE">FAQs</a><a href="./Yazz FAQs.dc.html#shipping" style="color:#B9D2EE">Shipping &amp; Returns</a><a href="./Yazz Contact Us.dc.html" style="color:#B9D2EE">Contact Us</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Follow Us</div>
+          <div style="display:flex;gap:8px">
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700" style-hover="background:#ED1B2E;color:#fff">f</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px" style-hover="background:#ED1B2E;color:#fff">◎</a>
+            <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px" style-hover="background:#ED1B2E;color:#fff">♪</a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:12px" style-hover="background:#ED1B2E;color:#fff">▶</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.14);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#9FC1E4">
+      <span>© 2025 Yazz. All rights reserved.</span>
+      <span style="display:flex;align-items:center;gap:8px"><span style="display:inline-flex;gap:2px"><span style="width:8px;height:12px;background:#CE1126"></span><span style="width:8px;height:12px;background:#FCD116"></span><span style="width:8px;height:12px;background:#006B3F"></span></span> Proudly Ghanaian</span>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">class Component extends DCLogic {
+  state = { menu: false, tips: false };
+  renderVals() {
+    return {
+      menuDisplay: this.state.menu ? 'block' : 'none',
+      openMenu: () => this.setState({ menu: true }),
+      tipsDisplay: this.state.tips ? 'block' : 'none',
+      openTips: () => this.setState({ tips: true }),
+      closeTips: () => this.setState({ tips: false }),
+      closeMenu: () => this.setState({ menu: false })
+    };
+  }
+}</script>
+</body>
+</html>

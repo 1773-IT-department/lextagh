@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600;1,700;1,800&amp;family=Caveat:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; background: #ffffff; font-family: Poppins, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: #0B4FA5; text-decoration: none; }
+  a:hover { color: #ED1B2E; }
+  .ms { font-family: 'Material Symbols Outlined'; font-weight: normal; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+</style>
+<script src="./yazz-articles.js"></script>
+<script src="./yazz-site.js"></script>
+</helmet>
+
+<div style="width:100%;max-width:1440px;margin:0 auto;background:#fff;color:#12243B;overflow:hidden">
+
+  <header style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:14px 40px;background:#fff;position:relative;z-index:5">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="background:#fff;border-radius:8px;transform:rotate(-6deg);padding:2px 12px 4px;box-shadow:0 1px 0 rgba(0,0,0,0.04)">
+        <span style="font-family:Poppins,sans-serif;font-weight:800;font-style:italic;font-size:38px;letter-spacing:-1px;color:#ED1B2E;-webkit-text-stroke:1.5px #0B4FA5;paint-order:stroke fill">Yazz</span>
+      </div>
+    </div>
+    <nav style="display:flex;align-items:center;gap:30px;font-size:14px;font-weight:500;color:#2A3B52">
+      <a href="./Yazz Home Page.dc.html" style="color:#2A3B52">Home</a>
+      <span style="position:relative;display:inline-flex" onMouseEnter="{{ openMenu }}" onMouseLeave="{{ closeMenu }}">
+        <a href="./Yazz Products.dc.html" style="color:#2A3B52;display:flex;align-items:center;gap:3px">Products <span class="ms" style="font-size:16px">expand_more</span></a>
+        <span style="position:absolute;top:100%;left:-14px;padding-top:12px;display:{{ menuDisplay }};z-index:30">
+          <span style="display:flex;flex-direction:column;min-width:198px;background:#fff;border:1px solid #EAF0F6;border-radius:12px;box-shadow:0 14px 34px rgba(11,46,99,.14);padding:8px;font-size:13px;font-weight:500">
+            <a href="./Yazz Shop.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#F3F8FD;color:#0B4FA5"><span class="ms" style="font-size:16px">storefront</span> All Products</a>
+            <a href="./Yazz Feminine Care.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#FDECF4;color:#EC1B7B"><span class="ms" style="font-size:16px">female</span> Feminine Care</a>
+            <a href="./Yazz Oral Care.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#EAF3FB;color:#0B4FA5"><span class="ms" style="font-size:16px">dentistry</span> Oral Care</a>
+            <a href="./Yazz Home &amp; Tissue.dc.html" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#F3F8FD;color:#0B4FA5"><span class="ms" style="font-size:16px">cottage</span> Home &amp; Tissues</a>
+          </span>
+        </span>
+      </span>
+      <a href="./Yazz About Us.dc.html" style="color:#2A3B52">About Us</a>
+      <span style="position:relative;display:inline-flex" onMouseEnter="{{ openTips }}" onMouseLeave="{{ closeTips }}">
+        <a href="./Yazz Tips &amp; Articles.dc.html" style="color:#2A3B52;display:flex;align-items:center;gap:3px">Tips &amp; Articles <span class="ms" style="font-size:16px">expand_more</span></a>
+        <span style="position:absolute;top:100%;left:-14px;padding-top:12px;display:{{ tipsDisplay }};z-index:30">
+          <span style="display:flex;flex-direction:column;min-width:214px;background:#fff;border:1px solid #EAF0F6;border-radius:12px;box-shadow:0 14px 34px rgba(11,46,99,.14);padding:8px;font-size:13px;font-weight:500">
+            <a href="./Yazz Tips &amp; Articles.dc.html#just-4-you" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#FDECF4;color:#EC1B7B"><span class="ms" style="font-size:16px">favorite</span> Tips Just 4 You</a>
+            <a href="./Yazz Tips &amp; Articles.dc.html#just-4-parents" style="color:#2A3B52;padding:9px 12px;border-radius:8px;display:flex;align-items:center;gap:8px" style-hover="background:#EAF3FB;color:#0B4FA5"><span class="ms" style="font-size:16px">family_restroom</span> Tips Just 4 Parents</a>
+          </span>
+        </span>
+      </span>
+      <a href="./Yazz CSR.dc.html" style="color:#2A3B52">CSR</a>
+      <a href="./Yazz News.dc.html" style="color:#2A3B52">News</a>
+      <a href="./Yazz Contact Us.dc.html" style="color:#2A3B52">Contact</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:20px">
+      <button data-yazz-search="" aria-label="Search" title="Search (press /)" style="border:0;background:none;padding:0;cursor:pointer;display:flex;color:#2A3B52"><span class="ms" style="font-size:22px">search</span></button>
+      <a href="./Yazz Cart.dc.html" aria-label="Cart" style="position:relative;display:flex;align-items:center;color:#2A3B52">
+        <span class="ms" style="font-size:22px">shopping_cart</span>
+        <span data-cart-count="" style="position:absolute;top:-7px;right:-8px;background:#ED1B2E;color:#fff;font-size:10px;font-weight:600;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center">0</span>
+      </a>
+      <a href="./Yazz Shop.dc.html" style="background:#ED1B2E;color:#fff;font-size:14px;font-weight:600;padding:11px 24px;border-radius:999px">Shop Now</a>
+    </div>
+  </header>
+
+  <section data-screen-label="Cart Hero" style="margin:0 40px;background:linear-gradient(90deg,#E6F2FB 0%,#EEF6FD 100%);border-radius:28px;padding:40px 48px 0">
+    <h1 style="margin:0;font-size:38px;font-weight:800;color:#0B2E63;letter-spacing:-1px">{{ pageTitle }}</h1>
+    <p style="margin:10px 0 0;font-size:14px;color:#4D6C90">{{ pageSub }}</p>
+    <div style="display:flex;gap:6px;margin-top:24px">
+      <a href="#cart" style="display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:14px 14px 0 0;font-size:14px;font-weight:600;background:{{ tabCartBg }};color:{{ tabCartFg }}"><span class="ms" style="font-size:18px">shopping_cart</span> Cart ({{ cartCount }})</a>
+      <a href="#quote" style="display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:14px 14px 0 0;font-size:14px;font-weight:600;background:{{ tabQuoteBg }};color:{{ tabQuoteFg }}"><span class="ms" style="font-size:18px">request_quote</span> Trade Quote ({{ quoteLen }})</a>
+    </div>
+  </section>
+
+  <sc-if value="{{ showCart }}" hint-placeholder-val="{{ true }}">
+  <section id="cart" data-screen-label="Cart" style="padding:32px 40px 56px">
+    <sc-if value="{{ orderDone }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:620px;margin:0 auto;text-align:center;background:#F3F8FD;border-radius:24px;padding:48px 36px">
+        <span style="width:64px;height:64px;border-radius:50%;background:#22A45D;color:#fff;display:inline-flex;align-items:center;justify-content:center"><span class="ms" style="font-size:34px">check</span></span>
+        <h2 style="margin:18px 0 0;font-size:26px;font-weight:800;color:#0B2E63">Thank you, {{ order.name }}!</h2>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.7;color:#4D6C90">Order <strong style="color:#0B2E63">{{ order.id }}</strong> is confirmed. Total {{ order.total }} · {{ order.pay }}. We’ll call {{ order.phone }} to arrange delivery to {{ order.region }}.</p>
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:22px">
+          <a href="./Yazz Shop.dc.html" style="display:inline-flex;align-items:center;gap:8px;background:#ED1B2E;color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:999px">Continue shopping <span class="ms" style="font-size:16px">arrow_forward</span></a>
+          <a href="./Yazz FAQs.dc.html#shipping" style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid #0B4FA5;color:#0B4FA5;font-size:14px;font-weight:600;padding:11px 22px;border-radius:999px">Delivery info</a>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:560px;margin:0 auto;text-align:center;padding:40px 20px">
+        <span class="ms" style="font-size:48px;color:#BBD3EA">remove_shopping_cart</span>
+        <h2 style="margin:12px 0 0;font-size:24px;font-weight:800;color:#0B2E63">Your cart is empty</h2>
+        <p style="margin:10px 0 0;font-size:14px;color:#5C7796">Pick up everyday essentials for the whole family.</p>
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:20px">
+          <a href="./Yazz Feminine Care.dc.html" style="padding:11px 20px;border-radius:999px;background:#FDECF4;color:#EC1B7B;font-size:13.5px;font-weight:600">Feminine Care</a>
+          <a href="./Yazz Oral Care.dc.html" style="padding:11px 20px;border-radius:999px;background:#EAF3FB;color:#0B4FA5;font-size:13.5px;font-weight:600">Oral Care</a>
+          <a href="./Yazz Home &amp; Tissue.dc.html" style="padding:11px 20px;border-radius:999px;background:#FEF1E3;color:#B05C10;font-size:13.5px;font-weight:600">Home &amp; Tissues</a>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);gap:32px;align-items:start">
+        <div>
+          <sc-for list="{{ lines }}" as="l" hint-placeholder-count="2">
+            <div style="display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:18px;align-items:center;padding:18px 0;border-bottom:1px solid #EAF0F6">
+              <div style="height:84px;border-radius:12px;background:#F3F8FD url('{{ l.img }}') center / contain no-repeat"></div>
+              <div>
+                <div style="font-size:10.5px;letter-spacing:1.3px;font-weight:600;color:#8FA8C2">{{ l.cat }}</div>
+                <div style="font-size:15px;font-weight:700;color:#0B2E63;margin-top:3px">{{ l.name }}</div>
+                <div style="font-size:12.5px;color:#5C7796;margin-top:2px">{{ l.size }} · {{ l.price }} each</div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:10px">
+                  <button onClick="{{ l.dec }}" aria-label="Decrease" style="width:30px;height:30px;border-radius:50%;border:1px solid #DCE6F1;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0B2E63"><span class="ms" style="font-size:16px">remove</span></button>
+                  <span style="min-width:22px;text-align:center;font-size:14px;font-weight:700">{{ l.qty }}</span>
+                  <button onClick="{{ l.inc }}" aria-label="Increase" style="width:30px;height:30px;border-radius:50%;border:1px solid #DCE6F1;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0B2E63"><span class="ms" style="font-size:16px">add</span></button>
+                  <button onClick="{{ l.remove }}" style="margin-left:8px;border:0;background:none;cursor:pointer;font-family:inherit;font-size:12.5px;color:#ED1B2E;display:inline-flex;align-items:center;gap:4px"><span class="ms" style="font-size:16px">delete</span> Remove</button>
+                </div>
+              </div>
+              <div style="font-size:16px;font-weight:800;color:#0B2E63">{{ l.total }}</div>
+            </div>
+          </sc-for>
+          <a href="./Yazz Shop.dc.html" style="display:inline-flex;align-items:center;gap:6px;margin-top:18px;font-size:13.5px;font-weight:600;color:#0B4FA5"><span class="ms" style="font-size:16px">arrow_back</span> Continue shopping</a>
+        </div>
+        <div style="background:#F3F8FD;border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:17px;font-weight:700;color:#0B2E63">Delivery &amp; payment</div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52">Full name<input type="text" value="{{ form.name }}" onChange="{{ on.name }}" placeholder="e.g. Ama Mensah" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52">Phone number<input type="tel" value="{{ form.phone }}" onChange="{{ on.phone }}" placeholder="e.g. 024 000 0000" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52">Region<select value="{{ form.region }}" onChange="{{ on.region }}" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0"><option value="Greater Accra">Greater Accra</option><option value="Ashanti">Ashanti</option><option value="Central">Central</option><option value="Eastern">Eastern</option><option value="Western">Western</option><option value="Western North">Western North</option><option value="Volta">Volta</option><option value="Oti">Oti</option><option value="Northern">Northern</option><option value="Savannah">Savannah</option><option value="North East">North East</option><option value="Upper East">Upper East</option><option value="Upper West">Upper West</option><option value="Bono">Bono</option><option value="Bono East">Bono East</option><option value="Ahafo">Ahafo</option></select></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52">Delivery address<input type="text" value="{{ form.address }}" onChange="{{ on.address }}" placeholder="House no., street, area / landmark" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52">Payment
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <sc-for list="{{ pays }}" as="p" hint-placeholder-count="2"><button onClick="{{ p.pick }}" style="font-family:inherit;font-size:12.5px;font-weight:600;padding:10px 14px;border-radius:999px;cursor:pointer;background:{{ p.bg }};color:{{ p.fg }};border:1px solid {{ p.border }}">{{ p.label }}</button></sc-for>
+            </div>
+          </div>
+          <div style="border-top:1px solid #DCE6F1;padding-top:14px;display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:#4D6C90">
+            <div style="display:flex;justify-content:space-between"><span>Subtotal</span><span>{{ subtotal }}</span></div>
+            <div style="display:flex;justify-content:space-between"><span>Delivery</span><span>{{ delivery }}</span></div>
+            <div style="font-size:11.5px;color:#22A45D">{{ freeNote }}</div>
+            <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;color:#0B2E63;margin-top:4px"><span>Total</span><span>{{ total }}</span></div>
+          </div>
+          <div style="font-size:12.5px;color:#ED1B2E;min-height:16px">{{ error }}</div>
+          <button onClick="{{ placeOrder }}" style="border:0;cursor:pointer;font-family:inherit;background:#ED1B2E;color:#fff;font-size:15px;font-weight:600;padding:14px 20px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:#C8102E">Place order <span class="ms" style="font-size:18px">lock</span></button>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ showQuote }}" hint-placeholder-val="{{ false }}">
+  <section id="quote" data-screen-label="Quote" style="padding:32px 40px 56px">
+    <sc-if value="{{ quoteDone }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:620px;margin:0 auto;text-align:center;background:#F3F8FD;border-radius:24px;padding:48px 36px">
+        <span style="width:64px;height:64px;border-radius:50%;background:#0B4FA5;color:#fff;display:inline-flex;align-items:center;justify-content:center"><span class="ms" style="font-size:32px">mark_email_read</span></span>
+        <h2 style="margin:18px 0 0;font-size:26px;font-weight:800;color:#0B2E63">Quote request sent</h2>
+        <p style="margin:10px 0 0;font-size:14.5px;line-height:1.7;color:#4D6C90">Reference <strong style="color:#0B2E63">{{ quoteRef }}</strong>. Our trade desk will reply to {{ quoteEmail }} within 48 hours with pricing and terms.</p>
+        <a href="./Yazz Shop.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:22px;background:#ED1B2E;color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:999px">Back to catalogue <span class="ms" style="font-size:16px">arrow_forward</span></a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ quoteEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="max-width:560px;margin:0 auto;text-align:center;padding:40px 20px">
+        <span class="ms" style="font-size:48px;color:#BBD3EA">request_quote</span>
+        <h2 style="margin:12px 0 0;font-size:24px;font-weight:800;color:#0B2E63">Your quote list is empty</h2>
+        <p style="margin:10px 0 0;font-size:14px;color:#5C7796">Add cartons from the trade catalogue to request wholesale pricing.</p>
+        <a href="./Yazz Shop.dc.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:#0B2E63;color:#fff;font-size:14px;font-weight:600;padding:12px 24px;border-radius:999px">Open trade catalogue <span class="ms" style="font-size:16px">arrow_forward</span></a>
+      </div>
+    </sc-if>
+    <sc-if value="{{ hasQuote }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,400px);gap:32px;align-items:start">
+        <div>
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 170px 40px;gap:14px;font-size:11px;letter-spacing:1.4px;font-weight:600;color:#8FA8C2;padding-bottom:10px;border-bottom:1px solid #EAF0F6"><span>PRODUCT</span><span>CARTONS</span><span></span></div>
+          <sc-for list="{{ qlines }}" as="q" hint-placeholder-count="2">
+            <div style="display:grid;grid-template-columns:minmax(0,1fr) 170px 40px;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid #EAF0F6">
+              <div><div style="font-size:10.5px;font-family:ui-monospace,Menlo,monospace;color:#8CA6C2">{{ q.sku }}</div><div style="font-size:14.5px;font-weight:700;color:#0B2E63;margin-top:2px">{{ q.name }}</div><div style="font-size:12px;color:#5C7796;margin-top:2px">{{ q.pack }} · min. {{ q.min }} cartons</div></div>
+              <div style="display:flex;align-items:center;gap:10px">
+                <button onClick="{{ q.dec }}" aria-label="Fewer cartons" style="width:30px;height:30px;border-radius:50%;border:1px solid #DCE6F1;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0B2E63"><span class="ms" style="font-size:16px">remove</span></button>
+                <span style="min-width:34px;text-align:center;font-size:14px;font-weight:700">{{ q.cartons }}</span>
+                <button onClick="{{ q.inc }}" aria-label="More cartons" style="width:30px;height:30px;border-radius:50%;border:1px solid #DCE6F1;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0B2E63"><span class="ms" style="font-size:16px">add</span></button>
+              </div>
+              <button onClick="{{ q.remove }}" aria-label="Remove" style="border:0;background:none;cursor:pointer;color:#ED1B2E"><span class="ms" style="font-size:20px">delete</span></button>
+            </div>
+          </sc-for>
+          <div style="margin-top:14px;font-size:13px;color:#5C7796">{{ totalCartons }} cartons across {{ quoteLen }} product lines</div>
+        </div>
+        <div style="background:#0B2E63;border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;color:#fff">
+          <div style="font-size:17px;font-weight:700">Your business details</div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52"><span style="color:#CFE1F5">Business name</span><input type="text" value="{{ qform.biz }}" onChange="{{ qon.biz }}" placeholder="e.g. Adum Trade Depot" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52"><span style="color:#CFE1F5">Contact person</span><input type="text" value="{{ qform.name }}" onChange="{{ qon.name }}" placeholder="Full name" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52"><span style="color:#CFE1F5">Email</span><input type="email" value="{{ qform.email }}" onChange="{{ qon.email }}" placeholder="you@business.com" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52"><span style="color:#CFE1F5">Phone</span><input type="tel" value="{{ qform.phone }}" onChange="{{ qon.phone }}" placeholder="e.g. 024 000 0000" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0" style-focus="border-color:#0B4FA5"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#2A3B52"><span style="color:#CFE1F5">Business type</span><select value="{{ qform.type }}" onChange="{{ qon.type }}" style="width:100%;box-sizing:border-box;border:1px solid #DCE6F1;border-radius:12px;padding:12px 14px;font-family:inherit;font-size:13.5px;color:#12243B;background:#fff;outline:0"><option value="Retailer">Retailer</option><option value="Wholesaler">Wholesaler</option><option value="Distributor">Distributor (outside Ghana)</option><option value="Institution">Institution</option></select></label>
+          <div style="font-size:12.5px;color:#FF8A94;min-height:16px">{{ qerror }}</div>
+          <button onClick="{{ submitQuote }}" style="border:0;cursor:pointer;font-family:inherit;background:#ED1B2E;color:#fff;font-size:15px;font-weight:600;padding:14px 20px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px">Submit quote request <span class="ms" style="font-size:18px">send</span></button>
+          <button data-print="" style="border:0;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.12);color:#fff;font-size:13px;font-weight:600;padding:11px 20px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:8px"><span class="ms" style="font-size:16px">print</span> Print / save as PDF</button>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+  </sc-if>
+
+  <footer style="background:linear-gradient(180deg,#0B3C7E 0%,#09306A 100%);color:#fff">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:30px;padding:38px 40px 30px;align-items:start">
+      <div>
+        <div style="display:inline-block;background:#fff;border-radius:8px;transform:rotate(-6deg);padding:2px 12px 4px">
+          <span style="font-weight:800;font-style:italic;font-size:34px;letter-spacing:-1px;color:#ED1B2E;-webkit-text-stroke:1.5px #0B4FA5;paint-order:stroke fill">Yazz</span>
+        </div>
+        <div style="font-family:Caveat,cursive;font-size:22px;color:#DCEAFA;margin-top:10px">Freshness for a brighter you.</div>
+      </div>
+      <div style="height:120px;position:relative"><image-slot id="yazz-footer-range" shape="rect" fit="contain" placeholder="full Yazz product range cut-out" src="./assets/products/footer-range.png"></image-slot></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:20px;font-size:12px">
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Shop</div>
+          <div style="display:flex;flex-direction:column;gap:7px;color:#B9D2EE"><a href="./Yazz Shop.dc.html" style="color:#B9D2EE">All Products</a><a href="./Yazz Feminine Care.dc.html" style="color:#B9D2EE">Feminine Care</a><a href="./Yazz Oral Care.dc.html" style="color:#B9D2EE">Oral Care</a><a href="./Yazz Home &amp; Tissue.dc.html" style="color:#B9D2EE">Home &amp; Tissues</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">About Us</div>
+          <div style="display:flex;flex-direction:column;gap:7px;color:#B9D2EE"><a href="./Yazz About Us.dc.html" style="color:#B9D2EE">Our Story</a><a href="./Yazz CSR.dc.html" style="color:#B9D2EE">Sustainability</a><a href="./Yazz Careers.dc.html" style="color:#B9D2EE">Careers</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Support</div>
+          <div style="display:flex;flex-direction:column;gap:7px;color:#B9D2EE"><a href="./Yazz FAQs.dc.html" style="color:#B9D2EE">FAQs</a><a href="./Yazz FAQs.dc.html#shipping" style="color:#B9D2EE">Shipping &amp; Returns</a><a href="./Yazz Contact Us.dc.html" style="color:#B9D2EE">Contact Us</a></div>
+        </div>
+        <div>
+          <div style="font-weight:600;font-size:13px;margin-bottom:12px">Follow Us</div>
+          <div style="display:flex;gap:8px">
+            <a href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700" style-hover="background:#ED1B2E;color:#fff">f</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px" style-hover="background:#ED1B2E;color:#fff">◎</a>
+            <a href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:13px" style-hover="background:#ED1B2E;color:#fff">♪</a>
+            <a href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="Yazz on social media" style="width:28px;height:28px;border-radius:50%;background:#fff;color:#0B3C7E;display:flex;align-items:center;justify-content:center;font-size:12px" style-hover="background:#ED1B2E;color:#fff">▶</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.14);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:#9FC1E4">
+      <span>© 2025 Yazz. All rights reserved.</span>
+      <span style="display:flex;align-items:center;gap:8px"><span style="display:inline-flex;gap:2px"><span style="width:8px;height:12px;background:#CE1126"></span><span style="width:8px;height:12px;background:#FCD116"></span><span style="width:8px;height:12px;background:#006B3F"></span></span> Proudly Ghanaian</span>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  state = { menu: false, tips: false, tab: 'cart', pay: 'Mobile Money', form: { name: '', phone: '', region: 'Greater Accra', address: '' }, qform: { biz: '', name: '', email: '', phone: '', type: 'Retailer' }, error: '', qerror: '', order: null, quoteRef: '' };
+  componentDidMount() {
+    this.sync = () => this.setState({ tab: (location.hash || '').indexOf('quote') > -1 ? 'quote' : 'cart' });
+    this.sync(); window.addEventListener('hashchange', this.sync);
+    const hook = () => { if (window.YazzSite) { this.off = window.YazzSite.onChange(() => this.forceUpdate()); this.forceUpdate(); } else setTimeout(hook, 80); };
+    hook();
+  }
+  componentWillUnmount() { window.removeEventListener('hashchange', this.sync); if (this.off) this.off(); }
+  navVals() {
+    return {
+      menuDisplay: this.state.menu ? 'block' : 'none', openMenu: () => this.setState({ menu: true, tips: false }), closeMenu: () => this.setState({ menu: false }),
+      tipsDisplay: this.state.tips ? 'block' : 'none', openTips: () => this.setState({ tips: true, menu: false }), closeTips: () => this.setState({ tips: false })
+    };
+  }
+  setF(group, k) { return e => { const v = e.target.value; this.setState(s => ({ [group]: Object.assign({}, s[group], { [k]: v }) })); }; }
+  renderVals() {
+    const Y = window.YazzSite;
+    const cart = Y ? Y.getCart() : [], quote = Y ? Y.getQuote() : [];
+    const money = n => 'GH₵ ' + n.toFixed(2);
+    const subtotal = cart.reduce((s, l) => s + Y.products[l.id].price * l.qty, 0);
+    const delivery = subtotal >= 200 || !cart.length ? 0 : (this.state.form.region === 'Greater Accra' ? 15 : 25);
+    const isCart = this.state.tab === 'cart';
+    const f = this.state.form, q = this.state.qform;
+    const setQty = (id, qty) => Y.setCart(cart.map(l => l.id === id ? { id: l.id, qty: qty } : l));
+    const setCart = (sku, c) => Y.setQuote(quote.map(l => l.sku === sku ? Object.assign({}, l, { cartons: c }) : l));
+    return Object.assign({}, this.navVals(), {
+      pageTitle: isCart ? 'Your Cart' : 'Trade Quote List',
+      pageSub: isCart ? 'Review your items and choose how you’d like to pay.' : 'Wholesale pricing for retailers, wholesalers and distributors.',
+      tabCartBg: isCart ? '#fff' : 'transparent', tabCartFg: isCart ? '#0B2E63' : '#4D6C90',
+      tabQuoteBg: isCart ? 'transparent' : '#fff', tabQuoteFg: isCart ? '#4D6C90' : '#0B2E63',
+      cartCount: Y ? Y.cartCount() : 0, quoteLen: quote.length,
+      showCart: isCart, showQuote: !isCart,
+      orderDone: !!this.state.order, order: this.state.order || {},
+      cartEmpty: !this.state.order && !cart.length, hasCart: !this.state.order && cart.length > 0,
+      lines: cart.map(l => { const p = Y.products[l.id]; return { name: p.name, size: p.size, cat: p.cat.toUpperCase(), img: p.img, qty: l.qty, price: money(p.price), total: money(p.price * l.qty),
+        inc: () => setQty(l.id, l.qty + 1), dec: () => setQty(l.id, l.qty - 1), remove: () => setQty(l.id, 0) }; }),
+      form: f, on: { name: this.setF('form', 'name'), phone: this.setF('form', 'phone'), region: this.setF('form', 'region'), address: this.setF('form', 'address') },
+      pays: ['Mobile Money', 'Cash on Delivery'].map(p => ({ label: p, pick: () => this.setState({ pay: p }), bg: this.state.pay === p ? '#0B2E63' : '#fff', fg: this.state.pay === p ? '#fff' : '#2A3B52', border: this.state.pay === p ? '#0B2E63' : '#DCE6F1' })),
+      subtotal: money(subtotal), delivery: delivery ? money(delivery) : 'Free', total: money(subtotal + delivery),
+      freeNote: subtotal >= 200 ? 'You qualify for free delivery.' : 'Add ' + money(200 - subtotal) + ' more for free delivery.',
+      error: this.state.error,
+      placeOrder: () => {
+        if (!f.name.trim() || f.phone.replace(/\D/g, '').length < 9 || !f.address.trim()) { this.setState({ error: 'Please enter your name, a valid phone number and delivery address.' }); return; }
+        if (this.state.pay === 'Cash on Delivery' && f.region !== 'Greater Accra') { this.setState({ error: 'Cash on delivery is available in Greater Accra only — please choose Mobile Money.' }); return; }
+        const order = { id: 'YZ-' + String(Date.now()).slice(-6), name: f.name.trim().split(' ')[0], phone: f.phone, region: f.region, pay: this.state.pay, total: money(subtotal + delivery) };
+        this.setState({ order, error: '' }); Y.setCart([]); window.scrollTo({ top: 0, behavior: 'smooth' });
+      },
+      quoteDone: !!this.state.quoteRef, quoteRef: this.state.quoteRef, quoteEmail: q.email,
+      quoteEmpty: !this.state.quoteRef && !quote.length, hasQuote: !this.state.quoteRef && quote.length > 0,
+      qlines: quote.map(l => ({ sku: l.sku, name: l.name, pack: l.pack, min: l.min, cartons: l.cartons,
+        inc: () => setCart(l.sku, l.cartons + 1), dec: () => setCart(l.sku, Math.max(l.min, l.cartons - 1)), remove: () => setCart(l.sku, 0) })),
+      totalCartons: quote.reduce((s, l) => s + l.cartons, 0),
+      qform: q, qon: { biz: this.setF('qform', 'biz'), name: this.setF('qform', 'name'), email: this.setF('qform', 'email'), phone: this.setF('qform', 'phone'), type: this.setF('qform', 'type') },
+      qerror: this.state.qerror,
+      submitQuote: () => {
+        if (!q.biz.trim() || !q.name.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(q.email)) { this.setState({ qerror: 'Please add your business name, contact person and a valid email.' }); return; }
+        this.setState({ quoteRef: 'TQ-' + String(Date.now()).slice(-6), qerror: '' }); Y.setQuote([]); window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+}
+</script>
+</body>
+</html>
