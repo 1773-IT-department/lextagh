@@ -4,6 +4,14 @@
 > Client wording kept. Only obvious typos fixed and dashes replaced. The product page is in products.md.
 > Scope note: CLAUDE.md lists CSR pages on brand sites as out of scope; Lexta's own CSR button links to the Lexta CSR page.
 
+## Instructions from Lexta (yellow highlights)
+
+> Desmond's rule (13 November 2026): text highlighted in yellow in Lexta's Drive documents is an **instruction to the builder, not website copy**. Do not publish it as text on the site.
+> Per the coordinator's check of Lexta's revised content PDF, the yellow items in the Linzzy section are the wireframe headings and the click and email route arrows. This file was made from a text export, so the highlighting itself is not visible here; open the Drive document to confirm any line before treating it as copy.
+
+- The whole "Linzzy, visual wireframe / click & email routes" table below is an instruction: the row labels (TOP BAR, HERO, FEMININE CARE, BABY CARE, EDUCATION, COMMUNITY IMPACT, CONTACT / FEEDBACK, FOOTER) are wireframe headings, and every "→" route (for example "Pads → Heavy Flow / Cool Mint / Extra Long", "Enquiry → shared CRM ✉ marketing@lextagh.com") describes where a click or form should go. Build the routes; do not print them.
+- Notes such as "verified catalogue", "(proposed interim)" and "(confirm)" are status notes for the build team, not copy.
+
 ## Linzzy, visual wireframe / click & email routes
 
 | | |

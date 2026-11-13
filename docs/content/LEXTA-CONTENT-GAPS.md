@@ -2,7 +2,7 @@
 
 > Desmond's rule for this branch: content only. The layout, sections, components, styles and images stay exactly as they are. Anything in Lexta's documents that needs a new section, a design change, a new page or a new feature is listed here and was **not** built.
 > Each item should also be logged on Trello by Desmond or Kofi (this session does not touch Trello).
-> Date: 13 November 2026.
+> Date: 13 November 2026. Updated the same day with what the original lextagh.com answers (branch content/lexta-gap-fill; details in lexta/ORIGINAL-SITE.md).
 
 ## 1. Design requests and new features in Lexta's documents (not built)
 
@@ -40,32 +40,41 @@
 
 | # | Item | Detail |
 | --- | --- | --- |
-| C1 | Consumer care email for the Lexta site | Lexta's documents give no Lexta level consumer care address (brand complaints go to support@yazzproducts.com etc.; Linzzy/Hooch inbox "to be confirmed before go-live"). The site keeps support@lextagh.com for Consumer care. Confirm it exists, or name the address. |
+| C1 | Consumer care email for the Lexta site | Lexta's documents give no Lexta level consumer care address (brand complaints go to support@yazzproducts.com etc.; Linzzy/Hooch inbox "to be confirmed before go-live"). The site keeps support@lextagh.com for Consumer care. Confirm it exists, or name the address. **Original site says** "Complaints & product reviews: Support@lextagh.com" (lextagh.com/contact-us/ and linzzyproducts.com/contact-us/). |
 | C2 | marketing@lextagh.com is "interim" | Lexta's routing says distributor/wholesale goes to marketing@lextagh.com "pending Sales confirmation". If Sales gives its own address, change SALES_EMAIL in apps/lexta/lib/forms/core.ts and the Contact/Partner pages. |
-| C3 | csr@lextagh.com | Listed for "Lexta CSR affairs", but the CSR proposal route says marketing@lextagh.com. The site uses marketing@ (no CSR email slot exists). Confirm which. |
-| C4 | Extra phone numbers | Lexta's contact block adds +233 (0) 302 662 970, WhatsApp Customer Care +233 (0) 544 351 010, Consumer Reports +233 (0) 509 967 400 and the WhatsApp channel link. The design has two phone lines; nothing added. "+233 02235296" in the block looks like a typo for +233 (0) 302 235 296. |
+| C3 | csr@lextagh.com | Listed for "Lexta CSR affairs", but the CSR proposal route says marketing@lextagh.com. The site uses marketing@ (no CSR email slot exists). Confirm which. **Original site says** "Partnerships/sponsorships: Marketing@lextagh.com"; csr@ and sales@ appear nowhere on it. |
+| C4 | Extra phone numbers | Lexta's contact block adds +233 (0) 302 662 970, WhatsApp Customer Care +233 (0) 544 351 010, Consumer Reports +233 (0) 509 967 400 and the WhatsApp channel link. The design has two phone lines; nothing added. "+233 02235296" in the block looks like a typo for +233 (0) 302 235 296. **Original site says** "+233 (0) 501 619 588, +233 (0) 302 235 296" (footer) and "Whatsapp Customer Care +233544351010" (contact page); 302 662 970 and 509 967 400 do not appear. This supports the typo reading. |
 | C5 | Hooch pack sizes | Lexta PDF: Cornflakes 500g and 375g; Hooch document: Cornflakes 500g, Frosted Flakes 375g. The Our Brands corn flakes image alt still says 375g. |
-| C6 | Hooch Choco Flakes | Shown on Our Brands (and seeded in Product Management) but in no Lexta document. Keep or remove? Removal is done in Product Management, not in code. |
+| C6 | Hooch Choco Flakes | Shown on Our Brands (and seeded in Product Management) but in no Lexta document. Keep or remove? Removal is done in Product Management, not in code. **Original site says** only "Super Crunchy Corn Flakes" and "Frosted Flakes" (lextagh.com/brands/). |
 | C7 | Hooch partnership and complaint emails | Lexta PDF says marketing@ / support@linzzyproducts.com; the Hooch document says marketing@ / support@ / info@hoochfoods.com. |
-| C8 | Programme status | Lexta's Yazz CSR copy calls the Forest Project, Clean Hands, Green Land and the Bright Smiles tour "proposed"; the CSR page and news stories describe them as running (for example Bright Smiles "with the Ghana Dental Association", the Forest Project "in the Ashanti and Eastern regions"). Confirm which are live. |
-| C9 | Clean Hands, Green Land news article body | Excerpt and standfirst now follow Lexta's new description, but the article body (from Lexta's earlier lextagh.com post) still describes a plastic buy back with Eco Points. Lexta to send the official story. |
-| C10 | Figures with no Lexta source | Founded 2002; "24 years" (proof bar) and "25+ Years of Excellence" (impact) disagree with each other; 500+ employees; 10M+ lives impacted; 200+ distribution partners; Liberia subsidiary since 2010; factories in Accra and Tema; "all 16 regions". None appear in Lexta's documents. |
-| C11 | Yazz award line | "Ghana's most preferred sanitary and hygiene brand at the 2022 Home Builders Awards" is not in Lexta's documents; confirm. |
+| C8 | Programme status | Lexta's Yazz CSR copy calls the Forest Project, Clean Hands, Green Land and the Bright Smiles tour "proposed"; the CSR page and news stories describe them as running (for example Bright Smiles "with the Ghana Dental Association", the Forest Project "in the Ashanti and Eastern regions"). Confirm which are live. **Original site says** each of the four in one sentence that reads as a plan (Forest "Commitment to plant…", Bright Smiles "Partner with the Ghana Dental Association to provide…"), with no activity reports; Empowered Periods is described as running. |
+| C9 | Clean Hands, Green Land news article body | Excerpt and standfirst now follow Lexta's new description, but the article body (from Lexta's earlier lextagh.com post) still describes a plastic buy back with Eco Points. Lexta to send the official story. The body is now a placeholder. **Original site says** only the old buy back version (lextagh.com/2026/07/15/clean-hands-green-land/), so the placeholder stays. |
+| C10 | Figures with no Lexta source | Founded 2002; "24 years" (proof bar) and "25+ Years of Excellence" (impact) disagree with each other; 500+ employees; 10M+ lives impacted; 200+ distribution partners; Liberia subsidiary since 2010; factories in Accra and Tema; "all 16 regions". None appear in Lexta's documents. **Original site says** "established in 2002", "a wholly-owned subsidiary in Monrovia, Liberia" (no year) and "Headquartered in Accra"; it has none of the other figures. |
+| C11 | Yazz award line | "Ghana's most preferred sanitary and hygiene brand at the 2022 Home Builders Awards" is not in Lexta's documents; confirm. Not on the original lextagh.com either. |
 | C12 | Product Management records | The live Our Brands page reads products from the database. The new descriptions are in the code fallback only; staff must paste them into Product Management (see LEXTA-CONTENT-CHANGES.md, product cards). Supabase was not touched on this branch. |
-| C13 | Mama Yazz | Lexta: "Mama Yazz, jumbo size tissue". The prototype image file and alt call it "Mama Yazz kitchen towel". Confirm the right name for the photo. |
+| C13 | Mama Yazz | Lexta: "Mama Yazz, jumbo size tissue". The prototype image file and alt call it "Mama Yazz kitchen towel". Confirm the right name for the photo. Original site does not name Mama Yazz ("premium kitchen towels" only). |
 | C14 | Product claims awaiting QA | Lexta's PDF: sanitary pad specs, diaper weight ranges, wipes ingredients, toothpaste claims, Hooch nutrition and allergens "will be worked on and shared separately". Also: Yazz Lavender wipes copy repeats the Aloe Vera text; Aloe Vera ingredients list castor oil; Total Care lists Triclosan; "ISO09001:2000". |
 
 ## 4. Placeholders and prototype copy still on the site
 
 | Where | Placeholder | Needed from Lexta |
 | --- | --- | --- |
-| Home, Careers band | `[PLACEHOLDER: team celebration photo from Lexta]` (empty image slot) | Team photo |
+| Home, Careers band | Filled from the original site (KAKEL-9864, Lexta team with Yazz hampers; see lexta/ORIGINAL-SITE.md O4) | Lexta to confirm the photo, or send a team celebration photo |
 | Home, Lexta Videos | `[PLACEHOLDER: Lexta brand video file]` | Video files or YouTube links and cover images |
-| Our Brands, "What holds them together" | `[PLACEHOLDER: real factory floor or production line photo from Lexta]` (empty image slot) | Factory photo |
-| Careers, general application | Empty image slot "Recruitment team photo" | HR team photo |
-| Contact Us, visit us | `[PLACEHOLDER: photo of Lexta Square from Lexta]` | Photo of Lexta Square |
+| Our Brands, "What holds them together" | `[PLACEHOLDER: real factory floor or production line photo from Lexta]` (empty image slot; none on the original site) | Factory photo |
+| Careers, general application | Filled from the original site (KAKEL-9871, the original Careers page image; see lexta/ORIGINAL-SITE.md O5) | Lexta to confirm the photo, or send an HR team photo |
+| Contact Us, visit us | `[PLACEHOLDER: photo of Lexta Square from Lexta]` (none on the original site) | Photo of Lexta Square |
 | People & Culture | `[PLACEHOLDER: one photo per area of work from Lexta]` | One photo per area of work |
-| Live chat | `[PLACEHOLDER: Lexta chat office hours]` | Chat office hours |
-| News | All 15 stories are `draft: true` summaries of public coverage, with the interim note | Lexta's official text for each story |
-| Home, About, People & Culture, CSR, Careers | Prototype copy not covered by Lexta's documents (founder welcome, story, pillars, values, leadership text, benefits, hiring steps, CSR programme detail, FAQs on trade terms, credit, delivery times, contract manufacturing) | Lexta to approve or replace; nothing in their documents contradicts it |
+| Live chat | `[PLACEHOLDER: Lexta chat office hours]` (no hours anywhere on the original site) | Chat office hours |
+| News | All 15 stories are `draft: true` with the interim note. Three bodies (Unity High JHS, Mawuko Girls SHS, Teen Care) now follow Lexta's own posts on the original lextagh.com (lexta/ORIGINAL-SITE.md O1 to O3); the other twelve are still summaries of public coverage | Lexta's official text for each story |
+| Home, About, People & Culture, CSR, Careers | Prototype copy not covered by Lexta's documents (founder welcome, story, pillars, values, leadership text, benefits, hiring steps, CSR programme detail, FAQs on trade terms, credit, delivery times, contract manufacturing) | Lexta to approve or replace; nothing in their documents contradicts it. The founder welcome, People pillars, core values, corporate pillars and board biographies match the original lextagh.com (lexta/ORIGINAL-SITE.md section 3) |
 | Brand sites | `[PLACEHOLDER: …]` markers in docs/content/yazz, linzzy and hooch (Yazz parenting guides, regular panty liner details, kitchen towel copy, Linzzy diaper sizes and wipes ingredients, Hooch nutrition panel and full nutrition articles) | See each brand folder |
+
+## 5. Original websites (13 November 2026)
+
+| # | Finding | Detail |
+| --- | --- | --- |
+| W1 | hoochfoods.com is broken | The bare domain has no DNS record; www.hoochfoods.com returns the raw source of WordPress's index.php instead of running it. No Hooch content could be saved (docs/content/hooch/original-site/README.md). Lexta's host should be told. |
+| W2 | linzzyproducts.com is unfinished | Store "coming soon", theme placeholder phone and email in the header, all contacts point to lextagh.com addresses. Text saved in docs/content/linzzy/original-site/. |
+| W3 | Unused real Lexta CSR photos | lextagh.com holds Empowered Periods outreach photos (KAKEL series) with no empty slot on the Lexta site. Listed in IMAGE-MAP.md for when Lexta wants them. |
+| W4 | Existing hotlinks | Several news stories still load their photo from lextagh.com or yazzproducts.com (the `image` field in content/news/articles.ts), and their source lists link to those domains. Not changed on this branch (no new links added). These images should be downloaded into public/assets before go-live. |

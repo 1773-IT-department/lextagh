@@ -176,7 +176,14 @@ export default async function CareersPage() {
               <div style={{ fontSize: 13, lineHeight: 1.8, color: "#5d7883", maxWidth: 320 }}>Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
             </div>
             <div style={{ marginTop: 26, borderRadius: 12, overflow: "hidden", flex: "1 1 auto", minHeight: 240, boxShadow: "0 18px 38px rgba(11,60,78,.16)" }}>
-              <ImageSlot placeholder="Recruitment team photo" />
+              {/* Photo from Lexta's original website (the lextagh.com careers page image, KAKEL-9871). */}
+              <ImageSlot
+                placeholder="Recruitment team photo"
+                src="/assets/original/lexta-careers-team-1600x1200.jpg"
+                width={1600}
+                height={1200}
+                alt="Lexta colleagues sharing Yazz gift hampers around the meeting room table"
+              />
             </div>
           </div>
 
