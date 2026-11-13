@@ -115,17 +115,27 @@ try {
     await shot(page, "02-forgot-password");
     await ctx.close();
   }
+  // Admin and management land on the management overview, so Home is shown for a marketing person.
   const admin = await login("admin@demo.test");
-  await go(admin, "/");
-  await shot(admin, "03-home-admin");
+  const marketingHome = await login("marketing@demo.test");
+  await go(marketingHome, "/");
+  await shot(marketingHome, "03-home-marketing");
   const repPhone = await login("rep@demo.test", "phone");
   await go(repPhone, "/");
   await shot(repPhone, "04-home-phone", { full: true, maxHeight: 1400 });
 
-  // 2. Management dashboard ---------------------------------------------------------------------------------------------
+  // 2. Management overview ----------------------------------------------------------------------------------------------
+  // The catalogue rows the migrations seed are dated the day they ran; date them back so the feed shows the demo work.
+  await q(`set session_replication_role = replica;
+    update public.products set created_at = now() - interval '1 year', updated_at = now() - interval '1 year';
+    set session_replication_role = origin;`);
   const manager = await login("manager@demo.test");
-  await go(manager, "/systems/dashboard");
+  await go(manager, "/management");
   await shot(manager, "10-dashboard", { full: true, maxHeight: 1500 });
+  await go(manager, "/management/activity");
+  await shot(manager, "11-management-activity", { full: true, maxHeight: 1300 });
+  await go(manager, "/management/complaints");
+  await shot(manager, "12-management-section", { full: true, maxHeight: 1500 });
 
   // 3. Distributor ordering ---------------------------------------------------------------------------------------------
   const rep = await login("rep@demo.test");

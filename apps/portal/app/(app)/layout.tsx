@@ -5,7 +5,8 @@ import { signOut } from "@/app/actions";
 import SideNav from "@/components/SideNav";
 import { requireSession } from "@/lib/session";
 import { ACTION_PREFIX, PATH_HEADER } from "@/lib/supabase/middleware";
-import { DISTRIBUTOR_HOME, DISTRIBUTOR_NAV, distributorMayRender, ROLE_LABELS, systemsFor } from "@/lib/systems";
+import { isManager } from "@/lib/management";
+import { DISTRIBUTOR_HOME, DISTRIBUTOR_NAV, distributorMayRender, ROLE_LABELS, systemPath, systemsFor } from "@/lib/systems";
 
 export const dynamic = "force-dynamic";
 
@@ -19,9 +20,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     // Fails closed: an unknown path counts as outside the ordering area (see distributorMayRender).
     if (!distributorMayRender((await headers()).get(PATH_HEADER), ACTION_PREFIX)) redirect(DISTRIBUTOR_HOME);
   }
+  // Admin and management have no separate Home: "/" opens the management overview, the first item of their menu.
   const items = role === "distributor"
     ? DISTRIBUTOR_NAV
-    : [{ href: "/", label: "Home" }, ...systemsFor(role).map((s) => ({ href: `/systems/${s.slug}`, label: s.name }))];
+    : [...(isManager(role) ? [] : [{ href: "/", label: "Home" }]), ...systemsFor(role).map((s) => ({ href: systemPath(s), label: s.name }))];
 
   return (
     <div className="shell">

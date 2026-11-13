@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { safeNext } from "@/lib/safe-next";
+import { homePathFor } from "@/lib/management";
 import { DISTRIBUTOR_HOME, isDistributorPath } from "@/lib/systems";
 
 export type FormState = { error?: string; message?: string; email?: string };
@@ -18,11 +19,13 @@ export async function signIn(_prev: FormState, form: FormData): Promise<FormStat
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: "That email and password do not match. Please try again or reset your password.", email };
   const next = safeNext(form.get("next"));
-  // A distributor only ever goes to their ordering area: straight there (a second redirect inside this action's
-  // response leaves the browser on an empty page), whatever "next" asks for outside it.
+  // A distributor only ever goes to their ordering area, and admin and management land on the management overview:
+  // straight there (a second redirect inside this action's response leaves the browser on an empty page). A
+  // distributor goes there whatever "next" asks for outside it; the others only when "next" is the home page.
   if (!isDistributorPath(next) && data.user) {
     const { data: profile } = await supabase.from("profiles").select("role, is_active").eq("id", data.user.id).maybeSingle();
     if (profile?.is_active && profile.role === "distributor") redirect(DISTRIBUTOR_HOME);
+    if (next === "/") redirect(homePathFor(profile?.is_active ? profile.role : null));
   }
   redirect(next);
 }
@@ -55,5 +58,8 @@ export async function setPassword(_prev: FormState, form: FormData): Promise<For
   if (!user) return { error: "Your link has expired. Ask for a new one from the login page." };
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: "We could not save that password. Please try a different one." };
-  redirect("/");
+  // Straight to the person's home (one redirect only, see signIn).
+  const { data: profile } = await supabase.from("profiles").select("role, is_active").eq("id", user.id).maybeSingle();
+  if (profile?.is_active && profile.role === "distributor") redirect(DISTRIBUTOR_HOME);
+  redirect(homePathFor(profile?.is_active ? profile.role : null));
 }

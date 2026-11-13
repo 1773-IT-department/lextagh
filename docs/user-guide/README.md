@@ -9,7 +9,7 @@ If something in this guide does not match what you see, or a step does not work,
 ## Contents
 
 1. [Getting started](#1-getting-started)
-2. [Management dashboard](#2-management-dashboard)
+2. [Management overview](#2-management-overview)
 3. [Distributor ordering](#3-distributor-ordering)
 4. [Field sales](#4-field-sales)
 5. [CRM](#5-crm)
@@ -41,7 +41,7 @@ Each video shows one task from start to finish, with a caption bar that says wha
 | [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 57 seconds |
 | [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) | Start a visit, pick the shop, take a photo, choose the outcome and save | 33 seconds |
 | [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 41 seconds |
-| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand, then clear the filters | 37 seconds |
+| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand, then clear the filters (recorded before the dashboard became the management overview) | 37 seconds |
 
 To record them again after the screens change, see `build/record.sh`.
 
@@ -82,11 +82,11 @@ The screen always says "If that email has a login, a reset link is on its way". 
 
 ### Your menu depends on your role
 
-Each person has one role. Your role decides which systems appear in your menu and on your Home screen. Your name and role show at the bottom of the menu (at the top on a phone).
+Each person has one role. Your role decides which systems appear in your menu and on your Home screen. Admin and management have no Home screen: they land on the **Management overview** when they sign in (see [chapter 2](#2-management-overview)). Your name and role show at the bottom of the menu (at the top on a phone).
 
 | System | Admin | Management | Sales rep | Customer care | Marketing | HR | Distributor |
 |---|---|---|---|---|---|---|---|
-| Management dashboard | Yes | Yes | | | | | |
+| Management overview | Yes | Yes | | | | | |
 | Distributor ordering | Yes | Yes | Yes | | | | Yes (own orders only) |
 | Field sales | Yes | Yes | Yes | | | | |
 | CRM | Yes | Yes | Yes | Yes | Yes | | |
@@ -104,7 +104,7 @@ Seeing a system does not always mean you can change everything in it. Each chapt
 
 If your Home screen says "an administrator has not given you a role yet", your login works but you have no access yet. Ask your admin to set your role.
 
-![Home screen for an admin, with every system](images/03-home-admin.png)
+![Home screen for a marketing person](images/03-home-marketing.png)
 
 ### Using it on a phone
 
@@ -129,45 +129,69 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 
 ---
 
-## 2. Management dashboard
+## 2. Management overview
 
-**Who can use it:** admin and management.
+**Who can use it:** admin and management. Nobody else can open it, and it only shows; it never changes a record.
 
-**What it is for:** the headline numbers from every system on one page: leads, complaints, distributor orders, shop visits, live chat, recruitment, CSR and the product catalogue.
+**What it is for:** one place to see what is happening across every system: the key figures and how they changed, what needs attention now, small charts over time, and everything people recorded, newest first. Tap any number or row to work on it in its own system.
 
-**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (37 seconds).
+**Where to find it:** admin and management land on it when they sign in. It is also the first item in their menu. (Its old name was Management dashboard; old links still work.)
 
-![The management dashboard](images/10-dashboard.png)
+**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (37 seconds, recorded before the overview; the period and brand work the same way).
 
-### Look at a period
+![The management overview](images/10-dashboard.png)
 
-1. Open **Management dashboard**.
-2. Tap **This month**, **Last 30 days** (the default) or **This year**.
-3. For your own dates, set **From** and **To** and tap **Apply**.
+### The tabs
 
-### Look at one brand
+Along the top: **Overview**, **Activity**, then one tab for each system: **Orders**, **Field sales**, **CRM**, **Complaints**, **Recruitment**, **Live chat**, **Products and stockists** and **CSR**. The period and brand you choose stay set when you move between tabs. On a phone, swipe the tabs sideways to see them all.
 
-1. Choose a brand under **Brand**.
-2. Tap **Apply**. Tap **Clear** to go back to every brand.
+### Look at a period or one brand
 
-### Open the records behind a number
+1. Tap **This month**, **Last 30 days** (the default) or **This year**.
+2. For your own dates, set **From** and **To** and tap **Apply**.
+3. To look at one brand, choose it under **Brand** and tap **Apply**. Tap **Clear** to go back to the last 30 days and every brand.
 
-1. Tap a tile title or its link (for example **Open complaints**).
-2. Many numbers are links too. For example, tap **Overdue now** to see the overdue complaints.
+### The Overview tab
+
+* **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
+* **Key figures** shows two numbers for each system, with how they changed on the period of the same length just before (for example "42 new leads, Up 41 on the previous 30 days"). Tap **More** to open that system's tab.
+* **Over time** has four small charts: orders submitted, new leads, complaints received and shop visits. Each column is a day (a week for longer periods, a month for more than a year). Point at a column to see its number, or tap **Show the numbers** for a table.
+* **Latest activity** shows the eight newest things recorded. Tap **See all activity** for the rest.
+
+### The Activity tab
+
+Everything recorded across the systems, newest first: new leads (with their source) and stage changes, complaints received and every status change (closed and resolved included), applications received and moved on, chats started and closed, orders submitted and every status change, shop visits, new shops found and confirmed, CSR activities logged, and products and stockists added or changed.
+
+1. Choose a **System** and, if you like, a **Person**, then tap **Show**. Tap **All activity** to clear them.
+2. Each row says what happened, when (Ghana time), who did it and the brand. Tap a row to open the record in its own system.
+3. The first 30 rows show. Tap **Load more** for the next 30.
+
+![The activity feed](images/11-management-activity.png)
+
+### A system's tab
+
+Each system's tab shows its figures (with the change on the period before), breakdowns such as complaints by severity, a chart for orders, field sales, CRM and complaints, and the ten latest records of the period. Tap a record to open it, or use the link at the top right of the list (for example **All complaints**) to open the full list in that system, where you can search, filter and export.
+
+![A system's tab: complaints](images/12-management-section.png)
 
 ### Good to know
 
-* Numbers marked "now" are as they are at this moment (for example "Open now"). The others count what happened in the period you chose.
-* Numbers with a coloured top edge need attention (for example website leads with no owner, overdue complaints, orders waiting to be confirmed).
+* Numbers marked "now" are as they are at this moment. The others count what happened in the period you chose.
+* "Up" and "Down" compare with the same number of days just before your period. For **This month** on the 13th, that is the 13 days before the 1st.
 * Orders carry no prices yet, so order size is shown as order lines and packs.
-* Recruitment is not split by brand. With a brand chosen, live chat counts that brand but the inbox still shows every chat.
+* Recruitment is not split by brand. With a brand chosen, recruitment figures still count every application, and the Activity tab leaves out records with no brand (recruitment, corporate CSR programmes and leads with no brand).
+* With a brand chosen, live chat counts that brand but the inbox still shows every chat. The website leads link opens every unassigned lead, not only website ones.
+* Products and stockists keep no history, so the Activity tab shows only the latest change to each one. A shop added on a field visit shows once, as a new shop found.
+* Some rows name no one: a website lead or an application, for example, has no staff member behind it.
 * CSR totals only count activities marked done.
 
 ### Common questions
 
 **Everything shows 0.** Nothing has been recorded for that period yet. Try **This year**.
 
-**Can I download the dashboard?** Not from the dashboard. Several systems have their own **Export CSV** button (orders, field sales, recruitment).
+**Can I change a record from here?** No. The overview only shows. Tap the record to open it in its own system and change it there.
+
+**Can I download the overview?** Not from the overview. Several systems have their own **Export CSV** button (orders, field sales, recruitment).
 
 ---
 
@@ -411,7 +435,7 @@ Admin chooses who gets new website leads.
 3. Under **Manager per brand**, choose a manager for a brand, or leave **Use default**.
 4. Tap **Save managers**. **Recent changes** shows who changed what.
 
-A sales rep or marketer can only manage a brand they work on. If nobody is chosen, website leads stay unassigned; the dashboard shows how many.
+A sales rep or marketer can only manage a brand they work on. If nobody is chosen, website leads stay unassigned; the management overview shows how many.
 
 ![Website lead managers](images/42-crm-website-lead-managers.png)
 

@@ -426,7 +426,8 @@ try {
     role: await one(`select id from public.job_openings where reference = 'LX-PRD-114'`),
     distOrder: await one(`select id from public.distributor_orders order by created_at limit 1`),
   };
-  const adminPages = ["/", "/systems/dashboard", "/systems/orders", `/systems/orders/${firstOrder}`, "/systems/orders/distributors",
+  const adminPages = ["/management", "/management/activity", "/management/orders", "/management/field-sales", "/management/crm", "/management/complaints",
+    "/management/recruitment", "/management/chat", "/management/catalogue", "/management/csr", "/systems/orders", `/systems/orders/${firstOrder}`, "/systems/orders/distributors",
     "/systems/field-sales", "/systems/field-sales/history", "/systems/field-sales/outcomes", `/systems/field-sales/visits/${ids.visit}`,
     "/systems/crm", "/systems/crm/leads", "/systems/crm/leads/00000000-0000-0000-0000-00000000e001", "/systems/crm/leads/new",
     "/systems/crm/contacts", "/systems/crm/contacts/00000000-0000-0000-0000-00000000d001", "/systems/crm/contacts/new",
@@ -447,12 +448,13 @@ try {
     const rep = await login("rep@demo.test", kind);
     for (const p of ["/", "/systems/field-sales", "/systems/field-sales/visit", "/systems/orders", "/systems/crm/leads"]) await checkPage(rep, PORTAL, p, kind, p, { as: "sales_rep" });
     const mgr = await login("manager@demo.test", kind);
-    for (const p of ["/", "/systems/dashboard"]) await checkPage(mgr, PORTAL, p, kind, p, { as: "management" });
+    for (const p of ["/management", "/management/activity", "/management/crm"]) await checkPage(mgr, PORTAL, p, kind, p, { as: "management" });
     for (const s of [admin, dist, rep, mgr]) s.ctx.__keep = true;
     // Links found on these pages are checked below with the admin context of this width.
   }
 
   // ---------------------------------------------------------------- Roles: menu and refusals
+  // The management overview lives at /management (/systems/dashboard redirects there); every other system at /systems/<slug>.
   const SYS = { dashboard: ["admin", "management"], orders: ["admin", "management", "sales_rep", "distributor"], "field-sales": ["admin", "management", "sales_rep"],
     crm: ["admin", "management", "sales_rep", "customer_care", "marketing"], complaints: ["admin", "management", "customer_care", "sales_rep", "marketing"],
     products: ["admin", "management", "marketing"], stockists: ["admin", "management", "sales_rep", "marketing", "customer_care"], csr: ["admin", "management", "marketing"],
@@ -463,18 +465,22 @@ try {
     const s = await login(email, "desktop");
     await s.page.goto(`${PORTAL}/`);
     const nav = await s.page.evaluate(() => [...document.querySelectorAll("aside a")].map((a) => new URL(a.href).pathname));
-    const expected = Object.entries(SYS).filter(([, r]) => r.includes(role)).map(([k]) => `/systems/${k}`);
-    const navSystems = nav.filter((n) => n.startsWith("/systems/"));
+    const sysPath = (k) => (k === "dashboard" ? "/management" : `/systems/${k}`);
+    const expected = Object.entries(SYS).filter(([, r]) => r.includes(role)).map(([k]) => sysPath(k));
+    const navSystems = nav.filter((n) => n.startsWith("/systems/") || n.startsWith("/management"));
     const menuOk = role === "distributor" ? navSystems.includes("/systems/orders") && navSystems.every((n) => n.startsWith("/systems/orders")) : expected.every((e) => navSystems.includes(e)) && navSystems.every((n) => expected.includes(n));
-    const tiles = await s.page.evaluate(() => [...document.querySelectorAll("main a")].map((a) => new URL(a.href).pathname).filter((p) => p.startsWith("/systems/")));
-    const tilesOk = role === "distributor" ? true : tiles.every((t) => expected.some((e) => t.startsWith(e)));
+    // Admin and management land on the overview instead of Home; its links open the systems, which they all may use.
+    const landed = new URL(s.page.url()).pathname;
+    const tiles = await s.page.evaluate(() => [...document.querySelectorAll("main .grid a.tile")].map((a) => new URL(a.href).pathname));
+    const tilesOk = role === "distributor" ? true : ["admin", "management"].includes(role) ? landed === "/management" && nav[0] === "/management"
+      : landed === "/" && tiles.length > 0 && tiles.every((t) => expected.some((e) => t.startsWith(e)));
     const refused = [];
     for (const [slug, allowed] of Object.entries(SYS)) {
       if (allowed.includes(role)) continue;
       s.drain();
-      const resp = await s.page.goto(`${PORTAL}/systems/${slug}`);
+      const resp = await s.page.goto(`${PORTAL}${sysPath(slug)}`);
       const text = await s.page.locator("main").innerText().catch(() => "");
-      const redirected = !new URL(s.page.url()).pathname.startsWith(`/systems/${slug}`);
+      const redirected = !new URL(s.page.url()).pathname.startsWith(sysPath(slug));
       const ok = redirected || /does not include|not include|Ask your Lexta administrator|not have access|only for/i.test(text);
       refused.push({ slug, ok, redirected, status: resp?.status(), text: ok ? "" : text.slice(0, 200) });
     }
@@ -565,8 +571,13 @@ try {
   {
     mgr.drain();
     await mgr.page.goto(`${PORTAL}/systems/dashboard`);
+    await mgr.page.waitForURL(/\/management/);
     const t = await mgr.page.locator("main").innerText();
-    flow("systems", "dashboard: management sees figures", /order/i.test(t) && /complaint/i.test(t), t.slice(0, 200));
+    flow("systems", "dashboard: the old address opens the management overview with figures", new URL(mgr.page.url()).pathname === "/management"
+      && /Needs attention/.test(t) && /orders submitted/i.test(t) && /complaints received/i.test(t), t.slice(0, 200));
+    await mgr.page.goto(`${PORTAL}/management/activity`);
+    const rows = await mgr.page.locator(".mgmt-feed-row").count();
+    flow("systems", "dashboard: the activity feed lists the demo records", rows > 5, String(rows));
   }
   // Orders: distributor places one (phone) and rep confirms it.
   {

@@ -1,9 +1,5 @@
-import type { AppRole } from "@lexta/db";
-
-/** Same as the role check at the top of public.management_dashboard in 0014_management_dashboard.sql. */
-export const DASHBOARD_ROLES: AppRole[] = ["admin", "management"];
-export const DASHBOARD_BASE = "/systems/dashboard";
-export const NO_DASHBOARD_ACCESS = "Your role does not include the management dashboard. Ask your Lexta administrator if you need it.";
+// Shared by the management overview (lib/management.ts, app/(app)/management): its period presets and filters, and
+// the shape of public.management_dashboard (0014_management_dashboard.sql).
 
 export type DashboardPreset = "30d" | "month" | "year";
 export const DASHBOARD_PRESETS: { value: DashboardPreset; label: string }[] = [
@@ -47,19 +43,13 @@ export function parseDashboardFilters(
   const brand = params.brand && UUID.test(params.brand) && brandIds.includes(params.brand) ? params.brand : "";
   const from = validDate(params.from);
   const to = validDate(params.to);
-  if (from && to && from <= to && (Date.parse(to) - Date.parse(from)) / DAY <= 3660) return { range: "custom", from, to, brand };
+  if (from && to && from <= to && (Date.parse(to) - Date.parse(from)) / DAY <= 3660) {
+    // Dates that are exactly a preset (the form sends dates, also after a preset) count as that preset.
+    const preset = DASHBOARD_PRESETS.find((p) => { const d = presetDates(p.value, now); return d.from === from && d.to === to; });
+    return { range: preset ? preset.value : "custom", from, to, brand };
+  }
   const range: DashboardPreset = params.range === "month" || params.range === "year" ? params.range : "30d";
   return { range, ...presetDates(range, now), brand };
-}
-
-/** The address of the dashboard with these filters (presets keep the address short). */
-export function dashboardHref(f: Pick<DashboardFilters, "range" | "brand"> & Partial<Pick<DashboardFilters, "from" | "to">>): string {
-  const q = new URLSearchParams();
-  if (f.range === "custom") { q.set("from", f.from ?? ""); q.set("to", f.to ?? ""); }
-  else if (f.range !== "30d") q.set("range", f.range);
-  if (f.brand) q.set("brand", f.brand);
-  const s = q.toString();
-  return s ? `${DASHBOARD_BASE}?${s}` : DASHBOARD_BASE;
 }
 
 /** A link into a system's list, with only the filters that list understands. */
