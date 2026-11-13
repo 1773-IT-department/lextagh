@@ -61,7 +61,7 @@ try {
     const db = list.filter((p) => !p.comingSoon || yazz.includes(p.slug));
     const soon = list.filter((p) => p.comingSoon && !yazz.includes(p.slug)).map((p) => p.slug).sort();
     check(live && db.length === yazz.length && db.every((p) => yazz.includes(p.slug)), `products: the ${yazz.length} published Yazz products, read live`, list.map((p) => p.slug));
-    check(JSON.stringify(soon) === JSON.stringify(["dental-floss", "pocket-tissue"]), "products: the coming soon items (Dental Floss, Pocket Tissue) are added from the catalogue", soon);
+    check(JSON.stringify(soon) === JSON.stringify(["dental-floss"]), "products: Dental Floss is added as coming soon; Pocket Tissue is not, because the seeded Tissue product already sells pocket tissues", soon);
     check(!list.some((p) => other.includes(p.name) && !yazz.includes(p.slug)), "products: no Linzzy or Hooch product");
     const ranges = new Set(list.map((p) => p.range));
     check(["feminine-care", "oral-care", "home-tissue", "baby-care", "home-care"].every((r) => ranges.has(r)), "products: the seeded categories map onto all five ranges", [...ranges]);

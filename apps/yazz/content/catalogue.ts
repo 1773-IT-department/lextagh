@@ -223,8 +223,8 @@ export const CATALOGUE: YazzProduct[] = [
     long: "Meet Mama Yazz®, the jumbo size tissue created with busy households in mind. Its larger format offers a practical choice for families and spaces where tissue is used frequently.",
     features: ["Jumbo size format", "Family focused convenience", "Practical for frequent household use"],
     usage: null, ingredients: null, skus: [sku("Jumbo size", PACK)], images: [
-      { src: "/images/original/mama-yazz-1.webp", alt: "Two rolls of Mama Yazz kitchen towel" },
-      { src: "/images/original/mama-yazz-2.webp", alt: "Two rolls of Mama Yazz kitchen towel, red pack" },
+      { src: "/images/original/mama-yazz-1.webp", alt: "Two rolls of Mama Yazz" },
+      { src: "/images/original/mama-yazz-2.webp", alt: "Two rolls of Mama Yazz, red pack" },
     ],
   },
   {

@@ -90,3 +90,6 @@ The contract allows 6 pages per brand site and no CSR pages, shop, quizzes, pare
   (The sixth page is FAQs, as Desmond chose.)
 - Separate "Where to Buy" and "Tips & Advice" mega menu tabs: Where to Buy is part of Contact & Where to Buy, and the
   Tips & Advice menu lists the article categories.
+
+- Better panty liner pack shot: the one from the original site is only 225 x 225 px and looks soft in the product window.
+- Product Management: the seeded "Tissue" product lists pocket tissues while Lexta's content calls Pocket Tissue "coming soon". The site hides the coming soon card while a live product sells pocket tissues; staff should correct the product.

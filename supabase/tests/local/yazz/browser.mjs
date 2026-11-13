@@ -144,8 +144,10 @@ try {
     const yazz = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug = 'yazz' and p.is_published`)).split("|");
     const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug in ('linzzy', 'hooch') and p.is_published`)).split("|");
     const cards = await page.locator("main article h3").allInnerTexts();
-    // Plus Lexta's coming soon items from content/catalogue.ts, which show even without a database row.
-    const soon = ["Yazz pocket tissue", "Yazz dental floss"].filter((n) => !yazz.includes(n));
+    // Plus Lexta's coming soon items from content/catalogue.ts, which show even without a database row. Pocket tissue is
+    // left out because the seeded "Tissue" product already sells pocket tissues (no card both on sale and coming soon).
+    const soon = ["Yazz dental floss"].filter((n) => !yazz.includes(n));
+    check(!cards.includes("Yazz pocket tissue"), "products page: no coming soon card for pocket tissue, which a live product already sells", cards);
     check(yazz.every((n) => cards.includes(n)) && soon.every((n) => cards.includes(n)) && cards.length === yazz.length + soon.length,
       `products page: one card for each of the ${yazz.length} Yazz products and the ${soon.length} coming soon items`, cards);
     const floss = page.locator("main article").filter({ hasText: "Yazz dental floss" });

@@ -53,7 +53,13 @@ export async function getYazzProducts(): Promise<{ products: YazzProduct[]; live
     const rows = await getPublishedProducts(BRAND_SLUG);
     const products = rows.map(toYazzProduct);
     // Coming soon items from Lexta's catalogue (Pocket Tissue, Dental Floss) show even when the database has no row.
-    const soon = CATALOGUE.filter((c) => c.comingSoon && !products.some((p) => p.slug === c.slug));
+    // A coming soon item is left out when a live product already covers it (same slug, or a live product in the same
+    // range whose name or pack variants name it, e.g. a "Tissue" row that sells pocket tissues).
+    const key = (s: string) => s.toLowerCase().replace(/^yazz\s+/, "").replace(/s\b/g, "").trim();
+    const covers = (p: YazzProduct, c: YazzProduct) =>
+      p.slug === c.slug ||
+      (p.range === c.range && [p.name, ...p.skus.map((s) => s.variant ?? "")].some((t) => key(t).includes(key(c.name))));
+    const soon = CATALOGUE.filter((c) => c.comingSoon && !products.some((p) => covers(p, c)));
     return { products: [...products, ...soon], live: true };
   } catch (error) {
     console.warn(`[products] showing the catalogue from content/catalogue.ts: ${error instanceof Error ? error.message : String(error)}`);
