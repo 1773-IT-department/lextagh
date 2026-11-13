@@ -52,7 +52,7 @@ try {
   // Not set up: a kind message with the email address, nothing sent anywhere.
   {
     const r = await start({});
-    check(r.status === 503 && r.body.code === "unavailable" && r.body.message.includes("support@lextagh.com"),
+    check(r.status === 503 && r.body.code === "unavailable" && r.body.message.includes("marketing@lextagh.com"),
       "without settings the chat says it is not available and gives the email address", r);
   }
 

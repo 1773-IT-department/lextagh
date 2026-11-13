@@ -8,7 +8,7 @@ import { articleHref, featuredArticle, gridArticles, mediaContact, mediaEmail, m
 // Title and description exactly as the prototype's <helmet> sets them.
 const title = "News & Media | Lexta Ghana";
 const description =
-  "Campaign launches, outreach reports, partnerships and product news from Lexta Ghana and our brands Yazz, Linzzy, Crox and Softcare.";
+  "Campaign launches, outreach reports, partnerships and product news from Lexta Ghana and our brands Yazz, Linzzy and Hooch.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -32,7 +32,7 @@ export default function NewsPage() {
             What we have been <span style={{ color: "#3fc0dd" }}>up to</span>
           </h1>
           <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 620, textWrap: "pretty" }}>
-            Campaign launches, outreach reports, partnerships and brand news from Lexta Ghana, Yazz, Linzzy, Crox and Softcare.
+            Campaign launches, outreach reports, partnerships and brand news from Lexta Ghana, Yazz, Linzzy and Hooch.
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 0, marginTop: 54, borderRadius: "14px 14px 0 0", overflow: "hidden", background: "#fff", boxShadow: "0 -14px 40px rgba(4,26,34,.28)" }}>

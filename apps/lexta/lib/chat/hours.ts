@@ -9,7 +9,7 @@ export { CHAT_AUTO_REPLY, CHAT_OFFICE_HOURS, chatTeamAvailable };
 /** Shown to visitors as is until Lexta confirms the hours. */
 export const CHAT_OFFICE_HOURS_TEXT = "[PLACEHOLDER: Lexta chat office hours]";
 
-export const CHAT_SUPPORT_EMAIL = "support@lextagh.com";
+export const CHAT_SUPPORT_EMAIL = "marketing@lextagh.com";
 
 /** Shown instead of the fixed reply outside office hours, and above the start form. */
 export const CHAT_OUT_OF_HOURS = chatOutOfHours(CHAT_OFFICE_HOURS_TEXT, CHAT_SUPPORT_EMAIL);

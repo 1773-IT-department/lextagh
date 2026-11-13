@@ -84,14 +84,14 @@ export default function SiteFooter() {
             </div>
             <div style={contactRow}>
               <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={iconStyle} aria-hidden="true"><rect x="1" y="3" width="12" height="9" stroke={stroke} strokeWidth="1.4" /><path d="M1 3.5l6 4.5 6-4.5" stroke={stroke} strokeWidth="1.4" /></svg>
-              <span>support@lextagh.com</span>
+              <span>marketing@lextagh.com</span>
             </div>
           </div>
         </div>
       </div>
 
       <div style={{ maxWidth: 1240, margin: "32px auto 0", paddingTop: 20, borderTop: "1px solid rgba(255,255,255,.12)", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ fontSize: 11, color: "rgba(255,255,255,.55)" }}>© 2026. Lexta Ghana LTD. All Rights Reserved.</div>
+        <div style={{ fontSize: 11, color: "rgba(255,255,255,.55)" }}>© 2026 Lexta Ghana Limited. All rights reserved.</div>
         <button
           type="button"
           data-totop="1"

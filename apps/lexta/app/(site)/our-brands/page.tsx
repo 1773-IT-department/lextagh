@@ -195,7 +195,7 @@ export default async function OurBrandsPage() {
               <div style={eyebrow}>Sophisticated protection</div>
               <h2 style={brandH2}>Linzzy</h2>
               <p style={lead}>
-                Linzzy is our answer to a generation that expects more from a personal care product than absorption. Cleaner design, clinical performance, and a quieter kind of confidence. Where Yazz is the trusted everyday, Linzzy is precise, modern and unmistakably deliberate.
+                Linzzy is a feminine, maternal and baby care brand under Lexta Ghana Limited, created to support the personal care needs of women, mothers and growing families. Its portfolio includes sanitary towels, panty liners, baby diapers and baby wipes, offering practical choices for different care routines.
               </p>
             </div>
           </div>
@@ -204,8 +204,8 @@ export default async function OurBrandsPage() {
             <Points
               style={flatPoint}
               items={[
-                { title: "Built on engineering, not marketing", text: "Structured absorption layers and anti leak barriers designed around how the product is actually worn, not how it photographs." },
-                { title: "Built for sensitive skin", text: "Fragrance free formulations across the baby range, tested to guard against irritation rather than mask it." },
+                { title: "Comfort-focused design", text: "Product options designed with attention to fit, coverage, convenience and everyday use, built around the Absorb, Lock and Breathe positioning." },
+                { title: "A brand that listens", text: "We value consumer feedback and believe that understanding real experiences helps us continuously improve." },
               ]}
             />
           </div>
@@ -227,7 +227,7 @@ export default async function OurBrandsPage() {
               <div style={{ ...eyebrow, marginTop: 22 }}>Fuelled by integrity</div>
               <h2 style={brandH2}>Hooch</h2>
               <p style={lead}>
-                Breakfast decides the morning. Hooch is built for mornings that have to last: pure grains, vitamin fortified, low in fat, and formulated to avoid the sugar crash that most cereals build in and then quietly rely on. For families, for students, for anyone whose day starts early and ends late.
+                Hooch is a food brand within the Lexta Ghana Limited family, created to make breakfast and snack moments enjoyable, practical and accessible. We believe that a positive start can open the door to learning, creativity and connection. Our ambition is to support families with dependable food choices and useful everyday ideas.
               </p>
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
@@ -243,8 +243,8 @@ export default async function OurBrandsPage() {
             <Points
               style={raisedPoint}
               items={[
-                { title: "Fortified, not just sweetened", text: "Essential vitamins added for real metabolic value, not a claim on the front of the box." },
-                { title: "Made for the long morning", text: "A grain profile designed to release energy steadily, so ten o'clock feels like nine." },
+                { title: "Enriched with vitamins", text: "Vitamin E, B1, B2, B3, B5, B6, B12 and folic acid." },
+                { title: "Convenience", text: "Making busy mornings easier with 10 individually portioned cereal packs in every product." },
               ]}
             />
           </div>
