@@ -40,9 +40,9 @@
 }
 
 /* States, drawn on the face. */
-.wrap:hover > .select:not(:disabled) { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.wrap:hover > .select:not(:disabled):not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
 .wrap[data-variant="region"]:hover > .select { background: #fff !important; box-shadow: 0 6px 18px rgba(18, 163, 196, .14) !important; }
-.wrap[data-open] > .select { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.wrap[data-open] > .select:not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
 .select:focus-visible,
 .wrap[data-focus-visible] > .select {
   outline: var(--lx-select-outline, 2px solid #12a3c4) !important; outline-offset: 2px;

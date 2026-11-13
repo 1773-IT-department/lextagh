@@ -395,7 +395,7 @@ try {
   const monthOf = (v) => `${MONTHS[Number(v.slice(5, 7)) - 1]} ${v.slice(0, 4)}`;
   check(await dlg.getAttribute("role") === "dialog" && await dlg.getAttribute("aria-modal") === "true" && await dlg.getByRole("heading").innerText() === monthOf(startFrom),
     "1440 date: the calendar is a dialog named by its month and year", await dlg.getByRole("heading").innerText());
-  check(await focusedDay() === startFrom && await dlg.locator(`[aria-selected=true]`).count() === 1, "1440 date: focus starts on the chosen day, shown as selected");
+  check(await focusedDay() === startFrom && await dlg.locator(`[aria-pressed=true]`).count() === 1, "1440 date: focus starts on the chosen day, shown as selected");
   check(await dlg.locator("[aria-current=date]").count() <= 1 && await dlg.getByRole("button", { name: "Clear" }).count() === 0 && await dlg.getByRole("button", { name: "Today" }).count() === 1,
     "1440 date: today is marked, Today is offered and Clear is not (the field is required)");
   check(JSON.stringify(await dlg.locator("th").evaluateAll((ths) => ths.map((t) => t.getAttribute("abbr")))) === JSON.stringify(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
@@ -447,7 +447,25 @@ try {
   await early.click({ force: true });
   check(await toInput.inputValue() === "2026-11-15" && await dlg.count() === 1, "1440 date: a day outside min and max cannot be chosen");
   await mgr.keyboard.press("Escape");
+  // A month button that disables itself at min hands focus to the other one (focus never drops to the page).
+  await toInput.evaluate((el) => { el.min = "2026-10-01"; });
+  await mgr.locator("[data-lx-date]", { has: toInput }).locator("[data-lx-date-trigger]").click();
+  await dlg.getByRole("button", { name: "Previous month" }).click();
+  await mgr.waitForTimeout(100);
+  check(await dlg.getByRole("heading").innerText() === "October 2026" && await dlg.getByRole("button", { name: "Previous month" }).isDisabled()
+    && await mgr.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Next month", "1440 date: at min, focus moves from the disabled month button to the other");
+  await mgr.keyboard.press("Escape");
   await toInput.evaluate((el) => { el.removeAttribute("min"); el.removeAttribute("max"); });
+  // Enhanced, the browser's own picker takes no clicks (only the brand button opens a calendar), and an error border
+  // stays red on hover.
+  // (Chrome does not report styles of this inner part, so look for the rule that applies to it.)
+  const pickerOff = await toInput.evaluate((el) => [...document.styleSheets].some((sh) => { try { return [...sh.cssRules].some((r) => r.selectorText?.includes("::-webkit-calendar-picker-indicator")
+    && r.style.pointerEvents === "none" && el.closest(r.selectorText.replace("::-webkit-calendar-picker-indicator", "").replace(/\s*>\s*[^>]+$/, "")) && el.matches(r.selectorText.split(">").pop().replace("::-webkit-calendar-picker-indicator", "").trim())); } catch { return false; } }));
+  check(pickerOff, "1440 date: the browser's own picker icon takes no clicks");
+  await toInput.evaluate((el) => el.setAttribute("aria-invalid", "true"));
+  await toInput.hover();
+  check(await toInput.evaluate((el) => getComputedStyle(el).borderTopColor) === "rgb(180, 35, 24)", "1440 date: an invalid field keeps its red border on hover");
+  await toInput.evaluate((el) => el.removeAttribute("aria-invalid"));
   await toInput.fill(toBefore);
   // Posting: the chosen dates go to the address like before.
   await mgr.getByRole("button", { name: "Apply" }).click();

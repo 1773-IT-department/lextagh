@@ -12,6 +12,15 @@
   opacity: 0; cursor: pointer;
 }
 .input:disabled { cursor: not-allowed; }
+/* Enhanced, only the brand button opens a calendar: the browser's own (still see through underneath) takes no clicks. */
+.wrap[data-enhanced] > .input::-webkit-calendar-picker-indicator { pointer-events: none; }
+/* Safari and Chrome extras that do not belong on the brand face. */
+.input::-webkit-inner-spin-button, .input::-webkit-clear-button { display: none; -webkit-appearance: none; }
+/* Firefox draws its own calendar button inside the field; as a text field it does not, and the brand icon takes its
+   place (it still opens Firefox's own picker on a click in the field when there is no JavaScript). */
+@supports (-moz-appearance: none) {
+  .input[type="date"], .input[type="datetime-local"], .input[type="time"], .input[type="month"] { -moz-appearance: textfield; appearance: textfield; }
+}
 .input:disabled::-webkit-calendar-picker-indicator { cursor: not-allowed; }
 
 .icon {
@@ -20,8 +29,9 @@
 }
 .icon svg { display: block; width: 16px; height: 16px; }
 .input:disabled ~ .icon { color: var(--lx-select-muted, #8aa4ae); opacity: .7; }
-.wrap:hover > .input:not(:disabled) { border-color: var(--lx-select-accent, #12a3c4) !important; }
-.wrap[data-open] > .input { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.wrap:hover > .input:not(:disabled):not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.wrap[data-open] > .input:not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.input[aria-invalid="true"] { border-color: var(--lx-select-danger, #b42318) !important; }
 
 /* With JavaScript, the icon is a button that opens the branded calendar. */
 .trigger {

@@ -7,4 +7,4 @@
 # Usage: DROPDOWN_SCREENSHOTS=/some/folder bash supabase/tests/local/dropdowns/run.sh
 set -euo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HARNESS_THEN="node '$DIR/browser.mjs'" bash "$DIR/../run.sh" "${1:-__dropdowns_only__}"
+HARNESS_THEN="node '$DIR/component.mjs' && node '$DIR/browser.mjs'" bash "$DIR/../run.sh" "${1:-__dropdowns_only__}"

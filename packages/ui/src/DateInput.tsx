@@ -27,7 +27,7 @@ export type DateInputProps = Omit<ComponentPropsWithRef<"input">, "type"> & {
   wrapperStyle?: CSSProperties;
 };
 
-type Place = { left: number; width: number; top?: number; bottom?: number; up: boolean };
+type Place = { left: number; width: number; top?: number; bottom?: number; maxHeight?: number; up: boolean };
 
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const DAYS = [["Mo", "Monday"], ["Tu", "Tuesday"], ["We", "Wednesday"], ["Th", "Thursday"], ["Fr", "Friday"], ["Sa", "Saturday"], ["Su", "Sunday"]];
@@ -40,16 +40,18 @@ const parse = (v: string | null | undefined): Date | null => {
   const d = new Date(`${v}T00:00:00Z`);
   return Number.isNaN(d.getTime()) ? null : d;
 };
+/** A UTC day. Unlike Date.UTC, years 0 to 99 stay as they are (a typed 0026 must not become 1926). */
+const utc = (y: number, m: number, day: number) => { const d = new Date(0); d.setUTCFullYear(y, m, day); return d; };
 const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 86_400_000);
 const addMonths = (d: Date, n: number) => {
   const y = d.getUTCFullYear();
   const m = d.getUTCMonth() + n;
-  const last = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
-  return new Date(Date.UTC(y, m, Math.min(d.getUTCDate(), last)));
+  const last = utc(y, m + 1, 0).getUTCDate();
+  return utc(y, m, Math.min(d.getUTCDate(), last));
 };
 const todayIso = () => {
   const n = new Date();
-  return iso(new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate())));
+  return iso(utc(n.getFullYear(), n.getMonth(), n.getDate()));
 };
 const spoken = (d: Date) => `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 const weekday = (d: Date) => (d.getUTCDay() + 6) % 7; // Monday 0 ... Sunday 6
@@ -104,6 +106,8 @@ export default function DateInput({
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const moveFocus = useRef(false);
   const openRef = useRef<() => void>(() => {});
+  const openState = useRef(false);
+  openState.current = open;
 
   const setInputRef = useCallback((node: HTMLInputElement | null) => {
     input.current = node;
@@ -129,15 +133,25 @@ export default function DateInput({
     setPortalTarget(document.body);
     setEnhanced(true);
     sync();
-    // A script that sets the value (a reset after sending, for example) is picked up too.
-    if (nativeValue?.set) {
+    // A script that sets the value (a reset after sending, for example) is picked up too. React keeps its own value
+    // tracker on the node (an own "value" property) for controlled inputs: wrap whatever is there, never replace it,
+    // and put it back on unmount (StrictMode mounts twice).
+    const own = Object.getOwnPropertyDescriptor(el, "value");
+    const prev = own ?? nativeValue;
+    if (prev?.set && prev.get) {
       Object.defineProperty(el, "value", {
-        configurable: true, get() { return nativeValue.get!.call(this); }, set(v) { nativeValue.set!.call(this, v); queueMicrotask(sync); },
+        configurable: true, enumerable: prev.enumerable,
+        get() { return prev.get!.call(this); },
+        set(v) { prev.set!.call(this, v); queueMicrotask(sync); },
       });
     }
     const onReset = () => setTimeout(sync, 0);
     // Alt and Down Arrow (the browser's own shortcut for its picker) opens the branded calendar instead.
     const onKey = (e: globalThis.KeyboardEvent) => { if (e.altKey && e.key === "ArrowDown") { e.preventDefault(); openRef.current(); } };
+    // Going back to typing in the field closes the calendar.
+    const onInputFocus = () => { if (openState.current) { setOpen(false); setPlace(null); } };
+    el.addEventListener("focus", onInputFocus);
+    el.addEventListener("pointerdown", onInputFocus);
     const form = el.form;
     el.addEventListener("keydown", onKey);
     el.addEventListener("input", sync);
@@ -149,8 +163,11 @@ export default function DateInput({
       watch.observe(f, { attributes: true, attributeFilter: ["disabled"] });
     }
     return () => {
-      delete (el as unknown as Record<string, unknown>).value;
+      if (own) Object.defineProperty(el, "value", own);
+      else delete (el as unknown as Record<string, unknown>).value;
       el.removeEventListener("keydown", onKey);
+      el.removeEventListener("focus", onInputFocus);
+      el.removeEventListener("pointerdown", onInputFocus);
       el.removeEventListener("input", sync);
       el.removeEventListener("change", sync);
       form?.removeEventListener("reset", onReset);
@@ -249,14 +266,17 @@ export default function DateInput({
     const gap = 6;
     const vw = document.documentElement.clientWidth;
     const vh = window.innerHeight;
-    const h = el.offsetHeight;
+    const h = el.scrollHeight;
     const below = vh - anchor.bottom - gap - margin;
     const above = anchor.top - gap - margin;
     const up = below < h && above > below;
+    // When neither side has room for the whole calendar, it takes the larger side and scrolls.
+    const room = up ? above : below;
+    const maxHeight = h > room ? Math.max(160, room) : undefined;
     const width = Math.min(PANEL_W, vw - margin * 2);
     const left = Math.min(Math.max(anchor.left, margin), vw - margin - width);
-    const next: Place = up ? { left, width, bottom: vh - anchor.top + gap, up } : { left, width, top: anchor.bottom + gap, up };
-    setPlace((p) => (p && p.left === next.left && p.width === next.width && p.top === next.top && p.bottom === next.bottom ? p : next));
+    const next: Place = up ? { left, width, bottom: vh - anchor.top + gap, maxHeight, up } : { left, width, top: anchor.bottom + gap, maxHeight, up };
+    setPlace((p) => (p && p.left === next.left && p.width === next.width && p.top === next.top && p.bottom === next.bottom && p.maxHeight === next.maxHeight ? p : next));
   }, []);
 
   useLayoutEffect(() => {
@@ -265,15 +285,18 @@ export default function DateInput({
     const onMove = () => {
       const r = wrap.current?.getBoundingClientRect();
       if (r && (r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > document.documentElement.clientWidth)) {
+        const hadFocus = !!dialog.current?.contains(document.activeElement);
         setOpen(false);
         setPlace(null);
+        if (hadFocus) trigger.current?.focus({ preventScroll: true });
         return;
       }
       placeDialog();
     };
+    // A press anywhere but the dialog or its button (the input included) closes it.
     const onPointer = (ev: PointerEvent) => {
       const t = ev.target as Node;
-      if (wrap.current?.contains(t) || dialog.current?.contains(t)) return;
+      if (trigger.current?.contains(t) || dialog.current?.contains(t)) return;
       setOpen(false);
       setPlace(null);
     };
@@ -287,15 +310,37 @@ export default function DateInput({
     };
   }, [open, placeDialog]);
 
+  // A month with more or fewer weeks changes the height: place it again.
+  const shown = `${focusDay.getUTCFullYear()}-${focusDay.getUTCMonth()}`;
+  useLayoutEffect(() => { if (open) placeDialog(); }, [open, shown, placeDialog]);
+
   // The month shown, as weeks of seven cells (Monday first); empty cells outside the month.
-  const first = new Date(Date.UTC(focusDay.getUTCFullYear(), focusDay.getUTCMonth(), 1));
-  const daysIn = new Date(Date.UTC(focusDay.getUTCFullYear(), focusDay.getUTCMonth() + 1, 0)).getUTCDate();
+  const first = utc(focusDay.getUTCFullYear(), focusDay.getUTCMonth(), 1);
+  const daysIn = utc(focusDay.getUTCFullYear(), focusDay.getUTCMonth() + 1, 0).getUTCDate();
   const cells: (Date | null)[] = [...Array(weekday(first)).fill(null), ...Array.from({ length: daysIn }, (_, i) => addDays(first, i))];
   while (cells.length % 7) cells.push(null);
   const weeks = Array.from({ length: cells.length / 7 }, (_, w) => cells.slice(w * 7, w * 7 + 7));
   const today = todayIso();
   const prevOk = !bounds.min || addDays(first, -1) >= bounds.min;
   const nextOk = !bounds.max || addDays(first, daysIn) <= bounds.max;
+
+  /** Previous or next month. A button that disables itself (at min or max) hands focus to the other one. */
+  const prevBtn = useRef<HTMLButtonElement>(null);
+  const nextBtn = useRef<HTMLButtonElement>(null);
+  const navMonth = (dir: 1 | -1) => {
+    const next = clampDay(addMonths(focusDay, dir), bounds.min, bounds.max);
+    setFocusDay(next);
+    const f = utc(next.getUTCFullYear(), next.getUTCMonth(), 1);
+    const n = utc(next.getUTCFullYear(), next.getUTCMonth() + 1, 1);
+    const stillOk = dir < 0 ? !bounds.min || addDays(f, -1) >= bounds.min : !bounds.max || n <= bounds.max;
+    if (!stillOk) {
+      requestAnimationFrame(() => {
+        const other = (dir < 0 ? nextBtn : prevBtn).current;
+        if (other && !other.disabled) other.focus();
+        else dialog.current?.querySelector<HTMLElement>(`#${CSS.escape(dayId(iso(next)))}`)?.focus();
+      });
+    }
+  };
 
   const panel = open && portalTarget ? createPortal(
     <div
@@ -308,14 +353,19 @@ export default function DateInput({
       data-up={place?.up ? "" : undefined}
       data-measuring={place ? undefined : ""}
       onKeyDown={onDialogKey}
-      style={place ? { left: place.left, width: place.width, top: place.top, bottom: place.bottom } : { left: 0, top: 0, width: PANEL_W }}
+      onBlur={(e) => {
+        // Focus that leaves both the dialog and the field (to somewhere real) closes it.
+        const to = e.relatedTarget as Node | null;
+        if (to && !dialog.current?.contains(to) && !wrap.current?.contains(to)) { setOpen(false); setPlace(null); }
+      }}
+      style={place ? { left: place.left, width: place.width, top: place.top, bottom: place.bottom, maxHeight: place.maxHeight, overflowY: place.maxHeight ? "auto" : undefined } : { left: 0, top: 0, width: PANEL_W }}
     >
       <div className={css.head}>
-        <button type="button" className={css.nav} aria-label="Previous month" disabled={!prevOk} onClick={() => setFocusDay(clampDay(addMonths(focusDay, -1), bounds.min, bounds.max))}>
+        <button ref={prevBtn} type="button" className={css.nav} aria-label="Previous month" disabled={!prevOk} onClick={() => navMonth(-1)}>
           <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M7.5 2.5L4 6l3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
         <h2 id={headId} className={css.title} aria-live="polite">{MONTHS[focusDay.getUTCMonth()]} {focusDay.getUTCFullYear()}</h2>
-        <button type="button" className={css.nav} aria-label="Next month" disabled={!nextOk} onClick={() => setFocusDay(clampDay(addMonths(focusDay, 1), bounds.min, bounds.max))}>
+        <button ref={nextBtn} type="button" className={css.nav} aria-label="Next month" disabled={!nextOk} onClick={() => navMonth(1)}>
           <svg viewBox="0 0 12 12" aria-hidden="true" focusable="false"><path d="M4.5 2.5L8 6 4.5 9.5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </button>
       </div>
@@ -339,10 +389,10 @@ export default function DateInput({
                       id={dayId(v)}
                       className={css.day}
                       tabIndex={focusable ? 0 : -1}
-                      aria-selected={selected || undefined}
+                      aria-pressed={selected}
                       aria-current={v === today ? "date" : undefined}
                       aria-disabled={ok ? undefined : true}
-                      aria-label={`${spoken(d)}${ok ? "" : ", not available"}`}
+                      aria-label={`${spoken(d)}${selected ? ", selected" : ""}${ok ? "" : ", not available"}`}
                       data-selected={selected ? "" : undefined}
                       data-today={v === today ? "" : undefined}
                       onKeyDown={onGridKey}
