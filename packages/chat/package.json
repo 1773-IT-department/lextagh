@@ -1,0 +1,14 @@
+{
+  "name": "@lexta/chat",
+  "private": true,
+  "exports": {
+    "./config": "./src/config.ts",
+    "./hours": "./src/hours.ts",
+    "./server": "./src/server.ts",
+    "./visitor": "./src/visitor.ts",
+    "./widget": "./src/widget/ChatLauncher.tsx"
+  },
+  "dependencies": { "@lexta/db": "workspace:*" },
+  "peerDependencies": { "react": "^19.1.0", "react-dom": "^19.1.0" },
+  "devDependencies": { "@types/node": "^22.0.0", "@types/react": "^19.1.0", "@types/react-dom": "^19.1.0", "react": "^19.1.0", "react-dom": "^19.1.0" }
+}

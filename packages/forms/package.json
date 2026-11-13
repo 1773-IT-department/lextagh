@@ -1,0 +1,11 @@
+{
+  "name": "@lexta/forms",
+  "private": true,
+  "exports": {
+    "./core": "./src/core.ts",
+    "./react": "./src/react.tsx"
+  },
+  "dependencies": { "@lexta/db": "workspace:*" },
+  "peerDependencies": { "react": "^19.1.0" },
+  "devDependencies": { "@types/react": "^19.1.0", "react": "^19.1.0" }
+}

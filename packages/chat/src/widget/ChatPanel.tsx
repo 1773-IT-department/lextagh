@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { CHAT_LIMITS, type ChatVisitorMessage } from "@lexta/db";
-import { CHAT_AUTO_REPLY, CHAT_OUT_OF_HOURS, chatTeamAvailable } from "@/lib/chat/hours";
+import type { ChatBrandConfig } from "../config";
+import { CHAT_AUTO_REPLY, chatOutOfHours, chatTeamAvailable } from "../hours";
 import s from "./panel.module.css";
 
 // The live chat panel: a short start form, then the conversation. Everything goes through this site's own
@@ -10,16 +11,15 @@ import s from "./panel.module.css";
 // token are kept in localStorage so the chat survives a reload (and simply starts fresh when storage is blocked).
 // While the panel is open it asks for new messages every few seconds; when it is closed it does not ask at all.
 
-const STORAGE_KEY = "lexta-chat-v1";
 const POLL_MS = 4000;
 const MAX_BACKOFF_MS = 30000;
-const GENERIC = "Sorry, that did not go through. Please try again in a moment, or email marketing@lextagh.com.";
+const genericError = (email: string) => `Sorry, that did not go through. Please try again in a moment, or email ${email}.`;
 
 type Session = { id: string; token: string };
 type Line = ChatVisitorMessage & { pending?: boolean };
 type ApiError = { ok: false; code: string; message: string; fieldErrors?: Record<string, string> };
 
-function loadSession(): Session | null {
+function loadSession(STORAGE_KEY: string): Session | null {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -29,7 +29,7 @@ function loadSession(): Session | null {
     return null;
   }
 }
-function saveSession(v: Session | null) {
+function saveSession(STORAGE_KEY: string, v: Session | null) {
   try {
     if (v) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(v));
     else window.localStorage.removeItem(STORAGE_KEY);
@@ -48,7 +48,7 @@ function newId(): string {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`;
 }
 
-async function api<T>(body: Record<string, unknown>): Promise<({ ok: true } & T) | ApiError> {
+async function api<T>(body: Record<string, unknown>, GENERIC: string): Promise<({ ok: true } & T) | ApiError> {
   try {
     const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), cache: "no-store" });
     const data = (await res.json()) as ({ ok: true } & T) | ApiError;
@@ -63,8 +63,11 @@ const timeOf = (iso: string) => {
   return Number.isNaN(d.getTime()) ? "" : d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 };
 
-export default function ChatPanel({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function ChatPanel({ open, onClose, config }: { open: boolean; onClose: () => void; config: ChatBrandConfig }) {
   const ids = useId();
+  const { brandName, storageKey, supportEmail } = config;
+  const GENERIC = genericError(supportEmail);
+  const CHAT_OUT_OF_HOURS = chatOutOfHours(config.officeHoursText, supportEmail);
   const [session, setSession] = useState<Session | null>(null);
   const [ready, setReady] = useState(false);
   const [lines, setLines] = useState<Line[]>([]);
@@ -90,9 +93,9 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
   const available = chatTeamAvailable();
 
   useEffect(() => {
-    setSession(loadSession());
+    setSession(loadSession(storageKey));
     setReady(true);
-  }, []);
+  }, [storageKey]);
 
   // Focus the first thing to do when the panel opens.
   useEffect(() => {
@@ -114,13 +117,13 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
   }, []);
 
   const forget = useCallback((message: string) => {
-    saveSession(null);
+    saveSession(storageKey, null);
     setSession(null);
     setLines([]);
     lastSeq.current = 0;
     setEnded(true);
     setError(message);
-  }, []);
+  }, [storageKey]);
 
   // Poll for new messages while the panel is open and the tab is visible.
   useEffect(() => {
@@ -133,7 +136,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
       if (document.visibilityState === "visible") {
         const r = await api<{ reference: string; status: string; messages: ChatVisitorMessage[] }>({
           action: "read", conversationId: session.id, token: session.token, after: lastSeq.current,
-        });
+        }, GENERIC);
         if (stop) return;
         if (r.ok) {
           merge(r.messages);
@@ -154,7 +157,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => { stop = true; window.clearTimeout(timer); document.removeEventListener("visibilitychange", onVisible); };
-  }, [open, session, merge, forget]);
+  }, [open, session, merge, forget, GENERIC]);
 
   // Keep the newest message in view.
   useEffect(() => {
@@ -178,7 +181,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
       website: get("website"), page: window.location.pathname,
     };
     const id = idFor(JSON.stringify(fields));
-    const r = await api<{ conversationId: string; token: string; reference: string }>({ ...fields, id });
+    const r = await api<{ conversationId: string; token: string; reference: string }>({ ...fields, id }, GENERIC);
     setBusy(false);
     if (!r.ok) {
       setError(r.message);
@@ -187,7 +190,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     }
     attempt.current = null;
     const next = { id: r.conversationId, token: r.token };
-    saveSession(next);
+    saveSession(storageKey, next);
     setEnded(false);
     lastSeq.current = 0;
     setLines([{ id: "first", seq: 0, sender: "visitor", body: get("message").trim(), created_at: new Date().toISOString(), staff_name: null }]);
@@ -205,7 +208,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     setError("");
     setDraft("");
     setLines((prev) => [...prev, { id, seq: Number.MAX_SAFE_INTEGER, sender: "visitor", body, created_at: new Date().toISOString(), staff_name: null, pending: true }]);
-    const r = await api<{ id: string; seq: number; createdAt: string }>({ action: "send", conversationId: session.id, token: session.token, id, body });
+    const r = await api<{ id: string; seq: number; createdAt: string }>({ action: "send", conversationId: session.id, token: session.token, id, body }, GENERIC);
     setBusy(false);
     if (r.ok) {
       attempt.current = null;
@@ -222,7 +225,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
   }
 
   function newChat() {
-    saveSession(null);
+    saveSession(storageKey, null);
     setSession(null);
     setLines([]);
     lastSeq.current = 0;
@@ -249,8 +252,8 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
     >
       <div className={s.head}>
         <div>
-          <h2 id={`${ids}-title`} className={s.title}>Chat with Lexta</h2>
-          <p className={s.sub}>{session ? "You are chatting with the Lexta team." : "A real person from our team will answer."}</p>
+          <h2 id={`${ids}-title`} className={s.title}>Chat with {brandName}</h2>
+          <p className={s.sub}>{session ? `You are chatting with the ${config.teamName}.` : "A real person from our team will answer."}</p>
         </div>
         <div className={s.headActions}>
           {session && <button type="button" className={s.textButton} onClick={newChat}>New chat</button>}
@@ -297,7 +300,7 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
             <input id={`${ids}-website`} name="website" tabIndex={-1} autoComplete="off" />
           </div>
           <button className={s.primary} type="submit" disabled={busy}>{busy ? "Starting..." : "Start chat"}</button>
-          <p className={s.small}>We use your details only to answer you. See our <a href="/privacy-policy">privacy policy</a>.</p>
+          <p className={s.small}>We use your details only to answer you. See our <a href={config.privacyUrl}>privacy policy</a>.</p>
         </form>
       ) : (
         <>
@@ -305,13 +308,13 @@ export default function ChatPanel({ open, onClose }: { open: boolean; onClose: (
             {lines.map((l, i) => (
               <div key={l.id}>
                 <div className={`${s.msg} ${l.sender === "visitor" ? s.mine : s.theirs}`}>
-                  <span className={s.who}>{l.sender === "visitor" ? "You" : `${l.staff_name ?? "Lexta team"}, Lexta`}</span>
+                  <span className={s.who}>{l.sender === "visitor" ? "You" : `${l.staff_name ?? `${brandName} team`}, ${brandName}`}</span>
                   <p className={s.bubble}>{l.body}</p>
                   <span className={s.meta}>{l.pending ? "Sending..." : timeOf(l.created_at)}</span>
                 </div>
                 {i === lines.indexOf(firstVisitor!) && autoLine && (
                   <div className={`${s.msg} ${s.theirs} ${s.auto}`}>
-                    <span className={s.who}>Lexta</span>
+                    <span className={s.who}>{brandName}</span>
                     <p className={s.bubble}>{autoLine}</p>
                   </div>
                 )}
