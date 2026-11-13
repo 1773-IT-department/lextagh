@@ -38,7 +38,7 @@ export default function SiteFooter() {
           <ul>
             <li><Link href="/">Home</Link></li>
             <li><Link href="/about">About Us</Link></li>
-            <li><Link href="/tips">Tips &amp; Articles</Link></li>
+            <li><Link href="/tips">Tips &amp; Advice</Link></li>
             <li><Link href="/faqs">FAQs</Link></li>
             <li><Link href="/contact">Contact &amp; Where to Buy</Link></li>
           </ul>
@@ -70,7 +70,9 @@ export default function SiteFooter() {
               </li>
             ))}
           </ul>
-          {socials.some((x) => !x.href) && <p className={s.placeholder}>[PLACEHOLDER: Yazz Facebook, Instagram, TikTok and YouTube links from Lexta]</p>}
+          {socials.some((x) => !x.href) && (
+            <p className={s.placeholder}>[PLACEHOLDER: {socials.filter((x) => !x.href).map((x) => x.label.replace(/^Yazz on /, "")).join(", ")} link from Lexta]</p>
+          )}
           <p className={s.ghana}><span className="yz-flag" aria-hidden="true"><i /><i /><i /></span> Proudly Ghanaian</p>
         </div>
       </div>

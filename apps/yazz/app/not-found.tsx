@@ -11,7 +11,7 @@ export default function NotFound() {
       <p className="yz-lead" style={{ marginTop: 12 }}>It may have moved. Try our products or tips instead.</p>
       <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 12, marginTop: 24 }}>
         <Link href="/products" className="yz-btn yz-btn--red">Explore Products <Icon name="arrow" size={16} /></Link>
-        <Link href="/tips" className="yz-btn yz-btn--outline">Tips &amp; Articles</Link>
+        <Link href="/tips" className="yz-btn yz-btn--outline">Tips &amp; Advice</Link>
       </div>
     </section>
     </SiteLayout>

@@ -53,13 +53,14 @@ export const tel = (phone: string) => `tel:${phone.replace(/[^+\d]/g, "")}`;
 export const whatsapp = (phone: string) => `https://wa.me/${phone.replace(/\D/g, "")}`;
 
 /**
- * Yazz social accounts. Lexta's content gives only the Lexta Ghana WhatsApp channel; the other handles are placeholders
- * until Lexta sends them (CONTENT-NEEDED.md). A link without a real address is shown as a plain icon, not a link.
+ * Yazz social accounts. Lexta's content gives only the Lexta Ghana WhatsApp channel. Facebook, Instagram and TikTok are
+ * the Yazz accounts linked from the footer of Yazz's original website (docs/content/yazz/ORIGINAL-SITE.md). YouTube is a
+ * placeholder until Lexta sends it (CONTENT-NEEDED.md). A link without a real address is shown as a plain icon.
  */
 export const socials: { label: string; icon: "whatsapp" | "facebook" | "instagram" | "tiktok" | "youtube"; href: string | null }[] = [
   { label: "Follow Lexta Ghana on WhatsApp", icon: "whatsapp", href: contact.whatsappChannel },
-  { label: "Yazz on Facebook", icon: "facebook", href: null },
-  { label: "Yazz on Instagram", icon: "instagram", href: null },
-  { label: "Yazz on TikTok", icon: "tiktok", href: null },
+  { label: "Yazz on Facebook", icon: "facebook", href: "https://www.facebook.com/yazzghana/" },
+  { label: "Yazz on Instagram", icon: "instagram", href: "https://www.instagram.com/yazz_products/" },
+  { label: "Yazz on TikTok", icon: "tiktok", href: "https://www.tiktok.com/@yazzproducts" },
   { label: "Yazz on YouTube", icon: "youtube", href: null },
 ];

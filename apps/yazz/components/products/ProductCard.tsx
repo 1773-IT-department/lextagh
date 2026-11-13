@@ -30,6 +30,7 @@ export default function ProductCard({ product, detailsHref, compact = false }: {
       </Detail>
       <div className={s.cardBody}>
         <span className={s.tag}>{range.name}</span>
+        {product.comingSoon && <span className={s.tag} data-coming-soon="">Coming soon</span>}
         <h3 className={s.cardTitle}><Detail href={detailsHref}>{product.name}</Detail></h3>
         {!compact && <p className={s.cardText}>{product.short}</p>}
         {packs > 0 && !compact && (
@@ -39,7 +40,7 @@ export default function ProductCard({ product, detailsHref, compact = false }: {
         )}
         <div className={s.cardActions}>
           <Detail href={detailsHref} className="yz-btn yz-btn--navy yz-btn--sm">View details <Icon name="arrow" size={15} /></Detail>
-          {!compact && <Link href={whereToBuyHref(product)} className={s.buyLink}><Icon name="pin" size={15} /> Where to buy</Link>}
+          {!compact && !product.comingSoon && <Link href={whereToBuyHref(product)} className={s.buyLink}><Icon name="pin" size={15} /> Where to buy</Link>}
         </div>
       </div>
     </article>

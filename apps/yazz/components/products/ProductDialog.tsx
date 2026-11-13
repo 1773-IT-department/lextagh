@@ -39,6 +39,7 @@ export default function ProductDialog({ product, closeHref }: { product: YazzPro
           </div>
           <div className={s.detailText}>
             <span className={s.tag}>{range.name}</span>
+            {product.comingSoon && <span className={s.tag} data-coming-soon="">Coming soon</span>}
             <h2 id={`${id}-title`} className={s.detailTitle}>{product.name}</h2>
             <p className={s.detailLong}>{product.long}</p>
 
@@ -79,7 +80,7 @@ export default function ProductDialog({ product, closeHref }: { product: YazzPro
             )}
 
             <div className={s.detailActions}>
-              <Link href={whereToBuyHref(product)} className="yz-btn yz-btn--red"><Icon name="pin" size={17} /> Where to buy</Link>
+              {!product.comingSoon && <Link href={whereToBuyHref(product)} className="yz-btn yz-btn--red"><Icon name="pin" size={17} /> Where to buy</Link>}
               <Link href={askHref(product)} className="yz-btn yz-btn--outline"><Icon name="chat" size={17} /> Ask about this product</Link>
             </div>
           </div>

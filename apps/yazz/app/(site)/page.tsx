@@ -70,7 +70,8 @@ const BANDS = [
 ] as const;
 
 export default async function HomePage() {
-  const { products } = await getYazzProducts();
+  const { products: all } = await getYazzProducts();
+  const products = all.filter((p) => !p.comingSoon);
   // Highlights: the first product of each range, in Product Management's order, then the rest, up to 8.
   const firsts = RANGE_SLUGS.map((r) => products.find((p) => p.range === r)).filter((p) => !!p);
   const featured = [...firsts, ...products.filter((p) => !firsts.includes(p))].slice(0, 8);
@@ -185,7 +186,7 @@ export default async function HomePage() {
 
       <section className={`yz-pad ${s.blog}`} aria-labelledby="blog-title">
         <div>
-          <h2 id="blog-title" className={s.featuredTitle}>Tips &amp; Articles</h2>
+          <h2 id="blog-title" className={s.featuredTitle}>Tips &amp; Advice</h2>
           <p className={s.blogIntro}>Helpful ideas for everyday living, created around the real questions families ask.</p>
           <Link href="/tips" className="yz-textlink" style={{ marginTop: 14 }}>View all articles <Icon name="arrow" size={15} /></Link>
         </div>

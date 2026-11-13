@@ -13,6 +13,7 @@
   align-self: flex-start; display: inline-block; padding: 4px 10px; border-radius: 999px; background: var(--soft);
   color: var(--tone); font-size: 10.5px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
 }
+.tag + .tag { margin-top: 6px; }
 .cardTitle { margin: 12px 0 0; font-size: 17px; line-height: 1.35; font-weight: 700; color: var(--yz-deep); }
 .cardTitle a { color: inherit; }
 .cardTitle a:hover { color: var(--yz-red); }

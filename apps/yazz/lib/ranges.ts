@@ -19,7 +19,7 @@ export type RangeInfo = {
   icon: string;
   /** Colours: accent (eyebrows, chips), deep (headings on the tint), tint (hero), soft (cards), rgb for overlays. */
   tone: { accent: string; deep: string; tint: string; soft: string; rgb: string };
-  /** A photo from the prototype (public/images), or null for a branded placeholder block. */
+  /** A photo from the prototype (public/images) or the original site (public/images/original), or null for a placeholder block. */
   image: { src: string; alt: string } | null;
   /** What photo is still needed (CONTENT-NEEDED.md), shown in the placeholder block. */
   imageNeeded: string;
@@ -32,7 +32,7 @@ export type RangeInfo = {
   /** "Good to know" points. */
   habits?: { title: string; items: { title: string; body: string }[] };
   trade: { title: string; body: string; script: string[] };
-  /** Tips & Articles topic for "Read more" links. */
+  /** Tips & Advice topic for "Read more" links. */
   tipsTopic: string;
   seo: { title: string; description: string };
 };
@@ -162,7 +162,8 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     tagline: "Diapers & baby wipes",
     icon: "baby",
     tone: { accent: "#15803D", deep: "#126E36", tint: "#E3F4E8", soft: "#F2FAF4", rgb: "21,128,61" },
-    image: null,
+    // Pack shot from Yazz's original website (docs/content/yazz/ORIGINAL-SITE.md) until Lexta sends a range photo.
+    image: { src: "/images/original/baby-diapers.webp", alt: "Yazz baby diapers, medium and large packs" },
     imageNeeded: "Yazz diapers, pull up pants and baby wipes pack shots",
     hero: {
       title: ["Everyday Care."],
@@ -211,7 +212,8 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     tagline: "Washing powder & detergent",
     icon: "laundry",
     tone: { accent: "#6D3FC0", deep: "#55309A", tint: "#ECE6FA", soft: "#F6F3FD", rgb: "109,63,192" },
-    image: null,
+    // Pack shot from Yazz's original website (docs/content/yazz/ORIGINAL-SITE.md) until Lexta sends a range photo.
+    image: { src: "/images/original/washing-powder.webp", alt: "The Yazz Activ washing powder range: box, tub and sachets" },
     imageNeeded: "Yazz Activ washing powder pack shots (200g, 500g, 2kg, 5kg)",
     hero: {
       title: ["Brighter."],

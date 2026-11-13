@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-/** One article: the Tips & Articles page template showing a single article (the prototype's Article view). */
+/** One article: the Tips & Advice page template showing a single article (the prototype's Article view). */
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
   const article = articleBySlug((await params).slug);
   if (!article) notFound();
@@ -40,7 +40,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     <div style={{ ["--tone" as string]: article.topic.tone }}>
       <nav className={s.crumbs} aria-label="Breadcrumb">
         <Link href="/">Home</Link><Icon name="chevron-right" size={14} />
-        <Link href="/tips">Tips &amp; Articles</Link><Icon name="chevron-right" size={14} />
+        <Link href="/tips">Tips &amp; Advice</Link><Icon name="chevron-right" size={14} />
         <Link href={`/tips?category=${cat.slug}`}>{cat.label}</Link><Icon name="chevron-right" size={14} />
         <span aria-current="page">{article.title}</span>
       </nav>

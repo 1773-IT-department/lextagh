@@ -57,7 +57,11 @@ try {
     const { products: list, live } = await products.getYazzProducts();
     const yazz = (await q(`select string_agg(p.slug, ',' order by p.slug) from public.products p join public.brands b on b.id = p.brand_id where b.slug = 'yazz' and p.is_published`)).split(",");
     const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug <> 'yazz' and p.is_published`)).split("|");
-    check(live && list.length === yazz.length && list.every((p) => yazz.includes(p.slug)), `products: the ${yazz.length} published Yazz products, read live`, list.map((p) => p.slug));
+    // Lexta's coming soon items (content/catalogue.ts) are added when the database has no row for them.
+    const db = list.filter((p) => !p.comingSoon || yazz.includes(p.slug));
+    const soon = list.filter((p) => p.comingSoon && !yazz.includes(p.slug)).map((p) => p.slug).sort();
+    check(live && db.length === yazz.length && db.every((p) => yazz.includes(p.slug)), `products: the ${yazz.length} published Yazz products, read live`, list.map((p) => p.slug));
+    check(JSON.stringify(soon) === JSON.stringify(["dental-floss", "pocket-tissue"]), "products: the coming soon items (Dental Floss, Pocket Tissue) are added from the catalogue", soon);
     check(!list.some((p) => other.includes(p.name) && !yazz.includes(p.slug)), "products: no Linzzy or Hooch product");
     const ranges = new Set(list.map((p) => p.range));
     check(["feminine-care", "oral-care", "home-tissue", "baby-care", "home-care"].every((r) => ranges.has(r)), "products: the seeded categories map onto all five ranges", [...ranges]);

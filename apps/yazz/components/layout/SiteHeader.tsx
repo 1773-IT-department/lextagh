@@ -9,7 +9,7 @@ import { productLinks, tipsLinks, type NavLink } from "@/lib/nav";
 import s from "./header.module.css";
 
 /**
- * Header from the prototype: the tilted wordmark, the nav with the Products and Tips & Articles dropdowns, and a red
+ * Header from the prototype: the tilted wordmark, the nav with the Products and Tips & Advice dropdowns, and a red
  * "Where to Buy" pill where the prototype had its cart and Shop Now (no shop, by contract).
  *
  * Dropdowns follow the disclosure pattern: the top link goes to the page, the chevron button next to it opens the list
@@ -112,7 +112,7 @@ export default function SiteHeader() {
         {top("/", "Home")}
         <Dropdown label="Products" href="/products" links={productLinks} active={is("/products")} />
         {top("/about", "About Us")}
-        <Dropdown label="Tips & Articles" href="/tips" links={tipsLinks} active={is("/tips")} />
+        <Dropdown label="Tips & Advice" href="/tips" links={tipsLinks} active={is("/tips")} />
         {top("/faqs", "FAQs")}
         {top("/contact", "Contact")}
       </nav>
@@ -138,7 +138,7 @@ export default function SiteHeader() {
             </div>
             <Link href="/about" className={s.sheetLink} aria-current={is("/about") ? "page" : undefined}>About Us</Link>
             <div className={s.sheetGroup}>
-              <Link href="/tips" className={s.sheetLink} aria-current={is("/tips") ? "page" : undefined}>Tips &amp; Articles</Link>
+              <Link href="/tips" className={s.sheetLink} aria-current={is("/tips") ? "page" : undefined}>Tips &amp; Advice</Link>
               {tipsLinks.slice(1).map((l) => (
                 <Link key={l.href} href={l.href} className={s.sheetSub}>{l.icon && <Icon name={l.icon} size={16} />} {l.label}</Link>
               ))}

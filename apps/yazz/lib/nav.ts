@@ -9,7 +9,7 @@ export const productLinks: NavLink[] = [
 ];
 
 export const tipsLinks: NavLink[] = [
-  { label: "All Tips & Articles", href: "/tips", icon: "book" },
+  { label: "All Tips & Advice", href: "/tips", icon: "book" },
   { label: "Tips Just 4 You", href: "/tips?category=just-4-you", icon: "heart" },
   { label: "Just 4 Parents", href: "/tips?category=just-4-parents", icon: "people" },
   { label: "Care Tips", href: "/tips?category=care-tips", icon: "leaf" },

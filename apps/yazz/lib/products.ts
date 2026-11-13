@@ -27,6 +27,8 @@ export type YazzProduct = {
   ingredients: string | null;
   skus: { code: string; variant: string | null; pack: string }[];
   images: { src: string; alt: string }[];
+  /** Announced but not on sale yet: a Coming soon badge and no Where to buy link. */
+  comingSoon?: boolean;
 };
 
 export function toYazzProduct(p: PublishedProduct): YazzProduct {
@@ -49,7 +51,10 @@ export function toYazzProduct(p: PublishedProduct): YazzProduct {
 export async function getYazzProducts(): Promise<{ products: YazzProduct[]; live: boolean }> {
   try {
     const rows = await getPublishedProducts(BRAND_SLUG);
-    return { products: rows.map(toYazzProduct), live: true };
+    const products = rows.map(toYazzProduct);
+    // Coming soon items from Lexta's catalogue (Pocket Tissue, Dental Floss) show even when the database has no row.
+    const soon = CATALOGUE.filter((c) => c.comingSoon && !products.some((p) => p.slug === c.slug));
+    return { products: [...products, ...soon], live: true };
   } catch (error) {
     console.warn(`[products] showing the catalogue from content/catalogue.ts: ${error instanceof Error ? error.message : String(error)}`);
     return { products: CATALOGUE, live: false };

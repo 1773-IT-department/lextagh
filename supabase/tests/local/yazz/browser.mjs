@@ -144,7 +144,13 @@ try {
     const yazz = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug = 'yazz' and p.is_published`)).split("|");
     const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug in ('linzzy', 'hooch') and p.is_published`)).split("|");
     const cards = await page.locator("main article h3").allInnerTexts();
-    check(yazz.every((n) => cards.includes(n)) && cards.length === yazz.length, `products page: one card for each of the ${yazz.length} Yazz products`, cards);
+    // Plus Lexta's coming soon items from content/catalogue.ts, which show even without a database row.
+    const soon = ["Yazz pocket tissue", "Yazz dental floss"].filter((n) => !yazz.includes(n));
+    check(yazz.every((n) => cards.includes(n)) && soon.every((n) => cards.includes(n)) && cards.length === yazz.length + soon.length,
+      `products page: one card for each of the ${yazz.length} Yazz products and the ${soon.length} coming soon items`, cards);
+    const floss = page.locator("main article").filter({ hasText: "Yazz dental floss" });
+    check(await floss.getByText("Coming soon", { exact: true }).count() === 1 && await floss.getByRole("link", { name: /Where to buy/ }).count() === 0,
+      "products page: Dental Floss has a Coming soon badge and no Where to buy link");
     check(!other.some((n) => cards.includes(n) && !yazz.includes(n)) && !/corn flakes/i.test(text), "products page: no Linzzy or Hooch product", other);
 
     await page.goto(`${SITE}/contact`);
@@ -181,7 +187,7 @@ try {
     await page.goto(`${SITE}/`);
     const navItems = await page.getByRole("navigation", { name: "Main" }).evaluate((nav) =>
       [...nav.children].map((c) => (c.matches("a") ? c : c.querySelector(":scope > a"))?.textContent?.trim() ?? ""));
-    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Articles", "FAQs", "Contact"]), "header: the nav has the 6 pages", navItems);
+    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact"]), "header: the nav has the 6 pages", navItems);
     check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() === 1, "footer: links to the FAQs page");
 
     // FAQs accordion by keyboard.

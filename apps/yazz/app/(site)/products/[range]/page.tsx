@@ -149,7 +149,7 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
       {reads.length > 0 && (
         <section className={`yz-pad ${s.reads}`} aria-labelledby="reads-title">
           <div className={s.rangeHead}>
-            <h2 id="reads-title" className={s.readsTitle}>Tips &amp; Articles</h2>
+            <h2 id="reads-title" className={s.readsTitle}>Tips &amp; Advice</h2>
             <Link href="/tips" className="yz-textlink">View all articles <Icon name="arrow" size={15} /></Link>
           </div>
           <div className={tc.grid3} style={{ marginTop: 18 }}>

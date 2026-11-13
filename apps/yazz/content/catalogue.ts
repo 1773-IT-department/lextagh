@@ -7,6 +7,10 @@
  *   2. the data entry sheet for Product Management. The database still holds the 8 products seeded from the Lexta
  *      prototype (0004); staff (or a data migration, see CONTENT-NEEDED.md) bring it up to this list.
  * Pack contents are as written by Lexta. SKU codes and some pack counts are still to come (marked placeholders).
+ * Gaps only (never Lexta's wording) are filled from Yazz's original website, yazzproducts.com: the pack shots in
+ * public/images/original and two pack sizes. Each one is listed in docs/content/yazz/ORIGINAL-SITE.md.
+ * `comingSoon` products are shown with a Coming soon badge and no Where to buy link, and are added to the database
+ * list when the database has no row for them (lib/products.ts).
  */
 import type { YazzProduct } from "../lib/products";
 
@@ -55,7 +59,13 @@ export const CATALOGUE: YazzProduct[] = [
       sku("Green, free panty liner", "6 normal flow pads + 6 heavy flow pads"),
       sku("Pink (Heavy), free panty liner", "6 normal flow pads + 6 heavy flow pads"),
     ],
-    images: [],
+    images: [
+      { src: "/images/original/sanitary-pad-extra-long.webp", alt: "Yazz Extra Long sanitary pad pack, free panty liner and disposable bag" },
+      { src: "/images/original/sanitary-pad-minty.webp", alt: "Yazz Minty sanitary pad pack, 6 normal flow and 6 heavy flow pads" },
+      { src: "/images/original/sanitary-pad-heavy-flow.webp", alt: "Yazz Heavy Flow sanitary pad pack in pink" },
+      { src: "/images/original/sanitary-pad-green.webp", alt: "Yazz sanitary pad pack in green, 6 normal flow and 6 heavy flow pads" },
+      { src: "/images/original/sanitary-pad-extra-long-minty.webp", alt: "Yazz Minty Extra Long sanitary pad pack, 9 extra long and 2 normal flow pads" },
+    ],
   },
   {
     slug: "panty-liners", name: "Yazz panty liners", range: "feminine-care", category: "Feminine care",
@@ -65,7 +75,9 @@ export const CATALOGUE: YazzProduct[] = [
     usage: `${IRRITATION} ${SUFFOCATION}`,
     ingredients: null,
     skus: [sku("Regular (yellow pack)", PACK), sku("Pink", PACK), sku("Extra long and thick, minty (pink)", "24 minty liners")],
-    images: [],
+    images: [
+      { src: "/images/original/panty-liner.webp", alt: "Yazz panty liner pack in yellow" },
+    ],
   },
   // Baby care ------------------------------------------------------------------------------------------------
   {
@@ -76,7 +88,10 @@ export const CATALOGUE: YazzProduct[] = [
     usage: `${DIAPER_USE} ${DIAPER_CAUTION}`,
     ingredients: null,
     skus: [sku("Small, 3 to 6kg", "15 pieces"), sku("Medium, 6 to 9kg", "12 pieces"), sku("Large", "11 pieces"), sku("Extra large, over 13kg", "8 pieces")],
-    images: [],
+    images: [
+      { src: "/images/original/baby-diapers.webp", alt: "Yazz baby diapers, medium and large packs" },
+      { src: "/images/original/baby-diapers-super-absorbency.webp", alt: "Yazz baby diapers pack, super absorbency, size L" },
+    ],
   },
   {
     slug: "baby-pull-up-pants", name: "Yazz pull up pants", range: "baby-care", category: "Baby care",
@@ -99,7 +114,7 @@ export const CATALOGUE: YazzProduct[] = [
     usage: WIPES_WARNING,
     ingredients:
       "Lavender: benzalkonium chloride, methyichloroisthiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated lavender extract, propylene glycol, water. Castor Oil and Aloe Vera: benzalkonium chloride, methyichloroisthiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated castor oil, propylene glycol, water.",
-    skus: [sku("Lavender", PACK), sku("Castor Oil", "80 pieces"), sku("Castor Oil", "40 pieces"), sku("Aloe Vera", "80 pieces"), sku("Aloe Vera", "40 pieces")],
+    skus: [sku("Lavender", "80 pieces"), sku("Castor Oil", "80 pieces"), sku("Castor Oil", "40 pieces"), sku("Aloe Vera", "80 pieces"), sku("Aloe Vera", "40 pieces")],
     images: [],
   },
   // Oral care ------------------------------------------------------------------------------------------------
@@ -111,7 +126,9 @@ export const CATALOGUE: YazzProduct[] = [
     usage: PASTE_USE,
     ingredients: "Sorbitol, silica, water, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, titanium dioxide, sodium saccharin, honeysuckle, sodium fluoride, CI 74260.",
     skus: [sku(null, "150g")],
-    images: [],
+    images: [
+      { src: "/images/original/toothpaste-herbal.webp", alt: "Yazz Herbal toothpaste tube and box" },
+    ],
   },
   {
     slug: "toothpaste-whitening", name: "Yazz Whitening toothpaste", range: "oral-care", category: "Oral care",
@@ -121,7 +138,9 @@ export const CATALOGUE: YazzProduct[] = [
     usage: PASTE_USE,
     ingredients: "Calcium carbonate, aqua, sorbitol, glycerin, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, hydroxyethylcellulose, flavour, sodium saccharin, calcium phosphate, sodium pyrophosphate, sodium phytate, methylparaben.",
     skus: [sku(null, "150g")],
-    images: [],
+    images: [
+      { src: "/images/original/toothpaste-whitening.webp", alt: "Yazz Whitening toothpaste tube and box" },
+    ],
   },
   {
     slug: "toothpaste-fluoride", name: "Yazz Fluoride toothpaste", range: "oral-care", category: "Oral care",
@@ -130,8 +149,10 @@ export const CATALOGUE: YazzProduct[] = [
     features: ["Long lasting protection", "For brilliant white teeth"],
     usage: PASTE_USE,
     ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, cellulose gum, aroma, sodium fluoride, sodium benzoate, CI 77891, CI 16255.",
-    skus: [sku(null, PACK)],
-    images: [],
+    skus: [sku(null, "150g")],
+    images: [
+      { src: "/images/original/toothpaste-fluoride.webp", alt: "Yazz Fluoride toothpaste tube and box, 150g" },
+    ],
   },
   {
     slug: "toothpaste-charcoal", name: "Yazz Charcoal toothpaste", range: "oral-care", category: "Oral care",
@@ -141,7 +162,9 @@ export const CATALOGUE: YazzProduct[] = [
     usage: PASTE_USE,
     ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, sodium saccharin, charcoal powder, mica, CI 77266, lanthanide gum, methylparaben, sodium fluoride.",
     skus: [sku(null, "150g"), sku(null, "50g")],
-    images: [],
+    images: [
+      { src: "/images/original/toothpaste-charcoal.webp", alt: "Yazz Charcoal toothpaste tube, 150g" },
+    ],
   },
   {
     slug: "toothpaste-total-care", name: "Yazz Total Care toothpaste", range: "oral-care", category: "Oral care",
@@ -151,7 +174,9 @@ export const CATALOGUE: YazzProduct[] = [
     usage: PASTE_USE,
     ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, sodium saccharin, mica, pigment, triclosan, methylparaben, sodium fluoride.",
     skus: [sku(null, PACK)],
-    images: [],
+    images: [
+      { src: "/images/original/toothpaste-total-care.webp", alt: "Yazz Total Care toothpaste tube and box" },
+    ],
   },
   {
     slug: "toothbrushes", name: "Yazz toothbrushes", range: "oral-care", category: "Oral care",
@@ -165,7 +190,17 @@ export const CATALOGUE: YazzProduct[] = [
       sku("Duke, medium bristle with tongue cleaner", PACK), sku("Kids, medium bristle with tongue cleaner", PACK),
       sku("Double (his & hers), medium bristle with tongue cleaner", PACK), sku("Hanger (Princess, Duchess, Duke, Monarch)", PACK),
     ],
-    images: [],
+    images: [
+      { src: "/images/original/toothbrush-princess.webp", alt: "Yazz Princess toothbrush display box and pack" },
+      { src: "/images/original/toothbrush-monarch.webp", alt: "Yazz Monarch toothbrush display box and pack" },
+      { src: "/images/original/toothbrush-duke.webp", alt: "Yazz Duke toothbrush display box and pack" },
+    ],
+  },
+  {
+    slug: "dental-floss", name: "Yazz dental floss", comingSoon: true, range: "oral-care", category: "Oral care",
+    short: "Coming soon: Yazz dental floss.",
+    long: "Yazz dental floss is coming soon to the Yazz oral care range.",
+    features: [], usage: null, ingredients: null, skus: [], images: [],
   },
   // Home care ------------------------------------------------------------------------------------------------
   {
@@ -177,7 +212,9 @@ export const CATALOGUE: YazzProduct[] = [
       "Dissolve Yazz Activ detergent in water and soak clothes for 15 to 20 minutes before washing. For heavy dirt or more clothes, soak longer and use more detergent. Separate coloured clothes from white. Do not use for silk or wool. Keep in a dry place, out of reach of children. In case of eye contact, flush with plenty of water. If swallowed, drink plenty of clean water or milk and seek medical assistance. Check the pack for directions at all times.",
     ingredients: "LAS, phosphate, enzymes, optical brightener, sodium sulphate, SCMC, perfume, sodium carbonate.",
     skus: [sku(null, "200g"), sku(null, "500g"), sku(null, "2kg"), sku(null, "5kg")],
-    images: [],
+    images: [
+      { src: "/images/original/washing-powder.webp", alt: "The Yazz Activ washing powder range: box, tub and sachets" },
+    ],
   },
   // Home & tissue --------------------------------------------------------------------------------------------
   {
@@ -185,21 +222,30 @@ export const CATALOGUE: YazzProduct[] = [
     short: "Big on care. Made for family needs: a jumbo size tissue for busy households.",
     long: "Meet Mama Yazz®, the jumbo size tissue created with busy households in mind. Its larger format offers a practical choice for families and spaces where tissue is used frequently.",
     features: ["Jumbo size format", "Family focused convenience", "Practical for frequent household use"],
-    usage: null, ingredients: null, skus: [sku("Jumbo size", PACK)], images: [],
+    usage: null, ingredients: null, skus: [sku("Jumbo size", PACK)], images: [
+      { src: "/images/original/mama-yazz-1.webp", alt: "Two rolls of Mama Yazz kitchen towel" },
+      { src: "/images/original/mama-yazz-2.webp", alt: "Two rolls of Mama Yazz kitchen towel, red pack" },
+    ],
   },
   {
     slug: "toilet-tissue-individual-wrap", name: "Yazz individual wrap luxury toilet tissue", range: "home-tissue", category: "Tissue",
     short: "A little luxury in everyday care, individually wrapped.",
     long: "Experience everyday comfort with Yazz® Individual Wrap Luxury Toilet Tissue. Packaged as a single roll, it is a practical and hygienic solution for personal use, family bathrooms and guest facilities.",
     features: ["Individually wrapped", "Convenient storage", "Everyday bathroom essential"],
-    usage: null, ingredients: null, skus: [sku("Single roll", PACK)], images: [],
+    usage: null, ingredients: null, skus: [sku("Single roll", PACK)], images: [
+      { src: "/images/original/luxury-toilet-tissue.webp", alt: "Yazz Luxury Toilet Tissue rolls, individually wrapped" },
+    ],
   },
   {
     slug: "tissue-napkin", name: "Yazz tissue napkin", range: "home-tissue", category: "Tissue",
     short: "Every sheet, a touch of care: 150 sheets per roll.",
     long: "From family meals to everyday clean-ups, Yazz® Tissue Napkin offers convenience when you need it. With 150 sheets in a roll, it is a handy addition to dining areas, kitchens and everyday household routines.",
     features: ["150 sheets per roll", "Convenient single roll format", "Suitable for everyday household use"],
-    usage: null, ingredients: null, skus: [sku(null, "1 roll, 150 sheets")], images: [],
+    usage: null, ingredients: null, skus: [sku(null, "1 roll, 150 sheets")], images: [
+      { src: "/images/original/tissue-napkin-blue.webp", alt: "Yazz Tissue Napkins pack in blue" },
+      { src: "/images/original/tissue-napkin-green.webp", alt: "Yazz Tissue Napkins pack in green" },
+      { src: "/images/original/tissue-napkin-purple.webp", alt: "Yazz Tissue Napkins pack in purple" },
+    ],
   },
   {
     slug: "individual-tissue", name: "Yazz individual tissue", range: "home-tissue", category: "Tissue",
@@ -209,7 +255,7 @@ export const CATALOGUE: YazzProduct[] = [
     usage: null, ingredients: null, skus: [sku("Single roll", PACK)], images: [],
   },
   {
-    slug: "pocket-tissue", name: "Yazz pocket tissue (coming soon)", range: "home-tissue", category: "Tissue",
+    slug: "pocket-tissue", name: "Yazz pocket tissue", comingSoon: true, range: "home-tissue", category: "Tissue",
     short: "Coming soon: extra soft, 3-ply pocket tissue. Softness that goes wherever you go.",
     long: "Stay prepared for life's little moments with Yazz® Pocket Tissue. White, embossed handkerchief tissues with an extra soft feel in a portable format, made with 100% virgin-plus material and a 3-ply structure: a handy companion for school, work and travel.",
     features: ["Extra soft", "White embossed tissue", "3-ply", "100% virgin-plus material", "Portable convenience"],

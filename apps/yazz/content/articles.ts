@@ -1,5 +1,5 @@
 /**
- * Yazz Tips & Articles. Static content in the repo: 1773 adds or edits articles on request (there is no staff news
+ * Yazz Tips & Advice. Static content in the repo: 1773 adds or edits articles on request (there is no staff news
  * CMS, by contract). To add one, add an entry to ARTICLES; it appears on /tips, in its category and at /tips/<slug>.
  *
  * Source: Lexta's "yazz article.docx" (Google Drive, YAZZ ARTICLES): the ten Tips Just 4 You articles and the ten
@@ -883,6 +883,24 @@ Wash by quantity of clothes against weight. Check the pack for directions at all
 Change used diapers to keep your baby comfortable, and throw them away immediately to avoid bacteria. Do not flush diapers or baby wipes: dispose of them with normal household waste.
 
 > Plastic bags are dangerous for children and must be kept out of reach.`,
+  },
+  // News. Taken from Yazz's original website (docs/content/yazz/ORIGINAL-SITE.md) while Lexta has sent no news stories.
+  {
+    slug: "yazz-preferred-sanitary-and-hygiene-brand-2022", title: "Yazz Is the Preferred Sanitary and Hygiene Brand in 2022",
+    kicker: "Home Builders Africa Awards", category: "news",
+    topic: { label: "News", tone: BLUE }, date: "2022-12", readMinutes: 2, image: null,
+    lede: "Yazz® has been named the most preferred sanitary and hygiene brand in Ghana for 2022 at the Home Builders Africa Awards.",
+    body: `Yazz®, the sanitary and hygiene brand of Lexta Ghana Limited, has been named the most preferred sanitary and hygiene brand in Ghana for the year 2022. According to the organisers of the Home Builders Africa Awards, Ghanaians widely choose Yazz® products because of their hygienic nature.
+
+## About the Awards
+
+The Home Builders Africa Awards recognise industry players who have contributed to the success and growth of society, to encourage others to do their best for Ghana and Africa as a whole. The organisers named Yazz® the most preferred sanitary and hygiene brand for the quality and durability of its products.
+
+## The Citation
+
+"In an era of a pandemic and several disease outbreaks, hygiene and sanitation cannot be overemphasized. The Yazz brand has stepped in to offer a wide range of products to improve hygiene and sanitation in our homes. Your success over the years has been driven by continuous investments in talents, research and development and an ambition to be the preferred brand in Ghana and Africa; aside promoting female hygiene and personal care. On this occasion, we honour YAZZ as the preferred sanitary and hygiene brand. Congratulations."
+
+> Lexta Ghana Limited makes a wide range of Yazz® products, including toothpastes, sanitary pads and tissues.`,
   },
 ];
 

@@ -11,15 +11,15 @@ type Search = Promise<{ category?: string | string[] }>;
 export async function generateMetadata({ searchParams }: { searchParams: Search }): Promise<Metadata> {
   const raw = (await searchParams).category;
   const c = typeof raw === "string" && isCategory(raw) ? CATEGORIES.find((x) => x.slug === raw)! : null;
-  const title = c ? `${c.label}: Tips & Articles` : "Tips & Articles";
+  const title = c ? `${c.label}: Tips & Advice` : "Tips & Advice";
   const description = c
     ? c.blurb
-    : "Yazz® Tips & Articles: Tips Just 4 You on periods and puberty, guides Just 4 Parents, and everyday care tips for oral care, baby care and home care.";
+    : "Yazz® Tips & Advice: Tips Just 4 You on periods and puberty, guides Just 4 Parents, and everyday care tips for oral care, baby care and home care.";
   return { title, description, alternates: { canonical: c ? `/tips?category=${c.slug}` : "/tips" }, openGraph: { title: `${title} | Yazz®`, description, url: "/tips" } };
 }
 
 /**
- * Tips & Articles: the prototype's News, Article list and Tips Just 4 You merged into one page. Categories are links
+ * Tips & Advice: the prototype's News, Article list and Tips Just 4 You merged into one page. Categories are links
  * (?category=...), so filtering works without JavaScript. Articles live in content/articles.ts.
  */
 export default async function TipsPage({ searchParams }: { searchParams: Search }) {

@@ -28,7 +28,9 @@ const one = (v: string | string[] | undefined) => (typeof v === "string" ? v.tri
  */
 export default async function ContactPage({ searchParams }: { searchParams: Search }) {
   const sp = await searchParams;
-  const [{ regions }, { products }] = await Promise.all([getWhereToBuyRegions(), getYazzProducts()]);
+  const [{ regions }, { products: all }] = await Promise.all([getWhereToBuyRegions(), getYazzProducts()]);
+  // Coming soon items are not in the shops yet, so they are not offered here.
+  const products = all.filter((p) => !p.comingSoon);
   const regionParam = one(sp.region);
   const regionFromUrl = regionParam === ALL_REGIONS || regions.some((r) => r.slug === regionParam);
   const region = regionFromUrl ? regionParam : ALL_REGIONS;
