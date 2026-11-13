@@ -67,7 +67,10 @@ export default function WhereToBuy({
   const all = result.state === "done" ? result.stockists : [];
   const types = useMemo(() => [...new Map(all.map((x) => [x.outletType, x.outletLabel])).entries()], [all]);
   const q = query.trim().toLowerCase();
-  const list = all.filter((x) => (type === "all" || x.outletType === type) && (!q || `${x.name} ${x.town} ${x.address ?? ""} ${x.region}`.toLowerCase().includes(q)));
+  const list = useMemo(
+    () => all.filter((x) => (type === "all" || x.outletType === type) && (!q || `${x.name} ${x.town} ${x.address ?? ""} ${x.region}`.toLowerCase().includes(q))),
+    [all, type, q],
+  );
   const regionName = region === ALL_REGIONS ? "Ghana" : regions.find((r) => r.slug === region)?.name ?? "";
 
   return (
@@ -141,7 +144,7 @@ export default function WhereToBuy({
             ))}
           </ul>
         </div>
-        <StockistMap stockists={list} selected={selected} onSelect={setSelected} />
+        <StockistMap stockists={list} selected={selected} onSelect={setSelected} viewKey={`${result.state}:${result.region}:${type}`} />
       </div>
       <p className={s.mapNote}>Shops are listed by Lexta&apos;s sales team. Your shop stocks Yazz and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
     </div>

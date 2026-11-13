@@ -70,6 +70,7 @@ export default function SiteFooter() {
               </li>
             ))}
           </ul>
+          {socials.some((x) => !x.href) && <p className={s.placeholder}>[PLACEHOLDER: Yazz Facebook, Instagram, TikTok and YouTube links from Lexta]</p>}
           <p className={s.ghana}><span className="yz-flag" aria-hidden="true"><i /><i /><i /></span> Proudly Ghanaian</p>
         </div>
       </div>

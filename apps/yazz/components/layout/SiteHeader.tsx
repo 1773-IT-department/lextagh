@@ -13,8 +13,9 @@ import s from "./header.module.css";
  * "Where to Buy" pill where the prototype had its cart and Shop Now (no shop, by contract).
  *
  * Dropdowns follow the disclosure pattern: the top link goes to the page, the chevron button next to it opens the list
- * (aria-expanded). They also open on hover and keyboard focus with CSS alone, so they work before or without
- * JavaScript. Arrow keys move through an open list, Escape closes it and returns focus to its button.
+ * (aria-expanded). Without JavaScript they open on hover and keyboard focus with CSS alone; once the page runs, the
+ * open state is the component's alone (hover, the button, arrow keys), so Escape or a click outside closes the list even
+ * while the pointer or focus is still there. Arrow keys move through an open list, Escape returns focus to the button.
  * Phones get a menu button and a panel built on <details>, which also opens without JavaScript.
  */
 function Dropdown({ label, href, links, active }: { label: string; href: string; links: NavLink[]; active: boolean }) {
@@ -55,6 +56,8 @@ function Dropdown({ label, href, links, active }: { label: string; href: string;
       className={s.drop}
       data-open={open ? "" : undefined}
       onKeyDown={onKeyDown}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
       onBlur={(e) => { if (!wrap.current?.contains(e.relatedTarget as Node)) setOpen(false); }}
     >
       <Link href={href} className={s.link} aria-current={active ? "page" : undefined}>{label}</Link>
@@ -89,8 +92,11 @@ export default function SiteHeader() {
   const mobile = useRef<HTMLDetailsElement>(null);
   const is = (p: string) => (p === "/" ? path === "/" : path === p || path.startsWith(`${p}/`));
 
-  // Close the phone menu after navigating.
+  // Close the phone menu after navigating, and from any of its links (some keep the same path: a query or a hash).
   useEffect(() => { if (mobile.current) mobile.current.open = false; }, [path]);
+  const closeMobile = () => { if (mobile.current) mobile.current.open = false; };
+  // The CSS lets JavaScript drive the dropdowns from here on (header.module.css).
+  useEffect(() => { document.documentElement.setAttribute("data-js", ""); }, []);
 
   const top = (href: string, label: string) => (
     <Link href={href} className={s.link} aria-current={is(href) ? "page" : undefined}>{label}</Link>
@@ -119,7 +125,7 @@ export default function SiteHeader() {
             <Icon name="menu" size={24} className={s.burgerOpen} />
             <Icon name="close" size={24} className={s.burgerClose} />
           </summary>
-          <nav className={s.sheet} aria-label="Mobile">
+          <nav className={s.sheet} aria-label="Mobile" onClick={(e) => { if ((e.target as HTMLElement).closest("a")) closeMobile(); }}>
             <Link href="/" className={s.sheetLink} aria-current={is("/") ? "page" : undefined}>Home</Link>
             <div className={s.sheetGroup}>
               <Link href="/products" className={s.sheetLink} aria-current={path === "/products" ? "page" : undefined}>Products</Link>

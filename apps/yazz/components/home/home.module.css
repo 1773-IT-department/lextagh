@@ -28,6 +28,12 @@
 .prev { left: 14px; }
 .next { right: 14px; }
 .dots { position: absolute; bottom: 16px; left: 50%; z-index: 3; transform: translateX(-50%); display: flex; gap: 6px; }
+.playPause {
+  width: 26px; height: 26px; margin-right: 6px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .92);
+  color: #0b4fa5; display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.playPause:hover { background: #fff; }
+.dots { align-items: center; }
 .dot { width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .dot::before { content: ""; width: 9px; height: 9px; border-radius: 999px; background: #4fa8f5; transition: all .25s; }
 .dot[data-active]::before { width: 24px; background: #fff; }

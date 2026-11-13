@@ -9,15 +9,29 @@ import s from "./contact.module.css";
 const GHANA: [number, number] = [7.95, -1.03];
 const HQ: [number, number] = [5.6037, -0.2]; // Lexta Square, Dzorwulu (approximate)
 
+/** Tooltip content as a text node: Leaflet writes a string tooltip with innerHTML, and shop names come from the database. */
+function textTooltip(text: string): HTMLElement {
+  const span = document.createElement("span");
+  span.textContent = text;
+  return span;
+}
+
 /**
  * The prototype's Leaflet map with OpenStreetMap tiles: numbered pins for the listed stockists (Yazz blue, the chosen
  * one red) and the Lexta head office. Loaded in the browser only; without JavaScript the list above is the finder.
  */
-export default function StockistMap({ stockists, selected, onSelect }: { stockists: StockistItem[]; selected: string | null; onSelect: (id: string) => void }) {
+export default function StockistMap({ stockists, selected, onSelect, viewKey }: {
+  stockists: StockistItem[]; selected: string | null; onSelect: (id: string) => void;
+  /** The view is fitted to the shops only when this (the region) or the selection changes, not on every search keystroke. */
+  viewKey: string;
+}) {
   const box = useRef<HTMLDivElement>(null);
   const map = useRef<LeafletMap | null>(null);
   const markers = useRef<Marker[]>([]);
   const L = useRef<typeof import("leaflet") | null>(null);
+  // The latest props, for the map code that runs after Leaflet has loaded.
+  const latest = useRef({ stockists, selected, onSelect });
+  latest.current = { stockists, selected, onSelect };
 
   useEffect(() => {
     let alive = true;
@@ -28,8 +42,9 @@ export default function StockistMap({ stockists, selected, onSelect }: { stockis
       map.current = leaflet.map(box.current, { scrollWheelZoom: false }).setView(GHANA, 6);
       leaflet.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18, attribution: "&copy; OpenStreetMap contributors" }).addTo(map.current);
       leaflet.marker(HQ, { icon: leaflet.divIcon({ className: "", html: `<div class="${s.pin} ${s.pinHq}"><span>HQ</span></div>`, iconSize: [30, 30], iconAnchor: [15, 28] }), keyboard: false })
-        .addTo(map.current).bindTooltip("Lexta Ghana head office", { direction: "top", offset: [0, -20] });
+        .addTo(map.current).bindTooltip(textTooltip("Lexta Ghana head office"), { direction: "top", offset: [0, -20] });
       draw();
+      fit();
     });
     return () => { alive = false; map.current?.remove(); map.current = null; };
   }, []);
@@ -38,6 +53,7 @@ export default function StockistMap({ stockists, selected, onSelect }: { stockis
     const leaflet = L.current;
     const m = map.current;
     if (!leaflet || !m) return;
+    const { stockists, selected, onSelect } = latest.current;
     markers.current.forEach((x) => x.remove());
     markers.current = [];
     const placed = stockists.filter((x) => x.position);
@@ -48,9 +64,18 @@ export default function StockistMap({ stockists, selected, onSelect }: { stockis
         title: x.name, alt: x.name,
       }).addTo(m);
       mk.on("click", () => onSelect(x.id));
-      mk.bindTooltip(x.name, { direction: "top", offset: [0, -20] });
+      mk.bindTooltip(textTooltip(x.name), { direction: "top", offset: [0, -20] });
       markers.current.push(mk);
     });
+  };
+
+  // Moves the view: to the chosen shop, or to fit the region's shops. Not on search typing, so pan and zoom stay.
+  const fit = () => {
+    const leaflet = L.current;
+    const m = map.current;
+    if (!leaflet || !m) return;
+    const { stockists, selected } = latest.current;
+    const placed = stockists.filter((x) => x.position);
     const sel = placed.find((x) => x.id === selected);
     if (sel) m.flyTo([sel.position!.lat, sel.position!.lng], 13, { duration: .6 });
     else if (placed.length === 1) m.setView([placed[0].position!.lat, placed[0].position!.lng], 12);
@@ -59,6 +84,8 @@ export default function StockistMap({ stockists, selected, onSelect }: { stockis
   };
 
   useEffect(draw, [stockists, selected]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(fit, [viewKey, selected]);
 
   return <div ref={box} className={s.map} role="region" aria-label="Map of Yazz stockists" />;
 }

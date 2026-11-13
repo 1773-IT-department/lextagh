@@ -23,14 +23,17 @@ export type Slide = {
 export default function HeroSlider({ slides }: { slides: Slide[] }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Stopped by the visitor (the pause button), or by a reduced motion setting.
+  const [stopped, setStopped] = useState(false);
+  useEffect(() => { if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setStopped(true); }, []);
   const timer = useRef<number>(0);
   const go = useCallback((n: number) => setI((n + slides.length) % slides.length), [slides.length]);
 
   useEffect(() => {
-    if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (paused || stopped) return;
     timer.current = window.setTimeout(() => go(i + 1), 6000);
     return () => window.clearTimeout(timer.current);
-  }, [i, paused, go]);
+  }, [i, paused, stopped, go]);
 
   return (
     <section
@@ -42,6 +45,8 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
+      {/* The page's one main heading stays in place whichever slide shows; the slides use h2. */}
+      <h1 className="yz-sr">Yazz®: Trusted Quality. Made for Everyday Living.</h1>
       {slides.map((sl, k) => (
         <div
           key={sl.eyebrow}
@@ -59,11 +64,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
           </div>
           <div className={s.slideText}>
             <p className={s.slideEyebrow}>{sl.eyebrow}</p>
-            {k === 0 ? (
-              <h1 className={s.slideTitle}>{sl.title[0]} <em>{sl.accent[0]}</em><br />{sl.title[1]} <em className={s.pink}>{sl.accent[1]}</em></h1>
-            ) : (
-              <h2 className={s.slideTitle}>{sl.title[0]} <em>{sl.accent[0]}</em><br />{sl.title[1]} <em className={s.pink}>{sl.accent[1]}</em></h2>
-            )}
+            <h2 className={s.slideTitle}>{sl.title[0]} <em>{sl.accent[0]}</em><br />{sl.title[1]} <em className={s.pink}>{sl.accent[1]}</em></h2>
             <p className={s.slideBody}>{sl.body}</p>
             <div className={s.slideActions}>
               {sl.ctas.map((c) => (
@@ -81,6 +82,11 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
       <button type="button" className={`${s.arrow} ${s.prev}`} aria-label="Previous slide" onClick={() => go(i - 1)}><Icon name="chevron-left" size={20} /></button>
       <button type="button" className={`${s.arrow} ${s.next}`} aria-label="Next slide" onClick={() => go(i + 1)}><Icon name="chevron-right" size={20} /></button>
       <div className={s.dots}>
+        <button type="button" className={s.playPause} onClick={() => setStopped((v) => !v)} aria-label={stopped ? "Play the slideshow" : "Pause the slideshow"}>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="14" height="14" fill="currentColor">
+            {stopped ? <path d="M8 5v14l11-7z" /> : <path d="M7 5h4v14H7zM13 5h4v14h-4z" />}
+          </svg>
+        </button>
         {slides.map((sl, k) => (
           <button key={sl.eyebrow} type="button" className={s.dot} data-active={k === i ? "" : undefined} aria-label={`Show slide ${k + 1}`} aria-current={k === i ? "true" : undefined} onClick={() => go(k)} />
         ))}

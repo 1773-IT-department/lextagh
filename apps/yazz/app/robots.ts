@@ -1,11 +1,15 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/site";
 
-/** Previews are not indexed; only a production deployment (Desmond's go-live) lets search engines in. */
+/**
+ * Search engines may index the site only on a production deployment that has its real address set
+ * (NEXT_PUBLIC_SITE_URL, which Desmond sets at go-live). Previews, and the vercel.app production alias before go-live,
+ * disallow everything.
+ */
 export default function robots(): MetadataRoute.Robots {
-  const production = process.env.VERCEL_ENV === "production";
+  const live = process.env.VERCEL_ENV === "production" && Boolean(process.env.NEXT_PUBLIC_SITE_URL);
   return {
-    rules: production ? { userAgent: "*", allow: "/", disallow: "/api/" } : { userAgent: "*", disallow: "/" },
-    sitemap: siteUrl ? `${siteUrl}/sitemap.xml` : undefined,
+    rules: live ? { userAgent: "*", allow: "/", disallow: "/api/" } : { userAgent: "*", disallow: "/" },
+    sitemap: live && siteUrl ? `${siteUrl}/sitemap.xml` : undefined,
   };
 }

@@ -16,9 +16,16 @@ export default function DialogEnhancer({ closeHash }: { closeHash: string }) {
       return el?.hasAttribute("data-product-dialog") ? el : null;
     };
     const close = () => {
+      const d = current();
+      // Opened from a link (or a bookmark) with no opener on this page: go back to that product card's View details.
+      const links = d ? Array.from(document.querySelectorAll<HTMLAnchorElement>(`a[href="#${d.id}"]`)).filter((a) => !a.closest("[data-product-dialog]") && a.tabIndex !== -1) : [];
+      const fallback = links.find((a) => /View details/.test(a.textContent ?? "")) ?? links[0] ?? null;
+      const target = opener && document.contains(opener) ? opener : fallback;
       history.replaceState(null, "", `${location.pathname}${location.search}#${closeHash}`);
       sync();
-      opener?.focus({ preventScroll: true });
+      target?.focus({ preventScroll: true });
+      if (target && target !== opener) target.scrollIntoView({ block: "center" });
+      opener = null;
     };
     const sync = () => {
       const d = current();

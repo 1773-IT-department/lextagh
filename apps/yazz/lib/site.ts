@@ -17,7 +17,7 @@ const vercelUrl = vercelHost ? `https://${vercelHost}` : "";
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || vercelUrl).replace(/\/+$/, "");
 export const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
 
-export const LEXTA_PREVIEW_URL = "https://lexta-web-git-claude-b-856ed5-1773-hr-consultancy-and-marketing.vercel.app";
+export const LEXTA_PREVIEW_URL = "https://lexta-web-git-nextjs-1773-hr-consultancy-and-marketing.vercel.app";
 export const lextaSiteUrl = (process.env.NEXT_PUBLIC_LEXTA_SITE_URL || LEXTA_PREVIEW_URL).replace(/\/+$/, "");
 
 /** Pages of the Lexta site that Yazz links to. */

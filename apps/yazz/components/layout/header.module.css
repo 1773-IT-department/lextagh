@@ -18,12 +18,14 @@
   background: none; color: var(--yz-text); cursor: pointer; transition: transform .2s, color .2s;
 }
 .caret:hover { color: var(--yz-red); }
-.drop[data-open] .caret, .drop:hover .caret { transform: rotate(180deg); }
+/* Without JavaScript the lists open on hover and keyboard focus. With JavaScript (html[data-js]) only the state the
+   header sets (aria-expanded, data-open) opens them, so Escape and clicks outside really close them. */
+.drop[data-open] .caret, :global(html:not([data-js])) .drop:hover .caret { transform: rotate(180deg); }
 .panelWrap {
   position: absolute; top: 100%; left: -14px; padding-top: 12px; z-index: 30;
   visibility: hidden; opacity: 0; transform: translateY(-4px); transition: opacity .16s, transform .16s, visibility 0s .16s;
 }
-.drop:hover .panelWrap, .drop:focus-within .panelWrap, .drop[data-open] .panelWrap {
+:global(html:not([data-js])) .drop:hover .panelWrap, :global(html:not([data-js])) .drop:focus-within .panelWrap, .drop[data-open] .panelWrap {
   visibility: visible; opacity: 1; transform: none; transition: opacity .16s, transform .16s;
 }
 .panel {

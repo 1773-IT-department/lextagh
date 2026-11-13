@@ -27,6 +27,11 @@ const OUT = process.env.YAZZ_SCREENSHOTS || path.join(os.tmpdir(), "yazz-screens
 mkdirSync(OUT, { recursive: true });
 
 const { q } = await import("../browser/demo-seed.mjs");
+// A stockist whose name is HTML: it must show as text everywhere (list, map tooltip), never run.
+const EVIL = `Evil <img src=x onerror="window.__xss=1"> Shop`;
+await q(`insert into public.stockists (id, name, outlet_type, region_id, town, latitude, longitude, is_active) values
+  ('00000000-0000-0000-0000-0000000e0001', '${EVIL.replace(/'/g, "''")}', 'general_trade', (select id from public.regions where slug = 'central'), 'Cape Coast', 5.105, -1.247, true)`);
+await q(`insert into public.stockist_brands (stockist_id, brand_id) values ('00000000-0000-0000-0000-0000000e0001', (select id from public.brands where slug = 'yazz'))`);
 const CHAT_SECRET = "harness-chat-secret-yazz-browser-0123456789";
 await q(`insert into private.chat_intake_secret (secret) values ('${CHAT_SECRET}') on conflict do nothing`).catch(async () => {
   await q(`delete from private.chat_intake_secret`);
@@ -114,13 +119,13 @@ try {
       await page.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 50)); } window.scrollTo(0, 0); });
       await sleep(500);
       const info = await page.evaluate(() => ({
-        sw: document.scrollingElement.scrollWidth, w: innerWidth, h1: document.querySelector("h1")?.innerText ?? "",
+        sw: document.scrollingElement.scrollWidth, w: innerWidth, h1: document.querySelector("h1")?.textContent ?? "", h1s: document.querySelectorAll("h1").length,
         noAlt: [...document.querySelectorAll("img:not([alt])")].length, main: !!document.querySelector("main#main"),
         dashes: (document.body.innerText.match(/.{0,20}(?:[–—]| - ).{0,20}/g) ?? []).slice(0, 3),
       }));
       const problems = drain();
-      check(resp?.status() === 200 && info.h1 && info.main && info.noAlt === 0 && info.sw <= info.w && problems.length === 0 && info.dashes.length === 0,
-        `${kind} ${url}: 200, heading, main landmark, alt text, no sideways scroll, no errors, no dashes`, { status: resp?.status(), ...info, problems });
+      check(resp?.status() === 200 && info.h1 && info.h1s === 1 && info.main && info.noAlt === 0 && info.sw <= info.w && problems.length === 0 && info.dashes.length === 0,
+        `${kind} ${url}: 200, one h1, main landmark, alt text, no sideways scroll, no errors, no dashes`, { status: resp?.status(), ...info, problems });
       await page.screenshot({ path: path.join(OUT, `${name}-${kind === "phone" ? 390 : 1440}.png`), fullPage: true });
     }
     // The product window, as a screenshot too.
@@ -160,9 +165,12 @@ try {
 
     const nojs = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
     const p2 = await nojs.newPage();
-    await p2.goto(`${SITE}/contact?region=greater-accra#where-to-buy`);
+    await p2.goto(`${SITE}/contact#where-to-buy`);
+    await p2.locator("#wtb-region").selectOption("greater-accra");
+    await Promise.all([p2.waitForURL(/region=greater-accra/), p2.getByRole("button", { name: "Find stockists" }).click()]);
     const listed = await p2.locator("#where-to-buy li h3").allInnerTexts();
-    check(listed.length === 3 && listed.includes("Demo Shop Adabraka") && !listed.includes("Demo Provisions Madina"), "where to buy without JavaScript: ?region= lists that region's Yazz stockists", listed);
+    check(listed.length === 3 && listed.includes("Demo Shop Adabraka") && !listed.includes("Demo Provisions Madina"),
+      "where to buy without JavaScript: submitting the region form lists that region's Yazz stockists", { url: p2.url(), listed });
     await nojs.close();
   }
 
@@ -180,8 +188,33 @@ try {
     await page.keyboard.press("ArrowDown");
     check(/Feminine Care/.test(await page.evaluate(() => document.activeElement?.textContent ?? "")), "dropdown: Arrow Down moves to the next item");
     await page.keyboard.press("Escape");
-    check(await caret.getAttribute("aria-expanded") === "false" && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Products menu",
-      "dropdown: Escape closes it and focus returns to the button");
+    const panel = page.locator(`#${await caret.getAttribute("aria-controls")}`);
+    await sleep(250);
+    check(await caret.getAttribute("aria-expanded") === "false" && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Products menu"
+      && !(await panel.isVisible()), "dropdown: Escape closes it (the list is hidden although focus is still inside) and focus returns to the button");
+    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await sleep(250);
+    const hoverOpen = await panel.isVisible();
+    await caret.focus();
+    await page.keyboard.press("Escape");
+    await sleep(250);
+    check(hoverOpen && !(await panel.isVisible()), "dropdown: hover opens it, and Escape closes it even while the pointer stays on it");
+
+    // The carousel: one h1 outside the slides, and a pause button.
+    await page.goto(`${SITE}/`);
+    const pause = page.getByRole("button", { name: "Pause the slideshow" });
+    await pause.click();
+    check(await page.getByRole("button", { name: "Play the slideshow" }).count() === 1, "carousel: the pause button stops it and offers play");
+
+    // The map: a stockist named with HTML shows as text.
+    await page.goto(`${SITE}/contact`);
+    await page.locator(".leaflet-marker-icon").first().waitFor({ timeout: 15000 });
+    const evilPin = page.locator(`.leaflet-marker-icon[title="${EVIL.replace(/"/g, '\\"')}"]`);
+    await evilPin.hover();
+    await sleep(500);
+    const tip = await page.locator(".leaflet-tooltip").last().textContent().catch(() => "");
+    check(await page.evaluate(() => window.__xss) === undefined && tip === EVIL && await page.getByText(EVIL, { exact: true }).count() >= 1,
+      "map: a stockist name with HTML shows as text in the list and the pin tooltip, and never runs", { tip });
 
     await page.goto(`${SITE}/products/oral-care`);
     const opener = page.locator("main article").filter({ hasText: "Toothbrushes" }).getByRole("link", { name: /View details/ });
@@ -196,6 +229,27 @@ try {
     await sleep(200);
     check(!(await dialog.isVisible()) && /View details/.test(await page.evaluate(() => document.activeElement?.textContent ?? "")), "product window: Escape closes it and focus returns to its link");
     check(!/add to cart|GH₵|checkout/i.test(await page.locator("body").innerText()), "range page: no cart, checkout or prices");
+    await page.goto(`${SITE}/products/oral-care#product-toothbrushes`);
+    await page.getByRole("dialog", { name: "Toothbrushes" }).waitFor({ state: "visible" });
+    await sleep(200);
+    await page.keyboard.press("Escape");
+    await sleep(300);
+    check(await page.evaluate(() => document.activeElement?.textContent?.trim()) === "View details" && await page.evaluate(() => document.activeElement?.getAttribute("href")) === "#product-toothbrushes",
+      "product window opened from an address: Escape returns focus to that product's View details");
+    await ctx.close();
+  }
+
+  // Phone menu: a link that keeps the same path (a query) still closes the menu.
+  {
+    const ctx = await context("phone");
+    const page = await ctx.newPage();
+    await page.goto(`${SITE}/tips`);
+    await page.getByLabel("Menu", { exact: true }).click();
+    const sheet = page.getByRole("navigation", { name: "Mobile" });
+    await sheet.getByRole("link", { name: /Just 4 Parents/ }).click();
+    await page.waitForURL(/category=just-4-parents/);
+    await sleep(300);
+    check(!(await sheet.isVisible()), "phone menu: closes after a link to the same page with another category");
     await ctx.close();
   }
 
