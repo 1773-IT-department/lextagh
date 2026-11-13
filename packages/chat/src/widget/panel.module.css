@@ -1,6 +1,6 @@
-/* Live chat panel, in the site's design: Poppins, primary #12a3c4 (hover #0d8ba8), text #14313d and #12313d, muted
-   #5d7883, borders #e6f1f5, light #f2f9fb, 9px radii. A CSS module (not inline styles), so the site's responsive
-   rules that match inline styles in globals.css never touch it. */
+/* Live chat panel, Poppins (inherited), 9px radii. Colours are the --chat-* custom properties, each with the Lexta
+   site's value as the default (primary #12a3c4, hover #0d8ba8, ink #12313d); a brand site sets its own on :root. A CSS
+   module (not inline styles), so the site's responsive rules that match inline styles in globals.css never touch it. */
 .panel {
   position: fixed;
   right: 24px;
@@ -12,7 +12,7 @@
   height: min(600px, calc(100vh - 48px));
   height: min(600px, calc(100dvh - 48px));
   background: #fff;
-  color: #14313d;
+  color: var(--chat-text, #14313d);
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(6, 32, 42, 0.28), 0 0 0 1px rgba(10, 55, 70, 0.08);
   overflow: hidden;
@@ -28,7 +28,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 16px 16px 14px 20px;
-  background: #12313d;
+  background: var(--chat-ink, #12313d);
   color: #fff;
 }
 .title { margin: 0; font-size: 16px !important; font-weight: 700; line-height: 1.3; color: #fff; }
@@ -44,65 +44,65 @@
 }
 .close svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; fill: none; }
 .close:hover, .textButton:hover { background: rgba(255, 255, 255, 0.18); }
-.close:focus-visible, .textButton:focus-visible { outline: 3px solid #7fd6ea; outline-offset: 1px; }
+.close:focus-visible, .textButton:focus-visible { outline: 3px solid var(--chat-head-focus, #7fd6ea); outline-offset: 1px; }
 
 /* Start form */
 .form { display: flex; flex-direction: column; gap: 12px; padding: 18px 20px 20px; overflow-y: auto; flex: 1; }
 .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
-.field label { font-size: 12.5px; font-weight: 600; color: #12313d; }
-.opt { font-weight: 400; color: #5d7883; }
+.field label { font-size: 12.5px; font-weight: 600; color: var(--chat-ink, #12313d); }
+.opt { font-weight: 400; color: var(--chat-muted, #5d7883); }
 .field input, .field textarea, .composeRow textarea {
-  width: 100%; border: 1px solid #cfe3ea; border-radius: 9px; padding: 11px 12px; font: inherit; font-size: 16px;
-  color: #14313d; background: #fff;
+  width: 100%; border: 1px solid var(--chat-field-border, #cfe3ea); border-radius: 9px; padding: 11px 12px; font: inherit; font-size: 16px;
+  color: var(--chat-text, #14313d); background: #fff;
 }
 .field textarea, .composeRow textarea { resize: vertical; min-height: 48px; line-height: 1.45; }
-.field input:focus, .field textarea:focus, .composeRow textarea:focus { outline: none; border-color: #12a3c4; box-shadow: 0 0 0 3px rgba(18, 163, 196, 0.22); }
+.field input:focus, .field textarea:focus, .composeRow textarea:focus { outline: none; border-color: var(--chat-accent, #12a3c4); box-shadow: 0 0 0 3px var(--chat-ring, rgba(18, 163, 196, 0.22)); }
 .field input[aria-invalid="true"], .field textarea[aria-invalid="true"] { border-color: #c0392b; }
 .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.hint { margin: -4px 0 0; font-size: 12px; line-height: 1.45; color: #5d7883; }
+.hint { margin: -4px 0 0; font-size: 12px; line-height: 1.45; color: var(--chat-muted, #5d7883); }
 .ferr { font-size: 12px; color: #b03a2e; }
-.small { margin: 0; font-size: 11.5px; line-height: 1.5; color: #5d7883; }
-.note { margin: 0; padding: 10px 12px; border-radius: 9px; background: #f2f9fb; border: 1px solid #e6f1f5; font-size: 12.5px; line-height: 1.5; color: #1d3c48; }
+.small { margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--chat-muted, #5d7883); }
+.note { margin: 0; padding: 10px 12px; border-radius: 9px; background: var(--chat-note-bg, #f2f9fb); border: 1px solid var(--chat-line, #e6f1f5); font-size: 12.5px; line-height: 1.5; color: var(--chat-note-text, #1d3c48); }
 .error { margin: 0; padding: 10px 12px; border-radius: 9px; background: #fdf0ee; border: 1px solid #f3c7c0; font-size: 12.5px; line-height: 1.5; color: #8e2c21; }
 .primary {
-  min-height: 48px; border: 0; border-radius: 9px; background: #12a3c4; color: #fff; font: inherit; font-size: 14px;
+  min-height: 48px; border: 0; border-radius: 9px; background: var(--chat-accent, #12a3c4); color: #fff; font: inherit; font-size: 14px;
   font-weight: 700; cursor: pointer;
 }
-.primary:hover { background: #0d8ba8; }
+.primary:hover { background: var(--chat-accent-dark, #0d8ba8); }
 .primary:disabled, .send:disabled { opacity: 0.6; cursor: default; }
-.primary:focus-visible, .send:focus-visible { outline: 3px solid #12313d; outline-offset: 2px; }
+.primary:focus-visible, .send:focus-visible { outline: 3px solid var(--chat-ink, #12313d); outline-offset: 2px; }
 .trap { position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden; }
 
 /* Conversation */
-.log { flex: 1; overflow-y: auto; padding: 16px 16px 8px; background: #f6fbfd; display: flex; flex-direction: column; gap: 10px; }
-.log:focus-visible { outline: 3px solid #12a3c4; outline-offset: -3px; }
+.log { flex: 1; overflow-y: auto; padding: 16px 16px 8px; background: var(--chat-log-bg, #f6fbfd); display: flex; flex-direction: column; gap: 10px; }
+.log:focus-visible { outline: 3px solid var(--chat-accent, #12a3c4); outline-offset: -3px; }
 .msg { display: flex; flex-direction: column; max-width: 84%; }
 .mine { align-self: flex-end; align-items: flex-end; margin-left: auto; }
 .theirs { align-self: flex-start; align-items: flex-start; }
-.who { font-size: 11px; font-weight: 600; color: #5d7883; margin: 0 4px 3px; }
+.who { font-size: 11px; font-weight: 600; color: var(--chat-muted, #5d7883); margin: 0 4px 3px; }
 .bubble { margin: 0; padding: 9px 13px; border-radius: 14px; font-size: 14px; line-height: 1.45; white-space: pre-wrap; overflow-wrap: anywhere; }
-.mine .bubble { background: #12a3c4; color: #fff; border-bottom-right-radius: 4px; }
-.theirs .bubble { background: #fff; color: #14313d; border: 1px solid #e6f1f5; border-bottom-left-radius: 4px; }
-.auto .bubble { background: #eef8fb; border-style: dashed; color: #1d3c48; font-size: 13px; }
+.mine .bubble { background: var(--chat-accent, #12a3c4); color: #fff; border-bottom-right-radius: 4px; }
+.theirs .bubble { background: #fff; color: var(--chat-text, #14313d); border: 1px solid var(--chat-line, #e6f1f5); border-bottom-left-radius: 4px; }
+.auto .bubble { background: var(--chat-auto-bg, #eef8fb); border-style: dashed; color: var(--chat-note-text, #1d3c48); font-size: 13px; }
 .meta { font-size: 10.5px; color: #7b939c; margin: 3px 4px 0; }
-.closedNote { margin: 6px 0 0; text-align: center; font-size: 12px; color: #5d7883; }
+.closedNote { margin: 6px 0 0; text-align: center; font-size: 12px; color: var(--chat-muted, #5d7883); }
 
-.composer { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid #e6f1f5; background: #fff; }
+.composer { display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid var(--chat-line, #e6f1f5); background: #fff; }
 .composeRow { display: flex; align-items: flex-end; gap: 8px; }
 .composeRow textarea { max-height: 140px; }
 .send {
-  flex: none; min-height: 48px; padding: 0 18px; border: 0; border-radius: 9px; background: #12a3c4; color: #fff;
+  flex: none; min-height: 48px; padding: 0 18px; border: 0; border-radius: 9px; background: var(--chat-accent, #12a3c4); color: #fff;
   font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
 }
-.send:hover { background: #0d8ba8; }
+.send:hover { background: var(--chat-accent-dark, #0d8ba8); }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
 /* Phones: a sheet under the 58px mobile bar, full width with the site's 8px gutter. */
 @media (max-width: 640px) {
   .panel {
     left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); width: auto;
-    height: calc(100vh - 58px - 16px);
-    height: calc(100dvh - 58px - 16px);
+    height: calc(100vh - var(--chat-mobile-offset, 58px) - 16px);
+    height: calc(100dvh - var(--chat-mobile-offset, 58px) - 16px);
     border-radius: 14px;
   }
   .pair { grid-template-columns: 1fr; }

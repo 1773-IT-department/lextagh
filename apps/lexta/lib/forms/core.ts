@@ -1,8 +1,8 @@
 // Website forms into the Lexta Business System (scoreboard item 19).
 //
 // Plain server code with no Next.js imports, so the local harness test (supabase/tests/local/forms) runs the very
-// same functions. The server actions in app/actions/forms.ts are thin wrappers around handleContact, handlePartner
-// and handleNewsletter.
+// same functions (the parts every site shares are in packages/forms). The server actions in app/actions/forms.ts are
+// thin wrappers around handleContact, handlePartner and handleNewsletter.
 //
 // The hidden honeypot field is checked here: a filled one gets a thank you with a reference shaped like a real one,
 // and nothing goes to the database. Every other submission goes through the database's own intake functions with
@@ -15,40 +15,55 @@ import {
   submitComplaint,
   submitWebsiteEnquiry,
   type ComplaintFormPayload,
-  type ComplaintResult,
   type ContactFormPayload,
-  type EnquiryResult,
   type PartnerFormPayload,
 } from "@lexta/db";
+import {
+  batchCodeFrom,
+  checkEmailPhone,
+  checkMax,
+  checkName,
+  EMAIL_RE,
+  fakeReference,
+  formsConfigured,
+  fromResult,
+  invalid,
+  LIMITS,
+  MSG_TOO_LONG,
+  payloadTooLarge,
+  read,
+  safely,
+  tooLarge,
+  trapped,
+  unavailable,
+  type Fields,
+} from "@lexta/forms/core";
 import { reasons as contactReasons } from "../../components/contact/data";
 
-export type FormState = {
-  status: "idle" | "success" | "error";
-  /** Text for the visitor: the thank you (with reference) or what went wrong. */
-  message?: string;
-  /** Reference or LX case number the database gave back. */
-  reference?: string;
-  /** Inline message per form field name. */
-  fieldErrors?: Record<string, string>;
-  /** What the visitor typed, sent back on error so the form keeps it. Empty on success so the form clears. */
-  values?: Record<string, string>;
-};
+// The parts every site shares live in packages/forms; these stay exported from here as before.
+export {
+  batchCodeFrom,
+  fakeReference,
+  formsConfigured,
+  HONEYPOT_FIELD,
+  initialFormState,
+  LIMITS,
+  MSG_CHECK_FIELDS,
+  MSG_RATE_LIMITED,
+  MSG_TOO_LONG,
+  msgGeneric,
+  msgUnavailable,
+  PAYLOAD_MAX_BYTES,
+  payloadTooLarge,
+  type FormState,
+} from "@lexta/forms/core";
+import type { FormState } from "@lexta/forms/core";
 
-export const initialFormState: FormState = { status: "idle" };
-
-/** Name of the hidden spam trap field on every form. People never see or fill it. */
-export const HONEYPOT_FIELD = "website";
 const BRAND = "lexta";
 
 /** Where visitors can write instead: sales for trade (distribution, bulk orders, partners), support for the rest. */
 export const SALES_EMAIL = "sales@lextagh.com";
 export const SUPPORT_EMAIL = "support@lextagh.com";
-
-export const msgUnavailable = (email: string) => `This form is not available right now, please email ${email}`;
-export const MSG_RATE_LIMITED = "Too many messages, please try again in an hour.";
-export const msgGeneric = (email: string) => `Sorry, your message could not be sent. Please try again in a few minutes, or email ${email}.`;
-export const MSG_TOO_LONG = "Your message is too long, please shorten it.";
-export const MSG_CHECK_FIELDS = "Please check the highlighted fields.";
 
 /** Labels the Contact Us form shows, to the reason slugs the database accepts. */
 export const CONTACT_REASONS: Record<string, NonNullable<ContactFormPayload["reason"]>> = {
@@ -82,127 +97,10 @@ export const PARTNER_TYPES: Record<string, NonNullable<PartnerFormPayload["partn
   Suppliers: "supplier",
 };
 
-/** Field limits, the same as the database intake functions. */
-export const LIMITS = { name: 120, email: 254, phone: 24, message: 3000, organisation: 160, detail: 300, location: 120, years: 20, batch: 60 };
-
-/**
- * The intake functions refuse a payload over 8000 bytes (octet_length of the jsonb as text, which adds a space after
- * every ":" and ","). Multi byte text (accents, emoji) can pass the character limits and still be too big, so the
- * encoded size is checked first, with that spacing allowed for.
- */
-export const PAYLOAD_MAX_BYTES = 8000;
-export function payloadTooLarge(payload: object): boolean {
-  const json = JSON.stringify(payload);
-  return new TextEncoder().encode(json).length + 2 * Object.keys(payload).length > PAYLOAD_MAX_BYTES;
-}
-
 /** Contact Us reason label to the address shown when the form cannot send (the page's own routing emails). */
 export function contactFallbackEmail(reasonLabel: string): string {
   return contactReasons.find((r) => r.key === reasonLabel)?.email ?? SUPPORT_EMAIL;
 }
-
-const randomHex = (n: number) => {
-  const bytes = new Uint8Array(Math.ceil(n / 2));
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("").slice(0, n).toUpperCase();
-};
-
-/**
- * What a caught bot sees: a thank you with a reference shaped exactly like a real one for that form (ENQ-, PTN-,
- * NWS- and ten hex characters; LX-YYYY-NNNN for a complaint). Nothing is sent to the database.
- */
-export function fakeReference(kind: "contact" | "complaint" | "partner" | "newsletter"): string {
-  if (kind === "complaint") {
-    const n = new Uint16Array(1);
-    crypto.getRandomValues(n);
-    return `LX-${new Date().getUTCFullYear()}-${String(1 + (n[0] % 9999)).padStart(4, "0")}`;
-  }
-  return `${{ contact: "ENQ", partner: "PTN", newsletter: "NWS" }[kind]}-${randomHex(10)}`;
-}
-
-/** The hidden trap field was filled in (any length counts): only bots do that. */
-const trapped = (fd: FormData) => {
-  const v = fd.get(HONEYPOT_FIELD);
-  return typeof v === "string" && v.trim() !== "";
-};
-
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-const PHONE_RE = /^\+?[0-9][0-9 ()-]{5,22}$/;
-
-type Fields = Record<string, string>;
-
-function read(fd: FormData, names: string[]): Fields {
-  const out: Fields = {};
-  for (const n of names) {
-    if (n === HONEYPOT_FIELD) continue;
-    const v = fd.get(n);
-    out[n] = typeof v === "string" ? v.replace(/\r\n/g, "\n").trim() : "";
-  }
-  return out;
-}
-
-/** Supabase settings present? Without them the forms explain how to reach Lexta instead of failing. */
-export function formsConfigured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
-}
-
-const tooLong = (label: string, max: number) => `${label} can be at most ${max} characters.`;
-
-function checkName(v: Fields, field: string, errors: Fields, label = "your name") {
-  if (!v[field]) errors[field] = `Please enter ${label}.`;
-  else if (v[field].length > LIMITS.name) errors[field] = tooLong("Your name", LIMITS.name);
-}
-
-function checkEmailPhone(v: Fields, errors: Fields) {
-  if (v.email.length > LIMITS.email || (v.email && !EMAIL_RE.test(v.email))) errors.email = "Please enter a valid email address.";
-  if (v.phone && (v.phone.length > LIMITS.phone || !PHONE_RE.test(v.phone))) {
-    errors.phone = "Please enter a valid phone number, for example +233 24 123 4567.";
-  }
-  if (!v.email && !v.phone) errors.email = "Please give an email address or a phone number so we can reply.";
-}
-
-function checkMax(v: Fields, field: string, max: number, label: string, errors: Fields) {
-  if (v[field].length > max) errors[field] = tooLong(label, max);
-}
-
-function invalid(values: Fields, fieldErrors: Fields): FormState {
-  return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors, values: values };
-}
-
-
-/** Turns what the database said into what the visitor sees. Never shows database details. */
-function fromResult(
-  result: EnquiryResult | ComplaintResult,
-  values: Fields,
-  fieldMap: Record<string, string>,
-  messages: Fields,
-  success: (ref: string) => string,
-  fallbackEmail: string,
-): FormState {
-  if (result.ok) {
-    const ref = "reference" in result ? result.reference : result.caseNumber;
-    return { status: "success", reference: ref, message: success(ref), values: {} };
-  }
-  const kept = values;
-  if (result.reason === "rate_limited") return { status: "error", message: MSG_RATE_LIMITED, values: kept };
-  if (result.reason === "invalid" && result.field && fieldMap[result.field]) {
-    const field = fieldMap[result.field];
-    return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { [field]: messages[field] ?? "Please check this field." }, values: kept };
-  }
-  return { status: "error", message: msgGeneric(fallbackEmail), values: kept };
-}
-
-async function safely<T>(run: () => Promise<T>): Promise<T | { ok: false; reason: "error" }> {
-  try {
-    return await run();
-  } catch {
-    // Network or configuration trouble: the visitor gets the generic message, never the details.
-    return { ok: false, reason: "error" };
-  }
-}
-
-const unavailable = (values: Fields, email: string): FormState => ({ status: "error", message: msgUnavailable(email), values: values });
-const tooLarge = (values: Fields): FormState => ({ status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { message: MSG_TOO_LONG }, values });
 
 // Contact Us ---------------------------------------------------------------------------------
 
@@ -222,16 +120,6 @@ const CONTACT_MESSAGES: Fields = {
 export type ContactRoute =
   | { kind: "enquiry"; payload: ContactFormPayload }
   | { kind: "complaint"; payload: ComplaintFormPayload };
-
-/**
- * The batch code inside the free text "Product and batch code" field, e.g. "Yazz Ultra, batch 2026-04-18" gives
- * "2026-04-18". With no "batch" word, a short field is taken whole (people often type only the code).
- */
-export function batchCodeFrom(detail: string): string | undefined {
-  const m = /\b(?:batch|lot)\b(?:\s*(?:code|no\.?|number))?\s*[:#.]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]*)/i.exec(detail);
-  const code = (m?.[1] ?? (/\d/.test(detail) && !/\s/.test(detail) ? detail : undefined))?.replace(/[.\-/]+$/, "");
-  return code && code.length <= LIMITS.batch ? code : undefined;
-}
 
 /** Validates the Contact Us form and builds what goes to the database. Exported for the harness test. */
 export function buildContact(fd: FormData): { values: Fields; errors: Fields; route?: ContactRoute } {
