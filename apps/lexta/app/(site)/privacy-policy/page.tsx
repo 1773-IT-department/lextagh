@@ -39,7 +39,7 @@ const sections: LegalSection[] = [
     "Access to personal data is limited to staff who need it for their role. Systems are password protected, business records are held on managed accounts, and paper files are kept in locked storage at our offices. We review these controls regularly.",
   ] },
   { heading: "8. Your rights", paras: [
-    "You may ask for a copy of the personal data we hold about you, ask us to correct it, ask us to delete it where we have no continuing obligation to keep it, or withdraw consent to marketing at any time. Email sales@lextagh.com and we will respond within 30 days.",
+    "You may ask for a copy of the personal data we hold about you, ask us to correct it, ask us to delete it where we have no continuing obligation to keep it, or withdraw consent to marketing at any time. Email marketing@lextagh.com and we will respond within 30 days.",
   ] },
   { heading: "9. Cookies", paras: [
     "This site uses only the cookies needed to make pages load and remember your preferences during a visit, plus basic analytics. You can block or delete cookies in your browser settings; core pages will still work.",

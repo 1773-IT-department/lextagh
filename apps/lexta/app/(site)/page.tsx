@@ -75,7 +75,7 @@ const brands = [
   },
   {
     name: "LINZZY", color: "#6a2b8f", anchor: "linzzy", bg: "#eef2fa", img: "/assets/brand-linzzy.png", w: 447, h: 447, alt: "Linzzy baby wipes", contain: false,
-    text: "Sanitary napkins in Cool Mint, Heavy Flow and Extra Long, plus fragrance free baby wipes formulated for sensitive skin.",
+    text: "Sanitary towels in Cool Mint, Heavy Flow and Extra Long, panty liners, plus baby diapers and baby wipes for everyday family care.",
   },
 ];
 
@@ -107,7 +107,7 @@ const impact = [
     svg: <><circle cx="12" cy="12" r="7.5" {...impactStroke} /><circle cx="12" cy="12" r="3" {...impactStroke} /></>,
   },
   {
-    count: 4, suffix: "+", label: ["Trusted", "Brands"],
+    count: 3, suffix: "", label: ["Trusted", "Brands"],
     svg: <><rect x="4" y="4" width="7" height="7" {...impactStroke} /><rect x="13" y="4" width="7" height="7" {...impactStroke} /><rect x="4" y="13" width="7" height="7" {...impactStroke} /><rect x="13" y="13" width="7" height="7" {...impactStroke} /></>,
   },
 ];

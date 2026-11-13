@@ -223,7 +223,7 @@ export default function OpenRoles({ jobs }: { jobs: CareersJob[] }) {
                         Apply for this role
                       </ArrowButton>
                       <a
-                        href="mailto:support@lextagh.com"
+                        href="mailto:hr@lextagh.com"
                         style={{ display: "inline-flex", alignItems: "center", border: "1px solid rgba(18,163,196,.45)", background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 20px", borderRadius: 7 }}
                       >
                         Ask a question

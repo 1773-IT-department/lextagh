@@ -41,8 +41,8 @@ export const HONEYPOT_FIELD = "website";
 const BRAND = "lexta";
 
 /** Where visitors can write instead: sales for trade (distribution, bulk orders, partners), support for the rest. */
-export const SALES_EMAIL = "sales@lextagh.com";
-export const SUPPORT_EMAIL = "support@lextagh.com";
+export const SALES_EMAIL = "marketing@lextagh.com";
+export const SUPPORT_EMAIL = "marketing@lextagh.com";
 
 export const msgUnavailable = (email: string) => `This form is not available right now, please email ${email}`;
 export const MSG_RATE_LIMITED = "Too many messages, please try again in an hour.";
@@ -224,7 +224,7 @@ export type ContactRoute =
   | { kind: "complaint"; payload: ComplaintFormPayload };
 
 /**
- * The batch code inside the free text "Product and batch code" field, e.g. "Yazz Ultra, batch 2026-04-18" gives
+ * The batch code inside the free text "Product and batch code" field, e.g. "Yazz Minty pads, batch 2026-04-18" gives
  * "2026-04-18". With no "batch" word, a short field is taken whole (people often type only the code).
  */
 export function batchCodeFrom(detail: string): string | undefined {

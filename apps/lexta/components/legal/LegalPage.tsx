@@ -44,7 +44,7 @@ export default function LegalPage({ kicker, title, intro, updated, sections }: P
           <div style={{ border: "1px solid rgba(18,163,196,.2)", background: "#f7fcfe", borderRadius: 14, padding: "26px 26px 28px" }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#12a3c4" }}>Questions</div>
             <p style={{ margin: "10px 0 0", fontSize: 13.5, lineHeight: 1.85, color: "#4c6a75" }}>
-              Write to <a href="mailto:sales@lextagh.com">sales@lextagh.com</a> or call +233 (0) 501 619 588. Postal enquiries: Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.
+              Write to <a href="mailto:marketing@lextagh.com">marketing@lextagh.com</a> or call +233 (0) 501 619 588. Postal enquiries: Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.
             </p>
           </div>
         </div>

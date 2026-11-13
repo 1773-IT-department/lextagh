@@ -6,7 +6,7 @@ export const aboutLexta =
 /** Same wording, email and phone as the News page "Media enquiries" block. */
 export const mediaContact =
   "For interviews, campaign details, brand assets or comment on any of our programmes, contact our communications team. We aim to respond within two working days.";
-export const mediaEmail = "support@lextagh.com";
+export const mediaEmail = "marketing@lextagh.com";
 export const mediaPhone = "+233 (0) 501 619 588";
 
 /** Note shown at the end of every article with draft: true. */

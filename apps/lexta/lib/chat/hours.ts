@@ -17,7 +17,7 @@ export function chatTeamAvailable(now: Date = new Date()): boolean {
   return (CHAT_OFFICE_HOURS.days as readonly number[]).includes(day) && hour >= CHAT_OFFICE_HOURS.openHour && hour < CHAT_OFFICE_HOURS.closeHour;
 }
 
-export const CHAT_SUPPORT_EMAIL = "support@lextagh.com";
+export const CHAT_SUPPORT_EMAIL = "marketing@lextagh.com";
 
 /** The one fixed reply, shown after the visitor's first message. */
 export const CHAT_AUTO_REPLY = "Thank you. A member of the team will reply shortly.";
