@@ -2,7 +2,7 @@ import Link from "next/link";
 import ActivityFeed from "@/components/management/ActivityFeed";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import { ROLE_LABELS } from "@/lib/systems";
-import { FEED_PAGE_SIZE, isFeedSystem, MANAGEMENT_BASE, MANAGEMENT_SECTIONS, managementHref, NO_MANAGEMENT_ACCESS, type FeedPage } from "@/lib/management";
+import { FEED_PAGE_SIZE, isFeedSystem, MANAGEMENT_BASE, MANAGEMENT_SECTIONS, managementHref, NO_MANAGEMENT_ACCESS, presentFeed, type FeedPage } from "@/lib/management";
 import { managementContext } from "@/lib/management-data";
 import type { AppRole } from "@lexta/db";
 
@@ -35,7 +35,6 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
   });
   if (error) console.error("[management] feed failed", error);
   const page = error ? null : (data as FeedPage);
-  const brandNames = ctx.brandNames;
 
   const keep: Record<string, string> = {};
   if (system) keep.system = system;
@@ -80,8 +79,8 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
       ) : page.items.length === 0 ? (
         <div className="alert info" role="status">Nothing has been recorded{filtered ? " for these filters" : ""} in this period yet.</div>
       ) : (
-        <ActivityFeed key={`${f.from}|${f.to}|${f.brand}|${system}|${person}|${beforeKey}`} first={page.items} hasMore={page.has_more} brandNames={brandNames}
-          query={{ from: f.from, to: f.to, brand: f.brand, system, person }} nextHref={nextHref} />
+        <ActivityFeed key={`${f.from}|${f.to}|${f.brand}|${system}|${person}|${beforeKey}`} first={presentFeed(page.items, ctx.brandNames)} hasMore={page.has_more}
+          query={{ from: f.from, to: f.to, brand: f.brand, system, person }} nextHref={nextHref} laterPage={!!beforeKey} />
       )}
     </>
   );

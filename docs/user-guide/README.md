@@ -154,7 +154,7 @@ Along the top: **Overview**, **Activity**, then one tab for each system: **Order
 ### The Overview tab
 
 * **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
-* **Key figures** shows two numbers for each system, with how they changed on the period of the same length just before (for example "42 new leads, Up 41 on the previous 30 days"). Tap **More** to open that system's tab.
+* **Key figures** shows two numbers for each system, with how they changed on the period of the same length just before (for example "42 new leads, Up 41 on the previous 30 days"). Tap a number to open those records in its system, or **More** to open that system's tab.
 * **Over time** has four small charts: orders submitted, new leads, complaints received and shop visits. Each column is a day (a week for longer periods, a month for more than a year). Point at a column to see its number, or tap **Show the numbers** for a table.
 * **Latest activity** shows the eight newest things recorded. Tap **See all activity** for the rest.
 
@@ -182,6 +182,7 @@ Each system's tab shows its figures (with the change on the period before), brea
 * Recruitment is not split by brand. With a brand chosen, recruitment figures still count every application, and the Activity tab leaves out records with no brand (recruitment, corporate CSR programmes and leads with no brand).
 * With a brand chosen, live chat counts that brand but the inbox still shows every chat. The website leads link opens every unassigned lead, not only website ones.
 * Products and stockists keep no history, so the Activity tab shows only the latest change to each one. A shop added on a field visit shows once, as a new shop found.
+* Leads from the website forms and the website chat show as "Website enquiry", "Partner enquiry", "Newsletter sign up" or "Live chat lead" with their reference, not by their title, because those titles hold the visitor's name. Tap the row to see the lead.
 * Some rows name no one: a website lead or an application, for example, has no staff member behind it.
 * CSR totals only count activities marked done.
 

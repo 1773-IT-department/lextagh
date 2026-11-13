@@ -5,11 +5,11 @@ type Key = "orders" | "leads" | "complaints" | "visits";
 
 /**
  * A small column chart of one series over the period, drawn as inline SVG (no chart library). One colour, so no
- * legend: the heading names the series. Each column has a tooltip (title), the chart has a written summary for screen
- * readers, and the numbers sit in a table under "Show the numbers".
+ * legend: the heading names the series. Each column has a tooltip (title), the chart's label carries a written summary
+ * for screen readers (once: no second copy), and the numbers sit in a table under "Show the numbers".
  */
-export default function MiniChart({ id, title, series, unitWord, data }: {
-  id: string; title: string; series: Key; unitWord: string; data: Timeseries;
+export default function MiniChart({ id, title, series, unitWord, unitOne, data }: {
+  id: string; title: string; series: Key; unitWord: string; unitOne: string; data: Timeseries;
 }) {
   const points: SeriesPoint[] = data.points;
   const values = points.map((p) => Number(p[series] ?? 0));
@@ -19,7 +19,7 @@ export default function MiniChart({ id, title, series, unitWord, data }: {
   const per = data.unit === "day" ? "day" : data.unit === "week" ? "week" : "month";
   const summary = total === 0
     ? `No ${unitWord} in this period.`
-    : `${formatNumber(total)} ${unitWord} in all, by ${per}. The busiest ${per} was ${pointLabel(points[peakAt], data.unit)} with ${formatNumber(max)}.`;
+    : `${formatNumber(total)} ${total === 1 ? unitOne : unitWord} in all, by ${per}. The busiest ${per} was ${pointLabel(points[peakAt], data.unit)} with ${formatNumber(max)}.`;
 
   const W = 320;
   const H = 96;
@@ -57,7 +57,6 @@ export default function MiniChart({ id, title, series, unitWord, data }: {
         <span>{max > 0 ? `Highest ${formatNumber(max)}` : "None"}</span>
         <span>{pointLabel(points[points.length - 1] ?? { from: data.to, to: data.to }, data.unit)}</span>
       </div>
-      <p className="sr-only">{summary}</p>
       <details className="mgmt-chart-table">
         <summary>Show the numbers</summary>
         <div className="mgmt-table-scroll">

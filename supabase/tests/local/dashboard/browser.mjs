@@ -172,14 +172,22 @@ try {
   const leads = fig(mgr, "CRM", "new leads");
   check(await leads.locator("b").innerText() === "42" && await leads.getByText("Up 41 on the previous 30 days").isVisible(),
     "1440: new leads with the change on the previous 30 days", await leads.innerText());
-  check(await fig(mgr, "Orders", "orders submitted").getByText("Up 1 on the previous 30 days").isVisible(), "1440: orders up 1");
+  check(await fig(mgr, "Orders", "order submitted").getByText("Up 1 on the previous 30 days").isVisible(), "1440: orders up 1, and one order reads in the singular");
+  check(await fig(mgr, "Orders", "order submitted").getAttribute("href") === `/systems/orders?from=${new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10)}&to=${new Date().toISOString().slice(0, 10)}`
+    && await fig(mgr, "CRM", "new leads").getAttribute("href") === "/systems/crm/leads?stage=all&sort=newest", "1440: key figures open their list in the system");
+  check(await mgr.locator(".mgmt-system .mgmt-fig:not(a)").count() === 0, "1440: every key figure is a link");
+  const attention = await mgr.locator(".mgmt-attention").evaluate((el) => {
+    const h = el.querySelector("h2").getBoundingClientRect(); const p = el.querySelector("p.small").getBoundingClientRect(); return p.top - h.bottom;
+  });
+  check(attention >= 0, "1440: the needs attention heading and its subtitle do not overlap", attention);
   const alerts = await mgr.locator(".mgmt-alerts li").allInnerTexts();
-  check(["complaints overdue", "chats waiting for a reply", "orders waiting to be confirmed", "website leads with no owner", "applications waiting at the first stage"]
-    .every((t) => alerts.some((a) => a.includes(t))) && alerts.every((a) => /^1\s/.test(a)), "1440: needs attention lists each alert with its count", alerts);
+  check(["1\ncomplaint overdue", "1\nchat waiting for a reply", "1\norder waiting to be confirmed", "1\nwebsite lead with no owner", "1\napplication waiting at the first stage"]
+    .every((t) => alerts.some((a) => a.includes(t))) && alerts.every((a) => /^1\s/.test(a)), "1440: needs attention lists each alert with its count, in the singular for one", alerts);
   check(!alerts.some((a) => a.includes("new shops")), "1440: an alert with nothing waiting is left out");
   const chart = mgr.locator("figure.mgmt-chart", { hasText: "Orders submitted" });
-  check(/Orders submitted\. 1 orders in all, by day\. The busiest day was/.test(await chart.locator("svg").getAttribute("aria-label") ?? ""), "1440: the chart has a written summary",
+  check(/Orders submitted\. 1 order in all, by day\. The busiest day was/.test(await chart.locator("svg").getAttribute("aria-label") ?? ""), "1440: the chart has a written summary",
     await chart.locator("svg").getAttribute("aria-label"));
+  check(await chart.locator(".sr-only", { hasText: "in all, by day" }).count() === 0, "1440: the summary is read once (the chart label only)");
   check(await chart.locator("rect.mgmt-chart-bar").count() === 1 && await chart.locator("rect.mgmt-chart-hit").count() === 30, "1440: one column drawn, 30 days to point at");
   await chart.getByText("Show the numbers").click();
   check(await chart.locator("tbody tr").count() === 30 && await chart.locator("tbody td:nth-child(2)", { hasText: /^1$/ }).count() === 1, "1440: the numbers table has every day");
@@ -188,7 +196,7 @@ try {
   check(await noSideScroll(mgr), "1440: no sideways scroll");
   await mgr.screenshot({ path: `${OUT}/manager-1440.png`, fullPage: true });
 
-  await mgr.locator(".mgmt-alerts a", { hasText: "complaints overdue" }).click();
+  await mgr.locator(".mgmt-alerts a", { hasText: "complaint overdue" }).click();
   await mgr.waitForURL(/\/systems\/complaints\?status=open&overdue=1/);
   await mgr.locator("main h1").waitFor();
   check(await mgr.getByText("LX-2026-9101").isVisible(), "1440: an alert opens the filtered list in its system");
@@ -219,8 +227,9 @@ try {
   const first = await mgr.locator(".mgmt-feed-row").allInnerTexts();
   check(first.length === 30, "1440: the feed shows 30 rows first", first.length);
   check(/Chat LC-D0000101 started/.test(first[0]) && /Website visitor/.test(first[0]), "1440: newest first: the chat 3 hours ago, by a website visitor", first[0]);
-  check(first.some((t) => /Application LX-APP-2026-9101 received/.test(t) && /Careers page/.test(t)) && first.some((t) => /New lead: L1/.test(t) && /Website contact form/.test(t)),
-    "1440: an application and a new lead with its source");
+  check(first.some((t) => /Application LX-APP-2026-9101 received/.test(t) && /Careers page/.test(t)) && first.some((t) => /New lead: Website enquiry/.test(t) && /Website contact form/.test(t)),
+    "1440: an application, and a website lead by its source, never its title");
+  check(!first.some((t) => /\bL1\b/.test(t)), "1440: a website lead's title (it holds the visitor's name) is not shown");
   check(first.some((t) => /Lead L2/.test(t) && /Stage changed from New to Won/.test(t) && /By Kofi Rep/.test(t)), "1440: a stage change with who made it");
   const moreLink = mgr.getByRole("link", { name: "Load more" });
   check(/before_at=.*before_key=/.test(await moreLink.getAttribute("href") ?? ""), "1440: Load more is a real link for browsers without JavaScript");
@@ -259,6 +268,8 @@ try {
   const p2 = await page2.locator(".mgmt-feed-row").allInnerTexts();
   check(p2.length === total - 30 && !p2.some((t) => first.includes(t)) && await page2.getByRole("link", { name: "Back to the newest" }).isVisible(),
     "no JavaScript: Load more opens the next page", p2.length);
+  check(!(await page2.getByText(/all there are for these filters/).count()) && await page2.getByText(`Showing ${total - 30} events.`).isVisible(),
+    "no JavaScript: a later page does not claim to show everything");
   await page2.context().close();
 
   // Every system section -------------------------------------------------------------------------------------------------------

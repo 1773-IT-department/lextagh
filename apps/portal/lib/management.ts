@@ -96,6 +96,11 @@ export type FeedItem = {
   brand_ids: string[]; actor_id: string | null; actor_name: string | null;
 };
 export type FeedPage = { items: FeedItem[]; has_more: boolean };
+/**
+ * An event ready to show, with every text made on the server. The client part of the feed only prints these strings,
+ * so the browser never formats a date itself (its date names can differ from the server's, which breaks hydration).
+ */
+export type FeedView = { key: string; at: string; href: string; system: string; when: string; what: string; detail: string; meta: string };
 export const FEED_PAGE_SIZE = 30;
 
 /** The record behind an event, in its own system. */
@@ -145,6 +150,22 @@ export function describe(item: FeedItem): { what: string; detail: string } {
     case "stockist_updated": return { what: `Stockist changed: ${item.title}`, detail: d };
     default: return { what: item.title, detail: d };
   }
+}
+
+/** Singular or plural from the count: plural(1, "order", "orders") is "order". */
+export const plural = (n: number | string | null | undefined, one: string, many: string) => (Number(n ?? 0) === 1 ? one : many);
+
+/** Turns events into what the feed shows (call on the server only). */
+export function presentFeed(items: FeedItem[], brandNames: Record<string, string>): FeedView[] {
+  return items.map((item) => {
+    const { what, detail } = describe(item);
+    const who = actorText(item);
+    const brands = item.brand_ids.map((b) => brandNames[b]).filter(Boolean);
+    return {
+      key: item.key, at: item.at, href: recordHref(item), system: FEED_SYSTEM_LABELS[item.system] ?? item.system, when: formatWhen(item.at), what, detail,
+      meta: [who ? `By ${who}` : "", brands.join(", ")].filter(Boolean).join(" \u00b7 "),
+    };
+  });
 }
 
 /** Who did it, or "" when no person is on record (records written before authors were kept, imports). */

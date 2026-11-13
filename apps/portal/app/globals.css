@@ -633,7 +633,8 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .mgmt-h2 { margin: 22px 0 4px; }
 .mgmt-h3 { font-size: 14px; margin: 14px 0 6px; }
 .mgmt-attention { border-left: 4px solid #8a4b00; }
-.mgmt-attention h2 { margin: 0 0 2px; }
+.mgmt-attention h2 { margin: 0 0 4px; }
+.panel.mgmt-attention > .small { margin: 0 0 4px; }
 .mgmt-calm { margin: 8px 0 0; font-weight: 600; color: #146c43; }
 .mgmt-alerts { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .mgmt-alerts li { min-width: 0; max-width: 100%; }

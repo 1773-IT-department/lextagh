@@ -153,7 +153,10 @@ begin
   perform pg_temp.ok(not has_function_privilege('anon', 'public.management_activity(date,date,uuid,text,uuid,timestamptz,text,integer)', 'execute'), 'anon cannot run the feed');
   perform pg_temp.ok(has_function_privilege('authenticated', 'public.management_timeseries(date,date,uuid)', 'execute'), 'signed in people can call the charts');
   perform pg_temp.ok(has_function_privilege('authenticated', 'public.management_activity(date,date,uuid,text,uuid,timestamptz,text,integer)', 'execute'), 'signed in people can call the feed');
-  raise notice 'PASS: security invoker, stable, empty search_path, closed to anon';
+  perform pg_temp.ok((select count(*) from pg_indexes where schemaname = 'public' and indexname in ('crm_activities_occurred_idx',
+    'complaint_events_occurred_idx', 'distributor_order_events_created_idx', 'job_application_events_created_idx', 'chat_conversations_created_idx')) = 5,
+    'the feed has its five date indexes');
+  raise notice 'PASS: security invoker, stable, empty search_path, closed to anon, date indexes';
 end $$;
 
 -- People -----------------------------------------------------------------------------------------------
@@ -212,9 +215,10 @@ insert into public.crm_organisations (id, name, kind) values (pg_temp.u('org'), 
 
 -- CRM: a website lead today (no owner), a phone lead won by the rep, an old lead (previous period)
 insert into public.crm_leads (id, title, contact_id, brand_id, source, stage, owner_id, created_by, created_at, closed_at) values
-  (pg_temp.u('lead1'), 'Website lead', pg_temp.u('contact'), pg_temp.brand('yazz'), 'website_contact_form', 'new', null, null, now() - interval '2 hours', null),
+  (pg_temp.u('lead1'), 'Secret Contact (website)', pg_temp.u('contact'), pg_temp.brand('yazz'), 'website_contact_form', 'new', null, null, now() - interval '2 hours', null),
   (pg_temp.u('lead2'), 'Phone lead', pg_temp.u('contact'), pg_temp.brand('hooch'), 'phone', 'won', pg_temp.u('rep'), pg_temp.u('rep'), now() - interval '3 days', now() - interval '1 day'),
   (pg_temp.u('lead_old'), 'Old lead', pg_temp.u('contact'), pg_temp.brand('yazz'), 'email', 'new', null, pg_temp.u('rep'), pg_temp.day_start(40), null);
+update public.crm_leads set intake_reference = 'ENQ-OV000001' where id = pg_temp.u('lead1');
 insert into public.crm_activities (lead_id, type, body, occurred_at, created_at, created_by) values
   (pg_temp.u('lead2'), 'status_change', 'Stage changed from New to Won', now() - interval '1 day', now() - interval '1 day', pg_temp.u('rep')),
   (pg_temp.u('lead2'), 'call', 'Private call notes', now() - interval '20 hours', now() - interval '20 hours', pg_temp.u('rep'));
@@ -357,7 +361,7 @@ begin
   perform pg_temp.eq(to_jsonb(k), to_jsonb(array[
     'chat_started LC-0E000001',
     'order_submitted LX-ORD-2026-8002',
-    'lead_created Website lead',
+    'lead_created Website enquiry ENQ-OV000001',
     'complaint_status LX-2026-8001',
     'visit Ov Edited Shop',
     'stockist_updated Ov Edited Shop',
@@ -374,7 +378,7 @@ begin
     'chat_closed LC-0E000002',
     'chat_started LC-0E000002',
     'stockist_created Ov Edited Shop']),
-    'every kind of event in the last 30 days, newest first (the same moment: by key); drafts, notes, calls and the case opened line are not events; '
+    'website leads get a fixed title, never the name the database wrote into it; every kind of event in the last 30 days, newest first (the same moment: by key); drafts, notes, calls and the case opened line are not events; '
     || 'a shop found on a visit shows once, as a new shop');
   perform pg_temp.eq(f->'has_more', 'false', 'one page holds them all');
   perform pg_temp.eq((f->'items'->0) - 'at' - 'key' - 'record_id', jsonb_build_object('system', 'chat', 'kind', 'chat_started', 'title', 'LC-0E000001',
@@ -387,7 +391,7 @@ begin
     '"Ov Distributors|draft|submitted|distributor"', 'a submission by the distributor says so');
   perform pg_temp.eq((select i->'detail' from jsonb_array_elements(f->'items') i where i->>'kind' = 'complaint_status'),
     '"Status changed from Investigating to Closed"', 'a complaint status change: the first line only, never the resolution');
-  perform pg_temp.eq((select i->'detail' from jsonb_array_elements(f->'items') i where i->>'kind' = 'lead_created' and i->>'title' = 'Website lead'),
+  perform pg_temp.eq((select i->'detail' from jsonb_array_elements(f->'items') i where i->>'kind' = 'lead_created' and i->>'title' = 'Website enquiry ENQ-OV000001'),
     '"website_contact_form"', 'a new lead carries its source');
   perform pg_temp.eq((select i->'actor_name' from jsonb_array_elements(f->'items') i where i->>'kind' = 'application_stage'), '"Hana HR"', 'who moved the application');
   perform pg_temp.eq((select i->'detail' from jsonb_array_elements(f->'items') i where i->>'kind' = 'application_stage'), '"new|screening"', 'from and to stage');
@@ -458,6 +462,27 @@ begin
   end loop;
   perform pg_temp.eq(seen, allf->'items', 'pages of one through events at the same moment');
   raise notice 'PASS: keyset paging returns every row once, newest first, ties included';
+end $$;
+
+-- A confirmed new shop shows once (shop_confirmed), not also as a stockist change ------------------------------
+do $$
+declare f jsonb;
+begin
+  set local session_replication_role = replica;
+  update public.field_new_shops set confirmed_at = now() - interval '10 minutes', confirmed_by = pg_temp.u('mkt') where stockist_id = pg_temp.u('shop_new');
+  update public.stockists set is_active = true, updated_at = now() - interval '10 minutes' + interval '2 seconds', updated_by = pg_temp.u('mkt') where id = pg_temp.u('shop_new');
+  set local session_replication_role = origin;
+  f := pg_temp.feed('mgmt', null, null, null, 'catalogue');
+  perform pg_temp.ok(not (pg_temp.kinds(f) @> array['stockist_updated Ov New Shop']), 'no stockist change for the confirmation');
+  f := pg_temp.feed('mgmt', null, null, null, 'field_sales');
+  perform pg_temp.eq(f->'items'->0->'kind', '"shop_confirmed"', 'the confirmation is a field sales event');
+  perform pg_temp.eq(f->'items'->0->'actor_name', '"ov.mkt@test.local"', 'by who confirmed it');
+  -- A later edit of the same shop is a stockist change again.
+  set local session_replication_role = replica;
+  update public.stockists set updated_at = now() - interval '1 minute' where id = pg_temp.u('shop_new');
+  set local session_replication_role = origin;
+  perform pg_temp.ok(pg_temp.kinds(pg_temp.feed('mgmt', null, null, null, 'catalogue')) @> array['stockist_updated Ov New Shop'], 'a later edit shows');
+  raise notice 'PASS: a confirmed new shop shows once';
 end $$;
 
 -- Bad input -----------------------------------------------------------------------------------------------------------

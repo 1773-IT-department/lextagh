@@ -139,9 +139,9 @@ function Table({ caption, head, rows, empty }: { caption: string; head: string[]
   );
 }
 
-function Chart({ series, id, title, k, word }: { series: Timeseries | null; id: string; title: string; k: "orders" | "leads" | "complaints" | "visits"; word: string }) {
+function Chart({ series, id, title, k, word, one }: { series: Timeseries | null; id: string; title: string; k: "orders" | "leads" | "complaints" | "visits"; word: string; one: string }) {
   if (!series) return <div className="alert error" role="alert">We could not load the chart.</div>;
-  return <section className="panel" aria-label={`${title} over time`}><MiniChart id={id} title={title} series={k} unitWord={word} data={series} /></section>;
+  return <section className="panel" aria-label={`${title} over time`}><MiniChart id={id} title={title} series={k} unitWord={word} unitOne={one} data={series} /></section>;
 }
 
 function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dashboard, series: Timeseries | null, latest: Latest): View {
@@ -165,7 +165,7 @@ function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dash
           <Figure value={d.orders.to_confirm_now} label="waiting to be confirmed, now" href={systemHref("/systems/orders", { status: "submitted", brand })} />
         </>),
         bars: <Bars title="Orders in the period by status" bars={barsFrom(STAFF_ORDER_STATUSES, d.orders.by_status)} empty="No orders in this period." />,
-        chart: <Chart series={series} id="s_orders" title="Orders submitted" k="orders" word="orders" />,
+        chart: <Chart series={series} id="s_orders" title="Orders submitted" k="orders" word="orders" one="order" />,
         latestTitle: "Latest orders",
         fullLinks: <Link href={systemHref("/systems/orders", { ...dates, brand })}>All orders in Distributor ordering</Link>,
         latest: <Table caption="Latest orders submitted in the period" head={["Order", "Distributor", "Status", "Packs", "Submitted"]} empty={none}
@@ -184,7 +184,7 @@ function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dash
           <Bars title="Top reps by visits" bars={d.field_sales.top_reps.map((r) => ({ label: r.name, value: r.visits }))} empty="No visits in this period." />
           <Bars title="Visit outcomes" bars={d.field_sales.outcomes.map((o) => ({ label: o.label, value: o.visits }))} empty="No visits in this period." />
         </>),
-        chart: <Chart series={series} id="s_visits" title="Shop visits" k="visits" word="visits" />,
+        chart: <Chart series={series} id="s_visits" title="Shop visits" k="visits" word="visits" one="visit" />,
         latestTitle: "Latest shop visits",
         fullLinks: <Link href={systemHref("/systems/field-sales", { ...dates, brand })}>All visits in Field sales</Link>,
         latest: <Table caption="Latest shop visits in the period" head={["Shop", "Rep", "Outcome", "When"]} empty={none}
@@ -204,7 +204,7 @@ function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dash
           <Bars title="New leads by source" bars={barsFrom(CRM_SOURCES, d.crm.by_source)} hideZero empty="No new leads in this period." />
           <Bars title="New leads by the stage they are at" bars={barsFrom(CRM_STAGES, d.crm.by_stage)} empty="No new leads in this period." />
         </>),
-        chart: <Chart series={series} id="s_leads" title="New leads" k="leads" word="leads" />,
+        chart: <Chart series={series} id="s_leads" title="New leads" k="leads" word="leads" one="lead" />,
         latestTitle: "Latest leads",
         fullLinks: <Link href={systemHref("/systems/crm/leads", { stage: "all", sort: "newest", brand })}>All leads in the CRM</Link>,
         latest: <Table caption="Latest leads created in the period" head={["Lead", "Source", "Stage", "Brand", "Created"]} empty={none}
@@ -226,7 +226,7 @@ function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dash
           <Bars title="Open now by severity" bars={barsFrom(COMPLAINT_SEVERITIES, d.complaints.open_by_severity).reverse()} empty="No open complaints." />
           <Bars title="Open now by status" bars={barsFrom(COMPLAINT_STATUSES.filter((s) => OPEN_COMPLAINT_STATUSES.includes(s.value)), d.complaints.open_by_status)} empty="No open complaints." />
         </>),
-        chart: <Chart series={series} id="s_complaints" title="Complaints received" k="complaints" word="complaints" />,
+        chart: <Chart series={series} id="s_complaints" title="Complaints received" k="complaints" word="complaints" one="complaint" />,
         latestTitle: "Latest complaints",
         fullLinks: <Link href={systemHref("/systems/complaints", { status: "all", brand })}>All complaints</Link>,
         latest: <Table caption="Latest complaints received in the period" head={["Case", "Category", "Severity", "Status", "Brand", "Received"]} empty={none}
