@@ -64,7 +64,7 @@ const pillars = [
   { n: "02", title: "Dignity and education", text: "Keeping adolescent girls in school by removing the barrier of period poverty, and giving them the knowledge to manage their health with confidence." },
   { n: "03", title: "Oral health", text: "Free screenings and hygiene workshops in schools, in partnership with dental professionals." },
   { n: "04", title: "Water and sanitation", text: "Access to clean water in communities where safe hygiene is not currently possible." },
-  { n: "05", title: "Environment", text: "Restoring what our production takes, and building circular systems that give plastic waste a value." },
+  { n: "05", title: "Environment", text: "Restoring what our production takes, with responsible packaging disposal and community clean-up partnerships." },
 ];
 
 const programmes = [
@@ -74,7 +74,7 @@ const programmes = [
   },
   {
     tag: "Water and sanitation", title: "The Safe Bottoms Initiative", href: "/news/the-safe-bottoms-initiative",
-    text: "For every jumbo pack sold, Lexta funds the construction and maintenance of mechanised boreholes in communities facing water scarcity, so that safe hygiene for infants is possible in the first place.",
+    text: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants.",
   },
   {
     tag: "Environment", title: "The Lexta Forest Project", href: "/news/the-lexta-forest-project",
@@ -82,7 +82,7 @@ const programmes = [
   },
   {
     tag: "Circular economy", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
-    text: "A plastic buy back programme. Consumers return empty sachet and detergent wrappers to Lexta distributors in exchange for Eco Points, redeemable against our products. Waste gets a value, and our distribution network becomes a collection network.",
+    text: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, this programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
   },
 ];
 
@@ -113,7 +113,7 @@ const sdgs = [
   { n: "SDG 4", title: "Quality education", text: "Keeping girls in school through The Dignity Project, and supporting skills development through the GES Cook Art Competition." },
   { n: "SDG 5", title: "Gender equality", text: "Menstrual health advocacy, girl child education, and the removal of a barrier that only affects half the population." },
   { n: "SDG 6", title: "Clean water and sanitation", text: "Mechanised boreholes through Safe Bottoms, and school sanitation through the Teen Care clean up competitions." },
-  { n: "SDG 12", title: "Responsible consumption and production", text: "The Clean Hands, Green Land plastic buy back programme." },
+  { n: "SDG 12", title: "Responsible consumption and production", text: "Clean Hands, Green Land: hygiene education, responsible packaging disposal and community clean-ups." },
   { n: "SDG 15", title: "Life on land", text: "Reforestation of degraded reserves through The Lexta Forest Project." },
 ];
 
@@ -141,7 +141,7 @@ export default function CorporateSocialResponsibilityPage() {
               Care that leaves <span style={{ color: "#3fc0dd" }}>the shelf</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              We make products that help people stay healthy, clean and confident. Our responsibility does not end when the pack is sold. It continues in the schools, clinics, markets and communities where those products are needed most.
+              Our care extends beyond our products. Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="#programmes" padding="12px 12px 12px 20px">Explore our programmes</ArrowButton>

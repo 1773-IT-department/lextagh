@@ -41,7 +41,7 @@ const benefits = [
   { title: "Pension and statutory benefits", text: "SSNIT tier one and tier two contributions handled properly and on time, with clear payslips every month." },
   { title: "Training budget", text: "Technical certification, safety and compliance training and professional development, funded rather than encouraged." },
   { title: "Performance bonus", text: "Annual review with a bonus tied to targets you can see and influence, not a number decided in a closed room." },
-  { title: "Staff product allocation", text: "A monthly allocation of Yazz, Linzzy, Crox and Softcare products for your household." },
+  { title: "Staff product allocation", text: "A monthly allocation of Yazz, Linzzy and Hooch products for your household." },
   { title: "Internal mobility", text: "Open roles are advertised internally first, and we back moves between functions where the fit is right." },
 ];
 
@@ -93,7 +93,7 @@ export default async function CareersPage() {
               Build something people <span style={{ color: "#3fc0dd" }}>use every day</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              From the production floor in Accra to sales routes across Ghana and into Liberia, our teams make and move products that hundreds of thousands of households depend on. Here is where we are hiring right now.
+              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration. Here is where we are hiring right now.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="#openings" padding="12px 12px 12px 20px">Browse open roles</ArrowButton>
@@ -171,12 +171,19 @@ export default async function CareersPage() {
               We keep general applications on file and go back to them first when a role opens. Send us the function you are interested in and where you are based.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>support@lextagh.com</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>hr@lextagh.com</div>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>+233 (0) 501 619 588</div>
               <div style={{ fontSize: 13, lineHeight: 1.8, color: "#5d7883", maxWidth: 320 }}>Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
             </div>
             <div style={{ marginTop: 26, borderRadius: 12, overflow: "hidden", flex: "1 1 auto", minHeight: 240, boxShadow: "0 18px 38px rgba(11,60,78,.16)" }}>
-              <ImageSlot placeholder="Recruitment team photo" />
+              {/* Photo from Lexta's original website (the lextagh.com careers page image, KAKEL-9871). */}
+              <ImageSlot
+                placeholder="Recruitment team photo"
+                src="/assets/original/lexta-careers-team-1600x1200.jpg"
+                width={1600}
+                height={1200}
+                alt="Lexta colleagues sharing Yazz gift hampers around the meeting room table"
+              />
             </div>
           </div>
 

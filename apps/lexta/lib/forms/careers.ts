@@ -28,7 +28,7 @@ import { formsConfigured, HONEYPOT_FIELD, msgUnavailable, payloadTooLarge, type 
 
 export { visitorKey };
 
-export const CAREERS_EMAIL = "support@lextagh.com";
+export const CAREERS_EMAIL = "hr@lextagh.com";
 
 export const APPLICATION_LIMITS = { name: 120, email: 254, phone: 24, interest: 120, message: 3000, opening: 20, cvName: 200 };
 

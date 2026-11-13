@@ -147,7 +147,7 @@ export const unavailable = (values: Fields, email: string): FormState => ({ stat
 export const tooLarge = (values: Fields): FormState => ({ status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { message: MSG_TOO_LONG }, values });
 
 /**
- * The batch code inside a free text "Product and batch code" field, e.g. "Yazz Ultra, batch 2026-04-18" gives
+ * The batch code inside a free text "Product and batch code" field, e.g. "Yazz Minty pads, batch 2026-04-18" gives
  * "2026-04-18". With no "batch" word, a short field is taken whole (people often type only the code).
  */
 export function batchCodeFrom(detail: string): string | undefined {

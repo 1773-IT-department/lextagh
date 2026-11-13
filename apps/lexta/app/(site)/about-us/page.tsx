@@ -12,7 +12,7 @@ import p from "@/components/proto.module.css";
 // The prototype page had no title or description; these reuse its own hero copy.
 const title = "About Us | Lexta Ghana Limited";
 const description =
-  "Lexta Ghana Limited is a Ghanaian manufacturer of home care, personal care and food products. Founded in Accra in 2002, we make and distribute the everyday essentials that families across Ghana and the wider West African sub-region reach for without thinking twice.";
+  "Lexta Ghana Limited is a Ghanaian consumer-goods company committed to making dependable everyday products more accessible to households. Across Yazz, Linzzy and Hooch, we bring care, innovation and value together with an ambition to serve families throughout Africa.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -66,7 +66,7 @@ const story: Photo[] = [
 
 const storyStats = [
   { figure: "2002", label: "Founded in Accra" },
-  { figure: "4", label: "Brands in the portfolio" },
+  { figure: "3", label: "Brands in the portfolio" },
   { figure: "2", label: "Countries of operation" },
 ];
 
@@ -265,7 +265,7 @@ export default function AboutUsPage() {
               The company began as a supplier of home care products. It has since grown into one of Ghana&apos;s established consumer goods manufacturers, expanding across home care, personal care and food, and building a distribution network that reaches supermarkets, pharmacies, market traders and neighbourhood shops nationwide.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
-              Today our portfolio carries three brands: Yazz, Hooch and Linzzy. Each was developed to serve a specific need in the Ghanaian home, and each holds to the same standard of quality, safety and value.
+              Our mission is to combine quality, innovation and affordability in products that meet family needs and deliver value to stakeholders. Our vision is to be the preferred choice for family-care products across Africa.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 18, marginTop: 30 }}>
               {storyStats.map((st) => (

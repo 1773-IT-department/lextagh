@@ -62,8 +62,8 @@ import type { FormState } from "@lexta/forms/core";
 const BRAND = "lexta";
 
 /** Where visitors can write instead: sales for trade (distribution, bulk orders, partners), support for the rest. */
-export const SALES_EMAIL = "sales@lextagh.com";
-export const SUPPORT_EMAIL = "support@lextagh.com";
+export const SALES_EMAIL = "marketing@lextagh.com";
+export const SUPPORT_EMAIL = "marketing@lextagh.com";
 
 /** Labels the Contact Us form shows, to the reason slugs the database accepts. */
 export const CONTACT_REASONS: Record<string, NonNullable<ContactFormPayload["reason"]>> = {

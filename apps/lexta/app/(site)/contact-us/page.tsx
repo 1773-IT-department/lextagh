@@ -33,22 +33,22 @@ type Dept = { title: string; text: string; email: string; accent?: boolean; seco
 
 const departments: Dept[] = [
   {
-    title: "Sales and distribution", accent: true, email: "sales@lextagh.com",
+    title: "Sales and distribution", accent: true, email: "marketing@lextagh.com",
     text: "Distributor appointments, trade terms, stock availability and route coverage.",
     second: { label: "+233 (0) 501 619 588", href: "tel:+233501619588" },
   },
   {
     title: "Consumer care", email: "support@lextagh.com",
-    text: "Product questions, quality concerns and batch enquiries for Yazz, Linzzy, Crox and Softcare.",
+    text: "Product questions, quality concerns and batch enquiries for Yazz, Linzzy and Hooch.",
     second: { label: "+233 (0) 302 235 296", href: "tel:+233302235296" },
   },
   {
-    title: "Media and communications", email: "support@lextagh.com",
+    title: "Media and communications", email: "marketing@lextagh.com",
     text: "Interviews, campaign detail, brand assets and comment on our programmes.",
     second: { label: "Visit the newsroom →", href: "/news" },
   },
   {
-    title: "Recruitment", email: "support@lextagh.com",
+    title: "Recruitment", email: "hr@lextagh.com",
     text: "Applications, interview scheduling and questions about an open role.",
     second: { label: "See open roles →", href: "/careers#openings" },
   },
@@ -114,8 +114,8 @@ export default function ContactPage() {
             <div style={{ padding: "32px 30px 34px" }}>
               <div style={cardLabel}>Email us</div>
               <div style={linkStack}>
-                <a href="mailto:support@lextagh.com" style={cardLink}>support@lextagh.com</a>
-                <a href="mailto:sales@lextagh.com" style={cardLink}>sales@lextagh.com</a>
+                <a href="mailto:marketing@lextagh.com" style={cardLink}>marketing@lextagh.com</a>
+                <a href="mailto:hr@lextagh.com" style={cardLink}>hr@lextagh.com</a>
               </div>
               <div style={cardNote}>We reply within two working days</div>
             </div>
@@ -178,7 +178,7 @@ export default function ContactPage() {
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
               <ArrowButton href={directionsUrl} padding="12px 12px 12px 20px">Get directions</ArrowButton>
               <a
-                href="mailto:support@lextagh.com"
+                href="mailto:marketing@lextagh.com"
                 style={{ display: "inline-flex", alignItems: "center", border: "1px solid rgba(18,163,196,.45)", background: "#f7fcfe", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 20px", borderRadius: 7 }}
               >
                 Book an appointment
@@ -212,7 +212,7 @@ export default function ContactPage() {
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
             <a
-              href="mailto:sales@lextagh.com"
+              href="mailto:marketing@lextagh.com"
               style={{ display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7 }}
             >
               Contact us
