@@ -1,6 +1,9 @@
 import type { AppRole } from "@lexta/db";
 
-export type SystemDef = { slug: string; name: string; summary: string; roles: AppRole[] };
+export type SystemDef = { slug: string; name: string; summary: string; roles: AppRole[]; href?: string };
+
+/** Where a system opens: its own address when it has one, otherwise /systems/<slug>. */
+export const systemPath = (s: SystemDef) => s.href ?? `/systems/${s.slug}`;
 
 /**
  * The 8 systems from proposal 1773/LEX/2026-09, plus the shared chat inbox and user admin.
@@ -10,7 +13,9 @@ export type SystemDef = { slug: string; name: string; summary: string; roles: Ap
  * The database enforces access with Row Level Security; this list only shapes the navigation.
  */
 export const SYSTEMS: SystemDef[] = [
-  { slug: "dashboard", name: "Management dashboard", summary: "Orders, coverage, leads, complaints, CSR and KPIs at a glance.", roles: ["admin", "management"] },
+  // The management dashboard of the proposal, grown into the management overview. First, so it leads the menu of admin
+  // and management, who also land on it (app/(app)/page.tsx and the sign in action). /systems/dashboard redirects there.
+  { slug: "dashboard", name: "Management overview", summary: "What is happening across every system: key figures, alerts, charts and activity.", roles: ["admin", "management"], href: "/management" },
   { slug: "orders", name: "Distributor ordering", summary: "Distributors place and track orders; sales confirms, dispatches and delivers.", roles: ["admin", "management", "sales_rep", "distributor"] },
   { slug: "field-sales", name: "Field sales", summary: "Shop visits on the phone, with photo and location.", roles: ["admin", "management", "sales_rep"] },
   { slug: "crm", name: "CRM", summary: "Leads, distributors, institutions and partners.", roles: ["admin", "management", "sales_rep", "customer_care", "marketing"] },
