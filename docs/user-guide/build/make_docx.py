@@ -149,7 +149,7 @@ def title_page(doc):
     r = p.add_run("Draft for review")
     r.bold, r.font.size = True, Pt(13)
     p = doc.add_paragraph()
-    p.add_run("12 November 2026").font.size = Pt(12)
+    p.add_run("13 November 2026").font.size = Pt(12)
     for _ in range(10):
         doc.add_paragraph()
     p = doc.add_paragraph()
@@ -174,6 +174,37 @@ def contents(doc, lines):
     doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
+def videos(lines):
+    """The videos, from the README's Videos table, each with the chapter whose **Video:** line links to it."""
+    chapter_of, chapter = {}, None
+    for line in lines:
+        m = re.match(r"^## (\d+\. .+)$", line)
+        if m:
+            chapter = m.group(1)
+        for f in re.findall(r"\*\*Video:\*\* \[[^\]]+\]\((videos/[^)]+)\)", line):
+            chapter_of.setdefault(f, chapter)
+    start = lines.index("## Videos")
+    out = []
+    for line in lines[start:]:
+        if line.startswith("## 1. "):
+            break
+        m = re.match(r"^\| \[([^\]]+)\]\((videos/[^)]+)\) \| [^|]+ \| ([^|]+) \|$", line)
+        if m:
+            name, f, length = m.group(1), m.group(2), m.group(3).strip()
+            out.append((name, f.split("/")[-1], chapter_of.get(f, ""), length))
+    return out
+
+
+def videos_page(doc, items):
+    doc.add_paragraph("Videos", style="Heading 1")
+    add_inline(doc.add_paragraph(), "Short screen recordings of the main tasks, without sound. They are in the videos folder next to this guide "
+               "and play in any browser or media player. Each one goes with the chapter shown.")
+    rows = ["| Video | File | Goes with | Length |", "|---|---|---|---|"]
+    rows += [f"| {n} | {f} | {c} | {l} |" for n, f, c, l in items]
+    add_table(doc, rows)
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+
+
 def build():
     lines = SRC.read_text(encoding="utf-8").splitlines()
     doc = Document()
@@ -182,9 +213,11 @@ def build():
     # Skip the Markdown title, the draft line and the in page contents list (the Word file has its own).
     start = next(i for i, l in enumerate(lines) if l.startswith("## 1. "))
     intro = [l for l in lines[1:next(i for i, l in enumerate(lines) if l.startswith("## Contents"))] if l.strip() and not l.startswith("**Draft")]
-    contents(doc, lines[start:])
+    contents(doc, ["## Videos"] + lines[start:])
     for l in intro:
         add_inline(doc.add_paragraph(), l)
+    doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
+    videos_page(doc, videos(lines))
     body = lines[start:]
     i, first_chapter = 0, True
     while i < len(body):

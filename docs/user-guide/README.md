@@ -1,6 +1,6 @@
 # Lexta Business System: Staff User Guide
 
-**Draft for review, 12 November 2026.** Prepared by 1773 Human Resources & Marketing Services LTD for Lexta Ghana Limited.
+**Draft for review, 13 November 2026.** Prepared by 1773 Human Resources & Marketing Services LTD for Lexta Ghana Limited.
 
 This guide shows you how to use the Lexta Business System, the staff portal behind the Lexta websites. It covers every system you can open from the menu, with steps and pictures. The pictures were taken with made up demo data (names such as "Ama Demo" and "Demo Shop Adabraka"), so your screens will show your own records.
 
@@ -31,17 +31,17 @@ Each video shows one task from start to finish, with a caption bar that says wha
 
 | Video | What it shows | Length |
 |---|---|---|
-| [Signing in and finding your way around](videos/01-sign-in.mp4) | Sign in, the Home tiles, the menu and signing out | 44 seconds |
-| [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) | A Contact Us message arrives as a lead; set the owner, move the stage and log a call | 63 seconds |
-| [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) | Log a phone complaint, acknowledge it, log the call back and resolve it | 73 seconds |
-| [Recruitment: an application from Careers](videos/04-recruitment.mp4) | A visitor applies on the Careers page; HR takes it, downloads the CV and moves the stage | 64 seconds |
-| [Live chat: reply to a visitor](videos/05-live-chat.mp4) | The website chat and the staff inbox side by side: assign the chat and reply | 40 seconds |
+| [Signing in and finding your way around](videos/01-sign-in.mp4) | Sign in, the Home tiles, the menu and signing out | 47 seconds |
+| [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) | A Contact Us message arrives as a lead; set the owner, move the stage and log a call | 68 seconds |
+| [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) | Log a phone complaint, acknowledge it, log the call back and resolve it | 83 seconds |
+| [Recruitment: an application from Careers](videos/04-recruitment.mp4) | A visitor applies on the Careers page; HR takes it, downloads the CV and moves the stage | 67 seconds |
+| [Live chat: reply to a visitor](videos/05-live-chat.mp4) | The website chat and the staff inbox side by side: assign the chat and reply | 43 seconds |
 | [Product management: edit a product](videos/06-products.mp4) | Change a product's description and see it on the Our Brands page | 29 seconds |
-| [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 47 seconds |
-| [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 57 seconds |
+| [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 51 seconds |
+| [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 56 seconds |
 | [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) | Start a visit, pick the shop, take a photo, choose the outcome and save | 33 seconds |
-| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 41 seconds |
-| [Management dashboard: dates and brand](videos/11-dashboard.mp4) | Change the period, set your own dates and look at one brand, then clear the filters (recorded before the dashboard became the management overview) | 37 seconds |
+| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 45 seconds |
+| [Management overview: a tour](videos/11-dashboard.mp4) | The overview, a change of period and brand, the Activity tab, then the CRM tab and its latest leads with the filters cleared | 46 seconds |
 
 To record them again after the screens change, see `build/record.sh`.
 
@@ -55,7 +55,7 @@ The Lexta Business System is one website where Lexta staff and distributors do t
 
 It works on a computer and on a phone. You do not need to install anything; you open it in your web browser (Chrome works well).
 
-**Video:** [Signing in and finding your way around](videos/01-sign-in.mp4) (44 seconds).
+**Video:** [Signing in and finding your way around](videos/01-sign-in.mp4) (47 seconds).
 
 ### Signing in
 
@@ -123,6 +123,9 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 * The system saves when you tap the button (Save, Add, Change status and so on). If you leave a page without tapping it, your changes are lost.
 * Green messages mean it worked. Red messages tell you what to fix. Fields with a problem are marked.
 * Most lists have **Search** and filters at the top. Choose your filters, then tap **Apply**. Tap **Clear** to see everything again.
+* Drop down boxes (Brand, Status, Region and so on) open a list with the current choice ticked. Click an option, or use the keyboard: the arrow keys move, typing the first letters jumps to an option, Enter chooses and Escape closes without changing anything. On a phone they open the phone's own list.
+
+![A drop down box open: the current choice is ticked](images/05-dropdown.png)
 * Long lists show 50 at a time. Use **Previous** and **Next** at the bottom.
 * "Delete" removes a record for good and asks you to confirm first. In most systems only admin can delete.
 * Times are Ghana time.
@@ -137,7 +140,7 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 
 **Where to find it:** admin and management land on it when they sign in. It is also the first item in their menu. (Its old name was Management dashboard; old links still work.)
 
-**Video:** [Management dashboard: dates and brand](videos/11-dashboard.mp4) (37 seconds, recorded before the overview; the period and brand work the same way).
+**Video:** [Management overview: a tour](videos/11-dashboard.mp4) (46 seconds).
 
 ![The management overview](images/10-dashboard.png)
 
@@ -174,6 +177,10 @@ Each system's tab shows its figures (with the change on the period before), brea
 
 ![A system's tab: complaints](images/12-management-section.png)
 
+On the **CRM** tab, the latest leads that came from the website forms or the website chat show as "Website enquiry", "Partner enquiry", "Newsletter sign up" or "Live chat lead" with their reference, the same as on the Activity tab. Leads your team typed in keep their own title. Tap a lead to see who it is from.
+
+![The CRM tab's latest leads](images/13-management-crm-latest.png)
+
 ### Good to know
 
 * Numbers marked "now" are as they are at this moment. The others count what happened in the period you chose.
@@ -182,7 +189,7 @@ Each system's tab shows its figures (with the change on the period before), brea
 * Recruitment is not split by brand. With a brand chosen, recruitment figures still count every application, and the Activity tab leaves out records with no brand (recruitment, corporate CSR programmes and leads with no brand).
 * With a brand chosen, live chat counts that brand but the inbox still shows every chat. The website leads link opens every unassigned lead, not only website ones.
 * Products and stockists keep no history, so the Activity tab shows only the latest change to each one. A shop added on a field visit shows once, as a new shop found.
-* Leads from the website forms and the website chat show as "Website enquiry", "Partner enquiry", "Newsletter sign up" or "Live chat lead" with their reference, not by their title, because those titles hold the visitor's name. Tap the row to see the lead.
+* Leads from the website forms and the website chat show as "Website enquiry", "Partner enquiry", "Newsletter sign up" or "Live chat lead" with their reference, not by their title, because those titles hold the visitor's name. This is the same on the Activity tab and in the CRM tab's latest leads. Tap the row to see the lead.
 * Some rows name no one: a website lead or an application, for example, has no staff member behind it.
 * CSR totals only count activities marked done.
 
@@ -202,7 +209,7 @@ Each system's tab shows its figures (with the change on the period before), brea
 
 **What it is for:** distributors place orders in the portal and follow them. Lexta staff confirm, dispatch and mark them delivered. The distributor sees each step.
 
-**Video:** [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) (57 seconds).
+**Video:** [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) (56 seconds).
 
 An order goes: **Draft** (only the distributor sees it), **Submitted**, **Confirmed**, **Dispatched**, **Delivered**. It can also be **Cancelled**.
 
@@ -380,7 +387,7 @@ Managers can also log visits with **Log a visit**. Admin can change the outcome 
 
 **What it is for:** one shared list of leads (possible sales), contacts (people) and organisations (distributors, retailers, institutions, partners, media, suppliers), each with a timeline of calls, visits and notes.
 
-**Video:** [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) (63 seconds).
+**Video:** [CRM: a website enquiry becomes a lead](videos/02-crm-website-lead.mp4) (68 seconds).
 
 Leads move through stages: **New**, **Contacted**, **Qualified**, **Proposal**, **Won** or **Lost**.
 
@@ -461,7 +468,7 @@ A sales rep or marketer can only manage a brand they work on. If nobody is chose
 
 **What it is for:** every consumer complaint gets a case number (for example LX-2026-0001), an owner, a severity with target times, a status and a timeline until it is closed.
 
-**Video:** [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) (73 seconds).
+**Video:** [Complaints: log, acknowledge and resolve](videos/03-complaints.mp4) (83 seconds).
 
 Status goes: **New**, **Acknowledged**, **Investigating**, **Awaiting customer**, then **Resolved** and **Closed**. A closed case can be **Reopened**.
 
@@ -570,7 +577,7 @@ You can also close straight away; closing needs **How it was resolved**.
 
 **What it is for:** the list of shops, supermarkets, pharmacies, markets and distributors that sell Yazz, Linzzy and Hooch. Active stockists show on the website's **Where to Buy**.
 
-**Video:** [Stockists: add a shop](videos/07-stockists.mp4) (47 seconds).
+**Video:** [Stockists: add a shop](videos/07-stockists.mp4) (51 seconds).
 
 ![The stockist list](images/70-stockists.png)
 
@@ -618,7 +625,7 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** record every CSR activity: the programme, date, place, people reached, partners, notes and photos, with totals per programme.
 
-**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (41 seconds).
+**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (45 seconds).
 
 ![CSR activities and totals](images/80-csr.png)
 
@@ -660,7 +667,7 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** the job roles shown on the Careers page of the Lexta website, and the applications that come from it, each with the CV, a stage and an owner.
 
-**Video:** [Recruitment: an application from Careers](videos/04-recruitment.mp4) (64 seconds).
+**Video:** [Recruitment: an application from Careers](videos/04-recruitment.mp4) (67 seconds).
 
 ### How the Careers page feeds it
 
@@ -708,7 +715,7 @@ Stages: **New**, **Screening**, **Shortlisted**, **Interview**, **Offer**, **Hir
 
 **What it is for:** answer website visitors who use the chat on the website, all in one inbox. Every answer comes from a person; there is no chatbot. Today the chat is on the Lexta website; the brand sites will use the same inbox when they are built.
 
-**Video:** [Live chat: reply to a visitor](videos/05-live-chat.mp4) (40 seconds).
+**Video:** [Live chat: reply to a visitor](videos/05-live-chat.mp4) (43 seconds).
 
 Chat status: **Open** (the visitor is waiting for you), **Waiting for visitor** (you replied), **Closed**.
 
