@@ -10,7 +10,7 @@ import Figure from "@/components/management/Figure";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import MiniChart from "@/components/management/MiniChart";
 import { barsFrom, formatNumber, systemHref, type Dashboard } from "@/lib/dashboard";
-import { formatWhen, MANAGEMENT_BASE, MANAGEMENT_SECTIONS, NO_MANAGEMENT_ACCESS, type SectionSlug, type Timeseries } from "@/lib/management";
+import { formatWhen, leadDisplayTitle, MANAGEMENT_BASE, MANAGEMENT_SECTIONS, NO_MANAGEMENT_ACCESS, type SectionSlug, type Timeseries } from "@/lib/management";
 import { loadNumbers, loadSeries, managementContext, type ManagementContext } from "@/lib/management-data";
 
 type Search = Partial<Record<"range" | "from" | "to" | "brand", string>>;
@@ -85,7 +85,7 @@ async function loadLatest(slug: SectionSlug, ctx: ManagementContext): Promise<La
     case "field-sales":
       return done(await supabase.rpc("field_visit_list", { p_from: f.from, p_to: f.to, p_brand: brand, p_limit: LATEST, p_offset: 0 }));
     case "crm": {
-      let q = supabase.from("crm_leads").select("id, title, source, stage, brand_id, created_at").gte("created_at", start).lt("created_at", end);
+      let q = supabase.from("crm_leads").select("id, title, source, intake_reference, stage, brand_id, created_at").gte("created_at", start).lt("created_at", end);
       if (brand) q = q.eq("brand_id", brand);
       return done(await q.order("created_at", { ascending: false }).limit(LATEST));
     }
@@ -208,7 +208,7 @@ function render(slug: SectionSlug, ctx: ManagementContext, d: Dashboard, b: Dash
         latestTitle: "Latest leads",
         fullLinks: <Link href={systemHref("/systems/crm/leads", { stage: "all", sort: "newest", brand })}>All leads in the CRM</Link>,
         latest: <Table caption="Latest leads created in the period" head={["Lead", "Source", "Stage", "Brand", "Created"]} empty={none}
-          rows={rows.map((r) => [<Link key="l" href={`/systems/crm/leads/${r.id}`}>{String(r.title)}</Link>, label(CRM_SOURCES, String(r.source)),
+          rows={rows.map((r) => [<Link key="l" href={`/systems/crm/leads/${r.id}`}>{leadDisplayTitle(r)}</Link>, label(CRM_SOURCES, String(r.source)),
             label(CRM_STAGES, String(r.stage)), r.brand_id ? bn(r.brand_id) : "No brand", formatWhen(String(r.created_at))])} />,
       };
     case "complaints":
