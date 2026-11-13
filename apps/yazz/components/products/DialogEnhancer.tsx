@@ -47,6 +47,7 @@ export default function DialogEnhancer({ closeHash }: { closeHash: string }) {
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
+    document.documentElement.setAttribute("data-dialogs-js", "");
     sync();
     window.addEventListener("hashchange", sync);
     document.addEventListener("click", onClick);
@@ -56,6 +57,7 @@ export default function DialogEnhancer({ closeHash }: { closeHash: string }) {
       document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = "";
+      document.documentElement.removeAttribute("data-dialogs-js");
     };
   }, [closeHash]);
   return null;

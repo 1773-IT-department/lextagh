@@ -105,7 +105,7 @@ button, input, select, textarea { font: inherit; }
   border-radius: 999px; border: 1.5px solid transparent; font-size: 14px; font-weight: 600; line-height: 1.2; cursor: pointer;
   text-align: center; transition: background-color .18s, color .18s, border-color .18s, transform .18s, box-shadow .18s;
 }
-.yz-btn:hover { transform: translateY(-1px); }
+@media (hover: hover) { .yz-btn:hover { transform: translateY(-1px); } }
 .yz-btn--red { background: var(--yz-red); color: #fff; }
 .yz-btn--red:hover { background: var(--yz-red-dark); color: #fff; box-shadow: 0 8px 20px rgba(237, 27, 46, .25); }
 .yz-btn--navy { background: var(--yz-navy); color: #fff; }

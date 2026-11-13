@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { flushSync } from "react-dom";
 import Icon from "@/components/Icon";
 import { productLinks, tipsLinks, type NavLink } from "@/lib/nav";
 import s from "./header.module.css";
@@ -37,8 +38,8 @@ function Dropdown({ label, href, links, active }: { label: string; href: string;
       if (open || i >= 0) { e.preventDefault(); setOpen(false); button.current?.focus(); }
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      setOpen(true);
-      requestAnimationFrame(() => items()[i < 0 ? 0 : Math.min(i + 1, list.length - 1)]?.focus());
+      flushSync(() => setOpen(true));
+      items()[i < 0 ? 0 : Math.min(i + 1, list.length - 1)]?.focus();
     } else if (e.key === "ArrowUp" && i >= 0) {
       e.preventDefault();
       (i === 0 ? button.current : list[i - 1])?.focus();

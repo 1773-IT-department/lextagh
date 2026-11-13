@@ -9,7 +9,6 @@ import s from "@/components/tips/tips.module.css";
 import { ARTICLES, articleBySlug, categoryOf, HEALTH_NOTE, monthLabel } from "@/content/articles";
 import { RANGES } from "@/lib/ranges";
 
-export const dynamicParams = false;
 
 export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));

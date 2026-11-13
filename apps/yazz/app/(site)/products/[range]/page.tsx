@@ -16,7 +16,6 @@ import s from "@/components/range/range.module.css";
 
 /** Rebuilt at most hourly; the portal's product saves refresh it at once through /api/revalidate. */
 export const revalidate = 3600;
-export const dynamicParams = false;
 
 export function generateStaticParams() {
   return RANGE_SLUGS.map((range) => ({ range }));

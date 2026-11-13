@@ -190,7 +190,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       ],
     },
     habits: {
-      title: "Good to know",
+      title: "Safe changing habits",
       items: [
         { title: "Clean hands", body: "Wash your hands before changing your baby's diaper." },
         { title: "Clean and dry", body: "Make sure your baby is clean and dry before putting on a fresh diaper." },

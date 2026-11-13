@@ -26,6 +26,8 @@
 /* The product window. Shown when it is the address target (works without JavaScript). */
 .dialog { display: none; position: fixed; inset: 0; z-index: 170; align-items: center; justify-content: center; padding: 24px; }
 .dialog:target, .dialog[data-open] { display: flex; }
+/* With JavaScript, DialogEnhancer decides (closing does not change the address target, so :target alone would stay). */
+:global(html[data-dialogs-js]) .dialog:target:not([data-open]) { display: none; }
 .scrim { position: absolute; inset: 0; background: rgba(7, 31, 69, .55); backdrop-filter: blur(2px); cursor: default; }
 .window {
   position: relative; width: min(1040px, 100%); max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain;
