@@ -1,29 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Faq from "@/components/about/Faq";
 import s from "@/components/about/about.module.css";
 import Icon from "@/components/Icon";
 import Photo from "@/components/Photo";
 import { BRAND } from "@/content/brand";
-import { FAQ_GROUPS } from "@/content/faqs";
 import { RANGE_SLUGS, RANGES } from "@/lib/ranges";
 import { contact, lexta, tel } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Yazz® is a trademark brand of Lexta Ghana Limited: dependable, quality-driven products for the everyday needs of Ghanaian families. Our promise, vision, mission and your questions answered.",
+  description: "Yazz® is a trademark brand of Lexta Ghana Limited: dependable, quality-driven products for the everyday needs of Ghanaian families. Our promise, vision and mission.",
   alternates: { canonical: "/about" },
 };
 
-/** About Us: the prototype's About page with Lexta's brand content, and the FAQs page folded in (#faqs). */
+/** About Us: the prototype's About page with Lexta's brand content. Questions and answers are on /faqs. */
 export default function AboutPage() {
-  const faqLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: FAQ_GROUPS.flatMap((g) => g.items).filter((i) => !i.a.startsWith("[PLACEHOLDER")).map((i) => ({
-      "@type": "Question", name: i.q, acceptedAnswer: { "@type": "Answer", text: i.a },
-    })),
-  };
   return (
     <>
       <section className={s.hero} aria-labelledby="about-title">
@@ -153,22 +144,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section id="faqs" className={`yz-pad ${s.faqWrap}`} aria-labelledby="faq-title">
-        <div className={s.faqSide}>
-          <p className="yz-eyebrow">Help centre</p>
-          <h2 id="faq-title" className="yz-h2" style={{ marginTop: 10 }}>Questions &amp; Answers</h2>
-          <p className={s.para}>Answers on periods and puberty, our products, where to buy Yazz and trade.</p>
-          <div className={s.help}>
-            <span style={{ color: "#ED1B2E" }}><Icon name="chat" size={26} /></span>
-            <h3>Still need help?</h3>
-            <p>Our consumer care team is here to listen, serve and support.</p>
-            <Link href="/contact?topic=question#message" className="yz-btn yz-btn--red yz-btn--sm" style={{ width: "100%" }}>Send a message <Icon name="arrow" size={15} /></Link>
-            <a href={`https://wa.me/${contact.whatsappCare.replace(/\D/g, "")}`} className="yz-btn yz-btn--outline yz-btn--sm" style={{ width: "100%", marginTop: 10 }} target="_blank" rel="noopener">
-              <Icon name="whatsapp" size={16} /> WhatsApp {contact.whatsappCare}
-            </a>
+      <section className={`yz-pad ${s.faqLink}`} aria-labelledby="faq-card-title">
+        <div className={s.faqCard}>
+          <div>
+            <p className="yz-eyebrow">Help centre</p>
+            <h2 id="faq-card-title">Questions &amp; Answers</h2>
+            <p>Answers on periods and puberty, our products, where to buy Yazz® and trade.</p>
           </div>
+          <Link href="/faqs" className="yz-btn yz-btn--red">Read the FAQs <Icon name="arrow" size={17} /></Link>
         </div>
-        <Faq groups={FAQ_GROUPS} />
       </section>
 
       <section className={s.red} aria-labelledby="red-title">
@@ -180,8 +164,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* eslint-disable-next-line react/no-danger */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd).replace(/</g, "\\u003c") }} />
     </>
   );
 }

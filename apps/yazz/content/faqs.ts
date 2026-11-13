@@ -1,5 +1,5 @@
 /**
- * About Us, "Questions & answers": the accordion of the prototype's FAQs page. The questions are Lexta's "Ask Yazz®"
+ * The FAQs page (/faqs): the accordion of the prototype's FAQs page. The questions are Lexta's "Ask Yazz®"
  * list ("yazz article.docx") plus where to buy and trade questions; each answer uses Lexta's own wording from the
  * articles and product content and links to the article that says more. Shop topics (orders, payment, delivery,
  * returns) are left out: the Yazz site sells nothing online (contract scope).

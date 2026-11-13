@@ -39,7 +39,7 @@ export default function SiteFooter() {
             <li><Link href="/">Home</Link></li>
             <li><Link href="/about">About Us</Link></li>
             <li><Link href="/tips">Tips &amp; Articles</Link></li>
-            <li><Link href="/about#faqs">Questions &amp; Answers</Link></li>
+            <li><Link href="/faqs">FAQs</Link></li>
             <li><Link href="/contact">Contact &amp; Where to Buy</Link></li>
           </ul>
         </nav>

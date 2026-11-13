@@ -140,10 +140,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
         <div>
           <p className="yz-eyebrow">Quick answers</p>
           <h2 id="quick-title" className="yz-h2" style={{ marginTop: 10 }}>Before You Write</h2>
-          <p className="yz-lead" style={{ marginTop: 12 }}>Many questions about periods, our products and where to buy Yazz are answered on our About page.</p>
+          <p className="yz-lead" style={{ marginTop: 12 }}>Many questions about periods, our products and where to buy Yazz are answered in our FAQs.</p>
         </div>
         <div className={s.quickLinks}>
-          <Link href="/about#faqs" className={s.quickLink}><Icon name="chat" size={20} /> Questions &amp; answers <Icon name="arrow" size={16} /></Link>
+          <Link href="/faqs" className={s.quickLink}><Icon name="chat" size={20} /> Questions &amp; answers <Icon name="arrow" size={16} /></Link>
           <Link href="/tips?category=just-4-you" className={s.quickLink}><Icon name="heart" size={20} /> Tips Just 4 You <Icon name="arrow" size={16} /></Link>
           <Link href="/products" className={s.quickLink}><Icon name="box" size={20} /> All Yazz products <Icon name="arrow" size={16} /></Link>
         </div>

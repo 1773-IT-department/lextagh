@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import type { FaqGroup } from "@/content/faqs";
-import s from "./about.module.css";
+import s from "./faqs.module.css";
 
 /**
- * Questions & answers: the prototype's FAQs page folded into About Us. Topic chips filter the groups and a search box
+ * The FAQs page's questions and answers (the prototype's FAQs page). Topic chips filter the groups and a search box
  * narrows the questions (with JavaScript); each answer is a <details> element, so it opens without JavaScript too.
  */
 export default function Faq({ groups }: { groups: FaqGroup[] }) {
@@ -37,7 +37,7 @@ export default function Faq({ groups }: { groups: FaqGroup[] }) {
       {shown.length === 0 && <p className={s.faqEmpty} role="status">No questions match. Try another word, or <Link href="/contact?topic=question#message">ask us directly</Link>.</p>}
       {shown.map((g) => (
         <section key={g.id} className={s.faqGroup} aria-labelledby={`faq-${g.id}`}>
-          <h3 id={`faq-${g.id}`} className={s.faqHead}><span><Icon name={g.icon} size={18} /></span> {g.name}</h3>
+          <h2 id={`faq-${g.id}`} className={s.faqHead}><span><Icon name={g.icon} size={18} /></span> {g.name}</h2>
           {g.items.map((it, k) => (
             <details key={it.q} className={s.faqItem} open={(k === 0 && g.id === groups[0].id && !query) || !!query || undefined}>
               <summary>

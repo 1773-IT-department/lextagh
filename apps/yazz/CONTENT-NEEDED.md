@@ -44,7 +44,8 @@ as a marked placeholder block:
 
 ## Words still to come
 
-- Minimum bulk order quantities (FAQ answer).
+- FAQs page (`/faqs`), answers Lexta still has to give: minimum bulk order quantities. Every other answer uses Lexta's
+  own wording from the articles and product content; more questions can be added to `content/faqs.ts` on request.
 - News: no Yazz news stories yet (the News category shows a placeholder).
 - "My Period & Me": the document lists its sub-topics (what is a period, cycle, flow, tracking) but no text.
 - Home & Tissue tips (kitchen hygiene, tissue handling, cleaning routines, waste reduction): topics only, no text.
@@ -64,5 +65,6 @@ The contract allows 6 pages per brand site and no CSR pages, shop, quizzes, pare
 - "Yazz Period Talk" school and community programmes (CSR).
 - Access to a blog backend for Lexta staff (articles are edited by 1773 on request).
 - A separate Legal / Trademark page: the trademark notice is on About Us and the short statement in the footer.
+  (The sixth page is FAQs, as Desmond chose.)
 - Separate "Where to Buy" and "Tips & Advice" mega menu tabs: Where to Buy is part of Contact & Where to Buy, and the
   Tips & Articles menu lists the article categories.

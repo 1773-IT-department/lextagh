@@ -59,10 +59,10 @@
 .sheetLink[aria-current="page"], .sheetSub[aria-current="page"] { color: var(--yz-red); }
 .sheetSub { display: flex; align-items: center; gap: 10px; padding: 9px 4px 9px 14px; font-size: 14px; font-weight: 500; color: var(--yz-text); }
 
-@media (max-width: 1100px) {
+@media (max-width: 1260px) {
   .nav { gap: 20px; }
 }
-@media (max-width: 960px) {
+@media (max-width: 1060px) {
   .nav { display: none; }
   .mobile { display: block; }
   .header { padding-top: 10px; padding-bottom: 10px; }

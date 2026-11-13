@@ -113,6 +113,7 @@ export default function SiteHeader() {
         <Dropdown label="Products" href="/products" links={productLinks} active={is("/products")} />
         {top("/about", "About Us")}
         <Dropdown label="Tips & Articles" href="/tips" links={tipsLinks} active={is("/tips")} />
+        {top("/faqs", "FAQs")}
         {top("/contact", "Contact")}
       </nav>
 
@@ -142,6 +143,7 @@ export default function SiteHeader() {
                 <Link key={l.href} href={l.href} className={s.sheetSub}>{l.icon && <Icon name={l.icon} size={16} />} {l.label}</Link>
               ))}
             </div>
+            <Link href="/faqs" className={s.sheetLink} aria-current={is("/faqs") ? "page" : undefined}>FAQs</Link>
             <Link href="/contact" className={s.sheetLink} aria-current={is("/contact") ? "page" : undefined}>Contact &amp; Where to Buy</Link>
             <Link href="/contact#where-to-buy" className="yz-btn yz-btn--red" style={{ marginTop: 14 }}>
               <Icon name="pin" size={17} /> Find a stockist

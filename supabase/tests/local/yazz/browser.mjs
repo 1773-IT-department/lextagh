@@ -87,7 +87,7 @@ function watch(page) {
 const PAGES = [
   ["home", "/"], ["products", "/products"], ["range-feminine-care", "/products/feminine-care"], ["range-oral-care", "/products/oral-care"],
   ["range-home-tissue", "/products/home-tissue"], ["range-baby-care", "/products/baby-care"], ["range-home-care", "/products/home-care"],
-  ["about", "/about"], ["tips", "/tips"], ["tips-just-4-parents", "/tips?category=just-4-parents"], ["article", "/tips/understanding-your-first-period"],
+  ["about", "/about"], ["faqs", "/faqs"], ["tips", "/tips"], ["tips-just-4-parents", "/tips?category=just-4-parents"], ["article", "/tips/understanding-your-first-period"],
   ["contact", "/contact"],
 ];
 
@@ -179,6 +179,26 @@ try {
     const ctx = await context("desktop");
     const page = await ctx.newPage();
     await page.goto(`${SITE}/`);
+    const navItems = await page.getByRole("navigation", { name: "Main" }).evaluate((nav) =>
+      [...nav.children].map((c) => (c.matches("a") ? c : c.querySelector(":scope > a"))?.textContent?.trim() ?? ""));
+    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Articles", "FAQs", "Contact"]), "header: the nav has the 6 pages", navItems);
+    check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() === 1, "footer: links to the FAQs page");
+
+    // FAQs accordion by keyboard.
+    await page.goto(`${SITE}/faqs`);
+    const item = page.locator("details").filter({ hasText: "When might I get my first period?" });
+    await item.locator("summary").focus();
+    await page.keyboard.press("Enter");
+    check(await item.evaluate((d) => d.open) && await item.getByText(/There isn't a single date or age/).isVisible(), "faqs: Enter on a question opens its answer");
+    await page.keyboard.press("Space");
+    check(!(await item.evaluate((d) => d.open)), "faqs: Space closes it again");
+    await page.getByRole("button", { name: "Where to Buy", exact: true }).click();
+    check(await page.getByRole("heading", { name: "Ask Yazz®" }).count() === 0 && await page.getByRole("heading", { name: "Where to Buy" }).count() === 1, "faqs: a topic chip shows only that group");
+    check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
+    await page.goto(`${SITE}/about`);
+    check(await page.getByText("What is a period?").count() === 0 && await page.getByRole("link", { name: /Read the FAQs/ }).getAttribute("href") === "/faqs", "about: no accordion any more, a card links to /faqs");
+
+    await page.goto(`${SITE}/`);
     const caret = page.getByRole("button", { name: "Products menu" });
     await caret.focus();
     await page.keyboard.press("Enter");
@@ -236,6 +256,17 @@ try {
     await sleep(300);
     check(await page.evaluate(() => document.activeElement?.textContent?.trim()) === "View details" && await page.evaluate(() => document.activeElement?.getAttribute("href")) === "#product-toothbrushes",
       "product window opened from an address: Escape returns focus to that product's View details");
+    await ctx.close();
+  }
+
+  // FAQs without JavaScript: the answers still open.
+  {
+    const ctx = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
+    const page = await ctx.newPage();
+    await page.goto(`${SITE}/faqs`);
+    const item = page.locator("details").filter({ hasText: "Can I go to school during my period?" });
+    await item.locator("summary").click();
+    check(await item.getAttribute("open") !== null && await item.getByText(/Most people can continue their usual activities/).isVisible(), "faqs without JavaScript: a question opens its answer");
     await ctx.close();
   }
 
