@@ -26,6 +26,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const OUT = process.env.DASHBOARD_SCREENSHOTS || path.join(os.tmpdir(), "lexta-dashboard-screens");
 mkdirSync(OUT, { recursive: true });
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -206,7 +207,7 @@ try {
   await mgr.getByRole("link", { name: "This year" }).click();
   await mgr.waitForURL(/range=year/);
   await settle(mgr);
-  await mgr.getByLabel("Brand").selectOption({ label: "Yazz" });
+  await choose(mgr, "Brand", "Yazz");
   await mgr.getByRole("button", { name: "Apply" }).click();
   await mgr.waitForURL(/brand=/);
   await settle(mgr);
@@ -243,7 +244,7 @@ try {
     `1440: Load more brings the other ${total - 30} rows once each, then stops`, { shown: all.length, total });
   check(await mgr.getByText(/all there are for these filters/).isVisible(), "1440: says when everything is shown");
 
-  await mgr.getByLabel("System", { exact: true }).selectOption({ label: "Orders" });
+  await choose(mgr, "System", "Orders");
   await mgr.getByRole("button", { name: "Show" }).click();
   await mgr.waitForURL(/system=orders/);
   await settle(mgr);

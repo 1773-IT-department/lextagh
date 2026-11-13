@@ -4,6 +4,7 @@
   "scripts": { "dev": "next dev -p 3000", "build": "next build", "start": "next start" },
   "dependencies": {
     "@lexta/db": "workspace:*",
+    "@lexta/ui": "workspace:*",
     "next": "^15.5.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

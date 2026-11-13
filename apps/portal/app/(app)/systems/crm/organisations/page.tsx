@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { CRM_ORG_KINDS, crmOrgKindLabel, type CrmOrgKind } from "@lexta/db";
 import CrmTabs from "@/components/crm/CrmTabs";
@@ -75,32 +76,32 @@ export default async function OrganisationsPage({ searchParams }: { searchParams
         </div>
         <div className="field">
           <label htmlFor="kind">Kind</label>
-          <select id="kind" name="kind" defaultValue={kind}>
+          <Select id="kind" name="kind" defaultValue={kind}>
             <option value="">Any kind</option>
             {CRM_ORG_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={brand}>
+          <Select id="brand" name="brand" defaultValue={brand}>
             <option value="">Any brand</option>
             {productBrands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="region">Region</label>
-          <select id="region" name="region" defaultValue={region}>
+          <Select id="region" name="region" defaultValue={region}>
             <option value="">Any region</option>
             {access.regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="owner">Owner</label>
-          <select id="owner" name="owner" defaultValue={owner}>
+          <Select id="owner" name="owner" defaultValue={owner}>
             <option value="">Anyone</option>
             <option value="mine">Mine</option>
             <option value="unassigned">Unassigned</option>
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

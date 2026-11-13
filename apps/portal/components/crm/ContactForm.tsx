@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useState } from "react";
 import { CRM_CHANNELS, type CrmContact } from "@lexta/db";
 import { saveContact } from "@/app/(app)/systems/crm/actions";
@@ -52,17 +53,17 @@ export default function ContactForm({
                   <label htmlFor="organisation_id">Organisation (optional)</label>
                   {hiddenOrganisation ? (
                     <>
-                      <select id="organisation_id" name="organisation_id" defaultValue="keep" aria-invalid={!!fe.organisation_id} aria-describedby="org-hidden">
+                      <Select id="organisation_id" name="organisation_id" defaultValue="keep" aria-invalid={!!fe.organisation_id} aria-describedby="org-hidden">
                         <option value="keep">Keep the current organisation</option>
                         {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                      </select>
+                      </Select>
                       <span className="hint" id="org-hidden">Linked to an organisation you cannot see. It stays linked unless you pick another one.</span>
                     </>
                   ) : (
-                    <select id="organisation_id" name="organisation_id" defaultValue={contact?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
+                    <Select id="organisation_id" name="organisation_id" defaultValue={contact?.organisation_id ?? defaults.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
                       <option value="">No organisation</option>
                       {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                    </select>
+                    </Select>
                   )}
                   {fe.organisation_id && <span className="ferr">{fe.organisation_id}</span>}
                 </div>
@@ -74,10 +75,10 @@ export default function ContactForm({
               </div>
               <div className="field">
                 <label htmlFor="preferred_channel">Preferred way to reach them (optional)</label>
-                <select id="preferred_channel" name="preferred_channel" defaultValue={contact?.preferred_channel ?? ""} aria-invalid={!!fe.preferred_channel}>
+                <Select id="preferred_channel" name="preferred_channel" defaultValue={contact?.preferred_channel ?? ""} aria-invalid={!!fe.preferred_channel}>
                   <option value="">Not known</option>
                   {CRM_CHANNELS.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-                </select>
+                </Select>
                 {fe.preferred_channel && <span className="ferr">{fe.preferred_channel}</span>}
               </div>
             </section>
@@ -107,9 +108,9 @@ export default function ContactForm({
               {isNew && (
                 <div className="field">
                   <label htmlFor="owner_id">Owner</label>
-                  <select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
+                  <Select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
                     {(ownerOptions ?? []).map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  </Select>
                   {fe.owner_id && <span className="ferr">{fe.owner_id}</span>}
                 </div>
               )}

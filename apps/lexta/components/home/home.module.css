@@ -22,8 +22,6 @@
 
 .outlineHover:hover { background: #f1fbfe !important; }
 .newsCard:hover { box-shadow: 0 18px 38px rgba(11, 60, 78, .16) !important; }
-.ddToggle:hover { border-color: #12a3c4 !important; background: #fff !important; box-shadow: 0 6px 18px rgba(18, 163, 196, .14) !important; }
-.ddOpt:hover { background: #f1fbfe !important; color: #0d8ba8 !important; }
 
 .srOnly {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;

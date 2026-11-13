@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { formatDistance, LOCATION_LABELS, type FieldVisitRow } from "@lexta/db";
 import FieldTabs from "@/components/field-sales/FieldTabs";
@@ -97,31 +98,31 @@ async function AllVisits({ access, params }: { access: FieldAccess; params: Sear
         </div>
         <div className="field">
           <label htmlFor="rep">Rep</label>
-          <select id="rep" name="rep" defaultValue={f.rep}>
+          <Select id="rep" name="rep" defaultValue={f.rep}>
             <option value="">Any rep</option>
             {people.map((p) => <option key={p.id} value={p.id}>{p.display_name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="region">Region</label>
-          <select id="region" name="region" defaultValue={f.region}>
+          <Select id="region" name="region" defaultValue={f.region}>
             <option value="">Any region</option>
             {access.regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={f.brand}>
+          <Select id="brand" name="brand" defaultValue={f.brand}>
             <option value="">Any brand</option>
             {access.brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="outcome">Outcome</label>
-          <select id="outcome" name="outcome" defaultValue={f.outcome}>
+          <Select id="outcome" name="outcome" defaultValue={f.outcome}>
             <option value="">Any outcome</option>
             {access.outcomes.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="from">From</label>

@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import type { FieldVisitRow } from "@lexta/db";
 import FieldTabs from "@/components/field-sales/FieldTabs";
@@ -46,10 +47,10 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
         </div>
         <div className="field">
           <label htmlFor="outcome">Outcome</label>
-          <select id="outcome" name="outcome" defaultValue={f.outcome}>
+          <Select id="outcome" name="outcome" defaultValue={f.outcome}>
             <option value="">Any outcome</option>
             {access.outcomes.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="from">From</label>

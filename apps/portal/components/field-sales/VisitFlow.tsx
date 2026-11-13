@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FIELD_FACINGS_MAX, FIELD_NOTES_MAX, formatDistance, OUTLET_TYPES, type FieldShop, type FieldVisitPayload } from "@lexta/db";
@@ -299,16 +300,16 @@ export default function VisitFlow({ outcomes, regions, myBrands, skus, canAddSho
                 </div>
                 <div className="field">
                   <label htmlFor="ns_type">Type of shop</label>
-                  <select id="ns_type" value={newShop.outlet_type} onChange={(e) => setNewShop({ ...newShop, outlet_type: e.target.value })}>
+                  <Select id="ns_type" value={newShop.outlet_type} onChange={(e) => setNewShop({ ...newShop, outlet_type: e.target.value })}>
                     {OUTLET_TYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                  </select>
+                  </Select>
                 </div>
                 <div className="field">
                   <label htmlFor="ns_region">Region</label>
-                  <select id="ns_region" value={newShop.region_id} onChange={(e) => setNewShop({ ...newShop, region_id: e.target.value })} aria-invalid={!!fieldError.region_id}>
+                  <Select id="ns_region" value={newShop.region_id} onChange={(e) => setNewShop({ ...newShop, region_id: e.target.value })} aria-invalid={!!fieldError.region_id}>
                     <option value="">Choose a region</option>
                     {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-                  </select>
+                  </Select>
                   {fieldError.region_id && <span className="ferr">{fieldError.region_id}</span>}
                 </div>
                 <div className="field">

@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import {
   COMPLAINT_CATEGORIES, COMPLAINT_SEVERITIES, COMPLAINT_STATUSES, OPEN_COMPLAINT_STATUSES, complaintCategoryLabel,
@@ -157,41 +158,41 @@ export default async function ComplaintsPage({ searchParams }: { searchParams: P
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={status}>
+          <Select id="status" name="status" defaultValue={status}>
             <option value="open">Open complaints</option>
             <option value="all">All statuses</option>
             {COMPLAINT_STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="severity">Severity</label>
-          <select id="severity" name="severity" defaultValue={severity}>
+          <Select id="severity" name="severity" defaultValue={severity}>
             <option value="">Any severity</option>
             {COMPLAINT_SEVERITIES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={brand}>
+          <Select id="brand" name="brand" defaultValue={brand}>
             <option value="">Any brand</option>
             {access.visibleBrands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="category">Category</label>
-          <select id="category" name="category" defaultValue={category}>
+          <Select id="category" name="category" defaultValue={category}>
             <option value="">Any category</option>
             {COMPLAINT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="owner">Owner</label>
-          <select id="owner" name="owner" defaultValue={owner}>
+          <Select id="owner" name="owner" defaultValue={owner}>
             <option value="">Anyone</option>
             {access.works && <option value="mine">Mine</option>}
             <option value="unassigned">Unassigned</option>
             {owners.filter((s) => s.id !== access.userId).map((s) => <option key={s.id} value={s.id}>{s.display_name}</option>)}
-          </select>
+          </Select>
         </div>
         <label className="check-inline">
           <input type="checkbox" name="overdue" value="1" defaultChecked={overdue} /> Overdue only

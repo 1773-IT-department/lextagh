@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { CSR_NOTES_MAX, CSR_PARTNERS_MAX, CSR_PLACE_MAX, type CsrStatus } from "@lexta/db";
 import { saveActivity } from "@/app/(app)/systems/csr/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -37,10 +38,10 @@ export default function ActivityForm({ values, programmes, regions }: {
       <fieldset disabled={pending}>
         <div className="field">
           <label htmlFor="programme_id">Programme</label>
-          <select id="programme_id" name="programme_id" defaultValue={v.programme_id} {...aria("programme_id")}>
+          <Select id="programme_id" name="programme_id" defaultValue={v.programme_id} {...aria("programme_id")}>
             <option value="">Choose a programme</option>
             {programmes.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
-          </select>
+          </Select>
           {err("programme_id")}
         </div>
         <div className="row2">
@@ -61,10 +62,10 @@ export default function ActivityForm({ values, programmes, regions }: {
         <div className="row2">
           <div className="field">
             <label htmlFor="region_id">Region</label>
-            <select id="region_id" name="region_id" defaultValue={v.region_id} {...aria("region_id")}>
+            <Select id="region_id" name="region_id" defaultValue={v.region_id} {...aria("region_id")}>
               <option value="">Choose a region</option>
               {regions.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
-            </select>
+            </Select>
             {err("region_id")}
           </div>
           <div className="field">

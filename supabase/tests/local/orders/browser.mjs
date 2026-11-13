@@ -22,6 +22,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const OUT = process.env.ORDER_SCREENSHOTS || path.join(os.tmpdir(), "lexta-order-screens");
 mkdirSync(OUT, { recursive: true });
 const { psql } = await import(`${ROOT}/supabase/tests/local/forms/rpc_shim.mjs`);
+const { choose } = await import(`${ROOT}/supabase/tests/local/browser/choose.mjs`);
 
 let failures = 0;
 const check = (ok, msg, detail) => {
@@ -142,7 +143,7 @@ try {
   await rep.getByText("Kofi Mensah", { exact: true }).waitFor();
   check(await rep.getByText("an organisation outside your brands").isVisible(), "a Yazz rep does not see the name of a Hooch only organisation");
   await rep.screenshot({ path: `${OUT}/staff-1440-logins-before.png`, fullPage: true });
-  await rep.getByLabel("Organisation for Kofi Mensah").selectOption({ label: "Accra Star Distributors" });
+  await choose(rep, "Organisation for Kofi Mensah", "Accra Star Distributors");
   await rep.getByRole("button", { name: "Link", exact: true }).click();
   await rep.locator(".login-linked", { hasText: "Accra Star Distributors" }).waitFor();
   check(true, "a sales rep links Kofi's login to Accra Star Distributors");
@@ -272,7 +273,7 @@ try {
   await rep.getByRole("link", { name: "Accra Star Distributors" }).first().waitFor();
   check(await rep.locator(".pipe.o-submitted b").innerText() === "1" && await rep.locator(".pipe.o-cancelled b").innerText() === "1", "staff counts: one submitted, one cancelled");
   await rep.screenshot({ path: `${OUT}/staff-1440-inbox.png`, fullPage: true });
-  await rep.getByLabel("Status", { exact: true }).selectOption("submitted");
+  await choose(rep, "Status", { value: "submitted" });
   await rep.getByRole("button", { name: "Apply" }).click();
   await rep.waitForURL(/status=submitted/);
   await rep.getByRole("heading", { name: "Distributor orders" }).waitFor();

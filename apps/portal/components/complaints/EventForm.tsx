@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useEffect, useRef } from "react";
 import { addComplaintEvent } from "@/app/(app)/systems/complaints/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -19,11 +20,11 @@ export default function EventForm({ id }: { id: string }) {
       <fieldset disabled={pending}>
         <div className="field">
           <label htmlFor={`etype-${id}`}>Type</label>
-          <select id={`etype-${id}`} name="type" defaultValue="note" aria-invalid={!!fe.type}>
+          <Select id={`etype-${id}`} name="type" defaultValue="note" aria-invalid={!!fe.type}>
             <option value="note">Note</option>
             <option value="call">Call</option>
             <option value="email">Email</option>
-          </select>
+          </Select>
           {fe.type && <span className="ferr">{fe.type}</span>}
         </div>
         <div className="field">

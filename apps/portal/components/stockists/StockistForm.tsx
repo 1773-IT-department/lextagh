@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { startTransition, useActionState, useState } from "react";
 import { OUTLET_TYPES, type Region, type StockistPublic } from "@lexta/db";
 import { saveStockist, type StockistFormState } from "@/app/(app)/systems/stockists/actions";
@@ -98,19 +99,19 @@ export default function StockistForm({
                 <div className="row2">
                   <div className="field">
                     <label htmlFor="outlet_type">Outlet type</label>
-                    <select id="outlet_type" name="outlet_type" defaultValue={stockist?.outlet_type ?? ""} aria-invalid={!!fe.outlet_type} required>
+                    <Select id="outlet_type" name="outlet_type" defaultValue={stockist?.outlet_type ?? ""} aria-invalid={!!fe.outlet_type} required>
                       <option value="" disabled>Choose a type</option>
                       {OUTLET_TYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-                    </select>
+                    </Select>
                     {fe.outlet_type && <span className="ferr">{fe.outlet_type}</span>}
                   </div>
                   <div className="field">
                     <label htmlFor="region_id">Region</label>
-                    <select id="region_id" name="region_id" defaultValue={stockist?.region_id ?? ""} aria-invalid={!!fe.region} required>
+                    <Select id="region_id" name="region_id" defaultValue={stockist?.region_id ?? ""} aria-invalid={!!fe.region} required>
                       <option value="" disabled>Choose a region</option>
                       <optgroup label="Ghana">{ghana.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</optgroup>
                       {abroad.length > 0 && <optgroup label="Outside Ghana">{abroad.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</optgroup>}
-                    </select>
+                    </Select>
                     {fe.region && <span className="ferr">{fe.region}</span>}
                   </div>
                 </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useMemo, useState } from "react";
 import { ORDER_MAX_QUANTITY } from "@lexta/db";
 import { saveOrder } from "@/app/(app)/systems/orders/actions";
@@ -175,11 +176,11 @@ export default function OrderBuilder({ products, regions, orderId, reference, in
           <h2>Delivery</h2>
           <div className="field">
             <label htmlFor="delivery_region_id">Region</label>
-            <select id="delivery_region_id" name="delivery_region_id" value={regionId} onChange={(e) => setRegionId(e.target.value)}
+            <Select id="delivery_region_id" name="delivery_region_id" value={regionId} onChange={(e) => setRegionId(e.target.value)}
               aria-invalid={!!fe.delivery_region_id} disabled={pending}>
               <option value="">Choose a region</option>
               {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-            </select>
+            </Select>
             {fe.delivery_region_id && <span className="ferr">{fe.delivery_region_id}</span>}
           </div>
           <div className="field">

@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { CSR_PROGRAMME_DESCRIPTION_MAX, CSR_PROGRAMME_NAME_MAX, type CsrProgramme } from "@lexta/db";
 import { deleteProgramme, saveProgramme, setProgrammeActive } from "@/app/(app)/systems/csr/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -19,10 +20,10 @@ function Fields({ p, brands, fe, prefix }: { p?: CsrProgramme; brands: Option[];
         <div className="row2">
           <div className="field">
             <label htmlFor={`${prefix}_brand`}>Brand (optional)</label>
-            <select id={`${prefix}_brand`} name="brand_id" defaultValue={p?.brand_id ?? ""} aria-invalid={!!fe.brand_id}>
+            <Select id={`${prefix}_brand`} name="brand_id" defaultValue={p?.brand_id ?? ""} aria-invalid={!!fe.brand_id}>
               <option value="">No brand (Lexta)</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-            </select>
+            </Select>
             {fe.brand_id && <span className="ferr">{fe.brand_id}</span>}
           </div>
           <div className="field">

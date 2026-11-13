@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import type { Product, ProductSku } from "@lexta/db";
 import { saveProduct, type ProductFormState } from "@/app/(app)/systems/products/actions";
@@ -102,10 +103,10 @@ export default function ProductForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="brand_id">Brand</label>
-              <select id="brand_id" name="brand_id" defaultValue={product?.brand_id ?? (brands.length === 1 ? brands[0].id : "")} disabled={!isNew} aria-invalid={!!fe.brand_id} required>
+              <Select id="brand_id" name="brand_id" defaultValue={product?.brand_id ?? (brands.length === 1 ? brands[0].id : "")} disabled={!isNew} aria-invalid={!!fe.brand_id} required>
                 <option value="" disabled>Choose a brand</option>
                 {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-              </select>
+              </Select>
               {fe.brand_id ? <span className="ferr">{fe.brand_id}</span> : !isNew && <span className="hint">The brand cannot be changed after the product is created.</span>}
             </div>
             <div className="field">

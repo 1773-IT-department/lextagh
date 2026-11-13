@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { startTransition, useActionState, useEffect, useRef, useState, type CSSProperties, type DragEvent, type FormEvent } from "react";
 import { JOB_CV_MAX_BYTES, jobCvExtension, looksLikeCv } from "@lexta/db/src/job-cv";
@@ -14,6 +15,8 @@ const field: CSSProperties = {
   border: "1px solid rgba(18,163,196,.35)", borderRadius: 7, padding: "12px 14px", fontSize: 13, color: "#12313d",
   background: "#fff", minWidth: 0, fontFamily: "inherit",
 };
+/* The dropdown's face (packages/ui Select): the native select's 47 px height, set so it holds while the font loads. */
+const selectField: CSSProperties = { ...field, lineHeight: "21px" };
 const cell: CSSProperties = { display: "flex", flexDirection: "column", gap: 6, minWidth: 0 };
 
 /** Same words as lib/forms/careers.ts, for the checks made in the browser before sending. */
@@ -166,10 +169,10 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
         <noscript>
           <label style={{ ...fieldLabel, marginTop: 16 }}>
             Role
-            <select name="opening_choice" defaultValue={v.opening ?? ""} style={field}>
+            <Select name="opening_choice" defaultValue={v.opening ?? ""} style={selectField}>
               <option value="">General application</option>
               {roles.map((r) => <option key={r.reference} value={r.reference}>{r.title} ({r.reference})</option>)}
-            </select>
+            </Select>
           </label>
         </noscript>
       )}
@@ -204,9 +207,9 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
           <div style={cell}>
             <label style={fieldLabel}>
               Area of interest
-              <select name="interest" defaultValue={v.interest || interests[0]} {...invalidProps(state, "interest", errorId("interest"))} style={field}>
+              <Select name="interest" defaultValue={v.interest || interests[0]} {...invalidProps(state, "interest", errorId("interest"))} style={selectField}>
                 {interests.map((o) => <option key={o}>{o}</option>)}
-              </select>
+              </Select>
             </label>
             <FieldError id={errorId("interest")} message={state.fieldErrors?.interest} />
           </div>

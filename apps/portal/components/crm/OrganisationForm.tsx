@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { CRM_ORG_KINDS, type CrmOrganisation, type Region } from "@lexta/db";
 import { saveOrganisation } from "@/app/(app)/systems/crm/actions";
 import FormAlerts from "./FormAlerts";
@@ -40,18 +41,18 @@ export default function OrganisationForm({
               <div className="row2">
                 <div className="field">
                   <label htmlFor="kind">Kind</label>
-                  <select id="kind" name="kind" defaultValue={organisation?.kind ?? "other"} aria-invalid={!!fe.kind}>
+                  <Select id="kind" name="kind" defaultValue={organisation?.kind ?? "other"} aria-invalid={!!fe.kind}>
                     {CRM_ORG_KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
-                  </select>
+                  </Select>
                   {fe.kind && <span className="ferr">{fe.kind}</span>}
                 </div>
                 <div className="field">
                   <label htmlFor="region_id">Region (optional)</label>
-                  <select id="region_id" name="region_id" defaultValue={organisation?.region_id ?? ""} aria-invalid={!!fe.region_id}>
+                  <Select id="region_id" name="region_id" defaultValue={organisation?.region_id ?? ""} aria-invalid={!!fe.region_id}>
                     <option value="">Not set</option>
                     <optgroup label="Ghana">{ghana.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</optgroup>
                     {abroad.length > 0 && <optgroup label="Outside Ghana">{abroad.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}</optgroup>}
-                  </select>
+                  </Select>
                   {fe.region_id && <span className="ferr">{fe.region_id}</span>}
                 </div>
               </div>
@@ -86,10 +87,10 @@ export default function OrganisationForm({
               </div>
               <div className="field">
                 <label htmlFor="stockist_id">Linked stockist on Where to Buy (optional)</label>
-                <select id="stockist_id" name="stockist_id" defaultValue={organisation?.stockist_id ?? ""} aria-invalid={!!fe.stockist_id}>
+                <Select id="stockist_id" name="stockist_id" defaultValue={organisation?.stockist_id ?? ""} aria-invalid={!!fe.stockist_id}>
                   <option value="">Not a listed stockist</option>
                   {stockists.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-                </select>
+                </Select>
                 {fe.stockist_id && <span className="ferr">{fe.stockist_id}</span>}
               </div>
             </section>
@@ -120,9 +121,9 @@ export default function OrganisationForm({
               {isNew && (
                 <div className="field">
                   <label htmlFor="owner_id">Owner</label>
-                  <select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
+                  <Select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
                     {(ownerOptions ?? []).map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                  </select>
+                  </Select>
                   {fe.owner_id && <span className="ferr">{fe.owner_id}</span>}
                 </div>
               )}

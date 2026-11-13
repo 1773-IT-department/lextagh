@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { DASHBOARD_PRESETS, formatRangeDay } from "@/lib/dashboard";
 import { MANAGEMENT_TABS, managementHref, type ManagementFilters } from "@/lib/management";
@@ -49,10 +50,10 @@ export default function ManagementHeader({ path, title, intro, f, brands, keep =
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={f.brand}>
+          <Select id="brand" name="brand" defaultValue={f.brand}>
             <option value="">Every brand</option>
             {brands.map((b) => <option key={b.id} value={b.id}>{b.name}{b.is_active ? "" : " (switched off)"}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

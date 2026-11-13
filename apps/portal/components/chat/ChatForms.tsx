@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useEffect, useRef, useState } from "react";
 import { COMPLAINT_CATEGORIES } from "@lexta/db";
 import { assignChat, makeComplaint, makeLead, saveVisitor, sendReply, setChatStatus } from "@/app/(app)/systems/chat/actions";
@@ -74,10 +75,10 @@ export function AssignControl({ id, assignedTo, assignedName, userId, staff }: {
       <form className="owner-form" onSubmit={onSubmit}>
         <input type="hidden" name="id" value={id} />
         <label className="sr-only" htmlFor={`assignee-${id}`}>Assign to</label>
-        <select id={`assignee-${id}`} name="assignee" defaultValue={assignedTo ?? "none"} disabled={pending} key={assignedTo ?? "none"}>
+        <Select id={`assignee-${id}`} name="assignee" defaultValue={assignedTo ?? "none"} disabled={pending} key={assignedTo ?? "none"}>
           <option value="none">Nobody</option>
           {staff.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-        </select>
+        </Select>
         <button className="btn small light" type="submit" disabled={pending}>{pending ? "Saving..." : "Assign"}</button>
       </form>
     </div>
@@ -145,10 +146,10 @@ export function MakeComplaintForm({ id, reachable }: { id: string; reachable: bo
       {!reachable && <p className="small" style={{ margin: 0 }}>Add the visitor&apos;s email or phone first: a complaint needs a way to reach the customer.</p>}
       <div className="field">
         <label htmlFor="complaint-category">What is the complaint about?</label>
-        <select id="complaint-category" name="category" defaultValue="" aria-invalid={!!fe.category} disabled={pending}>
+        <Select id="complaint-category" name="category" defaultValue="" aria-invalid={!!fe.category} disabled={pending}>
           <option value="" disabled>Choose a category</option>
           {COMPLAINT_CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
-        </select>
+        </Select>
         {fe.category && <span className="ferr">{fe.category}</span>}
       </div>
       <button className="btn small" type="submit" disabled={pending || !reachable}>{pending ? "Logging..." : "Log a complaint"}</button>

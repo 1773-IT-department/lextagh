@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@lexta/db": "workspace:*",
+    "@lexta/ui": "workspace:*",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.118.0",
     "next": "^15.5.0",

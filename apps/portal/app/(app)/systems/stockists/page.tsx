@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { OUTLET_TYPES, outletTypeLabel, type OutletType } from "@lexta/db";
 import { canEditStockist, getStockistAccess } from "@/lib/stockists";
@@ -113,10 +114,10 @@ export default async function StockistsPage({ searchParams }: { searchParams: Pr
         </div>
         <div className="field">
           <label htmlFor="region">Region</label>
-          <select id="region" name="region" defaultValue={region}>
+          <Select id="region" name="region" defaultValue={region}>
             <option value="">All regions</option>
             {access.regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="town">Town</label>
@@ -124,25 +125,25 @@ export default async function StockistsPage({ searchParams }: { searchParams: Pr
         </div>
         <div className="field">
           <label htmlFor="type">Outlet type</label>
-          <select id="type" name="type" defaultValue={type}>
+          <Select id="type" name="type" defaultValue={type}>
             <option value="">Any type</option>
             {OUTLET_TYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="brand">Brand</label>
-          <select id="brand" name="brand" defaultValue={brand}>
+          <Select id="brand" name="brand" defaultValue={brand}>
             <option value="">Any brand</option>
             {access.allBrands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={status}>
+          <Select id="status" name="status" defaultValue={status}>
             <option value="">Any</option>
             <option value="active">On Where to Buy</option>
             <option value="inactive">Deactivated</option>
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

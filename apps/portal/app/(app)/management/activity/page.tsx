@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import ActivityFeed from "@/components/management/ActivityFeed";
 import ManagementHeader from "@/components/management/ManagementHeader";
@@ -54,17 +55,17 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
         {f.brand && <input type="hidden" name="brand" value={f.brand} />}
         <div className="field">
           <label htmlFor="system">System</label>
-          <select id="system" name="system" defaultValue={system}>
+          <Select id="system" name="system" defaultValue={system}>
             <option value="">Every system</option>
             {MANAGEMENT_SECTIONS.map((s) => <option key={s.system} value={s.system}>{s.label}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="person">Person</label>
-          <select id="person" name="person" defaultValue={person}>
+          <Select id="person" name="person" defaultValue={person}>
             <option value="">Anyone</option>
             {people.map((p) => <option key={p.id} value={p.id}>{p.name} ({ROLE_LABELS[p.role] ?? p.role})</option>)}
-          </select>
+          </Select>
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Show</button>

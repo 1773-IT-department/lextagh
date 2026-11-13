@@ -1,5 +1,6 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import { useState } from "react";
 import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES, HIGH_FLOOR_CATEGORIES, type Complaint, type ComplaintCategory } from "@lexta/db";
 import { saveComplaint } from "@/app/(app)/systems/complaints/actions";
@@ -89,25 +90,25 @@ export default function ComplaintForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="channel">How it came in</label>
-              <select id="channel" name="channel" defaultValue={c?.channel ?? "phone"} aria-invalid={!!fe.channel}>
+              <Select id="channel" name="channel" defaultValue={c?.channel ?? "phone"} aria-invalid={!!fe.channel}>
                 {COMPLAINT_CHANNELS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              </Select>
               {fe.channel && <span className="ferr">{fe.channel}</span>}
             </div>
             <div className="field">
               <label htmlFor="category">What it is about</label>
-              <select id="category" name="category" value={category} onChange={(e) => setCategory(e.target.value)} aria-invalid={!!fe.category}>
+              <Select id="category" name="category" value={category} onChange={(e) => setCategory(e.target.value)} aria-invalid={!!fe.category}>
                 <option value="">Choose</option>
                 {COMPLAINT_CATEGORIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
+              </Select>
               {fe.category && <span className="ferr">{fe.category}</span>}
             </div>
           </div>
           <div className="field">
             <label htmlFor="severity">Severity</label>
-            <select id="severity" name="severity" defaultValue={c?.severity ?? "normal"} aria-invalid={!!fe.severity}>
+            <Select id="severity" name="severity" defaultValue={c?.severity ?? "normal"} aria-invalid={!!fe.severity}>
               {COMPLAINT_SEVERITIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-            </select>
+            </Select>
             <span className="hint">
               {highFloor
                 ? "A health or safety concern or a foreign object is always at least High."
@@ -126,7 +127,7 @@ export default function ComplaintForm({
           <h2>Product and purchase</h2>
           <div className="field">
             <label htmlFor="brand_id">Brand</label>
-            <select
+            <Select
               id="brand_id"
               name="brand_id"
               value={brand}
@@ -135,23 +136,23 @@ export default function ComplaintForm({
             >
               <option value="">Choose</option>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.label}</option>)}
-            </select>
+            </Select>
             <span className="hint">Use Lexta Ghana for anything not about one brand.</span>
             {fe.brand_id && <span className="ferr">{fe.brand_id}</span>}
           </div>
           <div className="row2">
             <div className="field">
               <label htmlFor="product_id">Product (optional)</label>
-              <select id="product_id" name="product_id" value={product} onChange={(e) => setProduct(e.target.value)} aria-invalid={!!fe.product_id}>
+              <Select id="product_id" name="product_id" value={product} onChange={(e) => setProduct(e.target.value)} aria-invalid={!!fe.product_id}>
                 <option value="">Not known</option>
                 {hiddenProduct && product === KEEP && <option value={KEEP}>Keep the current product</option>}
                 {brandProducts.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
-              </select>
+              </Select>
               {fe.product_id && <span className="ferr">{fe.product_id}</span>}
             </div>
             <div className="field">
               <label htmlFor="sku_id">Pack size (optional)</label>
-              <select
+              <Select
                 key={product}
                 id="sku_id"
                 name="sku_id"
@@ -162,7 +163,7 @@ export default function ComplaintForm({
                 <option value="">Not known</option>
                 {hiddenSku && product === originalProduct && <option value={KEEP}>Keep the current pack size</option>}
                 {productSkus.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
+              </Select>
               {fe.sku_id && <span className="ferr">{fe.sku_id}</span>}
             </div>
           </div>
@@ -181,10 +182,10 @@ export default function ComplaintForm({
           <div className="row2">
             <div className="field">
               <label htmlFor="stockist_id">Bought at (stockist)</label>
-              <select id="stockist_id" name="stockist_id" defaultValue={c?.stockist_id ?? ""} aria-invalid={!!fe.stockist_id}>
+              <Select id="stockist_id" name="stockist_id" defaultValue={c?.stockist_id ?? ""} aria-invalid={!!fe.stockist_id}>
                 <option value="">Not in the list</option>
                 {stockists.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
+              </Select>
               {fe.stockist_id && <span className="ferr">{fe.stockist_id}</span>}
             </div>
             <div className="field">
@@ -195,11 +196,11 @@ export default function ComplaintForm({
           </div>
           <div className="field">
             <label htmlFor="organisation_id">Organisation (optional)</label>
-            <select id="organisation_id" name="organisation_id" defaultValue={hiddenOrganisation ? KEEP : c?.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
+            <Select id="organisation_id" name="organisation_id" defaultValue={hiddenOrganisation ? KEEP : c?.organisation_id ?? ""} aria-invalid={!!fe.organisation_id}>
               <option value="">None</option>
               {hiddenOrganisation && <option value={KEEP}>Keep the current organisation</option>}
               {organisations.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-            </select>
+            </Select>
             <span className="hint">For a complaint from a shop, distributor or institution in the CRM.</span>
             {fe.organisation_id && <span className="ferr">{fe.organisation_id}</span>}
           </div>
@@ -210,9 +211,9 @@ export default function ComplaintForm({
             <h2>Owner</h2>
             <div className="field">
               <label htmlFor="owner_id">Who works this case</label>
-              <select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
+              <Select id="owner_id" name="owner_id" defaultValue="me" aria-invalid={!!fe.owner_id}>
                 {owners.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-              </select>
+              </Select>
               {fe.owner_id && <span className="ferr">{fe.owner_id}</span>}
             </div>
           </section>

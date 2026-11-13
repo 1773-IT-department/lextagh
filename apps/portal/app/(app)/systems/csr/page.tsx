@@ -1,3 +1,4 @@
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { CSR_STATUS_LABELS, type CsrActivityRow, type CsrProgrammeTotal } from "@lexta/db";
 import CsrTabs from "@/components/csr/CsrTabs";
@@ -61,25 +62,25 @@ export default async function CsrPage({ searchParams }: { searchParams: Promise<
         </div>
         <div className="field">
           <label htmlFor="programme">Programme</label>
-          <select id="programme" name="programme" defaultValue={f.programme}>
+          <Select id="programme" name="programme" defaultValue={f.programme}>
             <option value="">Any programme</option>
             {access.programmes.map((p) => <option key={p.id} value={p.id}>{p.name}{p.is_active ? "" : " (off)"}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="region">Region</label>
-          <select id="region" name="region" defaultValue={f.region}>
+          <Select id="region" name="region" defaultValue={f.region}>
             <option value="">Any region</option>
             {access.regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="status">Status</label>
-          <select id="status" name="status" defaultValue={f.status}>
+          <Select id="status" name="status" defaultValue={f.status}>
             <option value="">Done and planned</option>
             <option value="done">Done</option>
             <option value="planned">Planned</option>
-          </select>
+          </Select>
         </div>
         <div className="field">
           <label htmlFor="from">From</label>
