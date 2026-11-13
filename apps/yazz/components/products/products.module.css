@@ -24,7 +24,7 @@
 .buyLink:hover { color: var(--yz-red-dark); text-decoration: underline; }
 
 /* The product window. Shown when it is the address target (works without JavaScript). */
-.dialog { display: none; position: fixed; inset: 0; z-index: 120; align-items: center; justify-content: center; padding: 24px; }
+.dialog { display: none; position: fixed; inset: 0; z-index: 170; align-items: center; justify-content: center; padding: 24px; }
 .dialog:target, .dialog[data-open] { display: flex; }
 .scrim { position: absolute; inset: 0; background: rgba(7, 31, 69, .55); backdrop-filter: blur(2px); cursor: default; }
 .window {

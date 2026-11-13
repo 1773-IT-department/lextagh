@@ -1,0 +1,64 @@
+/* Products overview, from the prototype's Yazz Products page. */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 36px; align-items: center; padding: 50px var(--yz-gutter);
+  background: linear-gradient(120deg, #e7f2fc 0%, #f3f8fd 100%); border-radius: 0 0 28px 28px;
+}
+.title { margin: 12px 0 0; font-size: 48px; line-height: 1.1; font-weight: 800; color: var(--yz-deep); letter-spacing: -1px; }
+.title :global(.yz-script) { display: block; color: var(--yz-red); font-size: 50px; letter-spacing: 0; margin-top: 4px; }
+.body { margin: 18px 0 0; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); max-width: 440px; }
+.badges { list-style: none; margin: 26px 0 0; padding: 0; display: flex; flex-wrap: wrap; }
+.badges li { display: flex; flex-direction: column; gap: 4px; padding: 0 18px; border-left: 1px solid #d5e6f6; font-size: 11.5px; color: var(--yz-muted); line-height: 1.35; }
+.badges li:first-child { padding-left: 0; border-left: 0; }
+.badges li span { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+.badges strong { color: var(--yz-deep); font-size: 12.5px; }
+.heroPic { position: relative; height: 400px; border-radius: 24px; overflow: hidden; box-shadow: 0 24px 50px rgba(11, 46, 99, .14); }
+.note { position: absolute; top: 18px; right: 18px; margin: 0; padding: 10px 14px; border-radius: 12px; background: rgba(255, 255, 255, .9); font-size: 26px; line-height: 1.1; color: var(--yz-deep); }
+.note span { font-family: Poppins, sans-serif; font-size: 14px; color: var(--yz-red); }
+
+.tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-top: 24px; }
+.tile { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 20px 20px 22px; border-radius: 16px; transition: transform .18s, box-shadow .18s; }
+.tile:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(11, 46, 99, .1); }
+.tile strong { margin-top: 10px; font-size: 17px; font-weight: 700; }
+.tile span { font-size: 12.5px; color: var(--yz-body); }
+.tileArrow { position: absolute; right: 18px; bottom: 20px; }
+
+.all { margin-top: 56px; }
+.bands { display: flex; flex-direction: column; gap: 16px; margin-top: 56px; }
+.band { display: grid; grid-template-columns: 300px minmax(0, 1fr) minmax(220px, 300px); align-items: center; gap: 28px; border-radius: 24px; overflow: hidden; background: linear-gradient(100deg, var(--tint) 0%, var(--soft) 100%); }
+.bandPic { height: 100%; min-height: 220px; }
+.bandText { padding: 26px 0; }
+.bandText p { margin: 10px 0 18px; font-size: 13.5px; line-height: 1.7; color: var(--yz-text); max-width: 460px; }
+.bandTitle { margin: 10px 0 0; font-size: 24px; line-height: 1.2; font-weight: 800; color: var(--yz-deep); }
+.bandList { list-style: none; margin: 0; padding: 20px 24px 20px 0; display: flex; flex-direction: column; gap: 12px; }
+.bandList li { display: flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 600; }
+.bandList li span { width: 32px; height: 32px; border-radius: 50%; background: #fff; color: var(--tone); display: flex; align-items: center; justify-content: center; flex: none; }
+.bandList a { color: var(--yz-deep); }
+.bandList a:hover { color: var(--yz-red); }
+
+.ctaWrap { margin: 56px 0; }
+.cta { display: grid; grid-template-columns: minmax(180px, 300px) minmax(0, 1fr); gap: 30px; align-items: center; padding: 40px 36px; border-radius: 24px; color: #fff; background: linear-gradient(110deg, #0b2e63 0%, #0b3c7e 60%, #134c97 100%); }
+.cta > p { margin: 0; font-size: 34px; line-height: 1.1; }
+.cta h2 { margin: 0; font-size: 26px; font-weight: 700; }
+.cta div > p { margin: 10px 0 0; font-size: 14px; line-height: 1.7; color: #dceafa; max-width: 480px; }
+
+@media (max-width: 1100px) {
+  .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .band { grid-template-columns: 240px minmax(0, 1fr); }
+  .bandList { display: none; }
+}
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; padding-top: 30px; padding-bottom: 30px; }
+  .title { font-size: 34px; }
+  .title :global(.yz-script) { font-size: 36px; }
+  .heroPic { height: 260px; }
+  .badges { gap: 14px 0; }
+  .badges li { width: 50%; padding: 0 10px; border-left: 0; }
+  .badges li:first-child { padding-left: 10px; }
+  .tiles { grid-template-columns: 1fr 1fr; }
+  .band { grid-template-columns: 1fr; gap: 0; }
+  .bandPic { height: 180px; min-height: 0; }
+  .bandText { padding: 18px 20px 24px; }
+  .cta { grid-template-columns: 1fr; padding: 30px 22px; gap: 14px; }
+  .cta > p { font-size: 28px; }
+  .cta h2 { font-size: 22px; }
+}

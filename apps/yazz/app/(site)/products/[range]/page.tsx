@@ -121,8 +121,9 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
                 Ask our care team <Icon name="arrow" size={17} />
               </Link>
             </div>
-            <div className={s.guideSide} aria-hidden="true">
-              <p className={`yz-script ${s.guideNote}`}>
+            <div className={s.guideSide}>
+              {r.image && <Photo image={{ ...r.image, alt: "" }} needed="" position="center 25%" />}
+              <p aria-hidden="true" className={`yz-script ${s.guideNote}`}>
                 {r.guide.note.map((n) => <span key={n}>{n}</span>)}
                 <span className={s.heart}>♡ ♥</span>
               </p>
