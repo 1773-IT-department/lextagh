@@ -80,8 +80,8 @@ try {
     check(Array.isArray(jobs) && jobs.length === 0 && warnings.some((w) => w.includes("[careers] showing no open roles")),
       "no settings: Careers shows no roles (not the old samples) and logs a warning");
     const s = await apply(fd({ ...base("noconfig"), cv: file(PDF, "cv.pdf") }));
-    check(s.status === "error" && s.message === "This form is not available right now, please email support@lextagh.com",
-      "no settings: the form says it is not available and gives support@lextagh.com", s);
+    check(s.status === "error" && s.message === "This form is not available right now, please email hr@lextagh.com",
+      "no settings: the form says it is not available and gives hr@lextagh.com", s);
     check(s.values?.email === mail("noconfig"), "typed values are kept on that error");
   }
 
@@ -218,7 +218,7 @@ try {
     const objs = await objects();
     const results = [];
     for (const ip of ["", "unknown", "999.1.1.1"]) results.push(await apply(fd({ ...base(`noip${results.length}`), cv: file(PDF, "n.pdf") }), ip));
-    check(results.every((r) => r.status === "error" && r.message === careers.msgGeneric("support@lextagh.com") && r.values?.email)
+    check(results.every((r) => r.status === "error" && r.message === careers.msgGeneric("hr@lextagh.com") && r.values?.email)
       && (await objects()) === objs, "without a visitor address the CV is not uploaded and the visitor gets the friendly fallback", results.map((r) => r.message));
   }
   {
@@ -309,7 +309,7 @@ try {
     const jobs = await live.getCareersJobs();
     check(jobs.length === 0 && warnings.some((w) => w.includes("[careers] showing no open roles")), "database down: Careers shows the empty state and logs a warning");
     const s = await apply(fd({ ...base("down"), cv: file(PDF, "down.pdf") }));
-    check(s.status === "error" && s.message === careers.msgGeneric("support@lextagh.com") && s.values?.email === mail("down"),
+    check(s.status === "error" && s.message === careers.msgGeneric("hr@lextagh.com") && s.values?.email === mail("down"),
       "database down: the form says it could not send and keeps what was typed", s);
     process.env.NEXT_PUBLIC_SUPABASE_URL = shimUrl;
   }

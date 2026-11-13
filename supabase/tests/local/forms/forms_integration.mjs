@@ -47,11 +47,11 @@ const mail = (who) => `${who}.${stamp}@example.com`;
 try {
   {
     const s = await core.handleNewsletter(fd({ email: mail("noconfig"), consent: "yes", website: "" }));
-    check(s.status === "error" && s.message === "This form is not available right now, please email support@lextagh.com", "missing settings: newsletter says email support@lextagh.com");
+    check(s.status === "error" && s.message === "This form is not available right now, please email marketing@lextagh.com", "missing settings: newsletter says email marketing@lextagh.com");
     check(s.values?.email === mail("noconfig"), "typed values are kept on that error");
     const p = await core.handlePartner(fd({ route: "Retail", contact_name: "A", business_name: "B", email: mail("noconfig") }));
-    check(p.message === "This form is not available right now, please email sales@lextagh.com", "missing settings: partner says email sales@lextagh.com");
-    const expected = { "General enquiry": "support", Distribution: "sales", "Bulk orders": "sales", "Consumer care": "support", Media: "support", Careers: "support" };
+    check(p.message === "This form is not available right now, please email marketing@lextagh.com", "missing settings: partner says email marketing@lextagh.com");
+    const expected = { "General enquiry": "marketing", Distribution: "marketing", "Bulk orders": "marketing", "Consumer care": "support", Media: "marketing", Careers: "hr" };
     for (const [reason, box] of Object.entries(expected)) {
       const c = await core.handleContact(fd({ reason, name: "A", email: mail("noconfig"), region: "Volta", message: "Hi" }));
       check(c.message === `This form is not available right now, please email ${box}@lextagh.com`, `missing settings: contact reason ${reason} says email ${box}@lextagh.com`);
@@ -229,7 +229,7 @@ try {
   {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "http://127.0.0.1:9";
     const s = await core.handleNewsletter(fd({ email: mail("down"), consent: "yes", website: "" }));
-    check(s.status === "error" && s.message === "Sorry, your message could not be sent. Please try again in a few minutes, or email support@lextagh.com.", "unreachable database shows the generic error");
+    check(s.status === "error" && s.message === "Sorry, your message could not be sent. Please try again in a few minutes, or email marketing@lextagh.com.", "unreachable database shows the generic error");
   }
 } catch (error) {
   fail(`test crashed: ${error instanceof Error ? error.stack : error}`);

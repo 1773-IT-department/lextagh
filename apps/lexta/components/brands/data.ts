@@ -32,13 +32,13 @@ export const yazzProducts: ProductCard[] = [
   {
     slug: "sanitary-pads-and-panty-liners",
     name: "Sanitary pads and panty liners",
-    description: "Winged, high absorbency pads engineered for security and comfort through a full day. Available across regular, heavy flow and extra long formats, with panty liners for everyday freshness.",
+    description: "Ultra-thin pads with soft flexible wings and wide adhesive for side protection and comfort. Available in Green, Pink (Heavy Flow), Minty, Extra Long and Extra Long Minty, with panty liners for everyday freshness.",
     media: { kind: "single", image: { src: "https://yazzproducts.com/wp-content/uploads/2026/07/Yazz-sanitary-pad-Extra-Long.png", alt: "Yazz sanitary pads" } },
   },
   {
     slug: "toothpaste",
     name: "Toothpaste",
-    description: "The new Yazz range comes in three variants: Charcoal, Herbal and Fluoride. Formulated with calcium carbonate, fluoride and sodium to strengthen enamel and guard against plaque, cavities, bleeding gums and bad breath. The Herbal variant carries a blend of herbs that soothes the gums.",
+    description: "The Yazz range comes in five variants: Whitening, Total Care, Herbal, Fluoride and Charcoal. Made for whiter, brighter and healthier smiles, with everyday protection against plaque, cavities and bad breath. The Herbal variant carries a unique blend of herbs.",
     media: {
       kind: "grid", columns: 3, images: [
         { src: "https://yazzproducts.com/wp-content/uploads/2026/08/New-Yazz-charcoal-Toothpaste-e1787744429757.jpg", alt: "Yazz Charcoal toothpaste" },
@@ -50,13 +50,13 @@ export const yazzProducts: ProductCard[] = [
   {
     slug: "toothbrushes",
     name: "Toothbrushes",
-    description: "Designed to pair with the range, built to last longer than the month you bought them for.",
+    description: "Princess, Duke, Duchess, Monarch, Kids and Double (His & Hers), with medium bristles, a tongue cleaner and a flexible rubber handle for easy grip.",
     media: { kind: "photo", placeholder: "Yazz toothbrush pack shot", src: "/pasted-1788770223184-0-mtqzltnh-58d1.png", alt: "Yazz toothbrush packs", w: 1080, h: 1080 },
   },
   {
     slug: "washing-powder",
     name: "Washing powder",
-    description: "Active enzymes formulated to lift the toughest stains, with perfumed blue speckles that leave clothes smelling fresh. Clinically tested to be gentle on hands. Tough on stains, kind on fabric.",
+    description: "Yazz Activ Detergent with Enzymes, specially formulated to give you brighter and fresher clothes, free from every stain. Available in 200g, 500g, 2kg and 5kg packs.",
     media: {
       kind: "grid", columns: 2, images: [
         { src: "https://yazzproducts.com/wp-content/uploads/2026/07/EDSfdc2W4AAu3PT.jpg", alt: "Yazz washing powder" },
@@ -71,7 +71,7 @@ export const yazzProducts: ProductCard[] = [
   {
     slug: "baby-wipes",
     name: "Baby wipes",
-    description: "Alcohol free, gently scented wipes that clean and care for delicate skin, leaving it fresh and smooth. Available in three variants.",
+    description: "Alcohol free wipes that gently cleanse and care for delicate skin, leaving it soft and nourished. Available in Lavender, Castor Oil and Aloe Vera.",
     media: {
       kind: "grid", columns: 3, images: [
         { src: "https://yazzproducts.com/wp-content/uploads/2021/05/Yazz-baby-wipes-new-yellow.jpg", alt: "Yazz baby wipes" },
@@ -83,13 +83,13 @@ export const yazzProducts: ProductCard[] = [
   {
     slug: "baby-diapers",
     name: "Baby diapers",
-    description: "Absorbent, secure and comfortable, for the long nights and the longer days.",
+    description: "Regular diapers and pull up pants with elastic waists, cottony softness and up to 12 hours leakage protection.",
     media: { kind: "single", image: { src: "https://melcom.com/media/catalog/product/cache/8757aa1374eaaf34b9fd32f9e760ba0b/7/0/7018.png", alt: "Yazz baby diapers, large" } },
   },
   {
     slug: "tissue",
     name: "Tissue and kitchen towels",
-    description: "Pocket tissues, toilet rolls, and Mama Yazz, our two ply kitchen towel, named for the number of jobs it ends up doing in a Ghanaian kitchen.",
+    description: "Mama Yazz jumbo tissue, kitchen towels, toilet rolls and tissue napkins for everyday household routines. Pocket Tissue is coming soon.",
     media: {
       kind: "grid", columns: 2, images: [
         { src: "https://yazzproducts.com/wp-content/uploads/2026/07/unnamed-1.png", alt: "Yazz tissue" },
@@ -102,14 +102,14 @@ export const yazzProducts: ProductCard[] = [
 export const linzzyProducts: ProductCard[] = [
   {
     slug: "sanitary-napkins",
-    name: "Sanitary napkins",
-    description: "A full portfolio including Cool Mint, Heavy Flow and Extra Long, each with clinical anti leak barriers and structured absorption designed for a specific need rather than an average one.",
-    media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Your-trusted-partner-copy.jpg.jpeg", alt: "Linzzy sanitary napkins" } },
+    name: "Sanitary towels",
+    description: "Cool Mint, Heavy Flow and Extra Long sanitary towels built around the Absorb, Lock and Breathe positioning, plus Linzzy Panty Liners for light everyday protection.",
+    media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Your-trusted-partner-copy.jpg.jpeg", alt: "Linzzy sanitary towels" } },
   },
   {
     slug: "baby-wipes",
     name: "Baby wipes",
-    description: "Ultra mild, fragrance free wipes in 80 piece packs, formulated for sensitive skin and built to hold up to the job.",
+    description: "80 wipes per resealable pack, in Pink (Rose Perfume), Blue (Lavender Perfume) and Yellow, for everyday care at home or on the go.",
     media: {
       kind: "single",
       image: { src: "/pasted-1788770820092-0-mtqzymab-4cn2.png", alt: "Linzzy baby wipes" },
@@ -121,7 +121,7 @@ export const linzzyProducts: ProductCard[] = [
   {
     slug: "baby-care",
     name: "Baby care",
-    description: "A growing range of everyday essentials for the youngest members of the household.",
+    description: "Linzzy Baby Diapers with a flexible comfort design, in sizes for growing babies, made for little moves and everyday comfort.",
     media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Baby-Diaper-copy.jpg-1.jpeg", alt: "Linzzy baby care" } },
   },
 ];
@@ -130,13 +130,13 @@ export const hoochProducts: ProductCard[] = [
   {
     slug: "super-crunchy-corn-flakes",
     name: "Super Crunchy Corn Flakes",
-    description: "Traditional, crisp, sun ripened corn flakes toasted for a crunch that survives the milk, fortified with essential vitamins.",
+    description: "Super classic crunchy, everyday goodness. 10 individual packs of 50g in every 500g product, enriched with vitamins.",
     media: { kind: "single", image: { src: "https://www.chopboxonline.com/wp-content/uploads/2022/08/NewBookImages-53-1.png", alt: "Hooch Super Crunchy Corn Flakes, 375g" } },
   },
   {
     slug: "frosted-flakes",
     name: "Frosted Flakes",
-    description: "A measured balance of sweetness and high energy grain, low in fat, made for active mornings and small people with strong opinions.",
+    description: "Sweet crunch, happy mornings. A crispy texture with a sweet frosted finish, in 10 individual packs of 37.5g in every 375g product.",
     // The prototype editor left a fixed 390 x 248 size on this photo slot; kept so the card looks as approved.
     media: { kind: "photo", placeholder: "Hooch Frosted Flakes pack shot", src: "/pasted-1788770879108-0-mtqzzvrf-xf3v.png", alt: "Hooch Frosted Flakes pack", w: 1080, h: 1080, size: { width: 390, height: 248 } },
   },

@@ -13,7 +13,7 @@ import s from "./panel.module.css";
 const STORAGE_KEY = "lexta-chat-v1";
 const POLL_MS = 4000;
 const MAX_BACKOFF_MS = 30000;
-const GENERIC = "Sorry, that did not go through. Please try again in a moment, or email support@lextagh.com.";
+const GENERIC = "Sorry, that did not go through. Please try again in a moment, or email marketing@lextagh.com.";
 
 type Session = { id: string; token: string };
 type Line = ChatVisitorMessage & { pending?: boolean };

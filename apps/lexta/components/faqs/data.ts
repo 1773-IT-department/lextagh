@@ -11,7 +11,7 @@ export const faqGroups: FaqGroup[] = [
   { kicker: "Products", title: "Our products", items: [
     { q: "Where can I buy Lexta products?", a: "Yazz, Linzzy, Hooch and the rest of the range are stocked in supermarkets, pharmacies, open markets and wholesale outlets across all 16 regions of Ghana, and through our subsidiary in Monrovia, Liberia." },
     { q: "Are your products made in Ghana?", a: "Yes. We manufacture at our own plants in Accra and Tema. A small number of specialist lines are imported to complete a category, and these are labelled accordingly." },
-    { q: "How do I report a product quality issue?", a: "Email sales@lextagh.com or call +233 (0) 501 619 588 with the batch code printed on the pack. Quality assurance investigates every report and comes back with findings." },
+    { q: "How do I report a product quality issue?", a: "Email marketing@lextagh.com or call +233 (0) 501 619 588 with the batch code printed on the pack. Quality assurance investigates every report and comes back with findings." },
     { q: "Do you offer product samples?", a: "Samples go to trade partners, institutional buyers and private-label clients as part of an active enquiry. Request one through the Partner With Us form.", links: [{ phrase: "Partner With Us form", href: "/partner-with-us#apply" }] },
   ] },
   { kicker: "Buying", title: "Trade and bulk orders", items: [
@@ -28,6 +28,6 @@ export const faqGroups: FaqGroup[] = [
   { kicker: "Working here", title: "Careers and people", items: [
     { q: "How do I apply for a role?", a: "Open roles are listed on the Careers page with an apply link on each. If nothing fits, send a general application and we keep it on file for six months.", links: [{ phrase: "Careers page", href: "/careers" }] },
     { q: "Do you take interns or national service personnel?", a: "Yes, across production, quality, sales and finance. Applications open ahead of each intake, so send a general application to be notified.", links: [{ phrase: "general application", href: "/careers#general" }] },
-    { q: "Does Lexta ever charge for recruitment?", a: "Never. We do not charge candidates at any stage. Treat any request for payment as fraudulent and report it to sales@lextagh.com." },
+    { q: "Does Lexta ever charge for recruitment?", a: "Never. We do not charge candidates at any stage. Treat any request for payment as fraudulent and report it to hr@lextagh.com." },
   ] },
 ];

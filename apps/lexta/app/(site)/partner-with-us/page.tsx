@@ -28,11 +28,11 @@ const stats = [
   { value: "16", text: "Regions covered by our distribution network" },
   { value: "2", text: "Markets served: Ghana and Liberia" },
   { value: "48h", text: "Typical response to a complete application" },
-  { value: "6", text: "Consumer brands available to trade partners" },
+  { value: "3", text: "Consumer brands available to trade partners" },
 ];
 
 const contacts = [
-  { tag: "TR", title: "Trade desk", label: "sales@lextagh.com", href: "mailto:sales@lextagh.com" },
+  { tag: "TR", title: "Trade desk", label: "marketing@lextagh.com", href: "mailto:marketing@lextagh.com" },
   { tag: "TL", title: "Call the team", label: "+233 (0) 501 619 588", href: "tel:+233501619588" },
 ];
 

@@ -147,7 +147,7 @@ export default function MobileNav() {
         </div>
 
         <div style={{ marginTop: "auto", padding: 18, borderTop: "1px solid #eef5f8", fontSize: 12, lineHeight: 1.7, color: "#5d7883" }}>
-          Lexta Square, Dzorwulu, Accra<br />+233 (0) 501 619 588<br />support@lextagh.com
+          Lexta Square, Dzorwulu, Accra<br />+233 (0) 501 619 588<br />marketing@lextagh.com
           <div style={{ marginTop: 10 }}>
             <a href={portalUrl} style={{ fontSize: 12, fontWeight: 600, color: "#128fb0" }}>Staff login</a>
           </div>
