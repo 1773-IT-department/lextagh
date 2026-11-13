@@ -42,7 +42,6 @@ Lexta's routing table sends general contact, partnerships, distributor and whole
 | --- | --- | --- | --- |
 | Hero slide 1, headline | Caring for your everyday | Caring for you every day | Approved copy |
 | Hero slide 1, body | Home care, personal care and food products made in Ghana for families across Africa. | Quality, affordability and everyday care, proudly from Ghana. | Approved copy (trimmed; full text in the gaps file) |
-| Hero slide 1, buttons | Explore our brands | Explore Our Brands + Partner with Us (to /partner-with-us, the existing secondary button style already used on slide 6) | Approved copy |
 | Our Brands, Linzzy card | Sanitary napkins in Cool Mint, Heavy Flow and Extra Long, plus fragrance free baby wipes formulated for sensitive skin. | Sanitary towels in Cool Mint, Heavy Flow and Extra Long, panty liners, plus baby diapers and baby wipes for everyday family care. | Contradiction: Linzzy wipes are Rose Perfume and Lavender Perfume, and the range includes liners and diapers |
 | Our Impact in Numbers | 4+ Trusted Brands | 3 Trusted Brands | Contradiction: Lexta lists three brands |
 
@@ -137,3 +136,5 @@ The live page reads products from Product Management in the portal. These cards 
 - Head office address: Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.
 - Phone numbers +233 (0) 501 619 588 and +233 (0) 302 235 296 (both appear in Lexta's contact block).
 - "Founded 2002", "24 years", "25+ years", 500+ employees, 10M+ lives, 200+ distribution partners, Liberia: Lexta's documents give no figures, so nothing contradicts them (logged for confirmation in the gaps file).
+| Article "Clean Hands, Green Land", body | Plastic buy back and Eco Points text | [PLACEHOLDER: approved Clean Hands, Green Land article body from Lexta] | The old body contradicted Lexta's new description. |
+| FAQ "How do I report a product quality issue?" | (kept) support@lextagh.com | support@lextagh.com | Kept on the consumer care address so complaints go to one inbox. |

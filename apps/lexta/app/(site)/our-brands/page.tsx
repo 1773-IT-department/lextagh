@@ -243,7 +243,7 @@ export default async function OurBrandsPage() {
             <Points
               style={raisedPoint}
               items={[
-                { title: "Enriched with vitamins", text: "Vitamin E, B1, B2, B3, B5, B6, B12 and folic acid, as listed on the approved Hooch packaging." },
+                { title: "Enriched with vitamins", text: "Vitamin E, B1, B2, B3, B5, B6, B12 and folic acid." },
                 { title: "Convenience", text: "Making busy mornings easier with 10 individually portioned cereal packs in every product." },
               ]}
             />

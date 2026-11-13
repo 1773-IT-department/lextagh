@@ -1,8 +1,8 @@
 # Inventory of files Lexta shared on Google Drive
 
-> Searched on 13 November 2026 with the Drive connector: folder listings (`parentId = …`), `owner = 'akosua.obenewaa@lextagh.com'` (all pages), `owner = 'jeremy.appiah-kubi@lextagh.com'`, `sharedWithMe = true`, `sharedFrom` / `in writers` for akosua.obenewaa@lextagh.com, and title searches (Lexta, Wireframe, Yazz, Tip, Hooch, Linzzy).
+> Searched on 13 November 2026 with the Drive connector: folder listings (`parentId = …`), `owner = 'Lexta marketing (shared folder owner)'` (all pages), `owner = 'Lexta design'`, `sharedWithMe = true`, `sharedFrom` / `in writers` for Lexta marketing (shared folder owner), and title searches (Lexta, Wireframe, Yazz, Tip, Hooch, Linzzy).
 > Every text document and PDF was read in full with the Drive reader. Binaries (images, zip) were not downloaded; name, id, size and folder are recorded only.
-> Owners: folders and documents by akosua.obenewaa@lextagh.com; logo and icon files by jeremy.appiah-kubi@lextagh.com; the PDF by 1773hrconsultancy@gmail.com (1773's copy of Lexta's document).
+> Owners: folders and documents by Lexta marketing (shared folder owner); logo and icon files by Lexta design; the PDF by 1773 shared drive (1773's copy of Lexta's document).
 
 ## Folders
 
@@ -23,7 +23,7 @@
 
 | File | Drive id | Brand | Type | Size | Folder | Purpose | Read? |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Lexta Revised Website content and Wireframes new - Google Docs.pdf | 15Ypkvg9VXEvvbIYrrse55hdsv9yeVcdh | Lexta, Yazz (and routing for all four) | PDF | 575 KB | 1773 shared drive (owner 1773hrconsultancy@gmail.com) | Master content and wireframe document: implementation boundary, email routing, Lexta site copy, Yazz copy, products, CSR, Tips Just 4 You and articles | Yes, in full (about 100,000 characters). The text ends at "Yazz® First Period Education"; the Linzzy and Hooch sections are not in it (they are in the brand documents) |
+| Lexta Revised Website content and Wireframes new - Google Docs.pdf | 15Ypkvg9VXEvvbIYrrse55hdsv9yeVcdh | Lexta, Yazz (and routing for all four) | PDF | 575 KB | 1773 shared drive (owner 1773 shared drive) | Master content and wireframe document: implementation boundary, email routing, Lexta site copy, Yazz copy, products, CSR, Tips Just 4 You and articles | Yes, in full (about 100,000 characters). The text ends at "Yazz® First Period Education"; the Linzzy and Hooch sections are not in it (they are in the brand documents) |
 | yazz website content.docx | 1ZrvUbtzuuACtS5IoqimvZBZQo6gV9FQn | Yazz | Word | 7.0 MB | Yazz Tab Content | Yazz site copy by tab, products, CSR, Tips hub, contact block | Yes, in full. The file size suggests embedded images, which the text reader does not show |
 | yazz article.docx | 1M3vC1ELL2JaLdMc1pn-CksRp_nfPzDzh | Yazz | Word | 50 KB | YAZZ ARTICLES | 10 puberty articles, Just 4 Parents intro and 10 articles, topic pages, Period Talk, Tips Just 4 You landing page | Yes, in full |
 | Linzzy Website Content.docx | 127Nr_ZuLKakXYIApEGJ-TFqX11jF12I- | Linzzy | Word | 71 KB | Linzzy Tab Content | Linzzy site copy (home, about, products, CSR, contact), 6 baby care and 6 feminine care articles, quick tips, Parent Corner | Yes, in full |

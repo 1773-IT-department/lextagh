@@ -271,48 +271,8 @@ export const articles: Article[] = [
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "How it works"
-      },
-      {
         type: "p",
-        text: "Clean Hands, Green Land is Lexta Ghana's plastic buy back programme. Consumers return empty sachet and detergent wrappers to Lexta distributors. In exchange they receive Eco Points, which can be redeemed against Lexta products."
-      },
-      {
-        type: "p",
-        text: "The principle is simple: give waste a value, and people have a reason to collect it rather than throw it away."
-      },
-      {
-        type: "h2",
-        text: "Our network, working in reverse"
-      },
-      {
-        type: "p",
-        text: "Every day our distributors carry products out to shops, markets and homes across Ghana. Clean Hands, Green Land uses the same network in the other direction. The routes that deliver full packs can also bring empty wrappers back, which turns a distribution network into a collection network without building a new system from scratch."
-      },
-      {
-        type: "h2",
-        text: "Why packaging waste matters"
-      },
-      {
-        type: "p",
-        text: "Small plastic sachets and wrappers make everyday products affordable in convenient sizes, but once used they are easy to drop and hard to collect. Discarded packaging blocks drains, spoils public spaces and can contribute to flooding when gutters are clogged."
-      },
-      {
-        type: "p",
-        text: "As a manufacturer of home care products sold in this kind of packaging, we have a responsibility for what happens to it after use. Clean Hands, Green Land is one practical way of taking that responsibility seriously."
-      },
-      {
-        type: "h2",
-        text: "A circular approach"
-      },
-      {
-        type: "p",
-        text: "Rewarding returns with Eco Points that can be spent on our products closes the loop between consumer, distributor and manufacturer. Households gain value from something they would otherwise discard, and communities benefit from cleaner streets and drains."
-      },
-      {
-        type: "p",
-        text: "The programme is part of the environment pillar of our CSR work and contributes to Sustainable Development Goal 12, responsible consumption and production. For details of participating distributors, please contact our team through the Contact Us page."
+        text: "[PLACEHOLDER: approved Clean Hands, Green Land article body from Lexta]"
       }
     ],
     sources: [

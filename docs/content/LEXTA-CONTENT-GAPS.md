@@ -26,6 +26,8 @@
 | D16 | Yazz "blog post backend" access for Lexta to add article images | Yazz site | A staff-editable news CMS is out of scope (CLAUDE.md). Images can be supplied to Desmond instead. |
 | D17 | "All red texts remain as hyperlinks for read more", many "hyperlinked" and "make clickable" notes in the Yazz articles | Brand sites | To be handled when the brand sites are built (internal links between existing articles are fine). |
 
+- **Home hero, second button "Partner with Us".** Lexta's PDF asks for [Explore Our Brands] [Partner with Us] on slide 1. The approved design has one button there, so the second button was not added. Desmond to decide.
+
 ## 2. Text trimmed to fit (full version kept here)
 
 | Where | Shown on the site | Full approved text |

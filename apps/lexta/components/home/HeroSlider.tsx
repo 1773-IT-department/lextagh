@@ -31,7 +31,7 @@ const slides: Slide[] = [
     eyebrow: "Lexta Ghana Limited", title: "Caring for you ", highlight: "every\u00a0day", titleSize: 58, titleLeading: 1.05,
     body: "Quality, affordability and everyday care, proudly from Ghana.", bodyMax: 460,
     img: "/assets/hero-family-products.png", w: 1774, h: 887, alt: "Ghanaian family at home with Lexta and Yazz products", focus: "70% center",
-    ctas: [{ label: "Explore Our Brands", href: "/our-brands" }, { label: "Partner with Us", href: "/partner-with-us", ghost: true }],
+    ctas: [{ label: "Explore Our Brands", href: "/our-brands" }],
   },
   {
     eyebrow: "Proudly Ghanaian since 2002", title: "Two decades on ", highlight: "Ghana's shelves", titleSize: 58, titleLeading: 1.05,

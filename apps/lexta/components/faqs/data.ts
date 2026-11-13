@@ -11,7 +11,7 @@ export const faqGroups: FaqGroup[] = [
   { kicker: "Products", title: "Our products", items: [
     { q: "Where can I buy Lexta products?", a: "Yazz, Linzzy, Hooch and the rest of the range are stocked in supermarkets, pharmacies, open markets and wholesale outlets across all 16 regions of Ghana, and through our subsidiary in Monrovia, Liberia." },
     { q: "Are your products made in Ghana?", a: "Yes. We manufacture at our own plants in Accra and Tema. A small number of specialist lines are imported to complete a category, and these are labelled accordingly." },
-    { q: "How do I report a product quality issue?", a: "Email marketing@lextagh.com or call +233 (0) 501 619 588 with the batch code printed on the pack. Quality assurance investigates every report and comes back with findings." },
+    { q: "How do I report a product quality issue?", a: "Email support@lextagh.com or call +233 (0) 501 619 588 with the batch code printed on the pack. Quality assurance investigates every report and comes back with findings." },
     { q: "Do you offer product samples?", a: "Samples go to trade partners, institutional buyers and private-label clients as part of an active enquiry. Request one through the Partner With Us form.", links: [{ phrase: "Partner With Us form", href: "/partner-with-us#apply" }] },
   ] },
   { kicker: "Buying", title: "Trade and bulk orders", items: [
