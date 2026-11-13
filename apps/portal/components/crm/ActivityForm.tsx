@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import { useEffect, useRef } from "react";
 import { CRM_ACTIVITY_TYPES } from "@lexta/db";
 import { addActivity } from "@/app/(app)/systems/crm/actions";
@@ -31,7 +31,7 @@ export default function ActivityForm({ kind, id }: { kind: "lead" | "contact" | 
           </div>
           <div className="field">
             <label htmlFor={`occurred-${id}`}>When (leave empty for now)</label>
-            <input id={`occurred-${id}`} name="occurred_at" type="datetime-local" aria-invalid={!!fe.occurred_at} />
+            <DateInput id={`occurred-${id}`} name="occurred_at" type="datetime-local" aria-invalid={!!fe.occurred_at} />
             {fe.occurred_at && <span className="ferr">{fe.occurred_at}</span>}
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import { useState } from "react";
 import { COMPLAINT_CATEGORIES, COMPLAINT_CHANNELS, COMPLAINT_SEVERITIES, HIGH_FLOOR_CATEGORIES, type Complaint, type ComplaintCategory } from "@lexta/db";
 import { saveComplaint } from "@/app/(app)/systems/complaints/actions";
@@ -175,7 +175,7 @@ export default function ComplaintForm({
             </div>
             <div className="field">
               <label htmlFor="purchase_date">Date bought</label>
-              <input id="purchase_date" name="purchase_date" type="date" defaultValue={c?.purchase_date ?? ""} aria-invalid={!!fe.purchase_date} />
+              <DateInput id="purchase_date" name="purchase_date" type="date" defaultValue={c?.purchase_date ?? ""} aria-invalid={!!fe.purchase_date} />
               {fe.purchase_date && <span className="ferr">{fe.purchase_date}</span>}
             </div>
           </div>

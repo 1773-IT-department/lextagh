@@ -1,4 +1,4 @@
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import type { FieldVisitRow } from "@lexta/db";
 import FieldTabs from "@/components/field-sales/FieldTabs";
@@ -54,11 +54,11 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
         </div>
         <div className="field">
           <label htmlFor="from">From</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} />
         </div>
         <div className="field">
           <label htmlFor="to">To</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} />
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

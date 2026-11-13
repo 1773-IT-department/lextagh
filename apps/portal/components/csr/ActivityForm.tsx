@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import { CSR_NOTES_MAX, CSR_PARTNERS_MAX, CSR_PLACE_MAX, type CsrStatus } from "@lexta/db";
 import { saveActivity } from "@/app/(app)/systems/csr/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -47,7 +47,7 @@ export default function ActivityForm({ values, programmes, regions }: {
         <div className="row2">
           <div className="field">
             <label htmlFor="activity_date">Date</label>
-            <input id="activity_date" name="activity_date" type="date" defaultValue={v.activity_date} {...aria("activity_date")} />
+            <DateInput id="activity_date" name="activity_date" type="date" defaultValue={v.activity_date} {...aria("activity_date")} />
             {err("activity_date")}
           </div>
           <div className="field">

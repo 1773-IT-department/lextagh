@@ -375,6 +375,135 @@ try {
   await pBrand.click({ force: true });
   check(await pBrand.getAttribute("aria-expanded") === "false", "1440 portal: a disabled dropdown does not open");
 
+  // Date fields (packages/ui DateInput) --------------------------------------------------------------------------------------
+  await mgr.goto(`${PORTAL}/management`);
+  const fromWrap = mgr.locator("[data-lx-date]", { has: mgr.locator("#from") });
+  const fromTrigger = fromWrap.locator("[data-lx-date-trigger]");
+  await fromTrigger.waitFor();
+  const fromInput = mgr.locator("#from");
+  const dfFace = await fromInput.evaluate((el) => ({ pr: getComputedStyle(el).paddingRight, ind: getComputedStyle(el, "::-webkit-calendar-picker-indicator").opacity }));
+  check(dfFace.pr === "42px" && await fromWrap.locator("span[aria-hidden] svg").count() === 1, "1440 date: the field has the teal calendar icon in place of the browser's", dfFace);
+  const startFrom = await fromInput.inputValue();
+  const dlg = mgr.locator("[data-lx-date-dialog]");
+  const focusedDay = () => mgr.evaluate(() => document.activeElement?.id?.slice(-10) ?? "");
+  const shift = (v, days) => new Date(Date.parse(`${v}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
+  await fromTrigger.click();
+  await dlg.waitFor();
+  await mgr.waitForTimeout(350);
+  await mgr.screenshot({ path: `${OUT}/portal-1440-management-from-calendar.png` });
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const monthOf = (v) => `${MONTHS[Number(v.slice(5, 7)) - 1]} ${v.slice(0, 4)}`;
+  check(await dlg.getAttribute("role") === "dialog" && await dlg.getAttribute("aria-modal") === "true" && await dlg.getByRole("heading").innerText() === monthOf(startFrom),
+    "1440 date: the calendar is a dialog named by its month and year", await dlg.getByRole("heading").innerText());
+  check(await focusedDay() === startFrom && await dlg.locator(`[aria-selected=true]`).count() === 1, "1440 date: focus starts on the chosen day, shown as selected");
+  check(await dlg.locator("[aria-current=date]").count() <= 1 && await dlg.getByRole("button", { name: "Clear" }).count() === 0 && await dlg.getByRole("button", { name: "Today" }).count() === 1,
+    "1440 date: today is marked, Today is offered and Clear is not (the field is required)");
+  check(JSON.stringify(await dlg.locator("th").evaluateAll((ths) => ths.map((t) => t.getAttribute("abbr")))) === JSON.stringify(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]),
+    "1440 date: weeks run Monday to Sunday");
+  await mgr.keyboard.press("ArrowRight");
+  check(await focusedDay() === shift(startFrom, 1), "1440 date: Right Arrow moves a day");
+  await mgr.keyboard.press("ArrowDown");
+  check(await focusedDay() === shift(startFrom, 8), "1440 date: Down Arrow moves a week");
+  await mgr.keyboard.press("Home");
+  const home = await focusedDay();
+  check(new Date(`${home}T00:00:00Z`).getUTCDay() === 1, "1440 date: Home goes to the Monday", home);
+  await mgr.keyboard.press("End");
+  check(await focusedDay() === shift(home, 6), "1440 date: End goes to the Sunday");
+  await mgr.keyboard.press("PageDown");
+  const nextMonth = await focusedDay();
+  check(Number(nextMonth.slice(5, 7)) === (Number(shift(home, 6).slice(5, 7)) % 12) + 1, "1440 date: Page Down moves a month", nextMonth);
+  await mgr.keyboard.press("Shift+PageDown");
+  check(Number((await focusedDay()).slice(0, 4)) === Number(nextMonth.slice(0, 4)) + 1 && await dlg.getByRole("heading").innerText() === monthOf(await focusedDay()),
+    "1440 date: Shift Page Down moves a year and the heading follows");
+  await mgr.keyboard.press("Shift+PageUp");
+  await mgr.keyboard.press("PageUp");
+  await mgr.keyboard.press("Escape");
+  check(!(await dlg.count()) && await fromInput.inputValue() === startFrom && await fromTrigger.evaluate((el) => el === document.activeElement),
+    "1440 date: Escape closes without a change and returns focus to the calendar button");
+  await mgr.keyboard.press("Enter");
+  await dlg.waitFor();
+  await mgr.keyboard.press("ArrowLeft");
+  await mgr.keyboard.press("Enter");
+  const chosen = shift(startFrom, -1);
+  check(await fromInput.inputValue() === chosen && !(await dlg.count()) && await fromTrigger.evaluate((el) => el === document.activeElement),
+    "1440 date: Enter chooses the day, closes and returns focus", await fromInput.inputValue());
+  await mgr.waitForTimeout(100);
+  check(/selected$/.test(await fromWrap.locator("[role=status]").innerText()), "1440 date: the choice is announced", await fromWrap.locator("[role=status]").innerText());
+  // Typing still works, and the calendar opens on the typed month.
+  await fromInput.fill("2026-01-05");
+  await fromTrigger.click();
+  check(await dlg.getByRole("heading").innerText() === "January 2026", "1440 date: a typed date opens the calendar on its month");
+  await dlg.getByRole("button", { name: "8 January 2026", exact: true }).click();
+  check(await fromInput.inputValue() === "2026-01-08", "1440 date: clicking a day chooses it");
+  // min and max: days outside are greyed out and cannot be chosen.
+  const toInput = mgr.locator("#to");
+  const toBefore = await toInput.inputValue();
+  await toInput.evaluate((el) => { el.min = "2026-11-10"; el.max = "2026-11-20"; });
+  await toInput.fill("2026-11-15");
+  await mgr.locator("[data-lx-date]", { has: toInput }).locator("[data-lx-date-trigger]").click();
+  const early = dlg.getByRole("button", { name: "9 November 2026, not available", exact: true });
+  check(await early.getAttribute("aria-disabled") === "true" && await dlg.getByRole("button", { name: "Previous month" }).isDisabled() && await dlg.getByRole("button", { name: "Next month" }).isDisabled(),
+    "1440 date: days before min are greyed out and the months outside cannot be opened");
+  await early.click({ force: true });
+  check(await toInput.inputValue() === "2026-11-15" && await dlg.count() === 1, "1440 date: a day outside min and max cannot be chosen");
+  await mgr.keyboard.press("Escape");
+  await toInput.evaluate((el) => { el.removeAttribute("min"); el.removeAttribute("max"); });
+  await toInput.fill(toBefore);
+  // Posting: the chosen dates go to the address like before.
+  await mgr.getByRole("button", { name: "Apply" }).click();
+  await mgr.waitForURL(/from=2026-01-08/);
+  check(new URL(mgr.url()).searchParams.get("to") === toBefore, "1440 date: Apply posts the dates chosen in the calendar", mgr.url());
+
+  // A form date that is not required: Clear, a reset, and a disabled fieldset.
+  await admin.goto(`${PORTAL}/systems/complaints/new`);
+  const buyWrap = admin.locator("[data-lx-date]", { has: admin.locator("#purchase_date") });
+  const buyTrigger = buyWrap.locator("[data-lx-date-trigger]");
+  await buyTrigger.waitFor();
+  await buyTrigger.click();
+  const aDlg = admin.locator("[data-lx-date-dialog]");
+  await aDlg.waitFor();
+  await admin.waitForTimeout(350);
+  await admin.screenshot({ path: `${OUT}/portal-1440-complaint-purchase-date-calendar.png` });
+  await aDlg.getByRole("button", { name: "Today" }).click();
+  const todayIso = await admin.evaluate(() => { const n = new Date(); return new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate())).toISOString().slice(0, 10); });
+  check(await admin.locator("#purchase_date").inputValue() === todayIso, "1440 date: Today chooses today");
+  await buyTrigger.click();
+  await aDlg.getByRole("button", { name: "Clear" }).click();
+  check(await admin.locator("#purchase_date").inputValue() === "", "1440 date: Clear empties a field that is not required");
+  await buyTrigger.click();
+  await aDlg.getByRole("button", { name: "Today" }).click();
+  await admin.locator("#purchase_date").evaluate((el) => el.form.reset());
+  await admin.waitForTimeout(100);
+  check(await admin.locator("#purchase_date").inputValue() === "" && !/chosen/.test(await buyTrigger.innerText()), "1440 date: a form reset is picked up");
+  await admin.locator("#purchase_date").evaluate((el) => { el.closest("fieldset").disabled = true; });
+  await admin.waitForFunction(() => document.querySelector("#purchase_date").parentElement.querySelector("[data-lx-date-trigger]").disabled);
+  await buyTrigger.click({ force: true });
+  check(!(await aDlg.count()) && await admin.locator("#purchase_date").inputValue() === "", "1440 date: inside a disabled fieldset the calendar does not open");
+  await admin.locator("#purchase_date").evaluate((el) => { el.closest("fieldset").disabled = false; });
+  // Other screens with a date field, open, for the record.
+  for (const [url, id, name] of [["/systems/csr/new", "activity_date", "csr-activity-date"], ["/systems/orders", "from", "orders-from"]]) {
+    await admin.goto(`${PORTAL}${url}`);
+    const t = admin.locator("[data-lx-date]", { has: admin.locator(`#${id}`) }).locator("[data-lx-date-trigger]");
+    if (!(await t.count())) { await admin.locator("main h1").waitFor(); if (!(await t.count())) continue; }
+    await t.click();
+    await aDlg.waitFor();
+    await admin.waitForTimeout(350);
+    await admin.screenshot({ path: `${OUT}/portal-1440-${name}-calendar.png` });
+    await admin.keyboard.press("Escape");
+  }
+
+  // Without JavaScript: the branded field still types and posts.
+  const njs = await (await context(1440, { javaScriptEnabled: false })).newPage();
+  await njs.context().addCookies(await mgr.context().cookies());
+  await njs.goto(`${PORTAL}/management`);
+  check(await njs.locator("#from").isVisible() && await njs.locator("#from").evaluate((el) => getComputedStyle(el).paddingRight) === "42px" && !(await njs.locator("[data-lx-date-trigger]").count()),
+    "no JavaScript: the date field has the brand face and the browser's own picker");
+  await njs.locator("#from").fill("2026-02-02");
+  await njs.getByRole("button", { name: "Apply" }).click();
+  await njs.waitForURL(/from=2026-02-02/);
+  check(true, "no JavaScript: a typed date posts");
+  await njs.context().close();
+
   // Portal on a phone: the phone's own picker on the branded face, no sideways scroll.
   const rep = watch(await (await context(390)).newPage(), "manager 390");
   await rep.goto(`${PORTAL}/login`);
@@ -387,6 +516,11 @@ try {
   const stage = rep.locator("#stage");
   check(await stage.evaluate((s) => getComputedStyle(s).appearance) === "none" && !(await rep.locator("[data-lx-select-combo]").count()), "390 portal: filters use the phone's own picker on the branded face");
   check(await noSideScroll(rep), "390 portal: no sideways scroll on a filter bar");
+  await rep.goto(`${PORTAL}/management`);
+  await rep.locator("main h1").waitFor();
+  check(!(await rep.locator("[data-lx-date-trigger]").count()) && await rep.locator("#from").evaluate((el) => getComputedStyle(el).paddingRight) === "42px",
+    "390 touch: date fields keep the phone's own picker on the branded face");
+  await rep.screenshot({ path: `${OUT}/portal-390-management-dates.png` });
   await rep.screenshot({ path: `${OUT}/portal-390-leads.png` });
 
   check(errors.length === 0, "no errors in the browser console", errors.slice(0, 5));

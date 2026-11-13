@@ -1,4 +1,4 @@
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import { JOB_APPLICATION_STAGES, jobApplicationStageLabel, type JobApplication } from "@lexta/db";
 import { CleanupForm } from "@/components/recruitment/NotesForms";
@@ -108,11 +108,11 @@ export default async function RecruitmentPage({ searchParams }: { searchParams: 
         </div>
         <div className="field">
           <label htmlFor="from">Received from</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} />
         </div>
         <div className="field">
           <label htmlFor="to">Received to</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} />
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

@@ -279,6 +279,33 @@ async function choose(page, loc, option) {
   await list.waitFor({ state: "detached" });
   await sleep(600);
 }
+/**
+ * Picks a date in a Lexta date field: the pointer opens the calendar from the field's icon and clicks the day `days`
+ * from today (on the phone, or before a page runs, the date is typed into the field instead).
+ */
+async function pickDate(page, loc, days) {
+  const n = new Date();
+  const day = new Date(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) + days * 86400000);
+  const trigger = page.locator("[data-lx-date]", { has: loc }).locator("[data-lx-date-trigger]");
+  if (!(await trigger.count())) {
+    await point(page, loc);
+    await loc.fill(day.toISOString().slice(0, 10));
+    await sleep(600);
+    return;
+  }
+  await click(page, trigger, { pause: 250 });
+  const dialog = page.locator("[data-lx-date-dialog]");
+  await dialog.waitFor();
+  await sleep(500);
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const name = `${day.getUTCDate()} ${MONTHS[day.getUTCMonth()]} ${day.getUTCFullYear()}`;
+  if ((await dialog.getByRole("heading").innerText()) !== `${MONTHS[day.getUTCMonth()]} ${day.getUTCFullYear()}`) {
+    await click(page, dialog.getByRole("button", { name: days < 0 ? "Previous month" : "Next month" }), { pause: 200 });
+  }
+  await click(page, dialog.getByRole("button", { name, exact: true }), { pause: 300 });
+  await dialog.waitFor({ state: "detached" });
+  await sleep(500);
+}
 async function scrollTo(page, loc, block = "center") {
   await loc.evaluate((el, b) => el.scrollIntoView({ behavior: "smooth", block: b }), block);
   await sleep(900);
@@ -806,10 +833,7 @@ video("10", "csr", async () => {
   await settle(page);
   await say(page, "Choose the programme and the date, and tick Done", 1300);
   await choose(page, page.getByLabel("Programme"), { label: "The Dignity Project" });
-  const yday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  await point(page, page.getByLabel("Date"));
-  await page.getByLabel("Date").fill(yday);
-  await sleep(600);
+  await pickDate(page, page.getByLabel("Date"), -1);
   await click(page, page.getByRole("radio", { name: "Done" }));
   await say(page, "Choose the region and type the place and the people reached", 1300);
   await choose(page, page.getByLabel("Region"), { label: "Central" });

@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import { EMPLOYMENT_TYPES, JOB_OPENING_STATUSES, type JobOpening } from "@lexta/db";
 import { saveRole } from "@/app/(app)/systems/recruitment/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
@@ -106,13 +106,13 @@ export default function RoleForm({ mode, role, departments, locations }: Props) 
           <div className="row2">
             <div className="field">
               <label htmlFor="opens_at">Opening date (shown as Posted)</label>
-              <input id="opens_at" name="opens_at" type="date" defaultValue={role?.opens_at ?? ""} {...err("opens_at")} />
+              <DateInput id="opens_at" name="opens_at" type="date" defaultValue={role?.opens_at ?? ""} {...err("opens_at")} />
               <span className="hint">Left empty, opening the role sets today.</span>
               {msg("opens_at")}
             </div>
             <div className="field">
               <label htmlFor="closes_at">Closing date</label>
-              <input id="closes_at" name="closes_at" type="date" defaultValue={role?.closes_at ?? ""} {...err("closes_at")} />
+              <DateInput id="closes_at" name="closes_at" type="date" defaultValue={role?.closes_at ?? ""} {...err("closes_at")} />
               <span className="hint">Applications are taken through this whole day. Empty: open until you close it.</span>
               {msg("closes_at")}
             </div>

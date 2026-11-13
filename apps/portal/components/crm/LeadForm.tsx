@@ -1,6 +1,6 @@
 "use client";
 
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import { useState } from "react";
 import { CRM_SOURCES, CRM_STAGES, type CrmLead } from "@lexta/db";
 import { saveLead } from "@/app/(app)/systems/crm/actions";
@@ -127,7 +127,7 @@ export default function LeadForm({
             </div>
             <div className="field">
               <label htmlFor="next_action_date">By when (optional)</label>
-              <input id="next_action_date" name="next_action_date" type="date" defaultValue={lead?.next_action_date ?? ""} aria-invalid={!!fe.next_action_date} />
+              <DateInput id="next_action_date" name="next_action_date" type="date" defaultValue={lead?.next_action_date ?? ""} aria-invalid={!!fe.next_action_date} />
               {fe.next_action_date && <span className="ferr">{fe.next_action_date}</span>}
             </div>
           </div>

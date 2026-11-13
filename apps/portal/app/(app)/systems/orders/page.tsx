@@ -1,4 +1,4 @@
-import { Select } from "@lexta/ui";
+import { DateInput, Select } from "@lexta/ui";
 import Link from "next/link";
 import { orderStatusLabel, STAFF_ORDER_STATUSES, type DistributorOrder, type OrderInboxRow } from "@lexta/db";
 import OrderTabs from "@/components/orders/OrderTabs";
@@ -160,11 +160,11 @@ async function Inbox({ access, params }: { access: OrdersAccess; params: Search 
         </div>
         <div className="field">
           <label htmlFor="from">Submitted from</label>
-          <input id="from" name="from" type="date" defaultValue={f.from} />
+          <DateInput id="from" name="from" type="date" defaultValue={f.from} />
         </div>
         <div className="field">
           <label htmlFor="to">Submitted to</label>
-          <input id="to" name="to" type="date" defaultValue={f.to} />
+          <DateInput id="to" name="to" type="date" defaultValue={f.to} />
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>

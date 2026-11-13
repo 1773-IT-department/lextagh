@@ -40,7 +40,7 @@ Each video shows one task from start to finish, with a caption bar that says wha
 | [Stockists: add a shop](videos/07-stockists.mp4) | Add a stockist and find it on the website's Where to Buy | 51 seconds |
 | [Distributor ordering: place and confirm an order](videos/08-distributor-order.mp4) | A distributor places an order; a Lexta sales rep confirms it with a note | 56 seconds |
 | [Field sales: record a shop visit (phone)](videos/09-field-sales-phone.mp4) | Start a visit, pick the shop, take a photo, choose the outcome and save | 33 seconds |
-| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, add a photo and see the totals | 45 seconds |
+| [CSR activities: log an activity with a photo](videos/10-csr.mp4) | Log a done activity, pick the date in the calendar, add a photo and see the totals | 49 seconds |
 | [Management overview: a tour](videos/11-dashboard.mp4) | The overview, a change of period and brand, the Activity tab, then the CRM tab and its latest leads with the filters cleared | 46 seconds |
 
 To record them again after the screens change, see `build/record.sh`.
@@ -124,6 +124,7 @@ Tap **Sign out** under your name. Always sign out on a shared computer.
 * Green messages mean it worked. Red messages tell you what to fix. Fields with a problem are marked.
 * Most lists have **Search** and filters at the top. Choose your filters, then tap **Apply**. Tap **Clear** to see everything again.
 * Drop down boxes (Brand, Status, Region and so on) open a list with the current choice ticked. Click an option, or use the keyboard: the arrow keys move, typing the first letters jumps to an option, Enter chooses and Escape closes without changing anything. On a phone they open the phone's own list.
+* Date boxes (From, To, Date bought and so on) can be typed in, or tap the calendar icon to open a calendar. Today has a ring and the chosen day is filled in teal. Click a day, or use the keyboard: the arrow keys move by a day or a week, Page Up and Page Down by a month (with Shift, by a year), Enter chooses and Escape closes. **Today** picks today and **Clear** empties a box that can be left empty. Days you cannot choose are greyed out. On a phone they open the phone's own calendar.
 
 ![A drop down box open: the current choice is ticked](images/05-dropdown.png)
 * Long lists show 50 at a time. Use **Previous** and **Next** at the bottom.
@@ -625,7 +626,7 @@ New shops added by sales reps in Field sales start deactivated. Filter **Status:
 
 **What it is for:** record every CSR activity: the programme, date, place, people reached, partners, notes and photos, with totals per programme.
 
-**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (45 seconds).
+**Video:** [CSR activities: log an activity with a photo](videos/10-csr.mp4) (49 seconds).
 
 ![CSR activities and totals](images/80-csr.png)
 
