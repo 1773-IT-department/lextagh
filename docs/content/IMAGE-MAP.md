@@ -47,14 +47,36 @@ None of the images supplied above fits these slots; they need new photos from Le
 | Top banner | CSR | 2880 x 1080 / 1080 x 1730 upright | Prototype image in use |
 | Top banner | Careers | 2880 x 1270 / 1080 x 1440 | Prototype image in use |
 | Full width photo strips | About Us, People & Culture | 2880 x 1620 / 1080 x 1440 | Prototype images in use |
-| Team celebration photo (Careers band) | Home | 2880 x 1620 / 1080 x 1440 | **Empty placeholder** |
-| Factory floor / production line photo | Our Brands | 2880 x 1620 / 1080 x 1440 | **Empty placeholder** |
-| Recruitment team photo | Careers | 1600 x 1200 or 1200 x 1500 | **Empty placeholder** |
-| Photo of Lexta Square | Contact Us | 1200 x 800 | Placeholder |
+| Team celebration photo (Careers band) | Home | 2880 x 1620 / 1080 x 1440 | Filled from the original lextagh.com: `public/assets/original/lexta-team-hampers-2560x1440.jpg` (KAKEL-9864). Lexta to confirm or replace |
+| Factory floor / production line photo | Our Brands | 2880 x 1620 / 1080 x 1440 | **Empty placeholder** (none on the original site) |
+| Recruitment team photo | Careers | 1600 x 1200 or 1200 x 1500 | Filled from the original lextagh.com: `public/assets/original/lexta-careers-team-1600x1200.jpg` (KAKEL-9871). Lexta to confirm or replace |
+| Photo of Lexta Square | Contact Us | 1200 x 800 | Placeholder (none on the original site) |
 | Story photos (10 to 15) | About Us, People & Culture | 1600 x 1200 landscape or 1200 x 1500 upright | Prototype images in use |
-| News and CSR story photos | News, CSR, Home | 1200 x 800 (featured 1240 x 830) | Photos from lextagh.com in use |
+| News and CSR story photos | News, CSR, Home | 1200 x 800 (featured 1240 x 830) | Photos from lextagh.com in use, loaded from lextagh.com and yazzproducts.com (hotlinked); download them into public/assets before go-live |
 | Lexta Videos cover | Home | 1920 x 1080 | Placeholder, no video |
 | Leadership portraits | About Us | 1000 x 1000 | Supplied portraits in use |
 | Partner logos | Home, CSR | 600 x 600 (wide 800 x 400) | In use |
 | Product pack shots | Our Brands | 1200 x 1200 | Remote retailer images in use; replace from the zip |
 | Brand range photo (Yazz range group shot) | Our Brands | 2000 x 2000 | Prototype image in use |
+
+## Images from the original lextagh.com (13 November 2026)
+
+> Downloaded only for slots that were empty; each cropped to the slot's shape with sharp (centre crop, JPEG quality 74, metadata stripped) and kept under 400 KB. Sources and reasons in lexta/ORIGINAL-SITE.md.
+
+| File | Source (lextagh.com media library) | Size | Slot | Alt text |
+| --- | --- | --- | --- | --- |
+| `apps/lexta/public/assets/original/lexta-team-hampers-2560x1440.jpg` | https://lextagh.com/wp-content/uploads/2026/06/KAKEL-9864-scaled.jpg (id 571, 2560 x 1707) | 2560 x 1440, 307 KB | Home, Careers band background | Lexta team members with Yazz gift hampers in a meeting room |
+| `apps/lexta/public/assets/original/lexta-careers-team-1600x1200.jpg` | https://lextagh.com/wp-content/uploads/2026/06/KAKEL-9871-scaled.jpg (id 1339, 2560 x 1707) | 1600 x 1200, 186 KB | Careers, general application | Lexta colleagues sharing Yazz gift hampers around the meeting room table |
+
+The source is 2560 px wide, so the Home band is 2560 x 1440 rather than the guide's 2880 x 1620 (same 16:9 shape; it sits under a 72 to 94 percent dark overlay).
+
+### Real Lexta photos on the original site with no empty slot (not downloaded)
+
+Candidates for future news, CSR or story photos if Lexta approves them. All 2560 x 1707 or 1707 x 2560, `https://lextagh.com/wp-content/uploads/2026/06/`:
+
+| File | Shows |
+| --- | --- |
+| KAKEL-1798, 1845, 1866, 1870, 1875, 1892, 1897, 1899, 1914 | Empowered Periods school outreach (Yazz team in campaign T-shirts with students) |
+| KAKEL-0530 | Empowered Periods street outreach (a TECNO shop sign is visible; avoid) |
+| KAKEL-9864, KAKEL-9869, KAKEL-9871, KAKEL-9794, KAKEL-9832 | Lexta meeting room, staff and guests with Yazz products |
+| KAKEL-0008, 0026, 0043, 0046, 0057, 0061 | CroxItOut studio set with MX24 TV branding (another company's brand; do not use) |

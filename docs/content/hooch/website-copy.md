@@ -6,6 +6,14 @@
 
 Site: hoochfoods.com (do not deploy to or link the real domain until Desmond does go-live).
 
+## Instructions from Lexta (yellow highlights)
+
+> Desmond's rule (13 November 2026): text highlighted in yellow in Lexta's Drive documents is an **instruction to the builder, not website copy**. Do not publish it as text on the site.
+> Per the coordinator's check of Lexta's revised content PDF, the yellow items in the Hooch section are the wireframe headings, the route arrows and the Phase 2 notes. This file was made from a text export, so the highlighting itself is not visible here; open the Drive document to confirm any line before treating it as copy.
+
+- The "Wireframe and click routes (Lexta)" table below is an instruction: the area names are wireframe headings and each "to …" route says where a click or form should go. Build the routes; do not print them.
+- **Phase 2 creative experiences (out of scope):** "Phase 2 creative experiences", "Games & Library [P2]" (Ludu, Oware, licensed or adapted games), the story collections and proposed story themes, online checkout, merchandise and the comics store are instructions about a future phase, not copy. All are out of scope under the contract (CLAUDE.md: games/library and online shop/cart/checkout). Do not build them or publish their text.
+
 ## Wireframe and click routes (Lexta)
 
 | Area | Route |

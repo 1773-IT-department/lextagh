@@ -1033,35 +1033,31 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "On 8 March 2019, International Women's Day, a team from Lexta Ghana Limited visited Unity High Junior High School in Kotobabi, Accra, in collaboration with the Domite Foundation."
+        text: "On 8 March 2019, a team from Lexta Ghana Limited spent time with the girls of Unity High JHS in Kotobabi, Accra, in commemoration of International Women's Day."
       },
       {
         type: "p",
-        text: "The team took the girls through basic hygiene routines and encouraged them to stay focused on their studies. Yazz sanitary towels and free learning materials were distributed to support the wellbeing and education of the girl child."
+        text: "The pupils were taken through basic female hygiene routines, reminded of the need to focus on their studies and charged to persevere in all they do. Yazz, in collaboration with the Domite Foundation, visited the school with Yazz sanitary towels and free learning materials to support the learning and wellbeing of the girl child. We salute all women on this special day."
       },
       {
         type: "h2",
-        text: "Why junior high matters"
+        text: "Women in leadership"
       },
       {
         type: "p",
-        text: "The junior high years are when many girls begin to menstruate. Having the right information and products at that moment shapes how confidently a girl manages her period, and whether it disrupts her schooling. Practical, open conversations about hygiene help girls treat menstruation as a normal part of life rather than a reason to stay at home."
+        text: "Speaking to the media, the Head of Sales and Marketing for Lexta Ghana Limited, Mr Seth Ntiamoah-Asare Jnr, spoke of the need to help position women at higher levels of society. He stressed that women who have had the opportunity to steer affairs in key organisations have done so to perfection. Considering that impact, he said, the world would be a greater place if our mothers, wives, sisters and daughters had the space that most men have had and abused."
       },
       {
         type: "p",
-        text: "Pairing sanitary products with learning materials reflects a simple idea that guides our work in schools: hygiene and education go together, and a girl who is comfortable and confident is better placed to learn."
+        text: "He challenged the young women coming up behind them to push their way into strategic positions through higher learning and decency."
       },
       {
         type: "h2",
-        text: "Part of a longer commitment"
+        text: "Who was there"
       },
       {
         type: "p",
-        text: "The visit was one of many school sessions that Lexta and Yazz have carried out since our first CSR programme began in 2017. Today The Dignity Project and the annual Empowered Periods Campaign build on visits like this one, combining free products with health education and a sustained presence in schools."
-      },
-      {
-        type: "p",
-        text: "Schools and institutions can request a Lexta or Yazz outreach session on menstrual health, oral care, cervical cancer awareness or general hygiene through our website."
+        text: "Present at the event were the teaching and non-teaching staff of Unity JHS, the Executive Director of the Domite Foundation, Priscilla, the second director of the Domite Foundation, and Mr Osei Kwame Daniel, Key Account Manager for Modern Trade and Hooch Foods."
       }
     ],
     sources: [
@@ -1092,11 +1088,11 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "In February 2019, Lexta Ghana Limited, makers of Yazz products and Hooch cereals, joined the Medical Women Association of Ghana (MWAG) on a visit to Mawuko Girls Senior High School in Ho, in the Volta Region."
+        text: "Lexta Ghana Limited, producers and distributors of the Yazz range of products and Hooch cereals, in collaboration with the Medical Women Association of Ghana (MWAG), paid a visit to Mawuko Girls SHS in Ho to educate students on cervical cancer and femcare."
       },
       {
         type: "p",
-        text: "The visit was led by Dr Naa Sodzi Tettey, immediate past President of MWAG, and Mr Seth Ntiamoah-Asare Jnr, Head of Sales and Marketing at Lexta. It formed part of a national school tour to educate Ghanaians, especially women and girls, about cervical cancer and femcare."
+        text: "The visit was led by the immediate past President of MWAG, Dr Naa Sodzi Tettey, and the Head of Sales and Marketing of Lexta, Mr Seth Ntiamoah-Asare Jnr. It was part of a national tour of schools and other institutions to educate Ghanaians, especially women and girls, on the deadly cervical cancer disease."
       },
       {
         type: "h2",
@@ -1104,19 +1100,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The session focused on prevention and on the importance of periodic screening. Cervical cancer develops slowly and often without symptoms, so the most powerful tools against it are knowledge, vaccination and regular checks once a woman reaches screening age."
-      },
-      {
-        type: "p",
-        text: "Speaking to students in secondary school means that young women learn these facts years before they need them, and can share them with mothers, aunts and friends at home."
-      },
-      {
-        type: "h2",
-        text: "Femcare in the classroom"
-      },
-      {
-        type: "p",
-        text: "The femcare part of the session covered menstrual hygiene and personal care, giving students practical guidance on looking after their health with confidence during adolescence."
+        text: "The interaction stressed prevention and the need to screen periodically to eradicate this killer disease."
       },
       {
         type: "h2",
@@ -1124,15 +1108,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "As part of Lexta's corporate social responsibility, products and learning materials were distributed to the students at the end of the session."
-      },
-      {
-        type: "h2",
-        text: "A long partnership"
-      },
-      {
-        type: "p",
-        text: "The Mawuko visit is one chapter in a partnership with MWAG that has continued for close to a decade, from school tours like this one to the free community screening that Lexta and Yazz sponsor every January during Cervical Cancer Awareness Month."
+        text: "Products and learning materials were also given out to the students as part of the company's corporate social responsibility."
       }
     ],
     sources: [
@@ -1155,7 +1131,7 @@ export const articles: Article[] = [
     isoDate: "2017-05-30",
     excerpt: "Our original CSR programme, teaching senior high school students to build good personal care habits during adolescence.",
     standfirst: "The Lexta Teen Care Campaign, our first corporate social responsibility programme, teaches senior high school students to build good personal care and hygiene habits during adolescence.",
-    readingMinutes: 2,
+    readingMinutes: 3,
     image: "https://lextagh.com/wp-content/uploads/2026/06/Lexta-Teen-Care-Campaign.jpg",
     imageAlt: "Image from the original story",
     featured: false,
@@ -1163,44 +1139,55 @@ export const articles: Article[] = [
     body: [
       {
         type: "h2",
-        text: "Where it began"
+        text: "Our flagship CSR project"
       },
       {
         type: "p",
-        text: "Launched in 2017, the Lexta Teen Care Campaign is our original CSR programme and the foundation that everything since has been built on. Its aim is to teach senior high school students how to build good personal care and hygiene habits during adolescence, a crucial phase in their development."
+        text: "As our flagship CSR project, the Lexta Teen Care Campaign aims to teach students in Senior High Schools (SHS) how to cultivate good personal care and general hygiene habits in their adolescent years, a crucial phase in their development."
       },
       {
         type: "p",
-        text: "Adolescence is when young people start taking charge of their own health. The habits formed in these years, good and bad, tend to last, which makes senior high school the right place to start."
+        text: "Keeping clean is an important part of staying healthy and safe from diseases and infections. In adolescence, cleanliness cannot be overemphasised, owing to the many changes that occur as one begins adulthood."
+      },
+      {
+        type: "p",
+        text: "As a company that cares, Lexta believes there is a need for more education on the importance of personal hygiene for adolescents, and this led to the birth of the Lexta Teen Care Campaign."
+      },
+      {
+        type: "p",
+        text: "The campaign, launched in February 2017, is set to educate SHS students across the country on cervical cancer, menstrual hygiene and oral care. A number of clean up competitions will also be run to keep our school environments neat and tidy."
       },
       {
         type: "h2",
-        text: "What the campaign covers"
+        text: "Cervical cancer"
       },
       {
         type: "p",
-        text: "The campaign brings together the health topics where Lexta's products and partnerships give us something useful to offer:"
-      },
-      {
-        type: "list",
-        items: [
-          "Cervical cancer awareness and the importance of screening",
-          "Menstrual hygiene",
-          "Oral care",
-          "School sanitation, through clean up competitions run with schools to improve their own campuses"
-        ]
+        text: "Available statistics indicate that cervical cancer is the leading cause of cancer death for women in 40 of the 48 countries of sub Saharan Africa. It affects younger age groups as a result of early sexual activity, multiple sexual partners and exposure to other sexually transmitted infections such as HIV. Educating Ghanaian teenagers, both boys and girls, on the dangers of cervical cancer is a preventive measure aimed at reducing the rate of the disease in the country."
       },
       {
         type: "h2",
-        text: "Why these topics"
+        text: "Menstrual hygiene"
       },
       {
         type: "p",
-        text: "Each of these issues is preventable, and each begins with education. Cervical cancer is the leading cause of cancer death for women in 40 of the 48 countries of sub Saharan Africa. Across the world, between 60 and 90 percent of school children have dental cavities. Poor sanitation drives cholera, diarrhoea, dysentery, hepatitis A and typhoid."
+        text: "According to WASH United (2014), the majority of women of reproductive age in Africa do not have access to clean and safe sanitary products, or to a clean and private space to change their menstrual cloths or pads. Poor protection and inadequate washing facilities may increase the risk of infection of the reproductive tract, and the odour of menstrual blood puts girls at risk of being stigmatised. Our education on menstrual hygiene is our contribution to raising awareness of the importance of good menstrual hygiene."
+      },
+      {
+        type: "h2",
+        text: "Oral care"
       },
       {
         type: "p",
-        text: "Giving students accurate information, in their own schools and in language they relate to, is one of the most effective ways to change those outcomes."
+        text: "The World Health Organization (WHO) describes oral health as a key indicator of overall health, because of its systemic and reciprocal links with general health. The mouth, made up of the teeth, masticatory muscles, tongue, mucosal soft tissues and salivary glands, is the body's main portal for nutrition. It is regarded as the starting point of the body's defence system and immunity, so when oral health is compromised by disease or injury, general health suffers. A 2012 FDI report indicated that across the world, 60 to 90 percent of school children and nearly 100 percent of adults have dental cavities. As a producer of oral care products, we recognise the health and social benefits of good oral hygiene, which is why oral care is part of the Lexta Teen Care Campaign."
+      },
+      {
+        type: "h2",
+        text: "Clean up competitions"
+      },
+      {
+        type: "p",
+        text: "Poor sanitation affects public health. As a nation battling with sanitation issues, we found it important to work with schools by taking part in their weekly or monthly inspections, as a way of driving home the importance of keeping their surroundings clean. This goes a long way to reduce sanitation related diseases such as cholera, diarrhoea, dysentery, hepatitis A and typhoid."
       },
       {
         type: "h2",
@@ -1209,14 +1196,6 @@ export const articles: Article[] = [
       {
         type: "p",
         text: "At St. Mary's Senior High School, one of the schools visited under the campaign, Lexta's Head of HR and Administration addressed staff and students, and students took part in a presentation on cervical cancer and menstrual hygiene."
-      },
-      {
-        type: "h2",
-        text: "The foundation for what followed"
-      },
-      {
-        type: "p",
-        text: "Teen Care set the pattern for the CSR work that came after it: go where the need is, work alongside people who know the subject, and connect what we teach with what we make. Our school tours with the Medical Women Association of Ghana, The Dignity Project and the Empowered Periods Campaign all grew from the ground the Teen Care Campaign first prepared."
       }
     ],
     sources: [

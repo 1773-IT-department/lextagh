@@ -468,8 +468,14 @@ export default async function HomePage() {
 
       <section data-screen-label="Careers" data-reveal="1" style={{ position: "relative", background: "#0b2f3d", padding: 0 }}>
         <div style={{ position: "absolute", inset: 0 }}>
-          {/* [PLACEHOLDER: team celebration photo from Lexta] */}
-          <ImageSlot placeholder="Team celebration photo" />
+          {/* Photo from Lexta's original website (lextagh.com media library, KAKEL-9864). A dedicated team celebration photo from Lexta can replace it. */}
+          <ImageSlot
+            placeholder="Team celebration photo"
+            src="/assets/original/lexta-team-hampers-2560x1440.jpg"
+            width={2560}
+            height={1440}
+            alt="Lexta team members with Yazz gift hampers in a meeting room"
+          />
         </div>
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,rgba(8,42,55,.94),rgba(8,42,55,.72))", pointerEvents: "none" }} />
         <div
