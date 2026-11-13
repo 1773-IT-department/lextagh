@@ -3,6 +3,10 @@
 /* The Lexta dropdown (packages/ui Select) in the portal's tokens: a focus ring like the other fields, a larger option text. */
 :root { --lx-select-accent: var(--teal); --lx-select-accent-dark: var(--teal-dark); --lx-select-ink: var(--ink); --lx-select-muted: var(--muted);
   --lx-select-danger: var(--danger); --lx-select-option-size: 14px; --lx-select-outline: none; --lx-select-ring: 0 0 0 3px rgba(18,163,196,.18); }
+/* Like the other portal fields, a dropdown shows its focus ring on any focus, after a mouse pick too (the website keeps
+   its keyboard only ring). */
+[data-lx-select][data-focus] > select { border-color: var(--teal) !important; box-shadow: 0 0 0 3px rgba(18,163,196,.18) !important; }
+[data-lx-select][data-focus] > select[aria-invalid="true"] { border-color: var(--danger) !important; }
 body { margin: 0; font-family: Poppins, Helvetica, Arial, sans-serif; color: var(--ink); background: var(--soft); -webkit-font-smoothing: antialiased; }
 a { color: var(--teal-dark); text-decoration: none; }
 a:hover { text-decoration: underline; }

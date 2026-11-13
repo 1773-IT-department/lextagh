@@ -85,7 +85,8 @@ export default function Select({
   const combo = useRef<HTMLDivElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const typed = useRef({ text: "", at: 0 });
-  const skipRedirect = useRef(false);
+  // Whether the highlighted option was last moved by the keyboard (Tab only commits a keyboard highlight).
+  const activeByKey = useRef(true);
 
   const [enhanced, setEnhanced] = useState(false);
   const [open, setOpen] = useState(false);
@@ -96,6 +97,10 @@ export default function Select({
   const [announce, setAnnounce] = useState("");
   const [place, setPlace] = useState<Place | null>(null);
   const [focusVisible, setFocusVisible] = useState(false);
+  const [focused, setFocused] = useState(false);
+  // The browser's "please choose" message for a required field, shown under it (the select itself is hidden from
+  // screen readers, so its own bubble would point at a field nobody can reach).
+  const [validity, setValidity] = useState("");
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
   const setSelectRef = useCallback((node: HTMLSelectElement | null) => {
@@ -109,7 +114,9 @@ export default function Select({
     if (!s) return;
     const index = s.selectedIndex;
     const text = index >= 0 ? (s.options[index]?.text ?? "").replace(/\s+/g, " ").trim() : "";
-    const disabled = s.disabled;
+    // :disabled also covers a select inside a disabled <fieldset>.
+    const disabled = s.matches(":disabled");
+    if (s.validity.valid) setValidity("");
     setCurrent((c) => (c.index === index && c.text === text && c.disabled === disabled ? c : { index, text, disabled }));
   }, []);
 
@@ -134,13 +141,16 @@ export default function Select({
       });
     }
     const onReset = () => setTimeout(sync, 0);
-    // A <label> click focuses the select: hand focus to the combobox, unless the browser is pointing at it to show
-    // a "please choose" message for a required field.
-    const onFocus = () => {
-      if (skipRedirect.current) { skipRedirect.current = false; return; }
-      combo.current?.focus();
+    // A <label> click (or anything else) that focuses the select hands focus to the combobox.
+    const onFocus = () => { combo.current?.focus(); };
+    // A required field left empty when the form is sent: show the browser's message under the field instead of its
+    // bubble, and when this is the form's first problem, put focus on the combobox.
+    const onInvalid = (e: Event) => {
+      e.preventDefault();
+      setValidity(s.validationMessage);
+      const first = s.form && Array.from(s.form.elements).find((el) => !(el instanceof HTMLFieldSetElement) && el.matches(":invalid"));
+      if (first === s) setTimeout(() => combo.current?.focus(), 0);
     };
-    const onInvalid = () => { skipRedirect.current = true; };
     const form = s.form;
     s.addEventListener("change", sync);
     s.addEventListener("input", sync);
@@ -149,6 +159,10 @@ export default function Select({
     form?.addEventListener("reset", onReset);
     const watch = new MutationObserver(() => { sync(); setNaming(readLabelling(s, wrap.current, uid)); });
     watch.observe(s, { childList: true, subtree: true, attributes: true, characterData: true });
+    // A <fieldset disabled> around the field (at any depth) disables it too.
+    for (let f = s.parentElement?.closest("fieldset"); f; f = f.parentElement?.closest("fieldset")) {
+      watch.observe(f, { attributes: true, attributeFilter: ["disabled"] });
+    }
     return () => {
       delete (s as unknown as Record<string, unknown>).selectedIndex;
       delete (s as unknown as Record<string, unknown>).value;
@@ -161,8 +175,10 @@ export default function Select({
     };
   }, [nativeOnTouch, sync, uid]);
 
-  // React may have changed a controlled value or the options on this render.
+  // React may have changed a controlled value, the options or a fieldset's disabled on this render.
   useLayoutEffect(() => { if (enhanced) sync(); });
+  // A field that becomes disabled while its list is open closes the list.
+  useEffect(() => { if (current.disabled && open) { setOpen(false); setPlace(null); } }, [current.disabled, open]);
 
   const firstEnabled = (from: number, step: 1 | -1, list: Item[]) => {
     for (let i = from; i >= 0 && i < list.length; i += step) if (!list[i].disabled) return i;
@@ -171,7 +187,7 @@ export default function Select({
 
   const openList = (target?: "first" | "last" | number) => {
     const s = select.current;
-    if (!s || s.disabled) return;
+    if (!s || s.matches(":disabled")) return;
     const all = readItems(s);
     setItems(all);
     let start = s.selectedIndex >= 0 && !all[s.selectedIndex]?.disabled ? s.selectedIndex : firstEnabled(0, 1, all);
@@ -179,6 +195,7 @@ export default function Select({
     else if (target === "last") start = firstEnabled(all.length - 1, -1, all);
     else if (typeof target === "number") start = target;
     setActive(start);
+    activeByKey.current = true;
     setPlace(null);
     setOpen(true);
   };
@@ -192,7 +209,7 @@ export default function Select({
   const choose = (index: number, refocus = true) => {
     const s = select.current;
     const opt = s?.options[index];
-    if (!s || !opt || opt.disabled || (opt.parentElement instanceof HTMLOptGroupElement && opt.parentElement.disabled)) { close(refocus); return; }
+    if (!s || !opt || s.matches(":disabled") || opt.disabled || (opt.parentElement instanceof HTMLOptGroupElement && opt.parentElement.disabled)) { close(refocus); return; }
     if (s.selectedIndex !== index) {
       nativeIndex?.set ? nativeIndex.set.call(s, index) : (s.selectedIndex = index);
       s.dispatchEvent(new Event("input", { bubbles: true }));
@@ -243,7 +260,7 @@ export default function Select({
       return;
     }
 
-    const move = (to: number) => { if (to >= 0) setActive(to); };
+    const move = (to: number) => { if (to >= 0) { setActive(to); activeByKey.current = true; } };
     switch (key) {
       case "ArrowDown": e.preventDefault(); move(firstEnabled(active + 1, 1, items)); return;
       case "ArrowUp":
@@ -257,7 +274,8 @@ export default function Select({
       case "PageUp": e.preventDefault(); move(firstEnabled(Math.max(active - PAGE, 0), 1, items)); return;
       case "Enter": e.preventDefault(); choose(active); return;
       case "Escape": e.preventDefault(); e.stopPropagation(); close(); return;
-      case "Tab": choose(active, false); return;
+      // Tab keeps an option the keyboard moved to; a highlight left by the mouse is not a choice.
+      case "Tab": if (activeByKey.current) choose(active, false); else close(false); return;
       case " ":
         if (!typing) { e.preventDefault(); choose(active); return; }
         break;
@@ -267,7 +285,7 @@ export default function Select({
     if (printable) {
       e.preventDefault();
       const hit = typeahead(key, items, active);
-      if (hit >= 0) setActive(hit);
+      move(hit);
     }
   };
 
@@ -296,7 +314,16 @@ export default function Select({
   useLayoutEffect(() => {
     if (!open) return;
     placeList();
-    const onMove = () => placeList();
+    // Follow the field while it moves; once it has scrolled out of the window, close the list.
+    const onMove = () => {
+      const r = wrap.current?.getBoundingClientRect();
+      if (r && (r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > document.documentElement.clientWidth)) {
+        setOpen(false);
+        setPlace(null);
+        return;
+      }
+      placeList();
+    };
     const onPointer = (ev: PointerEvent) => {
       const t = ev.target as Node;
       if (wrap.current?.contains(t) || list.current?.contains(t)) return;
@@ -357,7 +384,7 @@ export default function Select({
               data-active={it.index === active ? "" : undefined}
               data-checked={checked ? "" : undefined}
               className={css.option}
-              onMouseMove={() => { if (!it.disabled && active !== it.index) setActive(it.index); }}
+              onMouseMove={() => { if (!it.disabled && active !== it.index) { setActive(it.index); activeByKey.current = false; } }}
               onClick={() => { if (!it.disabled) choose(it.index); }}
             >
               <span className={css.optionText}>{it.text || " "}</span>
@@ -383,6 +410,7 @@ export default function Select({
   ) : null;
 
   return (
+    <>
     <span
       ref={wrap}
       className={[css.wrap, wrapperClassName].filter(Boolean).join(" ")}
@@ -392,6 +420,8 @@ export default function Select({
       data-enhanced={enhanced ? "" : undefined}
       data-open={open ? "" : undefined}
       data-focus-visible={focusVisible ? "" : undefined}
+      data-focus={focused ? "" : undefined}
+      data-invalid={validity ? "" : undefined}
     >
       <select
         {...rest}
@@ -422,8 +452,8 @@ export default function Select({
             aria-activedescendant={open && active >= 0 ? optId(active) : undefined}
             aria-label={naming.label}
             aria-labelledby={naming.labelledby || undefined}
-            aria-describedby={describedby}
-            aria-invalid={invalid}
+            aria-describedby={[describedby, validity ? `lxs-${uid}-validity` : ""].filter(Boolean).join(" ") || undefined}
+            aria-invalid={invalid || (validity ? true : undefined)}
             aria-required={required || undefined}
             aria-disabled={current.disabled || undefined}
             data-lx-select-combo=""
@@ -434,8 +464,9 @@ export default function Select({
               if (open) close(); else openList();
             }}
             onKeyDown={onKeyDown}
-            onFocus={(e) => setFocusVisible(e.currentTarget.matches(":focus-visible"))}
+            onFocus={(e) => { setFocused(true); setFocusVisible(e.currentTarget.matches(":focus-visible")); }}
             onBlur={(e) => {
+              setFocused(false);
               setFocusVisible(false);
               const to = e.relatedTarget as Node | null;
               if (open && to !== select.current && !list.current?.contains(to)) { setOpen(false); setPlace(null); }
@@ -448,6 +479,8 @@ export default function Select({
         </>
       )}
     </span>
+    {validity && <span id={`lxs-${uid}-validity`} className={css.validity}>{validity}</span>}
+    </>
   );
 }
 

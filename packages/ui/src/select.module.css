@@ -49,7 +49,7 @@
   border-color: var(--lx-select-accent, #12a3c4) !important;
   box-shadow: var(--lx-select-ring, none) !important;
 }
-.select[aria-invalid="true"] { border-color: var(--lx-select-danger, #b42318) !important; }
+.select[aria-invalid="true"], .wrap[data-invalid] > .select { border-color: var(--lx-select-danger, #b42318) !important; }
 .wrap[data-focus-visible] > .select[aria-invalid="true"] { box-shadow: 0 0 0 3px rgba(180, 35, 24, .16) !important; }
 
 /* The combobox lies over the face, see through: it takes the clicks and the keyboard, the face shows its state. */
@@ -103,6 +103,9 @@
 .option .tick { flex: none; width: 16px; height: 16px; color: var(--lx-select-accent, #12a3c4); }
 .optionText { min-width: 0; overflow-wrap: anywhere; }
 @media (pointer: coarse) { .option { min-height: 44px; } }
+
+/* The browser's "please choose" message for a required field, under it. */
+.validity { display: block; margin-top: 4px; font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--lx-select-danger, #b42318); }
 
 .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 

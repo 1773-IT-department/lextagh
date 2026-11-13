@@ -155,6 +155,20 @@ try {
   check(await activeText() === "Northern", "1440 contact: hovering an option highlights it");
   await list.getByRole("option", { name: "Northern" }).click();
   check(await native.inputValue() === "Northern" && !(await list.count()), "1440 contact: clicking an option chooses it and closes the list");
+  check(await native.evaluate((s) => getComputedStyle(s).outlineStyle) === "none",
+    "1440 contact: after a mouse pick the website keeps its keyboard only focus ring");
+  // Tab with a highlight left by the mouse closes without choosing.
+  await combo.click();
+  await list.getByRole("option", { name: "Eastern" }).hover();
+  await site.keyboard.press("Tab");
+  check(await native.inputValue() === "Northern" && !(await list.count()), "1440 contact: Tab after a mouse hover closes without changing the choice", await native.inputValue());
+  // Scrolling the field out of the window closes the list.
+  await combo.click();
+  await list.waitFor();
+  await site.evaluate(() => window.scrollBy(0, 2000));
+  await site.waitForTimeout(150);
+  check(!(await list.count()) && await combo.getAttribute("aria-expanded") === "false", "1440 contact: the list closes when the field scrolls out of the window");
+  await combo.scrollIntoViewIfNeeded();
   await combo.click();
   await site.mouse.click(30, 500);
   check(await combo.getAttribute("aria-expanded") === "false", "1440 contact: a click outside closes the list");
@@ -295,7 +309,24 @@ try {
     "1440 portal: region options keep their groups");
   await mgr.waitForTimeout(350);
   await mgr.screenshot({ path: `${OUT}/portal-1440-organisation-region-open.png` });
-  await mgr.keyboard.press("Escape");
+  await orgList.getByRole("option", { name: "Ashanti" }).click();
+  check(/rgba\(18, 163, 196/.test(await mgr.locator("#region_id").evaluate((s) => getComputedStyle(s).boxShadow)),
+    "1440 portal: after a mouse pick the field keeps the portal focus ring");
+  // Inside a disabled <fieldset> (a form in view mode or while saving): not reachable, not opening, not changing.
+  const orgKind = mgr.getByRole("combobox", { name: "Kind", exact: true });
+  const kindBefore = await mgr.locator("#kind").inputValue();
+  await mgr.locator("#kind").evaluate((s) => { s.closest("fieldset").disabled = true; });
+  await mgr.waitForFunction(() => document.querySelector("#kind").parentElement.querySelector("[data-lx-select-combo]").getAttribute("aria-disabled") === "true");
+  check(await orgKind.getAttribute("tabindex") === "-1" && await orgKind.getAttribute("aria-disabled") === "true", "1440 portal: inside a disabled fieldset the dropdown is disabled and out of the Tab order");
+  await orgKind.click({ force: true });
+  await orgKind.focus();
+  await mgr.keyboard.press("ArrowDown");
+  await mgr.keyboard.press("Enter");
+  check(await orgKind.getAttribute("aria-expanded") === "false" && await mgr.locator("#kind").inputValue() === kindBefore,
+    "1440 portal: inside a disabled fieldset it does not open and its value does not change");
+  await mgr.locator("#kind").evaluate((s) => { s.closest("fieldset").disabled = false; });
+  await mgr.waitForFunction(() => !document.querySelector("#kind").parentElement.querySelector("[data-lx-select-combo]").hasAttribute("aria-disabled"));
+  check(await orgKind.getAttribute("tabindex") === "0", "1440 portal: enabled again when the fieldset is");
 
   const admin = watch(await (await context(1440)).newPage(), "admin 1440");
   await admin.goto(`${PORTAL}/login`);
@@ -310,6 +341,31 @@ try {
   await choose(admin, "What it is about", "Health or safety concern");
   check(/always at least High/.test(await hint.innerText()) && await admin.locator("#category").inputValue() === "health_safety",
     "1440 portal: a controlled select (category) updates the form when chosen in the dropdown");
+  // A required dropdown (ProductForm's brand): the form posts as before (it uses the server's checks); with the
+  // browser's own checks, the message shows under the field and focus lands on the dropdown, not the hidden select.
+  const mktP = watch(await (await context(1440)).newPage(), "marketing 1440");
+  await mktP.goto(`${PORTAL}/login`);
+  await mktP.getByLabel("Email").fill("marketing@demo.test");
+  await mktP.getByLabel("Password").fill("harness-password");
+  await mktP.getByRole("button", { name: /sign in/i }).click();
+  await mktP.waitForURL((u) => !u.pathname.startsWith("/login"));
+  await mktP.goto(`${PORTAL}/systems/products/new`);
+  await hydrated(mktP, "Brand");
+  const newBrand = mktP.locator("[data-lx-select-combo]").and(mktP.getByRole("combobox", { name: "Brand", exact: true }));
+  await mktP.locator("#brand_id").evaluate((s) => s.form.removeAttribute("novalidate"));
+  await mktP.getByRole("button", { name: "Create product" }).click();
+  await mktP.waitForTimeout(200);
+  const msgId = (await newBrand.getAttribute("aria-describedby")) ?? "";
+  check(await newBrand.evaluate((el) => el === document.activeElement) && await newBrand.getAttribute("aria-invalid") === "true"
+    && msgId.includes("validity") && (await mktP.locator(`#${msgId.split(" ").pop()}`).innerText()).length > 0,
+    "1440 portal: an empty required brand shows the message under it and focus lands on the dropdown", msgId);
+  await choose(mktP, "Brand", "Yazz");
+  check(!(await mktP.locator("[id$=-validity]").count()) && await newBrand.getAttribute("aria-invalid") !== "true", "1440 portal: choosing a brand clears the message");
+  await mktP.locator("label[for=name]").click();
+  await mktP.locator("label[for=brand_id]").click();
+  check(await newBrand.evaluate((el) => el === document.activeElement), "1440 portal: afterwards a label click still lands on the dropdown");
+  await mktP.context().close();
+
   await admin.goto(`${PORTAL}/systems/products`);
   await admin.locator("main table a").first().click();
   await admin.waitForURL(/\/systems\/products\/[0-9a-f-]{36}/);
