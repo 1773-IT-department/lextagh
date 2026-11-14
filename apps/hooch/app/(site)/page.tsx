@@ -6,7 +6,9 @@ import PackRow from "@/components/home/PackRow";
 import s from "@/components/home/home.module.css";
 import Icon from "@/components/Icon";
 import Marquee from "@/components/Marquee";
+import LoopVideo from "@/components/fun/LoopVideo";
 import FoodStage from "@/components/three/FoodStage";
+import { FILMS } from "@/content/videos";
 import { ARTICLES } from "@/content/articles";
 import { BRAND } from "@/content/brand";
 import { FAMILY_GUIDE } from "@/content/catalogue";
@@ -18,8 +20,8 @@ export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 /**
  * Home, Lexta's six tab draft in its order: hero, Meet Our Breakfast Favorites, 10 Packs 10 Breakfast Moments, Breakfast
- * Ideas for the Family, Everyday Nutrition & Family Tips, About Hooch® (with Who We Are) and Get in Touch. Two live 3D
- * scenes: the hero pour (cornflakes, milk and banana) and the frosted spotlight (frosted flakes and strawberries).
+ * Ideas for the Family, Everyday Nutrition & Family Tips, About Hooch® (with Who We Are) and Get in Touch. The hero plays
+ * the Hooch film (content/videos.ts); the frosted spotlight has the live 3D Hooch® boxes.
  */
 export default async function HomePage() {
   const { products } = await getHoochProducts();
@@ -41,13 +43,14 @@ export default async function HomePage() {
             </div>
           </div>
           <div className={s.heroStage}>
-            <FoodStage
-              variant="hero"
-              priority
-              config={{ vessel: "bowl", flake: "classic", milk: true, toppings: ["banana"], pour: true }}
-              poster={{ src: "/images/hooch/hero-pour.webp", alt: "Golden Hooch cornflakes in a red bowl of milk, topped with banana slices" }}
-              label="A 3D bowl: golden Hooch cornflakes pour into a red bowl of milk and banana slices drop on top. Tap the bowl for a crunch."
-            />
+            <div className="hc-film">
+              <LoopVideo film={FILMS.hero} priority />
+            </div>
+            <span className={s.heroBits} aria-hidden="true">
+              <i style={{ "--img": "url(/images/hooch/bits/berry-1.webp)", left: "-7%", top: "64%", "--s": "86px" } as React.CSSProperties} />
+              <i style={{ "--img": "url(/images/hooch/bits/flake-sharp.webp)", right: "-6%", top: "6%", "--s": "78px", "--d": "-2s" } as React.CSSProperties} />
+              <i style={{ "--img": "url(/images/hooch/bits/flake-1.webp)", left: "4%", top: "-5%", "--s": "58px", "--d": "-4s" } as React.CSSProperties} />
+            </span>
             <span className={`hc-sticker hc-sticker--red ${s.heroBadge}`}>10 packs inside!</span>
           </div>
         </div>
@@ -104,9 +107,9 @@ export default async function HomePage() {
           <div className={`hc-wrap ${s.spotGrid}`}>
             <FoodStage
               variant="band"
-              config={{ vessel: "bowl", flake: "frosted", milk: true, toppings: ["strawberry", "banana"] }}
-              poster={{ src: "/images/hooch/recipe-frosted-fruit.webp", alt: "Sparkling Hooch frosted flakes in milk with strawberries and banana" }}
-              label="A 3D bowl of Hooch frosted flakes glinting with sugar frost, with strawberries and banana. Tap the bowl for a crunch."
+              config={{ packs: ["frosted", "classic"] }}
+              poster={{ src: "/images/hooch/packs-duo.webp", alt: "A box of Hooch® Frosted Flakes beside a box of Hooch® Cornflakes" }}
+              label="A 3D model of the Hooch® Frosted Flakes and Hooch® Cornflakes boxes. Drag to spin a box; tap one and flakes pop out."
             />
             <div data-reveal="">
               <p className="hc-sticker hc-sticker--sky">{frosted.portions ?? "375g"}</p>

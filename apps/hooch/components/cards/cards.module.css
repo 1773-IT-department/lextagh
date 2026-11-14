@@ -41,8 +41,10 @@
 .recipe[data-tone="sky"] { --tone: var(--hc-sky); }
 .recipe[data-tone="gold"] { --tone: #ffc56b; }
 .recipeImg { display: block; aspect-ratio: 1; border-radius: 22px; background: radial-gradient(circle at 50% 55%, #fffaf0 0 30%, var(--tone) 70%); border: 2px solid var(--hc-ink); overflow: hidden; }
-.recipeImg img { width: 100%; height: 100%; object-fit: contain; transition: transform .5s var(--hc-bounce); }
-.recipe:hover .recipeImg img { transform: scale(1.08) rotate(6deg); }
+.recipeImg { position: relative; }
+.recipeImg img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--hc-bounce); }
+.recipe:hover .recipeImg img { transform: scale(1.1) rotate(2deg); }
+.recipePh { position: absolute; left: 8px; right: 8px; bottom: 8px; padding: 4px 8px; border-radius: 10px; background: rgba(59, 26, 11, .78); color: #fff; font-size: 11.5px; font-weight: 700; line-height: 1.3; }
 .recipeChips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; padding: 0 6px; }
 .chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: var(--hc-sun-3); border: 1.5px solid var(--hc-ink); font-size: 12.5px; font-weight: 700; }
 .recipeName { padding: 0 6px; font-family: var(--hc-display); font-weight: 700; font-size: 21px; line-height: 1.15; }

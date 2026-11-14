@@ -4,7 +4,7 @@ import { Floaters, MilkWave } from "@/components/fun/Decor";
 import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import RecipeFilter from "@/components/recipes/RecipeFilter";
-import FoodStage from "@/components/three/FoodStage";
+import RealPhoto from "@/components/fun/RealPhoto";
 import { BEYOND, RECIPES, RECIPES_INTRO, SHARE_RECIPE } from "@/content/recipes";
 
 export const metadata: Metadata = {
@@ -26,12 +26,7 @@ export default function RecipesPage() {
             <p className={s.heroLead}>{RECIPES_INTRO.body}</p>
           </div>
           <div className={s.splitStage}>
-            <FoodStage
-              priority
-              config={{ vessel: "glass", flake: "classic", milk: false, toppings: ["strawberry"] }}
-              poster={{ src: "/images/hooch/recipe-yoghurt-crunch.webp", alt: "A glass layered with yoghurt, strawberries and Hooch cornflakes" }}
-              label="A 3D glass of Hooch Yoghurt Crunch: yoghurt, strawberries and cornflakes in layers. Tap it for a crunch."
-            />
+            <RealPhoto priority ratio="1 / 1" src="/images/hooch/photo-bowl-hands.webp" alt="Hands holding a red bowl of golden Hooch cornflakes in milk on a red checked tablecloth" />
           </div>
         </div>
         <MilkWave style={{ marginTop: 20 }} />

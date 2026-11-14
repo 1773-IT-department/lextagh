@@ -1,14 +1,13 @@
 /**
  * Breakfast Ideas & Recipes, Lexta's words ("Hooch Foods website content.docx", Breakfast Ideas & Recipes tab;
  * docs/content/hooch/recipes.md). The four recipes of the six tab draft are the recipe cards; the creative uses ("Beyond
- * the Bowl") come from the same document. Each recipe has a 3D scene (components/three) with the toppings it names.
+ * the Bowl") come from the same document. Each recipe shows a real food photo from Lexta's own Hooch artwork; where none matches
+ * the recipe yet, the photo carries a clearly marked placeholder (CONTENT-NEEDED.md).
  *
  * Lexta asks that people can share a recipe "for publishing as an article after approval by admin": a moderated
  * upload and publishing flow is a new feature outside the contract, so "Share Your Hooch® Recipe" sends a message to
  * the Hooch team through the contact form (a CRM lead) instead. Logged in CONTENT-NEEDED.md.
  */
-import type { SceneConfig } from "../components/three/scene-config";
-
 export type Recipe = {
   slug: string;
   name: string;
@@ -23,8 +22,9 @@ export type Recipe = {
   cereals: string[];
   /** What goes in, read from Lexta's method (no quantities: Lexta gives none). */
   youNeed: string[];
-  scene: SceneConfig;
-  image: { src: string; alt: string };
+  image: { src: string; alt: string; position?: string };
+  /** Set while the photo only stands in for the recipe's own photo (still to come from Lexta). */
+  photoNeeded?: string;
   /** Card colour. */
   tone: "sun" | "red" | "sky" | "gold";
 };
@@ -45,8 +45,7 @@ export const RECIPES: Recipe[] = [
     moment: "Breakfast",
     cereals: ["cornflakes"],
     youNeed: ["Hooch® Cornflakes", "Milk", "Banana, sliced"],
-    scene: { vessel: "bowl", flake: "classic", milk: true, toppings: ["banana"] },
-    image: { src: "/images/hooch/recipe-classic-bowl.webp", alt: "A bowl of Hooch cornflakes in milk topped with banana slices" },
+    image: { src: "/images/hooch/photo-bowl-hands.webp", alt: "Hands holding a red bowl of golden Hooch cornflakes in milk on a red checked tablecloth" },
     tone: "sun",
   },
   {
@@ -58,8 +57,7 @@ export const RECIPES: Recipe[] = [
     moment: "Breakfast",
     cereals: ["frosted-flakes"],
     youNeed: ["Hooch® Frosted Flakes", "Fresh strawberries", "Banana or other seasonal fruit", "Milk"],
-    scene: { vessel: "bowl", flake: "frosted", milk: true, toppings: ["strawberry", "banana"] },
-    image: { src: "/images/hooch/recipe-frosted-fruit.webp", alt: "A bowl of Hooch frosted flakes in milk topped with strawberries and banana" },
+    image: { src: "/images/hooch/photo-bowl-berries.webp", alt: "A bowl heaped with crunchy golden flakes and fresh strawberries" },
     tone: "red",
   },
   {
@@ -71,8 +69,8 @@ export const RECIPES: Recipe[] = [
     moment: "Snack",
     cereals: ["cornflakes"],
     youNeed: ["Plain yoghurt", "Fresh fruit", "Hooch® Cornflakes"],
-    scene: { vessel: "glass", flake: "classic", milk: false, toppings: ["strawberry"] },
-    image: { src: "/images/hooch/recipe-yoghurt-crunch.webp", alt: "A glass layered with yoghurt, strawberries and Hooch cornflakes" },
+    image: { src: "/images/hooch/photo-bowl-berries.webp", alt: "Crunchy golden flakes with fresh strawberries", position: "70% 50%" },
+    photoNeeded: "photo of Hooch® Yoghurt Crunch from Lexta",
     tone: "sky",
   },
   {
@@ -84,8 +82,8 @@ export const RECIPES: Recipe[] = [
     moment: "Snack",
     cereals: ["cornflakes", "frosted-flakes"],
     youNeed: ["A small portion of Hooch®", "Sliced fruit"],
-    scene: { vessel: "bowl", flake: "classic", milk: false, toppings: ["banana", "strawberry"], small: true },
-    image: { src: "/images/hooch/recipe-after-school.webp", alt: "A small bowl of crunchy Hooch cornflakes with banana and strawberry slices" },
+    image: { src: "/images/hooch/photo-family.webp", alt: "A family at the table with bowls of Hooch cornflakes, a box of Hooch Cornflakes and a bowl of fruit", position: "55% 70%" },
+    photoNeeded: "photo of The Hooch® After-School Crunch from Lexta",
     tone: "gold",
   },
 ];

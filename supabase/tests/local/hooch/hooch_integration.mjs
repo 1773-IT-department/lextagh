@@ -66,7 +66,7 @@ try {
       && frost.name === "Hooch® Frosted Flakes" && frost.skus[0].pack === "375g: 10 x 37.5g individual packs" && frost.portions === "10 x 37.5g individual packs",
       "catalogue: Cornflakes 500g (10 x 50g) and Frosted Flakes 375g (10 x 37.5g), as the Drive says");
     check(!catalogue.CATALOGUE.some((c) => /choco/i.test(c.slug + c.name)), "catalogue: no Choco Flakes (in no Lexta document; Desmond: Drive only)");
-    check(recipes.RECIPES.length === 4 && recipes.RECIPES.every((r) => r.image.src.startsWith("/images/hooch/") && r.minutes > 0), "recipes: Lexta's four recipes, each with its own render");
+    check(recipes.RECIPES.length === 4 && recipes.RECIPES.every((r) => r.image.src.startsWith("/images/hooch/") && r.minutes > 0 && (!r.photoNeeded || /from Lexta/.test(r.photoNeeded))), "recipes: Lexta's four recipes, each with a food photo (marked as a placeholder where it stands in)");
     const all = JSON.stringify([catalogue.CATALOGUE, recipes.RECIPES, recipes.BEYOND]);
     check(!/[–—]| - /.test(all), "content: no em dashes or spaced hyphens");
     check(!PROTOTYPE_CLAIMS.test(all) && !/healthy|nutritious|boosts?|immun|energy/i.test(all.replace(/healthier routines/g, "")), "content: no claim beyond Lexta's wording (no health or energy claims)");
@@ -118,7 +118,7 @@ try {
   await q(`insert into public.products (brand_id, slug, name, category, short_description, is_published, sort_order) values (${hoochBrand}, 'hooch-test-new', 'Hooch Test New', 'Breakfast cereal', 'Added by staff', true, 5)`);
   {
     const { products: list } = await products.getHoochProducts();
-    check(list.at(-1)?.slug === "hooch-test-new" && list.at(-1)?.flavour === "classic" && list.length === 3, "a product staff add shows on the site (with the classic 3D bowl)", list.map((p) => p.slug));
+    check(list.at(-1)?.slug === "hooch-test-new" && list.at(-1)?.flavour === "classic" && list.length === 3, "a product staff add shows on the site (with the classic Cornflakes look)", list.map((p) => p.slug));
     await q(`update public.products set is_published = false where brand_id = ${hoochBrand} and slug = 'hooch-test-new'`);
     check(!(await products.getHoochProducts()).products.some((p) => p.slug === "hooch-test-new"), "an unpublished staff product disappears");
     await q(`delete from public.products where brand_id = ${hoochBrand} and slug = 'hooch-test-new'`);
@@ -151,6 +151,13 @@ try {
     check(row === "Hooch® Cornflakes (new pack)|false", "0017 run again: a row staff saved keeps its wording and stays unpublished", row);
     const { products: list } = await products.getHoochProducts();
     check(JSON.stringify(list.map((p) => p.slug)) === JSON.stringify(["frosted-flakes"]), "after 0017: an unpublished catalogue cereal disappears (no catalogue fallback)", list.map((p) => p.slug));
+    // Staff republish the prototype Choco Flakes row while Cornflakes is unpublished: Product Management decides, so it
+    // shows, and the site never falls back to its prototype mode (catalogue cards) because of it.
+    await asStaff(`update public.products set is_published = true where brand_id = ${hoochBrand} and slug = 'choco-flakes'`);
+    const back = (await products.getHoochProducts()).products.map((p) => p.slug);
+    check(back.includes("choco-flakes") && back.includes("frosted-flakes") && !back.includes("cornflakes") && back.length === 2,
+      "after 0017: a prototype row staff republish shows, with Cornflakes unpublished, and the catalogue does not come back", back);
+    await asStaff(`update public.products set is_published = false where brand_id = ${hoochBrand} and slug = 'choco-flakes'`);
   }
   await asStaff(`update public.products set name = 'Hooch® Cornflakes', short_description = 'The golden crunch of Hooch® Cornflakes: 500g, in 10 convenient packs of 50g.', is_published = true
     where brand_id = ${hoochBrand} and slug = 'cornflakes'`);

@@ -13,8 +13,10 @@
 .heroSub { margin-top: 18px; font-family: var(--hc-display); font-size: clamp(21px, 2.2vw, 28px); font-weight: 600; color: var(--hc-red-deep); }
 .heroBody { margin-top: 16px; max-width: 560px; font-size: 17.5px; line-height: 1.7; color: var(--hc-text); }
 .heroActions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
-.heroStage { position: relative; margin: -10px -20px -40px 0; }
-.heroBadge { position: absolute; left: 4%; top: 12%; z-index: 4; font-size: 16px; animation: hcWiggle 3.2s ease-in-out infinite; }
+.heroStage { position: relative; margin: 10px 0 0; transform: rotate(1.5deg); }
+.heroBits { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.heroBits i { position: absolute; width: var(--s); aspect-ratio: 1.15; background: var(--img) center / contain no-repeat; filter: drop-shadow(4px 10px 8px rgba(107, 52, 16, .32)); animation: hcDrift 7s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.heroBadge { position: absolute; left: -3%; top: 8%; z-index: 4; font-size: 16px; animation: hcWiggle 3.2s ease-in-out infinite; }
 @keyframes hcWiggle { 0%, 100% { rotate: -8deg; } 50% { rotate: 4deg; } }
 
 .head { max-width: 780px; display: flex; flex-direction: column; gap: 14px; }
@@ -112,4 +114,4 @@
   .touchCard { padding: 40px 20px; border-radius: 30px; box-shadow: 6px 6px 0 var(--hc-sun); }
   .favs { padding-top: 56px; }
 }
-@media (prefers-reduced-motion: reduce) { .sun, .pack, .heroBadge { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .sun, .pack, .heroBadge, .heroBits i { animation: none; } }

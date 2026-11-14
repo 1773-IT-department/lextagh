@@ -10,12 +10,12 @@
  *   4. it is the data entry sheet for Product Management. Migration 0017 (written, not applied: Desmond decides) writes
  *      these two products and unpublishes the prototype rows "Super Crunchy Corn Flakes" and "Choco Flakes".
  * After 0017 Product Management alone decides what shows and how it reads; these entries then only add the extras the
- * database has no column for (tagline, portions, flavour of the 3D scene, recipe ideas).
+ * database has no column for (tagline, portions, which 3D box, recipe ideas).
  *
  * Pack sizes are Lexta's Drive figures (Cornflakes 500g, Frosted Flakes 375g). The Lexta PDF also mentions a 375g
  * Cornflakes and the Lexta site shows a Choco Flakes card: both unconfirmed, see CONTENT-NEEDED.md. SKU codes are still to
- * come. Pictures are this site's own 3D renders of cereal in a bowl (Lexta: "Images should be illustrative food
- * photography, not official Hooch packaging"), shared files in public/images/hooch, also shipped with the Lexta site and
+ * come. Pictures are pack shots of the real Hooch boxes made from Lexta's own Hooch artwork (Desmond,
+ * 14 November 2026: realistic, with the actual product, until Lexta sends their images), shared files in public/images/hooch, also shipped with the Lexta site and
  * the portal (packages/db SHARED_IMAGE_PATH).
  */
 import type { HoochProduct } from "../lib/products";
@@ -37,7 +37,7 @@ export const CATALOGUE: HoochProduct[] = [
     usage: "Pour one individual pack into a bowl, add your preferred milk and enjoy. Add fruit or other toppings for variety.",
     ingredients: `Enriched with vitamins. Corn grits 92%, sugar, salt, acidity regulator: sodium phosphates, malt extract powder from barley. ${VITAMINS}`,
     skus: [{ code: "TBC-HOOCH-101", variant: null, pack: "500g: 10 x 50g individual packs" }],
-    images: [{ src: "/images/hooch/cornflakes-bowl.webp", alt: "A bowl of golden Hooch cornflakes with milk and banana slices" }],
+    images: [{ src: "/images/hooch/cornflakes-bowl.webp", alt: "A box of Hooch® Cornflakes, 500g, with fresh strawberries" }],
     recipes: ["classic-hooch-bowl", "yoghurt-crunch", "after-school-crunch"],
   },
   {
@@ -54,7 +54,7 @@ export const CATALOGUE: HoochProduct[] = [
     // Lexta's document gives "sugar 23" without a unit; the unit is left for Lexta to confirm (CONTENT-NEEDED.md).
     ingredients: `Enriched with vitamins. Corn grits 75%, sugar [PLACEHOLDER: confirm the sugar figure and unit, given as "23"], salt, acidity regulator: sodium phosphates, malt extract powder from barley. ${VITAMINS}`,
     skus: [{ code: "TBC-HOOCH-102", variant: null, pack: "375g: 10 x 37.5g individual packs" }],
-    images: [{ src: "/images/hooch/frosted-flakes-bowl.webp", alt: "A bowl of Hooch frosted flakes sparkling with sugar frost, with milk and strawberries" }],
+    images: [{ src: "/images/hooch/frosted-flakes-bowl.webp", alt: "A box of Hooch® Frosted Flakes with fresh strawberries" }],
     recipes: ["frosted-fruit-delight", "after-school-crunch"],
   },
 ];

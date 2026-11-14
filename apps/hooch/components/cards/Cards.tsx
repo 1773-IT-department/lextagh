@@ -5,7 +5,7 @@ import type { Recipe } from "@/content/recipes";
 import type { HoochProduct } from "@/lib/products";
 import s from "./cards.module.css";
 
-/** A cereal card: the bowl render bobbing on a sunny or red disc, name, Lexta's tagline and the pack. */
+/** A cereal card: the Hooch box pack shot bobbing on a sunny or red disc, name, Lexta's tagline and the pack. */
 export function ProductCard({ p, i = 0, big = false }: { p: HoochProduct; i?: number; big?: boolean }) {
   const img = p.images[0];
   return (
@@ -30,13 +30,14 @@ export function ProductCard({ p, i = 0, big = false }: { p: HoochProduct; i?: nu
   );
 }
 
-/** A recipe card: the render on a coloured plate, minutes and moment chips, Lexta's strapline. */
+/** A recipe card: the food photo on a coloured plate, minutes and moment chips, Lexta's strapline. */
 export function RecipeCard({ r, i = 0 }: { r: Recipe; i?: number }) {
   return (
     <Link href={`/recipes/${r.slug}`} className={`hc-wobble ${s.recipe}`} data-tone={r.tone} data-reveal="" style={{ "--d": `${i * 0.07}s` } as React.CSSProperties}>
       <span className={s.recipeImg}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={r.image.src} alt={r.image.alt} loading="lazy" decoding="async" />
+        <img src={r.image.src} alt={r.image.alt} loading="lazy" decoding="async" style={{ objectPosition: r.image.position }} />
+        {r.photoNeeded && <span className={s.recipePh}>[PLACEHOLDER: {r.photoNeeded}]</span>}
       </span>
       <span className={s.recipeChips}>
         <span className={s.chip}><Icon name="clock" size={14} /> About {r.minutes} min</span>

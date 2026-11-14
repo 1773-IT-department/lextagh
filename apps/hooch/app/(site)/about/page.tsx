@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Floaters, MilkWave } from "@/components/fun/Decor";
 import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
-import FoodStage from "@/components/three/FoodStage";
+import RealPhoto from "@/components/fun/RealPhoto";
 import { BRAND } from "@/content/brand";
 import { lexta } from "@/lib/site";
 
@@ -27,11 +27,7 @@ export default function AboutPage() {
             <p className={s.heroLead}>{a.story[0]}</p>
           </div>
           <div className={s.splitStage}>
-            <FoodStage
-              config={{ vessel: "bowl", flake: "classic", milk: false, toppings: ["banana", "strawberry"], small: true }}
-              poster={{ src: "/images/hooch/recipe-after-school.webp", alt: "A small bowl of crunchy Hooch cornflakes with banana and strawberry slices" }}
-              label="A 3D bowl of crunchy Hooch cornflakes with fruit. Tap the bowl for a crunch."
-            />
+            <RealPhoto priority ratio="4 / 3" src="/images/hooch/photo-family.webp" alt="A smiling family at the breakfast table with bowls of Hooch cornflakes, a box of Hooch Cornflakes, milk, juice and fruit" />
           </div>
         </div>
         <MilkWave style={{ marginTop: 20 }} />

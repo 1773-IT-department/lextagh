@@ -1,4 +1,6 @@
 import type { CSSProperties } from "react";
+import type { Film } from "@/content/videos";
+import LoopVideo from "./LoopVideo";
 
 /** Wavy creamy edge between two sections (the colour is the section below; the background the section above). */
 export function MilkWave({ color = "var(--hc-cream)", flip = false, style }: { color?: string; flip?: boolean; style?: CSSProperties }) {
@@ -11,13 +13,21 @@ export function MilkWave({ color = "var(--hc-cream)", flip = false, style }: { c
   );
 }
 
+/** Real Hooch flakes and strawberries (cut from Lexta's own Hooch artwork) for the floaters. */
+const BITS = [
+  "/images/hooch/bits/flake-sharp.webp", "/images/hooch/bits/flake-1.webp", "/images/hooch/bits/flake-sharp.webp", "/images/hooch/bits/flake-2.webp",
+  "/images/hooch/bits/flake-5.webp", "/images/hooch/bits/berry-1.webp", "/images/hooch/bits/flake-6.webp", "/images/hooch/bits/flake-4.webp",
+  "/images/hooch/bits/berry-2.webp",
+];
+
 /** Cereal flakes drifting along the edges of a section (decorative, seeded so the server and browser agree). */
 export function Floaters({ count = 12, seed = 1 }: { count?: number; seed?: number }) {
   let a = seed * 9301 + 49297;
   const r = () => ((a = (a * 9301 + 49297) % 233280) / 233280);
   const items = Array.from({ length: count }, () => ({
     // Along the left and right edges only, so they never sit on the words.
-    left: `${Math.round(r() < 0.5 ? r() * 7 : 89 + r() * 8)}%`, top: `${Math.round(r() * 90)}%`, s: 18 + Math.round(r() * 26), t: 7 + r() * 6, d: -r() * 8,
+    left: `${Math.round(r() < 0.5 ? r() * 7 : 89 + r() * 8)}%`, top: `${Math.round(r() * 90)}%`, s: 26 + Math.round(r() * 34), t: 7 + r() * 6, d: -r() * 8,
+    img: BITS[Math.floor(r() * BITS.length)], b: r() < 0.25 ? 1.5 : 0,
     dx: Math.round((r() - 0.5) * 40), dy: -Math.round(12 + r() * 30), r0: Math.round(r() * 360), r1: Math.round(r() * 360 - 180),
   }));
   return (
@@ -27,7 +37,7 @@ export function Floaters({ count = 12, seed = 1 }: { count?: number; seed?: numb
           key={i}
           style={{
             left: it.left, top: it.top, "--s": `${it.s}px`, "--t": `${it.t.toFixed(1)}s`, "--d": `${it.d.toFixed(1)}s`, "--dx": `${it.dx}px`,
-            "--dy": `${it.dy}px`, "--r0": `${it.r0}deg`, "--r1": `${it.r1}deg`,
+            "--dy": `${it.dy}px`, "--r0": `${it.r0}deg`, "--r1": `${it.r1}deg`, "--img": `url(${it.img})`, "--b": `${it.b}px`,
           } as CSSProperties}
         />
       ))}
@@ -54,14 +64,14 @@ export function Bouncy({ text, className }: { text: string; className?: string }
 }
 
 /**
- * Where Lexta's product film goes. With a video file it plays it (muted, controls); until then it shows the 3D render
- * with a clearly marked placeholder (CONTENT-NEEDED.md).
+ * Where a product film goes. With a film it plays it (muted loop, see LoopVideo; today our stand-in made from Lexta's
+ * Hooch artwork, set in content/videos.ts); with none, a clearly marked placeholder over the pack shot.
  */
-export function VideoSlot({ needed, poster, src }: { needed: string; poster: { src: string; alt: string }; src?: string }) {
-  if (src) {
+export function VideoSlot({ needed, poster, film }: { needed: string; poster: { src: string; alt: string }; film?: Film }) {
+  if (film) {
     return (
       <div className="hc-video">
-        <video src={src} poster={poster.src} controls muted playsInline preload="metadata" aria-label={poster.alt} />
+        <LoopVideo film={film} />
       </div>
     );
   }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductCard } from "@/components/cards/Cards";
 import { Floaters, MilkWave, VideoSlot } from "@/components/fun/Decor";
+import { filmFor } from "@/content/videos";
 import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import { BRAND } from "@/content/brand";
@@ -38,7 +39,7 @@ export default async function ProductsPage() {
         <h2 id="films-title" className="hc-h2" style={{ marginTop: 12 }}>Hooch® in Action</h2>
         <div className={`${s.grid2} ${s.mt}`}>
           {products.map((p) => (
-            <VideoSlot key={p.slug} needed={`${p.name} product video from Lexta`} poster={p.images[0] ?? { src: "/images/hooch/cornflakes-bowl.webp", alt: p.name }} />
+            <VideoSlot key={p.slug} needed={`${p.name} product video from Lexta`} poster={p.images[0] ?? { src: "/images/hooch/cornflakes-bowl.webp", alt: p.name }} film={filmFor(p.slug)} />
           ))}
         </div>
       </section>

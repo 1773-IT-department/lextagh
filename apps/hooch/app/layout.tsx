@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import type { ReactNode } from "react";
+import { MOTION_BOOT } from "@/lib/motion";
 import { metadataBase } from "@/lib/site";
 import "./globals.css";
 
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   description:
     "Hooch® Cornflakes and Hooch® Frosted Flakes, breakfast cereals from Lexta Ghana Limited in 10 convenient individual packs. Breakfast ideas, family tips and where to buy.",
   applicationName: "Hooch",
-  openGraph: { siteName: "Hooch®", type: "website", locale: "en_GH", images: [{ url: "/images/hooch/cornflakes-bowl.webp", width: 1200, height: 1200, alt: "A bowl of golden Hooch cornflakes with milk and banana slices" }] },
+  openGraph: { siteName: "Hooch®", type: "website", locale: "en_GH", images: [{ url: "/images/hooch/cornflakes-bowl.webp", width: 1200, height: 1200, alt: "A box of Hooch® Cornflakes, 500g" }] },
   twitter: { card: "summary_large_image" },
   icons: { icon: "/icon.svg" },
 };
@@ -31,7 +32,11 @@ export const viewport: Viewport = { themeColor: "#ffd23f", width: "device-width"
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-GH" className={`${display.variable} ${body.variable}`}>
+    <html lang="en-GH" className={`${display.variable} ${body.variable}`} suppressHydrationWarning>
+      <head>
+        {/* A remembered "Pause motion" applies before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: MOTION_BOOT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

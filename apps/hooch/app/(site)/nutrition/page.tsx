@@ -9,6 +9,7 @@ import { ARTICLES } from "@/content/articles";
 import { BRAND } from "@/content/brand";
 import { ALLERGEN_NOTE } from "@/content/catalogue";
 import { FAQ_GROUPS } from "@/content/faqs";
+import { getHoochProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Nutrition & Family Tips",
@@ -17,7 +18,8 @@ export const metadata: Metadata = {
 };
 
 /** Nutrition & Family Tips: Lexta's hub copy, the four articles, the Hooch® Nutrition Promise and the product FAQs. */
-export default function NutritionPage() {
+export default async function NutritionPage() {
+  const { products } = await getHoochProducts();
   const n = BRAND.nutrition;
   return (
     <>
@@ -46,8 +48,7 @@ export default function NutritionPage() {
             <p>Both Hooch® cereals are enriched with vitamins. Ingredients, as Lexta lists them, are on each product page.</p>
             <p><strong>Allergens:</strong> {ALLERGEN_NOTE}</p>
             <div className={s.actions}>
-              <Link href="/products/cornflakes" className="hc-btn hc-btn--sm">Hooch® Cornflakes <Icon name="arrow" size={16} /></Link>
-              <Link href="/products/frosted-flakes" className="hc-btn hc-btn--sm">Hooch® Frosted Flakes <Icon name="arrow" size={16} /></Link>
+              {products.map((p) => <Link key={p.slug} href={`/products/${p.slug}`} className="hc-btn hc-btn--sm">{p.name} <Icon name="arrow" size={16} /></Link>)}
             </div>
           </div>
         </div>

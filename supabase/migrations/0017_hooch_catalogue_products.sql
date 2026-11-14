@@ -18,9 +18,9 @@
 --      by migrations) is left exactly as it is: its wording and its published state are not overwritten.
 --   3. Their SKUs and pack sizes as Lexta wrote them (codes TBC-HOOCH-101 and 102 until Lexta sends real codes). The
 --      prototype Frosted Flakes SKU TBC-HOOCH-002 (pack size "[PLACEHOLDER: ...]") is switched off in favour of 102.
---   4. One picture each, a shared photo file (/images/hooch/...; 0016 already allows site paths): a 3D render of the
---      cereal in a bowl (Lexta: "Images should be illustrative food photography, not official Hooch packaging"),
---      shipped in the public folder of the Lexta site, the portal and the Hooch site alike.
+--   4. One picture each, a shared photo file (/images/hooch/...; 0016 already allows site paths): a pack shot of the
+--      real Hooch box made from Lexta's own Hooch artwork (Desmond, 14 November 2026: realistic, with the actual product,
+--      until Lexta sends their images), shipped in the public folder of the Lexta site, the portal and the Hooch site.
 --
 -- Row Level Security is unchanged: the existing product policies (0003) cover every row written here.
 -- Idempotent: running it again changes nothing more, and it never overwrites a product row staff have saved.
@@ -90,8 +90,8 @@ insert into public.product_images (product_id, external_url, alt_text, sort_orde
 select p.id, v.url, v.alt_text, 10,
        not exists (select 1 from public.product_images i where i.product_id = p.id and i.is_primary)
 from (values
-  ('cornflakes', '/images/hooch/cornflakes-bowl.webp', 'A bowl of golden Hooch cornflakes with milk and banana slices'),
-  ('frosted-flakes', '/images/hooch/frosted-flakes-bowl.webp', 'A bowl of Hooch frosted flakes sparkling with sugar frost, with milk and strawberries')
+  ('cornflakes', '/images/hooch/cornflakes-bowl.webp', 'A box of Hooch® Cornflakes, 500g, with fresh strawberries'),
+  ('frosted-flakes', '/images/hooch/frosted-flakes-bowl.webp', 'A box of Hooch® Frosted Flakes with fresh strawberries')
 ) as v(product_slug, url, alt_text)
 join public.brands b on b.slug = 'hooch'
 join public.products p on p.brand_id = b.id and p.slug = v.product_slug

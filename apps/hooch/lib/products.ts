@@ -30,7 +30,7 @@ export type HoochProduct = {
   ingredients: string | null;
   skus: { code: string; variant: string | null; pack: string }[];
   images: { src: string; alt: string }[];
-  /** Which 3D flake the product's scene shows. A product staff add later gets the classic golden flake. */
+  /** Which 3D box and colours the product gets. A product staff add later gets the classic (Cornflakes) look. */
   flavour: Flavour;
   /** Lexta's product page extras (content/catalogue.ts); a database row with the same slug borrows them. */
   tagline?: string;
@@ -62,16 +62,16 @@ export function isBlockedImage(src: string): boolean {
  * applies it, unpublishes them. The third seed row, "frosted-flakes", has the catalogue's slug, so it is merged instead.
  */
 export const PROTOTYPE_SEED_SLUGS = ["super-crunchy-corn-flakes", "choco-flakes"];
-const SEEDED_CATALOGUE_SLUGS = ["frosted-flakes"];
+const PROTOTYPE_CORNFLAKES = "super-crunchy-corn-flakes";
 
 /**
- * True while the database is still in its prototype state, before migration 0017: a prototype row is still published
- * and no Drive product except the seeded Frosted Flakes is. Once 0017 is applied this is false for good.
+ * True while the database is still in its prototype state, before migration 0017: the prototype "Super Crunchy Corn
+ * Flakes" row (which 0017 unpublishes) is published and Lexta's Cornflakes row (which 0017 writes) is not. Only those
+ * two rows decide, so after 0017 staff can republish Choco Flakes, or unpublish Cornflakes, without the site ever
+ * falling back to the catalogue.
  */
 export function isPrototypeDatabase(rows: PublishedProduct[]): boolean {
-  const seedPublished = rows.some((r) => PROTOTYPE_SEED_SLUGS.includes(r.slug));
-  const driveProductPublished = rows.some((r) => CATALOGUE.some((c) => c.slug === r.slug) && !SEEDED_CATALOGUE_SLUGS.includes(r.slug));
-  return seedPublished && !driveProductPublished;
+  return rows.some((r) => r.slug === PROTOTYPE_CORNFLAKES) && !rows.some((r) => r.slug === "cornflakes");
 }
 
 const flavourOf = (slug: string, name: string): Flavour => (/frost/i.test(`${slug} ${name}`) ? "frosted" : "classic");
@@ -110,14 +110,14 @@ export function toHoochProduct(p: PublishedProduct, prototype = false): HoochPro
 }
 
 /**
- * The site's product list. After 0017: exactly the published rows, in Product Management's order (prototype rows are
- * skipped if staff ever republish them). Before 0017: prototype rows skipped, rows merged with the catalogue, every
+ * The site's product list. After 0017: exactly the published rows, in Product Management's order (a prototype row
+ * staff republish shows too: Product Management decides). Before 0017: prototype rows skipped, rows merged with the catalogue, every
  * catalogue cereal the database lacks added, in the catalogue's order, then any product staff added.
  */
 export function mergeHoochProducts(rows: PublishedProduct[]): HoochProduct[] {
   const prototype = isPrototypeDatabase(rows);
-  const live = rows.filter((r) => !PROTOTYPE_SEED_SLUGS.includes(r.slug)).map((r) => toHoochProduct(r, prototype));
-  if (!prototype) return live;
+  if (!prototype) return rows.map((r) => toHoochProduct(r, false));
+  const live = rows.filter((r) => !PROTOTYPE_SEED_SLUGS.includes(r.slug)).map((r) => toHoochProduct(r, true));
   const fromCatalogue = CATALOGUE.map((c) => live.find((p) => p.slug === c.slug) ?? c);
   return [...fromCatalogue, ...live.filter((p) => !CATALOGUE.some((c) => c.slug === p.slug))];
 }

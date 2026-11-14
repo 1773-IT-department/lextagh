@@ -232,9 +232,8 @@ html.hc-js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(28px) s
 /* Floating flakes: cereal drifting in the background of sunny sections. */
 .hc-floaters { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
 .hc-floaters i {
-  position: absolute; display: block; width: var(--s, 34px); aspect-ratio: 1.25; border-radius: 48% 52% 40% 60% / 55% 45% 55% 45%;
-  background: radial-gradient(circle at 35% 30%, #ffe08a 0 18%, transparent 19%), radial-gradient(circle at 70% 65%, rgba(150, 78, 16, .35) 0 14%, transparent 15%), linear-gradient(140deg, #f6c45a, #e19a2c);
-  box-shadow: inset -3px -3px 0 rgba(150, 78, 16, .28), 2px 3px 0 rgba(59, 26, 11, .12); opacity: .95;
+  position: absolute; display: block; width: var(--s, 34px); aspect-ratio: 1.2; background: var(--img) center / contain no-repeat;
+  filter: drop-shadow(2px 5px 4px rgba(107, 52, 16, .22)) blur(var(--b, 0px)); opacity: .97;
   animation: hcDrift var(--t, 9s) ease-in-out infinite; animation-delay: var(--d, 0s);
 }
 @media (max-width: 720px) { .hc-floaters { display: none; } }
@@ -268,3 +267,41 @@ html.hc-js [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(28px) s
   .hc-wobble:hover, .hc-wobble:nth-child(2n):hover { transform: none; }
   .hc-sprinkle { display: none; }
 }
+
+/* Site-wide Pause motion (WCAG 2.2.2): every CSS animation stands still; videos and 3D pause in their components. */
+html[data-motion="paused"] *, html[data-motion="paused"] *::before, html[data-motion="paused"] *::after { animation-play-state: paused !important; }
+html[data-motion="paused"] .hc-sprinkle { display: none; }
+/* The ticker also stands still while it has keyboard focus. */
+.hc-marquee:focus-within .hc-marquee__track, .hc-marquee:focus .hc-marquee__track { animation-play-state: paused; }
+.hc-marquee:focus-visible { outline: 3px solid var(--hc-sun); outline-offset: -3px; }
+
+/* A real food photo that tilts towards the pointer, with real flakes floating in front and a crunch burst on tap. */
+.hc-photo { position: relative; aspect-ratio: var(--ratio, 4 / 3); perspective: 900px; isolation: isolate; cursor: pointer; }
+.hc-photo__frame {
+  position: absolute; inset: 0; overflow: hidden; border-radius: 28px; border: 3px solid var(--hc-ink); background: var(--hc-sun-3, #fff4cc);
+  box-shadow: 8px 10px 0 var(--hc-ink), 0 30px 50px -18px rgba(107, 52, 16, .45);
+  transform: rotateY(calc(var(--tx, 0) * 7deg)) rotateX(calc(var(--ty, 0) * -6deg)); transition: transform .35s var(--hc-bounce, ease);
+}
+.hc-photo__frame img { width: 100%; height: 100%; display: block; transform: scale(1.04) translate(calc(var(--tx, 0) * -10px), calc(var(--ty, 0) * -8px)); transition: transform .5s ease; }
+.hc-photo:hover .hc-photo__frame img { transform: scale(1.09) translate(calc(var(--tx, 0) * -14px), calc(var(--ty, 0) * -10px)); }
+.hc-photo__shine { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at calc(50% + var(--tx, 0) * 30%) calc(30% + var(--ty, 0) * 30%), rgba(255, 255, 255, .28), transparent 55%); mix-blend-mode: soft-light; }
+.hc-photo__bits { position: absolute; inset: 0; pointer-events: none; z-index: 2; transform: translate(calc(var(--tx, 0) * 18px), calc(var(--ty, 0) * 14px)); transition: transform .4s ease; }
+.hc-photo__bits i { position: absolute; width: var(--s); aspect-ratio: 1.15; background: var(--img) center / contain no-repeat; filter: drop-shadow(3px 8px 6px rgba(107, 52, 16, .3)); animation: hcDrift 8s ease-in-out infinite; animation-delay: var(--d, 0s); }
+.hc-photo__ph { position: absolute; left: 12px; bottom: 12px; z-index: 3; max-width: calc(100% - 24px); padding: 6px 12px; border-radius: 12px; background: rgba(59, 26, 11, .78); color: #fff; font-weight: 700; font-size: 13px; }
+.hc-photo__burst { position: absolute; z-index: 4; pointer-events: none; }
+.hc-photo__burst i { position: absolute; left: 0; top: 0; width: var(--s); aspect-ratio: 1.15; margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); background: var(--img) center / contain no-repeat; animation: hcBits .95s cubic-bezier(.2, .8, .3, 1) forwards; }
+.hc-photo__burst b {
+  position: absolute; left: 0; top: 0; translate: -50% -50%; font-family: var(--hc-display); font-weight: 700; font-size: clamp(26px, 3.4vw, 40px);
+  color: var(--hc-red); -webkit-text-stroke: 2px var(--hc-ink); paint-order: stroke fill; text-shadow: 3px 3px 0 var(--hc-sun); animation: hcPhotoShout .95s cubic-bezier(.2, .9, .3, 1.3) forwards; white-space: nowrap;
+}
+@keyframes hcBits { 0% { transform: translate(0, 0) scale(.4) rotate(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: translate(var(--dx), calc(var(--dy) + 40px)) scale(1) rotate(var(--r)); opacity: 0; } }
+@keyframes hcPhotoShout { 0% { scale: .3; opacity: 0; } 30% { scale: 1.15; opacity: 1; } 100% { scale: 1; opacity: 0; translate: -50% -150%; } }
+@media (prefers-reduced-motion: reduce) {
+  .hc-photo__frame, .hc-photo__frame img, .hc-photo__bits { transform: none !important; transition: none; }
+  .hc-photo__bits i { animation: none; }
+}
+@media (max-width: 640px) { .hc-photo__frame { border-radius: 22px; box-shadow: 5px 6px 0 var(--hc-ink), 0 20px 34px -16px rgba(107, 52, 16, .45); } .hc-photo__bits i { width: calc(var(--s) * .7); } }
+
+/* The hero film: the Hooch boxes and a real bowl, playing in a rounded frame. */
+.hc-film { position: relative; aspect-ratio: 1 / 1; border-radius: 34px; overflow: hidden; border: 3px solid var(--hc-ink); box-shadow: 10px 12px 0 var(--hc-ink), 0 40px 60px -24px rgba(107, 52, 16, .5); background: #ffd23f; }
+.hc-film video { width: 100%; height: 100%; object-fit: cover; display: block; }

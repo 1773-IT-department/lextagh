@@ -5,7 +5,7 @@ import { Floaters, MilkWave } from "@/components/fun/Decor";
 import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import NeedList from "@/components/recipes/NeedList";
-import FoodStage from "@/components/three/FoodStage";
+import RealPhoto from "@/components/fun/RealPhoto";
 import { RECIPES, recipeBySlug, SHARE_RECIPE } from "@/content/recipes";
 import { getHoochProducts } from "@/lib/products";
 
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return { title: r.name, description: `${r.strap} ${r.method}`, alternates: { canonical: `/recipes/${r.slug}` }, openGraph: { images: [{ url: r.image.src, alt: r.image.alt }] } };
 }
 
-/** One recipe: its live 3D scene, what you need (a tick list), Lexta's method, the cereal it uses and the next idea. */
+/** One recipe: its food photo (tilts, and crunches when tapped), what you need (a tick list), Lexta's method, the cereal it uses and the next idea. */
 export default async function RecipePage({ params }: { params: Params }) {
   const r = recipeBySlug((await params).slug);
   if (!r) notFound();
@@ -45,7 +45,7 @@ export default async function RecipePage({ params }: { params: Params }) {
               </div>
             </div>
             <div className={s.splitStage}>
-              <FoodStage priority config={r.scene} poster={r.image} label={`A 3D scene of ${r.name}: ${r.image.alt}. Tap it for a crunch.`} />
+              <RealPhoto priority ratio="1 / 1" src={r.image.src} alt={r.image.alt} position={r.image.position} placeholder={r.photoNeeded} />
             </div>
           </div>
         </div>

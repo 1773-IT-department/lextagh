@@ -7,6 +7,7 @@ import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import FoodStage from "@/components/three/FoodStage";
 import { ALLERGEN_NOTE, CATALOGUE } from "@/content/catalogue";
+import { filmFor } from "@/content/videos";
 import { RECIPES } from "@/content/recipes";
 import { getHoochProducts } from "@/lib/products";
 
@@ -26,7 +27,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 /**
- * One cereal: a live 3D bowl of it, Lexta's description, key benefits, how to enjoy, nutrition and ingredients (as
+ * One cereal: a live 3D model of its box, Lexta's description, key benefits, how to enjoy, nutrition and ingredients (as
  * Lexta wrote them; the approved panel is still to come), packs and codes, its product film slot, recipes that use it
  * and Where to Buy (the stockist finder with the product chosen).
  */
@@ -39,6 +40,10 @@ export default async function ProductPage({ params }: { params: Params }) {
   const recipes = RECIPES.filter((r) => (p.recipes ?? []).includes(r.slug) || r.cereals.includes(p.slug));
   const others = products.filter((x) => x.slug !== p.slug);
   const poster = p.images[0] ?? { src: frosted ? "/images/hooch/frosted-flakes-bowl.webp" : "/images/hooch/cornflakes-bowl.webp", alt: p.name };
+  // The 3D stage's poster: the box on its own (transparent), for the catalogue cereals.
+  const knownPack = p.slug === "cornflakes" || p.slug === "frosted-flakes";
+  const stagePoster = knownPack ? { src: frosted ? "/images/hooch/pack-frosted.webp" : "/images/hooch/pack-corn.webp", alt: `A box of ${p.name}` } : poster;
+  const film = filmFor(p.slug);
   const steps = (p.usage ?? "").split(/(?<=\.)\s+/).filter(Boolean);
 
   return (
@@ -64,9 +69,9 @@ export default async function ProductPage({ params }: { params: Params }) {
             <div className={s.splitStage}>
               <FoodStage
                 priority
-                config={{ vessel: "bowl", flake: p.flavour, milk: true, toppings: frosted ? ["strawberry"] : ["banana"] }}
-                poster={poster}
-                label={`A 3D bowl of ${p.name} with milk${frosted ? " and strawberries" : " and banana slices"}. Tap the bowl for a crunch.`}
+                config={{ packs: [p.flavour] }}
+                poster={stagePoster}
+                label={`A 3D model of the ${p.name} box. Drag to spin it; tap it and flakes pop out.`}
               />
             </div>
           </div>
@@ -115,7 +120,7 @@ export default async function ProductPage({ params }: { params: Params }) {
             )}
           </div>
           <div data-reveal="" style={{ "--d": ".1s" } as React.CSSProperties}>
-            <VideoSlot needed={`${p.name} product video from Lexta`} poster={poster} />
+            <VideoSlot needed={`${p.name} product video from Lexta`} poster={poster} film={film} />
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@ import { MilkWave } from "@/components/fun/Decor";
 import Icon from "@/components/Icon";
 import { BRAND } from "@/content/brand";
 import { NAV } from "@/lib/nav";
+import { getHoochProducts } from "@/lib/products";
 import { contact, lexta, socials, tel } from "@/lib/site";
 import s from "./footer.module.css";
 
@@ -10,7 +11,8 @@ import s from "./footer.module.css";
  * Footer: Lexta's sign-off on a sunny band (milk wave on top), then the link columns. Links go to this site's pages and
  * to the Lexta site for community programmes, careers and the legal pages (brand sites have no CSR pages, by contract).
  */
-export default function SiteFooter() {
+export default async function SiteFooter() {
+  const { products } = await getHoochProducts();
   const ext = { target: "_blank", rel: "noopener" } as const;
   return (
     <footer className={s.footer}>
@@ -39,8 +41,7 @@ export default function SiteFooter() {
         <nav aria-label="Our cereals">
           <h2 className={s.head}>Our cereals</h2>
           <ul>
-            <li><Link href="/products/cornflakes">Hooch® Cornflakes</Link></li>
-            <li><Link href="/products/frosted-flakes">Hooch® Frosted Flakes</Link></li>
+            {products.map((p) => <li key={p.slug}><Link href={`/products/${p.slug}`}>{p.name}</Link></li>)}
             <li><Link href="/recipes">Breakfast Ideas &amp; Recipes</Link></li>
             <li><Link href="/contact#where-to-buy">Where to Buy</Link></li>
           </ul>

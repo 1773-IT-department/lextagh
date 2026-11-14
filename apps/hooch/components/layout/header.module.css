@@ -19,6 +19,12 @@
 
 .actions { display: flex; align-items: center; gap: 12px; }
 .cta { white-space: nowrap; }
+.motion {
+  display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--hc-ink);
+  background: #fff; color: var(--hc-ink); cursor: pointer; transition: transform .2s var(--hc-bounce, ease);
+}
+.motion:hover, .motion:focus-visible { transform: scale(1.08) rotate(-6deg); }
+.motion[aria-pressed="true"] { background: var(--hc-sun, #ffd23f); }
 
 .mobile { display: none; position: relative; }
 .mobile > summary { list-style: none; }

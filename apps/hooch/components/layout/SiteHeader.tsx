@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import Icon from "@/components/Icon";
+import MotionToggle from "@/components/motion/MotionToggle";
 import { NAV } from "@/lib/nav";
 import s from "./header.module.css";
 
@@ -34,6 +35,7 @@ export default function SiteHeader() {
       </nav>
 
       <div className={s.actions}>
+        <MotionToggle compact className={s.motion} />
         <Link href="/contact#where-to-buy" className={`hc-btn hc-btn--red hc-btn--sm ${s.cta}`}>
           <Icon name="pin" size={17} /> Where to Buy
         </Link>

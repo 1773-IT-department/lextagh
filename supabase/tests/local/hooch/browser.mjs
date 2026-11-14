@@ -167,7 +167,10 @@ try {
     check(JSON.stringify(names) === JSON.stringify(["Hooch® Cornflakes", "Hooch® Frosted Flakes"]), "products page: the two Drive cereals, nothing else", names);
     const navItems = await page.getByRole("navigation", { name: "Main" }).locator("a").allInnerTexts();
     check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact"]), "header: Lexta's six tabs", navItems);
-    check(await page.getByText("[PLACEHOLDER: Hooch® Cornflakes product video from Lexta]").count() === 1, "products page: the product film slots are clearly marked placeholders");
+    const films = await page.locator(".hc-video video").evaluateAll((vs) => vs.map((v) => ({ poster: v.getAttribute("poster"), muted: v.muted, loop: v.loop, inline: v.playsInline,
+      types: [...v.querySelectorAll("source")].map((s) => s.type) })));
+    check(films.length === 2 && films.every((f) => f.muted && f.loop && f.inline && f.poster?.startsWith("/videos/") && f.types.includes("video/webm") && f.types.includes("video/mp4")),
+      "products page: each cereal's film slot plays its short film (muted loop, webm and mp4, poster)", films);
 
     await page.goto(`${SITE}/contact?3d=off`);
     await page.locator("#where-to-buy li h3").first().waitFor({ timeout: 15000 }).catch(() => {});
@@ -209,11 +212,22 @@ try {
     await page.waitForSelector("[data-mode='live'][data-shown] canvas", { timeout: 60000, state: "attached" }).catch(() => {});
     const live = await stage.evaluate((el) => ({ mode: el.dataset.mode, shown: el.hasAttribute("data-shown"), canvas: !!el.querySelector("canvas"),
       label: el.querySelector("[role=img]")?.getAttribute("aria-label") ?? "", posterHidden: el.querySelector("img")?.getAttribute("aria-hidden") === "true" }));
-    check(live.mode === "live" && live.shown && live.canvas && /3D bowl of Hooch® Cornflakes/.test(live.label) && live.posterHidden,
+    check(live.mode === "live" && live.shown && live.canvas && /3D model of the Hooch® Cornflakes box/.test(live.label) && live.posterHidden,
       "3D: on a capable browser the live scene loads, fades in over the poster and is described for screen readers", live);
-    const pause = page.getByRole("button", { name: /Pause motion/ });
+    const pause = stage.getByRole("button", { name: /Pause motion/ });
     await pause.click();
-    check(await page.getByRole("button", { name: /Play motion/ }).getAttribute("aria-pressed") === "true", "3D: Pause motion stops the movement (WCAG 2.2.2) and says so");
+    check(await stage.getByRole("button", { name: /Play motion/ }).getAttribute("aria-pressed") === "true" && await page.evaluate(() => document.documentElement.dataset.motion) === "paused",
+      "3D: Pause motion stops the movement (WCAG 2.2.2), says so, and pauses the whole site");
+    // The choice is remembered: the next page starts paused (ticker and hero film still), and Play motion undoes it.
+    await page.goto(`${SITE}/`);
+    await sleep(800);
+    const calmHome = await page.evaluate(() => ({ motion: document.documentElement.dataset.motion, film: document.querySelector(".hc-film video")?.paused,
+      ticker: getComputedStyle(document.querySelector(".hc-marquee__track")).animationPlayState }));
+    check(calmHome.motion === "paused" && calmHome.film === true && calmHome.ticker === "paused", "site-wide pause: remembered on the next page; the hero film and the ticker stand still", calmHome);
+    await page.getByRole("banner").getByRole("button", { name: /Play motion/ }).click();
+    await sleep(800);
+    const moving = await page.evaluate(() => ({ motion: document.documentElement.dataset.motion ?? "", film: document.querySelector(".hc-film video")?.paused }));
+    check(moving.motion === "" && moving.film === false, "site-wide pause: Play motion in the header starts everything again, the hero film plays", moving);
     check(drain().length === 0, "3D: no console errors");
     await ctx.close();
 
@@ -233,10 +247,10 @@ try {
     });
     check(drawn > 0, "3D: the scene draws (the middle of the canvas is not empty)", drawn);
     const box = await sp.locator("[data-mode]").first().boundingBox();
-    await sp.mouse.click(box.x + box.width / 2, box.y + box.height * 0.42);
+    await sp.mouse.click(box.x + box.width / 2, box.y + box.height * 0.5);
     await sleep(300);
     const burst = await sp.locator("[data-mode] span[aria-hidden='true']").filter({ hasText: /Crunch!|Munch!|Yum!|Pop!/ }).count();
-    check(burst >= 1, "3D: tapping the bowl makes a crunch burst", burst);
+    check(burst >= 1, "3D: tapping the box makes a crunch burst", burst);
     await sctx.close();
 
     const calm = await context("desktop", { reducedMotion: "reduce" });
@@ -245,6 +259,7 @@ try {
     await sleep(2500);
     const still = await cp.locator("[data-mode]").first().evaluate((el) => ({ mode: el.dataset.mode, canvas: !!el.querySelector("canvas"), anim: getComputedStyle(el.querySelector("img")).animationName }));
     check(still.mode === "poster" && !still.canvas && still.anim === "none", "3D: with reduced motion the poster stays, without movement", still);
+    check(await cp.locator(".hc-film video").evaluate((v) => v.paused && !v.autoplay), "hero film: with reduced motion it shows its poster and does not play");
     check(await cp.locator(".hc-marquee__track").evaluate((e) => getComputedStyle(e).animationName) === "none", "marquee: no movement for reduced motion");
     await calm.close();
   }
@@ -311,7 +326,7 @@ try {
     const row = ref ? await q(`select b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${ref}'`) : "";
     check(row === "hooch", "consumer form without JavaScript: posts, shows the reference and lands a Hooch lead", { ref, row });
     await page.goto(`${SITE}/`);
-    check(await page.locator("img[src='/images/hooch/hero-pour.webp']").count() === 1 && await page.locator("canvas").count() === 0, "without JavaScript: the home page shows the hero poster, no canvas");
+    check(await page.locator(".hc-film video[poster='/videos/hooch-hero-poster.webp']").count() === 1 && await page.locator("canvas").count() === 0, "without JavaScript: the home page shows the hero film's poster, no canvas");
     await page.goto(`${SITE}/recipes`);
     const bubble = page.locator("details").filter({ hasText: "Can I use Hooch® Cornflakes for baking?" });
     await bubble.locator("summary").click();

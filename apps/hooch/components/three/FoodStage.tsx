@@ -1,23 +1,25 @@
 "use client";
 
 /**
- * A food stage: the poster picture first (a render of the settled 3D scene, so the page is fast and looks right with
- * no JavaScript), then, on devices that can take it, the live 3D scene fades in over it once the stage scrolls near.
+ * A 3D stage: the poster picture first (a pack shot made from Lexta's own Hooch artwork, so the page is fast and looks
+ * right with no JavaScript), then, on devices that can take it, the live 3D Hooch® boxes fade in over it once the stage
+ * scrolls near.
  *
  * Who gets the live scene: WebGL2 works, the visitor has not asked for reduced motion or data saving, and the device
  * has at least 4 processor cores. Everyone else keeps the poster with a gentle CSS bob (still, with reduced motion).
- * ?3d=off and ?3d=on in the address force either way (for testing); ?3d=still shows the settled scene, standing still
- * (the poster renders).
- * The scene is unmounted when the stage is far off screen (frees the graphics memory; it pours again on return) and
- * paused when just out of view. A "Pause motion" button stops all movement (WCAG 2.2.2).
+ * ?3d=off and ?3d=on in the address force either way (for testing); ?3d=still shows the boxes standing still.
+ * The scene is unmounted when the stage is far off screen (frees the graphics memory) and paused when just out of view.
+ * The site-wide "Pause motion" switch (also on each stage) stops all movement (WCAG 2.2.2).
  */
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Icon from "@/components/Icon";
+import MotionToggle from "@/components/motion/MotionToggle";
+import { useMotionPaused } from "@/lib/motion";
 import type { SceneConfig } from "./scene-config";
 import s from "./stage.module.css";
 
-const CerealScene = dynamic(() => import("./CerealScene"), { ssr: false });
+const BoxScene = dynamic(() => import("./BoxScene"), { ssr: false });
 
 type Mode = "poster" | "live";
 
@@ -59,7 +61,7 @@ export default function FoodStage({
   const [near, setNear] = useState(false);
   const [visible, setVisible] = useState(false);
   const [shown, setShown] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const paused = useMotionPaused();
   const [settled, setSettled] = useState(false);
   const [tapped, setTapped] = useState(false);
   const [bursts, setBursts] = useState<{ id: number; x: number; y: number; word: string }[]>([]);
@@ -75,7 +77,7 @@ export default function FoodStage({
     const seen = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { rootMargin: "60px 0px" });
     far.observe(el);
     seen.observe(el);
-    return () => { far.disconnect(); seen.disconnect(); };
+    return () => { far.disconnect(); seen.disconnect(); document.body.style.cursor = ""; };
   }, [mode]);
 
   const onCrunch = useCallback((x: number, y: number) => {
@@ -86,15 +88,17 @@ export default function FoodStage({
   }, []);
 
   const live = mode === "live" && near;
+  const two = config.packs.length > 1;
 
   return (
     <div
       ref={box}
       className={`${s.stage} ${s[variant]} ${className ?? ""}`}
-      data-vessel={config.vessel}
+      data-packs={two ? "two" : "one"}
       data-mode={mode}
       data-shown={shown ? "" : undefined}
       data-settled={settled ? "" : undefined}
+      data-no-sprinkle=""
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -108,7 +112,7 @@ export default function FoodStage({
       />
       {live && (
         <div className={s.canvas} role="img" aria-label={label}>
-          <CerealScene
+          <BoxScene
             config={config}
             running={visible && !paused && !(still && settled)}
             onReady={() => setShown(true)}
@@ -124,10 +128,8 @@ export default function FoodStage({
       ))}
       {shown && !still && (
         <>
-          {hint && !tapped && <span className={s.hint} aria-hidden="true"><Icon name="hand" size={16} /> Tap the bowl for a crunch!</span>}
-          <button type="button" className={s.pause} aria-pressed={paused} onClick={() => setPaused((p) => !p)}>
-            <Icon name={paused ? "play" : "pause"} size={14} /> {paused ? "Play motion" : "Pause motion"}
-          </button>
+          {hint && !tapped && <span className={s.hint} aria-hidden="true"><Icon name="hand" size={16} /> Tap a box, or drag to spin it!</span>}
+          <MotionToggle className={s.pause} />
         </>
       )}
     </div>
