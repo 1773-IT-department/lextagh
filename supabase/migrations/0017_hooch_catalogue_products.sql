@@ -1,6 +1,7 @@
 -- 0017_hooch_catalogue_products: Lexta's real Hooch catalogue in Product Management, replacing the prototype rows.
 --
--- WRITTEN, NOT APPLIED. Desmond decides whether and when to apply it to the live project.
+-- Applied to the live project (Lexta Gh) on 2026-11-14 with Desmond's approval, after a read-only check showed the
+-- 3 prototype Hooch rows unedited by staff and codes TBC-HOOCH-101/102 unused.
 --
 -- Why: the Hooch products seeded from the Lexta prototype (0004) carry claims no Lexta document makes ("sun ripened",
 -- "toasted for a crunch that survives the milk", "low in fat", "high energy grain") and photos hotlinked from a
