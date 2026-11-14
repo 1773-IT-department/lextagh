@@ -1,0 +1,6 @@
+/* Website forms (item 19). The reason and route cards are labels around visually hidden radios: show a focus ring
+   on the card while its radio has keyboard focus, as the buttons they replace did. */
+.choice:has(input:focus-visible) { outline: 2px solid #12a3c4; outline-offset: 2px; }
+
+/* Careers CV box: a label around a visually hidden file input. Focus ring while the input has keyboard focus. */
+.dropzone:has(input:focus-visible) { outline: 2px solid #12a3c4; outline-offset: 2px; }

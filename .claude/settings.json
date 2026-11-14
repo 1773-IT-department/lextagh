@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Lexta_Supabase",
+      "mcp__Trello",
+      "mcp__github",
+      "mcp__Vercel",
+      "mcp__claude-code-remote",
+      "Bash(git *)",
+      "Bash(pnpm *)",
+      "Bash(node *)",
+      "Bash(npx *)",
+      "Bash(python3 *)",
+      "Bash(bash supabase/tests/local/run.sh*)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(sed *)",
+      "Bash(wc *)",
+      "Bash(ps *)",
+      "Bash(kill *)"
+    ],
+    "deny": [
+      "mcp__Ivie_Supabase",
+      "mcp__Bezalel_Junior_Supabase"
+    ]
+  }
+}

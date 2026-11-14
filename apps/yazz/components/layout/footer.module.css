@@ -1,0 +1,42 @@
+.footer { color: #fff; background: linear-gradient(180deg, #0b3c7e 0%, #09306a 100%); }
+.band {
+  display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 54px var(--yz-gutter) 50px;
+  background: linear-gradient(180deg, #0b2e63 0%, #071f45 100%);
+}
+.bandScript { margin: 0; font-size: 46px; line-height: 1.05; color: #fff; font-weight: 600; }
+.bandLogo { text-align: right; }
+.bandLogo p { margin: 14px 0 0; font-size: 22px; color: #dceafa; font-weight: 600; }
+
+.cols {
+  display: grid; grid-template-columns: 1.3fr repeat(3, 1fr) 1.1fr; gap: 32px; padding: 40px var(--yz-gutter) 30px; align-items: start;
+}
+.about p { margin: 14px 0 0; font-size: 12.5px; line-height: 1.6; color: #b9d2ee; max-width: 220px; }
+.about .phone { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.about a { color: #dceafa; }
+.about a:hover { color: #fff; text-decoration: underline; }
+.head { margin: 0 0 12px; font-size: 13.5px; font-weight: 600; color: #fff; }
+.cols ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 12.5px; }
+.cols nav a { color: #b9d2ee; display: inline-flex; align-items: center; gap: 4px; }
+.cols nav a:hover { color: #fff; text-decoration: underline; }
+.social { flex-direction: row !important; flex-wrap: wrap; gap: 8px !important; }
+.social a, .social span {
+  width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #0b3c7e; display: flex; align-items: center; justify-content: center;
+}
+.social span { opacity: .55; }
+.social a:hover { background: var(--yz-red); color: #fff; }
+.placeholder { margin: 10px 0 0; font-size: 11px; line-height: 1.5; color: #9fc1e4; max-width: 220px; }
+.ghana { display: flex; align-items: center; gap: 8px; margin: 18px 0 0; font-size: 12.5px; color: #dceafa; }
+
+.bottom {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
+  border-top: 1px solid rgba(255, 255, 255, .14); padding: 14px var(--yz-gutter) 18px; font-size: 11.5px; color: #9fc1e4;
+}
+
+@media (max-width: 1100px) { .cols { grid-template-columns: repeat(3, 1fr); } .about { grid-column: 1 / -1; } }
+@media (max-width: 720px) {
+  .band { flex-direction: column; align-items: flex-start; padding-top: 40px; padding-bottom: 36px; }
+  .bandScript { font-size: 36px; }
+  .bandLogo { text-align: left; }
+  .cols { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+  .bottom { flex-direction: column; align-items: flex-start; }
+}

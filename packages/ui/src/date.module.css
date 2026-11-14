@@ -1,0 +1,95 @@
+/*
+ * Lexta date field (see DateInput.tsx), in the tokens of the Lexta dropdown (select.module.css): teal #12a3c4 (hover
+ * #0d8ba8), ink #12313d, pale teal #f1fbfe, the same panel border, radius and shadow. The same custom properties tune it.
+ */
+.wrap { position: relative; display: block; min-width: 0; max-width: 100%; }
+
+/* The real input is the face of the field: typed in, posted with the form. The browser's own calendar icon is made
+   see through and laid over the brand icon, so without JavaScript the brand icon still opens the browser's picker. */
+.input { width: 100%; max-width: 100%; min-width: 0; padding-right: 42px !important; position: relative; cursor: text; }
+.input::-webkit-calendar-picker-indicator {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 42px; height: auto; margin: 0; padding: 0;
+  opacity: 0; cursor: pointer;
+}
+.input:disabled { cursor: not-allowed; }
+/* Enhanced, only the brand button opens a calendar: the browser's own (still see through underneath) takes no clicks. */
+.wrap[data-enhanced] > .input::-webkit-calendar-picker-indicator { pointer-events: none; }
+/* Safari and Chrome extras that do not belong on the brand face. */
+.input::-webkit-inner-spin-button, .input::-webkit-clear-button { display: none; -webkit-appearance: none; }
+/* Firefox draws its own calendar button inside the field; as a text field it does not, and the brand icon takes its
+   place (it still opens Firefox's own picker on a click in the field when there is no JavaScript). */
+@supports (-moz-appearance: none) {
+  .input[type="date"], .input[type="datetime-local"], .input[type="time"], .input[type="month"] { -moz-appearance: textfield; appearance: textfield; }
+}
+.input:disabled::-webkit-calendar-picker-indicator { cursor: not-allowed; }
+
+.icon {
+  position: absolute; top: 50%; right: 13px; width: 16px; height: 16px; margin-top: -8px;
+  color: var(--lx-select-accent, #12a3c4); pointer-events: none; transition: color .18s;
+}
+.icon svg { display: block; width: 16px; height: 16px; }
+.input:disabled ~ .icon { color: var(--lx-select-muted, #8aa4ae); opacity: .7; }
+.wrap:hover > .input:not(:disabled):not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.wrap[data-open] > .input:not([aria-invalid="true"]) { border-color: var(--lx-select-accent, #12a3c4) !important; }
+.input[aria-invalid="true"] { border-color: var(--lx-select-danger, #b42318) !important; }
+
+/* With JavaScript, the icon is a button that opens the branded calendar. */
+.trigger {
+  position: absolute; top: 4px; right: 4px; bottom: 4px; width: 34px; z-index: 1; margin: 0; padding: 0;
+  border: 0; border-radius: 7px; background: transparent; cursor: pointer; transition: background-color .15s, box-shadow .15s;
+}
+.trigger:hover:not(:disabled) { background: var(--lx-select-tint, rgba(18, 163, 196, .1)); }
+.trigger:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--lx-select-accent, #12a3c4); }
+.trigger:disabled { cursor: not-allowed; }
+
+.dialog {
+  position: fixed; z-index: 1000; box-sizing: border-box; padding: 12px;
+  background: #fff; border: 1px solid var(--lx-select-panel-border, #e2eff4); border-radius: 12px;
+  box-shadow: var(--lx-select-panel-shadow, 0 22px 44px rgba(11, 60, 78, .18), 0 2px 6px rgba(11, 60, 78, .06));
+  font-family: inherit; color: var(--lx-select-ink, #12313d);
+  animation: lxDateIn .16s cubic-bezier(.3, .7, .2, 1);
+}
+.dialog[data-up] { animation-name: lxDateInUp; }
+.dialog[data-measuring] { visibility: hidden; animation: none; }
+@keyframes lxDateIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@keyframes lxDateInUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .dialog, .dialog[data-up] { animation: none; } }
+
+.head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.title { margin: 0; font-size: 15px; font-weight: 700; color: var(--lx-select-ink, #12313d); }
+.nav {
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0;
+  border: 1px solid var(--lx-select-tint-border, rgba(18, 163, 196, .35)); border-radius: 9px; background: #fff; color: var(--lx-select-accent, #12a3c4); cursor: pointer;
+  transition: background-color .15s, border-color .15s;
+}
+.nav svg { width: 12px; height: 12px; }
+.nav:hover:not(:disabled) { background: var(--lx-select-soft, #f1fbfe); border-color: var(--lx-select-accent, #12a3c4); }
+.nav:focus-visible { outline: 2px solid var(--lx-select-accent, #12a3c4); outline-offset: 1px; }
+.nav:disabled { opacity: .4; cursor: not-allowed; }
+
+.grid { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.grid th { padding: 4px 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--lx-select-muted, #8aa4ae); text-align: center; }
+.grid td { padding: 2px; text-align: center; }
+.day {
+  width: 100%; height: 36px; padding: 0; border: 0; border-radius: 9px; background: transparent;
+  font: inherit; font-size: 13.5px; font-weight: 500; color: var(--lx-select-option-color, #3f5b66); cursor: pointer; transition: background-color .12s, color .12s;
+}
+.day:hover { background: var(--lx-select-soft, #f1fbfe); color: var(--lx-select-accent-dark, #0d8ba8); }
+.day[data-today] { box-shadow: inset 0 0 0 1.5px var(--lx-select-accent, #12a3c4); font-weight: 700; color: var(--lx-select-accent-dark, #0d8ba8); }
+.day[data-selected] { background: var(--lx-select-accent, #12a3c4); color: #fff; font-weight: 700; }
+.day[data-selected]:hover { background: var(--lx-select-accent-dark, #0d8ba8); color: #fff; }
+.day:focus-visible { outline: 2px solid var(--lx-select-accent-dark, #0d8ba8); outline-offset: 1px; }
+.day[aria-disabled="true"] { color: var(--lx-select-day-disabled, #c3d2d8); background: transparent; cursor: not-allowed; text-decoration: line-through; box-shadow: none; }
+@media (pointer: coarse) { .day { height: 40px; } }
+
+.foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--lx-select-line, #e6f1f5); }
+.action {
+  padding: 7px 12px; border: 0; border-radius: 8px; background: transparent; font: inherit; font-size: 13px; font-weight: 700;
+  color: var(--lx-select-accent-dark, #0d8ba8); cursor: pointer;
+}
+.action:hover:not(:disabled) { background: var(--lx-select-soft, #f1fbfe); }
+.action:focus-visible { outline: 2px solid var(--lx-select-accent, #12a3c4); outline-offset: 1px; }
+.action:disabled { opacity: .4; cursor: not-allowed; }
+
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (forced-colors: active) { .day[data-selected] { outline: 2px solid Highlight; } .dialog { border: 1px solid CanvasText; } }

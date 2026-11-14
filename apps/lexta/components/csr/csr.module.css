@@ -1,0 +1,6 @@
+/* CSR pillar card hover (the prototype's style-hover attribute, applied with !important by its runtime). */
+.pillarCard:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(63, 192, 221, .55) !important;
+  background: rgba(255, 255, 255, .08) !important;
+}
