@@ -56,3 +56,11 @@ export function isCurrent(href: string, pathname: string | null): boolean {
   if (href !== "/" && pathname?.startsWith(`${href}/`)) return true;
   return normPath(href) === normPath(pathname || "/");
 }
+
+/**
+ * The three brand websites. Until go-live they are the Vercel addresses (set per environment); the defaults are the
+ * real domains, which Desmond points at the new sites at go-live.
+ */
+export const yazzSiteUrl = process.env.NEXT_PUBLIC_YAZZ_SITE_URL || "https://yazzproducts.com";
+export const linzzySiteUrl = process.env.NEXT_PUBLIC_LINZZY_SITE_URL || "https://linzzyproducts.com";
+export const hoochSiteUrl = process.env.NEXT_PUBLIC_HOOCH_SITE_URL || "https://hoochfoods.com";

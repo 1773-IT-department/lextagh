@@ -65,7 +65,7 @@ try {
       yazz.map((p) => p.slug),
     );
     const toothpaste = yazz.find((p) => p.slug === "toothpaste");
-    check(toothpaste?.images.length === 3 && toothpaste.images[0].is_primary && toothpaste.images[0].url.startsWith("https://yazzproducts.com/"), "images come primary first with their public URL");
+    check(toothpaste?.images.length === 3 && toothpaste.images[0].is_primary && toothpaste.images[0].url === "/images/yazz/toothpaste-charcoal-new.webp", "images come primary first; a prototype link to an old Lexta site is shown from its local copy (LEGACY_IMAGE_COPIES)", toothpaste?.images.map((i) => i.url));
     check(toothpaste?.skus.length === 3 && toothpaste.skus.every((s) => s.is_active), "active SKUs come with the product");
     check(!("brand" in (toothpaste ?? {})), "the brand join is not leaked into the product");
     check((await db.getPublishedProducts("linzzy")).length === 6 && (await db.getPublishedProducts("hooch")).length === 2, "Linzzy: Lexta's 6 catalogue products (0016); Hooch: Lexta's 2 Drive cereals (0017)");
@@ -109,7 +109,21 @@ try {
       check(hoochMedia.every((src) => ["lexta", "portal", "hooch"].every((app) => existsSync(new URL(`../../../../apps/${app}/public${src}`, import.meta.url)))),
         "Hooch pictures: every shared photo file is shipped by the Lexta site, the portal and the Hooch site", hoochMedia);
     }
-    check(same(ranges.yazz.slice(0, 6), data.yazzProducts.slice(0, 6)), "Yazz cards 1 to 6 (pads to diapers, with the before/after strip) are identical", ranges.yazz.slice(0, 6));
+    // Card text comes from Product Management, so it follows the database (the content update in PR 35 changed the
+    // static copy); what must match the approved static cards is the order and the layout of each card.
+    check(
+      same(ranges.yazz.slice(0, 6).map((c) => [c.slug, c.media.kind]), data.yazzProducts.slice(0, 6).map((c) => [c.slug, c.media.kind])),
+      "Yazz cards 1 to 6 (pads to diapers, with the before/after strip) keep the approved order and card layout",
+      ranges.yazz.slice(0, 6).map((c) => [c.slug, c.media.kind]),
+    );
+    {
+      const realDomains = /https?:\/\/(www\.)?(lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com|melcom\.com|chopboxonline\.com)\//;
+      const pics = JSON.stringify([ranges.yazz, ranges.linzzy, ranges.hooch, data.yazzProducts]).match(/"src":"[^"]+"/g) ?? [];
+      check(!pics.some((x) => realDomains.test(x)), "Our Brands: no picture loads from Lexta's old websites or a retailer", pics.filter((x) => realDomains.test(x)));
+      const { existsSync } = await import("node:fs");
+      const local = pics.map((x) => x.slice(7, -1)).filter((src) => src.startsWith("/"));
+      check(local.every((src) => existsSync(new URL(`../../../../apps/lexta/public${src}`, import.meta.url))), "Our Brands: every local picture exists in the Lexta site", local.filter((src) => !existsSync(new URL(`../../../../apps/lexta/public${src}`, import.meta.url))));
+    }
     const tail = ranges.yazz.slice(6).map((c) => [c.name, c.media.kind]);
     check(
       same(tail, [["Tissue", "single"], ["Mama Yazz kitchen towel", "single"]]),

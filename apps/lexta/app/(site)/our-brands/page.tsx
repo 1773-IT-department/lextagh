@@ -8,6 +8,7 @@ import ProductCardView from "@/components/brands/ProductCardView";
 import type { ProductCard } from "@/components/brands/data";
 import { getBrandRanges } from "@/components/brands/live";
 import p from "@/components/proto.module.css";
+import { hoochSiteUrl, linzzySiteUrl, yazzSiteUrl } from "@/components/site-links";
 
 const title = "Our Brands | Yazz, Linzzy and Hooch by Lexta Ghana";
 const description =
@@ -148,7 +149,7 @@ export default async function OurBrandsPage() {
           <div style={twoCol}>
             <div>
               <div style={logoBadge}>
-                <img src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Brand-Yazz1-e1779978936763.jpg" alt="Yazz" style={{ height: 56, width: "auto", display: "block" }} />
+                <img src="/assets/original/web/lexta-lexta-brand-yazz1-e1779978936763.webp" alt="Yazz" style={{ height: 56, width: "auto", display: "block" }} />
               </div>
               <div style={{ ...eyebrow, marginTop: 22 }}>The champion of the everyday</div>
               <h2 style={brandH2}>Yazz</h2>
@@ -180,7 +181,7 @@ export default async function OurBrandsPage() {
 
           <Range label="The Yazz range" products={ranges.yazz} variant="raised" />
 
-          <BrandButton href="https://yazzproducts.com">Visit yazzproducts.com</BrandButton>
+          <BrandButton href={yazzSiteUrl}>Visit yazzproducts.com</BrandButton>
         </div>
       </section>
 
@@ -189,7 +190,7 @@ export default async function OurBrandsPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={twoCol}>
             <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 20px 44px rgba(11,60,78,.18)", order: -1 }}>
-              <img src="https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Your-trusted-partner-copy.jpg.jpeg" alt="Linzzy" style={{ display: "block", width: "100%", height: "auto" }} />
+              <img src="/assets/original/web/lexta-linzzy-your-trusted-partner-copy.webp" alt="Linzzy" style={{ display: "block", width: "100%", height: "auto" }} />
             </div>
             <div>
               <div style={eyebrow}>Sophisticated protection</div>
@@ -212,7 +213,7 @@ export default async function OurBrandsPage() {
 
           <Range label="The Linzzy range" products={ranges.linzzy} variant="outlined" />
 
-          <BrandButton href="https://linzzyproducts.com">Visit linzzyproducts.com</BrandButton>
+          <BrandButton href={linzzySiteUrl}>Visit linzzyproducts.com</BrandButton>
         </div>
       </section>
 
@@ -222,7 +223,7 @@ export default async function OurBrandsPage() {
           <div style={twoCol}>
             <div>
               <div style={logoBadge}>
-                <img src="https://lextagh.com/wp-content/uploads/2026/06/hooch-logo.png" alt="Hooch" style={{ height: 52, width: "auto", display: "block" }} />
+                <img src="/assets/original/web/lexta-hooch-logo.webp" alt="Hooch" style={{ height: 52, width: "auto", display: "block" }} />
               </div>
               <div style={{ ...eyebrow, marginTop: 22 }}>Fuelled by integrity</div>
               <h2 style={brandH2}>Hooch</h2>
@@ -232,7 +233,7 @@ export default async function OurBrandsPage() {
             </div>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
               <img
-                src="https://lextagh.com/wp-content/uploads/elementor/thumbs/hooch-mascot-rr0nb0dsah3quka9ki3k3ixuza0in0lgws11dpir2g.png"
+                src="/assets/original/web/lexta-hooch-mascot-rr0nb0dsah3quka9ki3k3ixuza0in0lgws11dpir2g.webp"
                 alt="Hooch mascot"
                 style={{ maxWidth: "100%", maxHeight: 340, display: "block" }}
               />
@@ -251,7 +252,7 @@ export default async function OurBrandsPage() {
 
           <Range label="The Hooch range" products={ranges.hooch} variant="raised" />
 
-          <BrandButton href="#hooch">Explore Hooch</BrandButton>
+          <BrandButton href={hoochSiteUrl}>Visit hoochfoods.com</BrandButton>
         </div>
       </section>
 
