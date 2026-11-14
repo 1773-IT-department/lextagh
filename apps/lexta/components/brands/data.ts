@@ -33,7 +33,7 @@ export const yazzProducts: ProductCard[] = [
     slug: "sanitary-pads-and-panty-liners",
     name: "Sanitary pads and panty liners",
     description: "Ultra-thin pads with soft flexible wings and wide adhesive for side protection and comfort. Available in Green, Pink (Heavy Flow), Minty, Extra Long and Extra Long Minty, with panty liners for everyday freshness.",
-    media: { kind: "single", image: { src: "https://yazzproducts.com/wp-content/uploads/2026/07/Yazz-sanitary-pad-Extra-Long.png", alt: "Yazz sanitary pads" } },
+    media: { kind: "single", image: { src: "/assets/original/web/yazz-yazz-sanitary-pad-extra-long.webp", alt: "Yazz sanitary pads" } },
   },
   {
     slug: "toothpaste",
@@ -41,9 +41,9 @@ export const yazzProducts: ProductCard[] = [
     description: "The Yazz range comes in five variants: Whitening, Total Care, Herbal, Fluoride and Charcoal. Made for whiter, brighter and healthier smiles, with everyday protection against plaque, cavities and bad breath. The Herbal variant carries a unique blend of herbs.",
     media: {
       kind: "grid", columns: 3, images: [
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/08/New-Yazz-charcoal-Toothpaste-e1787744429757.jpg", alt: "Yazz Charcoal toothpaste" },
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/08/New-Yazz-herbal-Toothpaste-e1787744479191.jpg", alt: "Yazz Herbal toothpaste" },
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/08/New-Yazz-Flouride-Toothpaste-e1787744539801.jpg", alt: "Yazz Fluoride toothpaste" },
+        { src: "/assets/original/web/yazz-new-yazz-charcoal-toothpaste-e1787744429757.webp", alt: "Yazz Charcoal toothpaste" },
+        { src: "/assets/original/web/yazz-new-yazz-herbal-toothpaste-e1787744479191.webp", alt: "Yazz Herbal toothpaste" },
+        { src: "/assets/original/web/yazz-new-yazz-flouride-toothpaste-e1787744539801.webp", alt: "Yazz Fluoride toothpaste" },
       ],
     },
   },
@@ -59,13 +59,13 @@ export const yazzProducts: ProductCard[] = [
     description: "Yazz Activ Detergent with Enzymes, specially formulated to give you brighter and fresher clothes, free from every stain. Available in 200g, 500g, 2kg and 5kg packs.",
     media: {
       kind: "grid", columns: 2, images: [
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/07/EDSfdc2W4AAu3PT.jpg", alt: "Yazz washing powder" },
-        { src: "https://lextagh.com/wp-content/uploads/2026/06/Yazz-Washing-powder1.jpg", alt: "Yazz washing powder pack" },
+        { src: "/assets/original/web/yazz-edsfdc2w4aau3pt.webp", alt: "Yazz washing powder" },
+        { src: "/assets/original/web/lexta-yazz-washing-powder1.webp", alt: "Yazz washing powder pack" },
       ],
     },
     beforeAfter: {
-      before: { src: "https://yazzproducts.com/wp-content/uploads/2026/06/dirty-yazz-cloth.png", alt: "Cloth before washing" },
-      after: { src: "https://yazzproducts.com/wp-content/uploads/2026/06/clean-yazz-cloth.png", alt: "Cloth after washing" },
+      before: { src: "/assets/original/web/yazz-dirty-yazz-cloth.webp", alt: "Cloth before washing" },
+      after: { src: "/assets/original/web/yazz-clean-yazz-cloth.webp", alt: "Cloth after washing" },
     },
   },
   {
@@ -74,9 +74,9 @@ export const yazzProducts: ProductCard[] = [
     description: "Alcohol free wipes that gently cleanse and care for delicate skin, leaving it soft and nourished. Available in Lavender, Castor Oil and Aloe Vera.",
     media: {
       kind: "grid", columns: 3, images: [
-        { src: "https://yazzproducts.com/wp-content/uploads/2021/05/Yazz-baby-wipes-new-yellow.jpg", alt: "Yazz baby wipes" },
-        { src: "https://melcom.com/media/catalog/product/cache/8757aa1374eaaf34b9fd32f9e760ba0b/7/0/70195_1_1.jpg", alt: "Yazz baby wipes, 80 pieces" },
-        { src: "https://yazzproducts.com/wp-content/uploads/2021/05/Yazz-baby-wipes-new-green.jpg", alt: "Yazz baby wipes" },
+        { src: "/assets/original/web/yazz-yazz-baby-wipes-new-yellow.webp", alt: "Yazz baby wipes" },
+        { src: "/assets/original/web/yazz-yazz-baby-wipes-new1.webp", alt: "Yazz baby wipes, 80 pieces" },
+        { src: "/assets/original/web/yazz-yazz-baby-wipes-new-green.webp", alt: "Yazz baby wipes" },
       ],
     },
   },
@@ -84,7 +84,7 @@ export const yazzProducts: ProductCard[] = [
     slug: "baby-diapers",
     name: "Baby diapers",
     description: "Regular diapers and pull up pants with elastic waists, cottony softness and up to 12 hours leakage protection.",
-    media: { kind: "single", image: { src: "https://melcom.com/media/catalog/product/cache/8757aa1374eaaf34b9fd32f9e760ba0b/7/0/7018.png", alt: "Yazz baby diapers, large" } },
+    media: { kind: "single", image: { src: "/assets/original/web/yazz-baby-diapers.webp", alt: "Yazz baby diapers, large" } },
   },
   {
     slug: "tissue",
@@ -92,8 +92,8 @@ export const yazzProducts: ProductCard[] = [
     description: "Mama Yazz jumbo tissue, kitchen towels, toilet rolls and tissue napkins for everyday household routines. Pocket Tissue is coming soon.",
     media: {
       kind: "grid", columns: 2, images: [
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/07/unnamed-1.png", alt: "Yazz tissue" },
-        { src: "https://yazzproducts.com/wp-content/uploads/2026/07/Mama-Yazz-Kitchen-Towel2.png", alt: "Mama Yazz kitchen towel" },
+        { src: "/assets/original/web/yazz-unnamed-1.webp", alt: "Yazz tissue" },
+        { src: "/assets/original/web/yazz-mama-yazz-kitchen-towel2.webp", alt: "Mama Yazz kitchen towel" },
       ],
     },
   },
@@ -104,7 +104,7 @@ export const linzzyProducts: ProductCard[] = [
     slug: "sanitary-napkins",
     name: "Sanitary towels",
     description: "Cool Mint, Heavy Flow and Extra Long sanitary towels built around the Absorb, Lock and Breathe positioning, plus Linzzy Panty Liners for light everyday protection.",
-    media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Your-trusted-partner-copy.jpg.jpeg", alt: "Linzzy sanitary towels" } },
+    media: { kind: "single", image: { src: "/assets/original/web/lexta-linzzy-your-trusted-partner-copy.webp", alt: "Linzzy sanitary towels" } },
   },
   {
     slug: "baby-wipes",
@@ -122,7 +122,7 @@ export const linzzyProducts: ProductCard[] = [
     slug: "baby-care",
     name: "Baby care",
     description: "Linzzy Baby Diapers with a flexible comfort design, in sizes for growing babies, made for little moves and everyday comfort.",
-    media: { kind: "single", image: { src: "https://lextagh.com/wp-content/uploads/2026/06/Linzzy-Baby-Diaper-copy.jpg-1.jpeg", alt: "Linzzy baby care" } },
+    media: { kind: "single", image: { src: "/assets/original/web/lexta-linzzy-baby-diaper-copy.webp", alt: "Linzzy baby care" } },
   },
 ];
 

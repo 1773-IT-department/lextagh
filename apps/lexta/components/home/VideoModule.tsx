@@ -11,7 +11,7 @@ import type { CSSProperties } from "react";
 export const brandVideo: { file?: string; youtubeId?: string } = {};
 
 const poster = {
-  src: "https://lextagh.com/wp-content/uploads/2026/06/KAKEL-1897-scaled.jpg",
+  src: "/assets/original/web/lexta-kakel-1897-scaled.webp",
   alt: "Lexta outreach team with students",
 };
 

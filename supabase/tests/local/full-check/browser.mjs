@@ -133,6 +133,9 @@ async function checkPage(sess, base, url, kind, label, { as = "" } = {}) {
       scrollWidth: se.scrollWidth, innerWidth, wide,
       errorBoundary: /Application error|Something went wrong|This page could not be found|Unhandled Runtime Error/i.test(text) ? text.match(/(Application error[^\n]*|Something went wrong[^\n]*|This page could not be found[^\n]*)/i)?.[0] : null,
       noAlt: [...document.querySelectorAll("img:not([alt])")].map((i) => i.getAttribute("src")).slice(0, 10),
+      hotlinked: [...document.querySelectorAll("img[src], source[src], video[poster]")]
+        .map((i) => i.getAttribute("src") || i.getAttribute("poster") || "")
+        .filter((src) => /^(https?:)?\/\/(www\.)?(lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com)\//i.test(src)).slice(0, 10),
       links: [...document.querySelectorAll("a[href]")].map((a) => a.href),
       h1: document.querySelector("h1")?.innerText ?? "",
       placeholders: [...new Set((text.match(/\[PLACEHOLDER:[^\]]*\]/g) ?? []))],
@@ -146,6 +149,7 @@ async function checkPage(sess, base, url, kind, label, { as = "" } = {}) {
   if (info.errorBoundary) rec.problems.push(`error text: ${info.errorBoundary}`);
   if (info.dashes?.length) rec.problems.push(`em dash, en dash or spaced hyphen in the copy: ${info.dashes.join(" / ")}`);
   if (info.noAlt?.length) rec.problems.push(`img without alt: ${info.noAlt.join(", ")}`);
+  if (info.hotlinked?.length) rec.problems.push(`picture loaded from one of Lexta's real domains: ${info.hotlinked.join(", ")}`);
   const errs = drain();
   rec.problems.push(...errs);
   for (const l of info.links ?? []) {
