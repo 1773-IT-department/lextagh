@@ -32,8 +32,9 @@ function localMedia(hint: ProductCard | undefined): ProductMedia | undefined {
 
 /** Turns one published product into the card the page already draws. */
 export function toProductCard(product: PublishedProduct, hint?: ProductCard): ProductCard {
-  // A path such as /images/original/pad-heavy-flow.webp (0016) is a file of the brand's own website, not of this site:
-  // it is left out, so the card falls back to the prototype's local pack shot or the styled placeholder.
+  // A shared photo such as /images/linzzy/pad-heavy-flow.webp (0016) is shipped in this site's public folder too, so it
+  // shows. Any other site path is a file of a brand website only: it is left out, so the card falls back to the
+  // prototype's local pack shot or the styled placeholder.
   let images: ProductImage[] = product.images.filter((i) => !isBrandSiteImage(i)).map((i) => ({ src: i.url, alt: i.alt_text }));
 
   // Before/after strip (Yazz washing powder): kept while the product still has those two exact images.

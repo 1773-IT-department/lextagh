@@ -204,7 +204,7 @@ try {
     }
     await ctx.close();
     await q(`delete from public.product_images where external_url like 'https://www.lextagh.com/%';
-      update public.product_images set is_primary = true where external_url = '/images/original/baby-wipes.webp';
+      update public.product_images set is_primary = true where external_url = '/images/linzzy/baby-wipes.webp';
       ${readFileSync(path.join(ROOT, "supabase/migrations/0016_linzzy_catalogue_products.sql"), "utf8")}`);
     await refresh();
   }

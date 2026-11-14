@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { PRODUCT_IMAGES_BUCKET } from "@lexta/db";
+import { PRODUCT_IMAGES_BUCKET, isSharedImagePath } from "@lexta/db";
 import {
   addLinkedImage, addUploadedImage, moveImage, removeImage, setPrimaryImage, updateImageAlt, type ActionResult,
 } from "@/app/(app)/systems/products/actions";
@@ -87,9 +87,9 @@ export default function ImageManager({
           {images.map((img, i) => (
             <li key={img.id} className={img.is_primary ? "primary" : undefined}>
               <div className="thumb">
-                {img.url.startsWith("/") ? (
-                  // A path such as /images/original/pad-heavy-flow.webp is a file the brand website ships (0016): only
-                  // that website can show it, so the portal names it instead of drawing a broken picture.
+                {!img.is_upload && img.url.startsWith("/") && !isSharedImagePath(img.url) ? (
+                  // A site path other than a shared photo (/images/<brand>/..., which the portal ships too) is a file only
+                  // the brand website has: the portal names it instead of drawing a broken picture.
                   <span className="small">{img.url}</span>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -103,7 +103,7 @@ export default function ImageManager({
                 disabled={!canEdit || busy}
                 onSave={(value) => run(() => updateImageAlt(productId, img.id, value), "Alt text saved.")}
               />
-              <span className="hint">{img.is_upload ? "Uploaded file" : img.url.startsWith("/") ? "File on the brand website" : "Linked image"}</span>
+              <span className="hint">{img.is_upload ? "Uploaded file" : isSharedImagePath(img.url) ? "Shared photo file" : img.url.startsWith("/") ? "File on the brand website" : "Linked image"}</span>
               {canEdit && (
                 <div className="img-actions">
                   {!img.is_primary && <button type="button" className="btn small light" disabled={busy} onClick={() => run(() => setPrimaryImage(productId, img.id))}>Make main</button>}

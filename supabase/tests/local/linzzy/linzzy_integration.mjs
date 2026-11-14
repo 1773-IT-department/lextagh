@@ -75,7 +75,7 @@ try {
       check(list.filter((p) => p.range === "feminine-care").length === 4 && list.filter((p) => p.range === "baby-care").length === 2, "products: Feminine care and Baby care categories map onto the two ranges");
       const wipes = list.find((p) => p.slug === "baby-wipes");
       check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet and unexpected messes") && wipes.features.includes("80 wipes per pack")
-        && wipes.says === "A gentle touch for life's little messes." && wipes.images[0]?.src === "/images/original/baby-wipes.webp"
+        && wipes.says === "A gentle touch for life's little messes." && wipes.images[0]?.src === "/images/linzzy/baby-wipes.webp"
         && JSON.stringify(wipes.skus.map((x) => x.code)) === JSON.stringify(["TBC-LINZZY-108", "TBC-LINZZY-109", "TBC-LINZZY-110"]),
         "0016: the prototype Baby wipes row now carries Lexta's Drive wording, its three variants and the site's own pack shot", wipes);
       check(clean(list), "products: no prototype claim (fragrance free, clinical, ultra mild) and no image from a real Lexta domain", list.map((p) => p.images));
@@ -101,11 +101,15 @@ try {
       check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet") && wipes.short.startsWith("80 wipes in a resealable pack")
         && wipes.features[0] === "Convenient resealable packaging" && wipes.usage?.startsWith("Open the resealable lid") && wipes.ingredients?.startsWith("[PLACEHOLDER"),
         "before 0016: the database Baby wipes row shows the Drive wording (name, texts, features, usage, ingredients)", wipes);
-      check(wipes?.images.length === 1 && wipes.images[0].src === "/images/original/baby-wipes.webp", "before 0016: the hotlinked www.lextagh.com photo is never used; the catalogue pack shot is shown instead", wipes?.images);
+      check(wipes?.images.length === 1 && /^\/images\/(original|linzzy)\/baby-wipes\.webp$/.test(wipes.images[0].src),
+        "before 0016: the hotlinked www.lextagh.com photo is never used; only the site's own Baby wipes pack shot is shown", wipes?.images);
       check(clean(list), "before 0016: no prototype claim and no image from a real Lexta domain anywhere", list.map((p) => [p.slug, p.images.map((i) => i.src)]));
       check(products.isBlockedImage("https://lextagh.com/a.jpg") && products.isBlockedImage("https://WWW.hoochfoods.com/a.png") && products.isBlockedImage("http://yazzproducts.com/x")
         && products.isBlockedImage("https://www.linzzyproducts.com/x") && !products.isBlockedImage("/images/original/baby-wipes.webp") && !products.isBlockedImage("https://cdn.example.com/lextagh.com.jpg"),
         "image filter: the four real domains, with or without www, are blocked; the site's own files and other hosts are not");
+      check(products.isBlockedImage("https://cdn.lextagh.com/a.jpg") && products.isBlockedImage("https://shop.linzzyproducts.com/x.png") && products.isBlockedImage("https://lextagh.com./a.jpg")
+        && products.isBlockedImage("https://WWW.Hoochfoods.com../a.jpg") && !products.isBlockedImage("https://notlextagh.com/a.jpg") && !products.isBlockedImage("https://lextagh.com.example.org/a.jpg"),
+        "image filter: subdomains and a trailing dot are blocked too; look-alike hosts are not");
     }
 
     // A product staff create later still shows (after the catalogue), and disappears when unpublished.
@@ -121,12 +125,48 @@ try {
 
     // Back to the state after 0016: delete the test photo and run the migration again (it is idempotent).
     await q(`delete from public.product_images where external_url like 'https://www.lextagh.com/%';
-      update public.product_images set is_primary = true where external_url = '/images/original/baby-wipes.webp';
+      update public.product_images set is_primary = true where external_url = '/images/linzzy/baby-wipes.webp';
       ${readFileSync(new URL("../../../migrations/0016_linzzy_catalogue_products.sql", import.meta.url), "utf8")}`);
     const restored = await products.getLinzzyProducts();
     const sameAgain = await q(`select string_agg(slug, ',' order by sort_order) from public.products where brand_id = ${linzzyBrand} and is_published`);
-    check(sameAgain === CATALOGUE_SLUGS.join(",") && restored.products.find((p) => p.slug === "baby-wipes")?.images[0]?.src === "/images/original/baby-wipes.webp",
+    check(sameAgain === CATALOGUE_SLUGS.join(",") && restored.products.find((p) => p.slug === "baby-wipes")?.images[0]?.src === "/images/linzzy/baby-wipes.webp",
       "0016 run a second time: back to the six products, nothing duplicated", sameAgain);
+
+    // After 0016, Product Management decides: a staff edit shows on the site, 0016 never overwrites it, an unpublished
+    // catalogue product disappears, and a product whose SKUs are all switched off shows no codes.
+    const staff = (await q(`select id from public.profiles order by created_at limit 1`)).trim();
+    check(Boolean(staff), "a staff profile exists to save products as", staff);
+    const asStaff = (sql) => q(`select set_config('request.jwt.claim.sub', '${staff}', false) \\g /dev/null
+      ${sql}`);
+    await asStaff(`update public.products set name = 'Linzzy Panty Liners (30 pack)', short_description = 'Edited in Product Management.' where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
+    {
+      const edited = (await products.getLinzzyProducts()).products.find((p) => p.slug === "panty-liners");
+      check(edited?.name === "Linzzy Panty Liners (30 pack)" && edited.short === "Edited in Product Management." && Boolean(edited.says),
+        "after 0016: a Product Management edit to a catalogue product shows on the site (catalogue extras such as the sign-off stay)", edited);
+      const by = await q(`select updated_by is not null from public.products where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
+      check(by === "t", "the staff save is recorded in updated_by", by);
+    }
+    await asStaff(`update public.products set is_published = false where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
+    await q(readFileSync(new URL("../../../migrations/0016_linzzy_catalogue_products.sql", import.meta.url), "utf8"));
+    {
+      const row = await q(`select name || '|' || is_published from public.products where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
+      check(row === "Linzzy Panty Liners (30 pack)|false", "0016 run again: a row staff saved keeps its wording and stays unpublished", row);
+      const { products: list } = await products.getLinzzyProducts();
+      check(!list.some((p) => p.slug === "panty-liners") && list.length === 5,
+        "after 0016: an unpublished catalogue product disappears from the site (no catalogue fallback)", list.map((p) => p.slug));
+    }
+    await asStaff(`update public.product_skus set is_active = false where product_id = (select id from public.products where brand_id = ${linzzyBrand} and slug = 'heavy-flow-sanitary-towels')`);
+    {
+      const heavy = (await products.getLinzzyProducts()).products.find((p) => p.slug === "heavy-flow-sanitary-towels");
+      check(heavy && heavy.skus.length === 0, "after 0016: a product with every SKU switched off shows no codes (no catalogue TBC codes)", heavy?.skus);
+    }
+    await asStaff(`update public.product_skus set is_active = true where sku_code = 'TBC-LINZZY-101';
+      update public.products set name = 'Linzzy Panty Liners', short_description = 'A compact 155 mm liner for light spotting or small amounts of moisture, 30 in a pack.', is_published = true
+        where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
+    {
+      const back = await q(`select string_agg(slug, ',' order by sort_order) from public.products where brand_id = ${linzzyBrand} and is_published`);
+      check(back === CATALOGUE_SLUGS.join(","), "staff changes undone: the six products again", back);
+    }
   }
 
   // Where to Buy: only stockists that carry Linzzy. -----------------------------------------------------------

@@ -8,21 +8,27 @@
 -- real products. They are structured in apps/linzzy/content/catalogue.ts; this migration writes the same words.
 --
 -- What it changes (Linzzy rows only; no other brand, table policy or function is touched):
---   1. product_images.external_url may also be a path under /images/ (a file the brand website ships in its own
---      public folder, for example /images/original/pad-heavy-flow.webp on the Linzzy site), besides an https link.
---      Only the brand's own website can show such a path; the Lexta site and the portal show a placeholder for it.
+--   1. product_images.external_url may also be a path under /images/, besides an https link. The six pack shots are
+--      shared photo files at /images/linzzy/<file>, shipped in the public folder of the Lexta site, the portal and the
+--      Linzzy site alike, so every app shows them (SHARED_IMAGE_PATH in packages/db).
 --   2. Unpublishes the prototype rows "Sanitary napkins" (sanitary-napkins) and "Baby care" (baby-care). They are kept,
 --      with their SKUs and images, so past orders, complaints and leads that point at them stay intact.
 --   3. Writes Lexta's six products: Heavy Flow, Cool Mint and Extra Long sanitary towels, Panty Liners, Baby Diapers and
 --      Baby Wipes, published, in Lexta's order. The prototype "Baby wipes" row has the same slug as Lexta's Baby Wipes,
 --      so it is corrected in place (same id): Drive name, texts and features replace the prototype wording.
+--      A row with one of these slugs that staff have already saved in Product Management (updated_by is set; the
+--      trigger from 0003 records who saved it, and is null for rows written only by migrations) is left exactly as
+--      it is: its wording and its published state are not overwritten.
 --   4. Their SKUs and pack sizes as Lexta wrote them (codes TBC-LINZZY-101 to 110, as in the catalogue, until Lexta
 --      sends real codes; 107, the diaper sizes still to confirm, is left out so nobody can order a placeholder). The
 --      prototype wipes SKU TBC-LINZZY-004 ("80 pieces", no variant) is switched off in favour of the three variants.
---   5. One pack shot each, pointing at the Linzzy site's own files (/images/original/...), with Lexta's alt text.
+--   5. One pack shot each, a shared photo file (/images/linzzy/...), with Lexta's alt text.
 --
 -- Row Level Security is unchanged: the existing product policies (0003) cover every row written here.
--- Idempotent: running it again changes nothing more.
+-- Idempotent: running it again changes nothing more, and it never overwrites a product row staff have saved.
+-- Before applying to the live project, check the live Linzzy rows read-only:
+--   select slug, is_published, updated_at, updated_by from public.products
+--   where brand_id = (select id from public.brands where slug = 'linzzy') order by sort_order;
 
 -- 1. Images may be a site path ----------------------------------------------------------------------------------
 alter table public.product_images drop constraint if exists product_images_external_url_check;
@@ -90,7 +96,8 @@ on conflict (brand_id, slug) do update set
   usage_instructions = excluded.usage_instructions,
   ingredients = excluded.ingredients,
   is_published = true,
-  sort_order = excluded.sort_order;
+  sort_order = excluded.sort_order
+where products.updated_by is null;
 
 -- 4. SKUs and pack sizes -------------------------------------------------------------------------------------------
 update public.product_skus s
@@ -115,17 +122,17 @@ join public.brands b on b.slug = 'linzzy'
 join public.products p on p.brand_id = b.id and p.slug = v.product_slug
 on conflict (sku_code) do nothing;
 
--- 5. Pack shots (the Linzzy site's own files) ----------------------------------------------------------------------
+-- 5. Pack shots (shared photo files in every app) ----------------------------------------------------------------------
 insert into public.product_images (product_id, external_url, alt_text, sort_order, is_primary)
 select p.id, v.url, v.alt_text, v.sort_order,
        v.is_primary and not exists (select 1 from public.product_images i where i.product_id = p.id and i.is_primary)
 from (values
-('heavy-flow-sanitary-towels', '/images/original/pad-heavy-flow.webp', 'Linzzy Heavy Flow sanitary towels pack: 12 towels of 290 mm plus 2 free panty liners', 10, true),
-  ('cool-mint-sanitary-towels', '/images/original/pad-cool-mint.webp', 'Linzzy Cool Mint sanitary towels pack: 6 towels of 260 mm, 6 of 290 mm and 3 panty liners', 10, true),
-  ('extra-long-sanitary-towels', '/images/original/pad-extra-long.webp', 'Linzzy Extra Long sanitary towels pack: 9 towels of 330 mm, 2 of 290 mm and 2 free panty liners', 10, true),
-  ('panty-liners', '/images/original/panty-liner.webp', 'Linzzy Panty Liner pack: 30 liners of 155 mm', 10, true),
-  ('baby-diapers', '/images/original/baby-diapers.webp', 'Linzzy Baby Diapers pack, size L, 40 pieces, with a mother and baby on the pack', 10, true),
-  ('baby-wipes', '/images/original/baby-wipes.webp', 'Linzzy Baby Wipes packs in yellow, pink and blue, 80 wipes each', 10, true)
+('heavy-flow-sanitary-towels', '/images/linzzy/pad-heavy-flow.webp', 'Linzzy Heavy Flow sanitary towels pack: 12 towels of 290 mm plus 2 free panty liners', 10, true),
+  ('cool-mint-sanitary-towels', '/images/linzzy/pad-cool-mint.webp', 'Linzzy Cool Mint sanitary towels pack: 6 towels of 260 mm, 6 of 290 mm and 3 panty liners', 10, true),
+  ('extra-long-sanitary-towels', '/images/linzzy/pad-extra-long.webp', 'Linzzy Extra Long sanitary towels pack: 9 towels of 330 mm, 2 of 290 mm and 2 free panty liners', 10, true),
+  ('panty-liners', '/images/linzzy/panty-liner.webp', 'Linzzy Panty Liner pack: 30 liners of 155 mm', 10, true),
+  ('baby-diapers', '/images/linzzy/baby-diapers.webp', 'Linzzy Baby Diapers pack, size L, 40 pieces, with a mother and baby on the pack', 10, true),
+  ('baby-wipes', '/images/linzzy/baby-wipes.webp', 'Linzzy Baby Wipes packs in yellow, pink and blue, 80 wipes each', 10, true)
 ) as v(product_slug, url, alt_text, sort_order, is_primary)
 join public.brands b on b.slug = 'linzzy'
 join public.products p on p.brand_id = b.id and p.slug = v.product_slug

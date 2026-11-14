@@ -76,9 +76,8 @@ try {
   {
     const ranges = await live.getBrandRanges();
     check(warnings.length === 0, "no fallback warning while the database answers", warnings);
-    // 0016 replaced the prototype Linzzy rows with Lexta's six Drive products. Their pack shots are files of the Linzzy
-    // site (/images/...), which this site cannot serve: the Baby wipes card keeps the prototype's local pack shot (same
-    // slug), the others show the empty photo slot until photos are uploaded in Product Management.
+    // 0016 replaced the prototype Linzzy rows with Lexta's six Drive products. Their pack shots are shared photo files
+    // (/images/linzzy/...), which this site ships in its own public folder too, so every card shows its real photo.
     linzzyCards = ranges.linzzy;
     check(
       same(ranges.linzzy.map((c) => c.slug), ["heavy-flow-sanitary-towels", "cool-mint-sanitary-towels", "extra-long-sanitary-towels", "panty-liners", "baby-diapers", "baby-wipes"])
@@ -87,9 +86,15 @@ try {
     );
     const linzzyMedia = ranges.linzzy.map((c) => (c.media.kind === "single" ? c.media.image.src : c.media.kind === "photo" ? c.media.src ?? "" : "grid"));
     check(
-      same(linzzyMedia, ["", "", "", "", "", "/pasted-1788770820092-0-mtqzymab-4cn2.png"]) && !JSON.stringify(ranges.linzzy).includes("lextagh.com") && !/fragrance free|clinical/i.test(JSON.stringify(ranges.linzzy)),
-      "Linzzy cards: no site path or lextagh.com photo, no prototype claim; Baby wipes keeps its local pack shot, the rest the empty photo slot", linzzyMedia,
+      same(linzzyMedia, ["pad-heavy-flow", "pad-cool-mint", "pad-extra-long", "panty-liner", "baby-diapers", "baby-wipes"].map((f) => `/images/linzzy/${f}.webp`))
+        && !JSON.stringify(ranges.linzzy).includes("lextagh.com") && !/fragrance free|clinical/i.test(JSON.stringify(ranges.linzzy)),
+      "Linzzy cards: each of the six shows its real pack shot (a shared photo file), no lextagh.com photo, no prototype claim", linzzyMedia,
     );
+    {
+      const { existsSync } = await import("node:fs");
+      const files = linzzyMedia.map((src) => ["lexta", "portal", "linzzy"].every((app) => existsSync(new URL(`../../../../apps/${app}/public${src}`, import.meta.url))));
+      check(files.every(Boolean), "Linzzy pack shots: every shared photo file is shipped by the Lexta site, the portal and the Linzzy site", files);
+    }
     check(same(ranges.hooch, data.hoochProducts), "Hooch cards from the database are identical to the approved static cards", ranges.hooch);
     check(same(ranges.yazz.slice(0, 6), data.yazzProducts.slice(0, 6)), "Yazz cards 1 to 6 (pads to diapers, with the before/after strip) are identical", ranges.yazz.slice(0, 6));
     const tail = ranges.yazz.slice(6).map((c) => [c.name, c.media.kind]);

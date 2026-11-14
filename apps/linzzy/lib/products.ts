@@ -6,9 +6,9 @@
  * returns published products of active brands) and caches under the "products" tag for up to an hour. The portal calls
  * this site's /api/revalidate after every product save, which clears the tag and rebuilds the product pages.
  * Each product is put in one of the two ranges by its category (rangeOf in ./ranges.ts).
- * Lexta's Drive catalogue (content/catalogue.ts) is the authority for product wording: a database row with a catalogue
- * slug shows the Drive text, the prototype seed rows without a Drive product are skipped, catalogue products the
- * database lacks are added, and no image from Lexta's real domains is ever shown (mergeLinzzyProducts below).
+ * Before migration 0016 the database still holds the prototype rows, so Lexta's Drive catalogue (content/catalogue.ts)
+ * supplies the wording and any missing products; after 0016 Product Management alone decides what shows and how it reads
+ * (mergeLinzzyProducts below). No image from Lexta's real domains is ever shown.
  * If the database cannot be reached, or the site has no Supabase settings, Lexta's own catalogue (content/catalogue.ts)
  * is shown and a warning is logged, so pages never break.
  */
@@ -43,15 +43,15 @@ export type LinzzyProduct = {
 
 /**
  * Lexta's real domains. The prototype seed (0004) hotlinked product photos from them (one is a campaign poster); the
- * site never shows a picture served from one of them, whatever the database says.
+ * site never shows a picture served from one of them or any of their subdomains, whatever the database says.
  */
 const BLOCKED_IMAGE_HOSTS = ["lextagh.com", "yazzproducts.com", "linzzyproducts.com", "hoochfoods.com"];
 
-/** True when an image address points at one of Lexta's real domains (with or without www). */
+/** True when an image address points at one of Lexta's real domains or a subdomain of one (www, cdn, shop...). */
 export function isBlockedImage(src: string): boolean {
   try {
-    const host = new URL(src, "https://local.invalid").hostname.toLowerCase().replace(/^www\./, "");
-    return BLOCKED_IMAGE_HOSTS.includes(host);
+    const host = new URL(src, "https://local.invalid").hostname.toLowerCase().replace(/\.+$/, "");
+    return BLOCKED_IMAGE_HOSTS.some((d) => host === d || host.endsWith("." + d));
   } catch {
     return false;
   }
@@ -69,7 +69,33 @@ export const PROTOTYPE_SEED_SLUGS: Record<string, RangeSlug> = {
   "baby-care": "baby-care",
 };
 
-export function toLinzzyProduct(p: PublishedProduct): LinzzyProduct {
+/** The catalogue product that also exists as the prototype seed row "baby-wipes" (0004). */
+const SEEDED_CATALOGUE_SLUGS = ["baby-wipes"];
+
+/**
+ * True while the database is still in its prototype state, before migration 0016: a prototype umbrella row is still
+ * published and none of Lexta's Drive products except the seeded Baby wipes is. The site can only read published rows,
+ * so this is judged from them. Once 0016 is applied the umbrella rows are unpublished and the Drive products are in
+ * the database, so this is false for good: from then on Product Management alone decides what shows (an unpublished
+ * product disappears) and its wording wins.
+ */
+export function isPrototypeDatabase(rows: PublishedProduct[]): boolean {
+  const seedPublished = rows.some((r) => r.slug in PROTOTYPE_SEED_SLUGS);
+  const driveProductPublished = rows.some((r) => CATALOGUE.some((c) => c.slug === r.slug) && !SEEDED_CATALOGUE_SLUGS.includes(r.slug));
+  return seedPublished && !driveProductPublished;
+}
+
+/**
+ * One database row as a site product.
+ * prototype = false (after 0016): the database wins for everything it holds (name, texts, features, how to use,
+ * ingredients, category and so range, SKUs, photos), so a Product Management edit shows here as on every other site.
+ * A row with a catalogue slug only borrows Lexta's product page extras the database has no column for (headline,
+ * recommended use, skin sensitivity, sign-off, related articles), and the catalogue pack shot when it has no usable photo.
+ * prototype = true (before 0016): the database rows still carry the prototype's invented claims, so a row with a
+ * catalogue slug shows the Drive wording instead and only its SKUs, photos, published state and order come from the
+ * database.
+ */
+export function toLinzzyProduct(p: PublishedProduct, prototype = false): LinzzyProduct {
   const images = p.images.filter((i) => !isBlockedImage(i.url)).map((i) => ({ src: i.url, alt: i.alt_text }));
   const base: LinzzyProduct = {
     slug: p.slug,
@@ -84,13 +110,19 @@ export function toLinzzyProduct(p: PublishedProduct): LinzzyProduct {
     skus: p.skus.map((s) => ({ code: s.sku_code, variant: s.variant_name, pack: s.pack_size_label })),
     images,
   };
-  // A row with the same slug as a product in Lexta's Drive catalogue: the Drive wording wins for the name, the short and
-  // long text, the features, how to use and the ingredients, together with Lexta's product page extras (headline,
-  // recommended use, skin sensitivity, sign-off, related articles). The database only supplies what Drive lacks: the
-  // SKU codes and pack sizes, the photos (the catalogue pack shot when it has none, or only blocked ones) and its
-  // published state and display order.
   const c = CATALOGUE.find((x) => x.slug === p.slug);
   if (!c) return base;
+  if (!prototype) {
+    return {
+      ...base,
+      images: images.length ? images : c.images,
+      headline: c.headline,
+      recommended: c.recommended,
+      sensitivity: c.sensitivity,
+      says: c.says,
+      reads: c.reads,
+    };
+  }
   return {
     ...c,
     category: base.category ?? c.category,
@@ -103,18 +135,20 @@ export function toLinzzyProduct(p: PublishedProduct): LinzzyProduct {
 }
 
 /**
- * The site's product list from the published database rows: prototype seed rows skipped, rows merged with the
- * catalogue, and every catalogue product the database lacks added from content/catalogue.ts (coming soon items too),
- * so the full Linzzy range always shows. While the database holds every catalogue product, Product Management's order
- * is kept; until then the catalogue's order comes first, followed by the products staff added.
+ * The site's product list from the published database rows.
+ * After 0016: exactly the published rows, in Product Management's order (an unpublished product, catalogue or not,
+ * disappears), with the prototype umbrella rows skipped if staff ever republish them while the catalogue covers the range.
+ * Before 0016 (isPrototypeDatabase): the umbrella rows are skipped, rows are merged with the catalogue, and every
+ * catalogue product the database lacks is added from content/catalogue.ts, in the catalogue's order, followed by the
+ * products staff added.
  */
 export function mergeLinzzyProducts(rows: PublishedProduct[]): LinzzyProduct[] {
+  const prototype = isPrototypeDatabase(rows);
   const covered = (range: RangeSlug) => CATALOGUE.some((c) => c.range === range && !c.comingSoon);
   const live = rows
     .filter((r) => !(r.slug in PROTOTYPE_SEED_SLUGS && covered(PROTOTYPE_SEED_SLUGS[r.slug])))
-    .map(toLinzzyProduct);
-  const missing = CATALOGUE.filter((c) => !live.some((p) => p.slug === c.slug));
-  if (!missing.length) return live;
+    .map((r) => toLinzzyProduct(r, prototype));
+  if (!prototype) return live;
   const fromCatalogue = CATALOGUE.map((c) => live.find((p) => p.slug === c.slug) ?? c);
   return [...fromCatalogue, ...live.filter((p) => !CATALOGUE.some((c) => c.slug === p.slug))];
 }
