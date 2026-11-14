@@ -239,14 +239,14 @@ export default function CorporateSocialResponsibilityPage() {
                 Period poverty is one of the quietest causes of school absenteeism in Ghana. Girls miss days every month because they do not have access to the products they need or a safe place to manage their period. The Dignity Project addresses that directly, through free product distribution, reproductive health education, and sustained presence in schools rather than a single visit.
               </p>
             </div>
-            <Photo src="https://lextagh.com/wp-content/uploads/2026/06/KAKEL-1875-683x1024.jpg" alt="The Dignity Project in schools" box={{ ...photoBox, maxHeight: 520 }} />
+            <Photo src="/assets/original/web/lexta-kakel-1875-683x1024.webp" alt="The Dignity Project in schools" box={{ ...photoBox, maxHeight: 520 }} />
           </div>
         </div>
       </section>
 
       <section data-reveal="1" data-screen-label="Empowered Periods" style={{ background: "#fff", padding: "58px 28px" }}>
         <div style={twoCol}>
-          <Photo src="https://lextagh.com/wp-content/uploads/2026/06/KAKEL-1845-1024x683.jpg" alt="The Empowered Periods Campaign" />
+          <Photo src="/assets/original/web/lexta-kakel-1845-1024x683.webp" alt="The Empowered Periods Campaign" />
           <div>
             <h2 style={h2Mid}>The Empowered Periods Campaign</h2>
             <p style={lead}>
@@ -274,7 +274,7 @@ export default function CorporateSocialResponsibilityPage() {
             </p>
             <StoryLink href="/news/yazz-partners-mx24-tv-for-the-2026-croxitout-high-school-tour">Read the full story</StoryLink>
           </div>
-          <Photo src="https://yazzproducts.com/wp-content/uploads/2026/09/WhatsApp-Image-2026-05-29-at-15.58.53-780x470-1.webp" alt="CroxItOut High School Tour with MX24 TV" />
+          <Photo src="/assets/original/web/yazz-whatsapp-image-2026-05-29-at-15-58-53-780x470-1.webp" alt="CroxItOut High School Tour with MX24 TV" />
         </div>
       </section>
 
@@ -298,7 +298,7 @@ export default function CorporateSocialResponsibilityPage() {
 
       <section data-reveal="1" data-screen-label="Teen Care Campaign" className={p.pad76} style={{ background: "#f7fcfe", borderTop: "1px solid rgba(18,163,196,.14)" }}>
         <div style={twoCol}>
-          <Photo src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Teen-Care-Campaign.jpg" alt="The Lexta Teen Care Campaign" />
+          <Photo src="/assets/original/web/lexta-lexta-teen-care-campaign.webp" alt="The Lexta Teen Care Campaign" />
           <div>
             <div style={eyebrow}>Since February 2017</div>
             <h2 style={{ ...h2Mid, margin: "14px 0 0" }}>The Lexta Teen Care Campaign</h2>
@@ -351,12 +351,12 @@ export default function CorporateSocialResponsibilityPage() {
               </p>
               <StoryLink href="/news/lexta-ghana-visits-mawuko-girls-shs-ho" marginTop={20}>Read the full story</StoryLink>
             </div>
-            <Photo src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-Visits-Mawuko-girls-SHS-Ho.jpeg" alt="Lexta Ghana visits Mawuko Girls SHS, Ho" box={photoBoxSm} />
+            <Photo src="/assets/original/web/lexta-lexta-ghana-limited-visits-mawuko-girls-shs-ho.webp" alt="Lexta Ghana visits Mawuko Girls SHS, Ho" box={photoBoxSm} />
           </div>
 
           <div style={{ ...schoolRow, marginTop: 62 }}>
             <Photo
-              src="https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-spent-time-with-the-girls-of-Unity-high-JHS-in-Kotobabi-in-commemoration-of-the-internal-womens-day.jpg"
+              src="/assets/original/web/lexta-lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kot.webp"
               alt="Unity High JHS, Kotobabi, International Women's Day"
               box={photoBoxSm}
             />
@@ -387,7 +387,7 @@ export default function CorporateSocialResponsibilityPage() {
               </p>
               <StoryLink href="/news/yazz-partners-the-ges-cook-art-competition" marginTop={20}>Read the full story</StoryLink>
             </div>
-            <Photo src="https://yazzproducts.com/wp-content/uploads/2020/02/WhatsApp-Image-2020-02-11-at-11.57.18-AM.jpeg" alt="GES Cook Art Competition" box={photoBoxSm} />
+            <Photo src="/assets/original/web/placeholder-ges-cook-art.webp" alt="GES Cook Art Competition" box={photoBoxSm} />
           </div>
         </div>
       </section>

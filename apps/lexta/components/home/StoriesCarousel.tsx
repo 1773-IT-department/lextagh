@@ -6,43 +6,43 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 /** Story photos come from the existing Yazz and Lexta sites, exactly as the prototype links them. */
 const stories = [
   {
-    img: "https://yazzproducts.com/wp-content/uploads/2024/02/WhatsApp-Image-2024-01-16-at-21.50.17-1021x1024.jpeg",
+    img: "/assets/original/web/yazz-whatsapp-image-2024-01-16-at-21-50-17-1021x1024.webp",
     alt: "Cervical Cancer Awareness Launch 2024, Tamale",
     title: "Awareness Launch 2024, Tamale",
     text: "The national launch, hosted in the north for the first time.",
   },
   {
-    img: "https://yazzproducts.com/wp-content/uploads/2025/03/WE6A0601-1024x683.jpg",
+    img: "/assets/original/web/yazz-we6a0601-1024x683.webp",
     alt: "Tuesday Market Park, Mamprobi, 2025",
     title: "Tuesday Market Park, Mamprobi",
     text: "Screening and education taken into the market.",
   },
   {
-    img: "https://yazzproducts.com/wp-content/uploads/2025/04/130202594139-vaqdtgfssn-health-cervical-cancer1.jpg",
+    img: "/assets/original/web/yazz-130202594139-vaqdtgfssn-health-cervical-cancer1.webp",
     alt: "Ghanaian women doctors encourage screening",
     title: "Doctors Urge Early Detection",
     text: "MWAG's awareness month launch in Ablekuma South.",
   },
   {
-    img: "https://yazzproducts.com/wp-content/uploads/2026/02/yazz-crvical-cancer-awareness-2026.png",
+    img: "/assets/original/web/yazz-yazz-crvical-cancer-awareness-2026.webp",
     alt: "SOFPOG, MWAG, Yazz and Korle Bu Polyclinic free screening",
     title: "Free Screening at Korle Bu",
     text: "With SOFPOG, MWAG and the Family Medicine Department.",
   },
   {
-    img: "https://yazzproducts.com/wp-content/uploads/2026/05/WhatsApp-Image-2020-01-19-at-8.42.06-AM-1080x675-1-1024x640.jpeg",
+    img: "/assets/original/web/yazz-whatsapp-image-2020-01-19-at-8-42-06-am-1080x675-1-1024x640.webp",
     alt: "Free cervical cancer screening in Kumasi",
     title: "Free Screening in Kumasi",
     text: "Education and screening ahead of the Accra edition.",
   },
   {
-    img: "https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-Visits-Mawuko-girls-SHS-Ho.jpeg",
+    img: "/assets/original/web/lexta-lexta-ghana-limited-visits-mawuko-girls-shs-ho.webp",
     alt: "Lexta Ghana visits Mawuko Girls SHS, Ho",
     title: "Mawuko Girls SHS, Ho",
     text: "Health education and pad donations with MWAG.",
   },
   {
-    img: "https://lextagh.com/wp-content/uploads/2026/06/Lexta-Ghana-Limited-spent-time-with-the-girls-of-Unity-high-JHS-in-Kotobabi-in-commemoration-of-the-internal-womens-day.jpg",
+    img: "/assets/original/web/lexta-lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kot.webp",
     alt: "Unity High JHS, Kotobabi on International Women's Day",
     title: "Unity High JHS, Kotobabi",
     text: "International Women's Day with the Domite Foundation.",
