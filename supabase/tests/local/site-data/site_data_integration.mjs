@@ -68,7 +68,7 @@ try {
     check(toothpaste?.images.length === 3 && toothpaste.images[0].is_primary && toothpaste.images[0].url.startsWith("https://yazzproducts.com/"), "images come primary first with their public URL");
     check(toothpaste?.skus.length === 3 && toothpaste.skus.every((s) => s.is_active), "active SKUs come with the product");
     check(!("brand" in (toothpaste ?? {})), "the brand join is not leaked into the product");
-    check((await db.getPublishedProducts("linzzy")).length === 6 && (await db.getPublishedProducts("hooch")).length === 3, "Linzzy: Lexta's 6 catalogue products (0016); Hooch: 3 published products");
+    check((await db.getPublishedProducts("linzzy")).length === 6 && (await db.getPublishedProducts("hooch")).length === 2, "Linzzy: Lexta's 6 catalogue products (0016); Hooch: Lexta's 2 Drive cereals (0017)");
     check((await db.getPublishedProducts("lexta")).length === 0, "the corporate brand has no products");
   }
 
@@ -95,7 +95,20 @@ try {
       const files = linzzyMedia.map((src) => ["lexta", "portal", "linzzy"].every((app) => existsSync(new URL(`../../../../apps/${app}/public${src}`, import.meta.url))));
       check(files.every(Boolean), "Linzzy pack shots: every shared photo file is shipped by the Lexta site, the portal and the Linzzy site", files);
     }
-    check(same(ranges.hooch, data.hoochProducts), "Hooch cards from the database are identical to the approved static cards", ranges.hooch);
+    // 0017 replaced the prototype Hooch rows with Lexta's two Drive cereals (Choco Flakes, in no Lexta document, is
+    // unpublished). Their pictures are shared photo files (/images/hooch/...), shipped by this site too.
+    {
+      const hoochMedia = ranges.hooch.map((c) => (c.media.kind === "single" ? c.media.image.src : c.media.kind === "photo" ? c.media.src ?? "" : "grid"));
+      check(
+        same(ranges.hooch.map((c) => [c.slug, c.name]), [["cornflakes", "Hooch® Cornflakes"], ["frosted-flakes", "Hooch® Frosted Flakes"]])
+          && ranges.hooch[0].description.startsWith("Start your morning with the golden crunch") && same(hoochMedia, ["/images/hooch/cornflakes-bowl.webp", "/images/hooch/frosted-flakes-bowl.webp"])
+          && !/chopboxonline|low in fat|sun ripened/i.test(JSON.stringify(ranges.hooch)),
+        "Hooch cards: Lexta's two Drive cereals with their shared pictures, no hotlinked shop photo, no prototype claim (0017)", ranges.hooch.map((c) => [c.slug, c.name, c.media]),
+      );
+      const { existsSync } = await import("node:fs");
+      check(hoochMedia.every((src) => ["lexta", "portal", "hooch"].every((app) => existsSync(new URL(`../../../../apps/${app}/public${src}`, import.meta.url)))),
+        "Hooch pictures: every shared photo file is shipped by the Lexta site, the portal and the Hooch site", hoochMedia);
+    }
     check(same(ranges.yazz.slice(0, 6), data.yazzProducts.slice(0, 6)), "Yazz cards 1 to 6 (pads to diapers, with the before/after strip) are identical", ranges.yazz.slice(0, 6));
     const tail = ranges.yazz.slice(6).map((c) => [c.name, c.media.kind]);
     check(
