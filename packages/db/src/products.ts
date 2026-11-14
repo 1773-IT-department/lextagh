@@ -22,6 +22,30 @@ export function productImageUrl(image: Pick<ProductImage, "storage_path" | "exte
 }
 
 /**
+ * A product photo every app ships in its own public folder at the same path, /images/<brand>/<file> (0016), for example
+ * /images/linzzy/pad-heavy-flow.webp: the Lexta site, the portal and the brand website all serve it, so all show it.
+ */
+export const SHARED_IMAGE_PATH = /^\/images\/(yazz|linzzy|hooch)\/[A-Za-z0-9._-]+$/;
+
+/** True for an image address that is one of the shared photo files (see SHARED_IMAGE_PATH). */
+export function isSharedImagePath(url: string | null | undefined): boolean {
+  return !!url && SHARED_IMAGE_PATH.test(url) && !url.includes("..");
+}
+
+/**
+ * True for any other site path, such as /images/original/x.webp: a file only one brand website ships in its public
+ * folder. Only that website can show it; the Lexta site and the portal treat it as no picture.
+ */
+export function isBrandSiteImage(image: Pick<ProductImage, "storage_path" | "external_url">): boolean {
+  return !image.storage_path && !!image.external_url?.startsWith("/") && !isSharedImagePath(image.external_url);
+}
+
+/** Address of a product image that any app can show (shared photo files included), or null for a brand website's own file. */
+export function sharedProductImageUrl(image: Pick<ProductImage, "storage_path" | "external_url">): string | null {
+  return isBrandSiteImage(image) ? null : productImageUrl(image);
+}
+
+/**
  * Published products of one brand with their active SKUs and images, in display order.
  * For the websites: uses the publishable key, so Row Level Security only ever returns published data.
  * Requests are cached under the "products" tag, so a portal save refreshes the pages.

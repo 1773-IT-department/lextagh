@@ -52,6 +52,7 @@ const warnings = [];
 const realWarn = console.warn;
 console.warn = (...args) => warnings.push(args.join(" "));
 
+let linzzyCards;
 try {
   // ---------- Products: helper ----------
   {
@@ -67,7 +68,7 @@ try {
     check(toothpaste?.images.length === 3 && toothpaste.images[0].is_primary && toothpaste.images[0].url.startsWith("https://yazzproducts.com/"), "images come primary first with their public URL");
     check(toothpaste?.skus.length === 3 && toothpaste.skus.every((s) => s.is_active), "active SKUs come with the product");
     check(!("brand" in (toothpaste ?? {})), "the brand join is not leaked into the product");
-    check((await db.getPublishedProducts("linzzy")).length === 3 && (await db.getPublishedProducts("hooch")).length === 3, "Linzzy and Hooch: 3 published products each");
+    check((await db.getPublishedProducts("linzzy")).length === 6 && (await db.getPublishedProducts("hooch")).length === 3, "Linzzy: Lexta's 6 catalogue products (0016); Hooch: 3 published products");
     check((await db.getPublishedProducts("lexta")).length === 0, "the corporate brand has no products");
   }
 
@@ -75,7 +76,25 @@ try {
   {
     const ranges = await live.getBrandRanges();
     check(warnings.length === 0, "no fallback warning while the database answers", warnings);
-    check(same(ranges.linzzy, data.linzzyProducts), "Linzzy cards from the database are identical to the approved static cards", ranges.linzzy);
+    // 0016 replaced the prototype Linzzy rows with Lexta's six Drive products. Their pack shots are shared photo files
+    // (/images/linzzy/...), which this site ships in its own public folder too, so every card shows its real photo.
+    linzzyCards = ranges.linzzy;
+    check(
+      same(ranges.linzzy.map((c) => c.slug), ["heavy-flow-sanitary-towels", "cool-mint-sanitary-towels", "extra-long-sanitary-towels", "panty-liners", "baby-diapers", "baby-wipes"])
+        && ranges.linzzy[0].name === "Linzzy Heavy Flow Sanitary Towels" && ranges.linzzy[5].description.startsWith("Little hands, tiny feet"),
+      "Linzzy cards: Lexta's six products with their Drive names and descriptions (0016)", ranges.linzzy.map((c) => [c.slug, c.name]),
+    );
+    const linzzyMedia = ranges.linzzy.map((c) => (c.media.kind === "single" ? c.media.image.src : c.media.kind === "photo" ? c.media.src ?? "" : "grid"));
+    check(
+      same(linzzyMedia, ["pad-heavy-flow", "pad-cool-mint", "pad-extra-long", "panty-liner", "baby-diapers", "baby-wipes"].map((f) => `/images/linzzy/${f}.webp`))
+        && !JSON.stringify(ranges.linzzy).includes("lextagh.com") && !/fragrance free|clinical/i.test(JSON.stringify(ranges.linzzy)),
+      "Linzzy cards: each of the six shows its real pack shot (a shared photo file), no lextagh.com photo, no prototype claim", linzzyMedia,
+    );
+    {
+      const { existsSync } = await import("node:fs");
+      const files = linzzyMedia.map((src) => ["lexta", "portal", "linzzy"].every((app) => existsSync(new URL(`../../../../apps/${app}/public${src}`, import.meta.url))));
+      check(files.every(Boolean), "Linzzy pack shots: every shared photo file is shipped by the Lexta site, the portal and the Linzzy site", files);
+    }
     check(same(ranges.hooch, data.hoochProducts), "Hooch cards from the database are identical to the approved static cards", ranges.hooch);
     check(same(ranges.yazz.slice(0, 6), data.yazzProducts.slice(0, 6)), "Yazz cards 1 to 6 (pads to diapers, with the before/after strip) are identical", ranges.yazz.slice(0, 6));
     const tail = ranges.yazz.slice(6).map((c) => [c.name, c.media.kind]);
@@ -107,7 +126,7 @@ try {
     const linzzy = await live.getBrandRanges().then((r) => r.linzzy);
     const added = linzzy[1];
     check(
-      linzzy.length === 4 && added?.slug === "new-test" && added.description === "Just added" && added.media.kind === "photo" && !added.media.src,
+      linzzy.length === 7 && added?.slug === "new-test" && added.description === "Just added" && added.media.kind === "photo" && !added.media.src,
       "a new product without a photo appears in its sort position with the empty photo slot",
       added,
     );
@@ -125,7 +144,7 @@ try {
     await q(`update public.brands set is_active = true where slug = 'hooch';
              update public.products set name = 'Toothpaste', is_published = true where slug = 'toothpaste';
              delete from public.products where slug in ('draft-test', 'new-test');`);
-    check(same((await live.getBrandRanges()).linzzy, data.linzzyProducts), "back to the seed: identical again");
+    check(same((await live.getBrandRanges()).linzzy, linzzyCards), "back to the seed: identical again");
   }
 
   // ---------- Regions ----------

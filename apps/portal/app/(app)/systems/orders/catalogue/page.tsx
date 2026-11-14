@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { productImageUrl } from "@lexta/db";
+import { sharedProductImageUrl } from "@lexta/db";
 import OrderTabs from "@/components/orders/OrderTabs";
 import { brandName, getOrdersAccess, loadCatalogue, NOT_LINKED, PRICE_PLACEHOLDER } from "@/lib/orders";
 import { redirect } from "next/navigation";
@@ -35,7 +35,7 @@ export default async function CataloguePage() {
                 <div className="cat-head">
                   <span className="pthumb">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    {p.image ? <img src={productImageUrl(p.image)} alt={p.image.alt_text} loading="lazy" /> : <span aria-hidden="true">No image</span>}
+                    {p.image && sharedProductImageUrl(p.image) ? <img src={sharedProductImageUrl(p.image)!} alt={p.image.alt_text} loading="lazy" /> : <span aria-hidden="true">No image</span>}
                   </span>
                   <div>
                     <b>{p.name}</b>
