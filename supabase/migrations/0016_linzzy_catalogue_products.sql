@@ -1,6 +1,7 @@
 -- 0016_linzzy_catalogue_products: Lexta's real Linzzy catalogue in Product Management, replacing the prototype rows.
 --
--- WRITTEN, NOT APPLIED. Desmond decides whether and when to apply it to the live project.
+-- Applied to the live project (Lexta Gh) on 2026-11-14 with Desmond's approval, after a read-only check showed no
+-- staff-edited Linzzy rows.
 --
 -- Why: the Linzzy products seeded from the Lexta prototype (0004) are umbrella cards with invented claims ("clinical anti
 -- leak barriers", "fragrance free", "formulated for sensitive skin") and hotlinked photos from lextagh.com, one of them a
