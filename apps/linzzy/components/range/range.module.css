@@ -22,7 +22,9 @@
 .heroPackB { width: 30%; right: -2%; top: 2%; rotate: 9deg; animation-delay: -3s; }
 .page[data-mood="soft"] .heroPackA { width: 24%; }
 .page[data-mood="soft"] .heroPackB { width: 36%; }
-.page[data-mood="bold"] .heroPackB { right: auto; left: 10%; top: 0; width: 27%; rotate: -6deg; }
+/* The pad pack shots are only about 240 px wide: kept at or under 150 px so they stay crisp on sharp screens. */
+.page[data-mood="bold"] .heroPackA { width: 26%; max-width: 150px; left: 2%; }
+.page[data-mood="bold"] .heroPackB { right: auto; left: 10%; top: 0; width: 24%; max-width: 140px; rotate: -6deg; }
 .heroSticker { position: absolute; z-index: 3; right: 4%; bottom: 2%; transform: rotate(-5deg); font-size: 15px; }
 
 .features { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; margin-top: -40px; position: relative; z-index: 2; }

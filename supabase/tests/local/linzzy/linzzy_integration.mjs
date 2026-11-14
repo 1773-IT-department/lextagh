@@ -3,6 +3,7 @@
 //
 // Loads apps/linzzy/lib/forms/core.ts (behind the server actions), lib/products.ts, lib/where-to-buy.ts (behind the
 // pages and /api/stockists) and lib/chat-server.ts (behind /api/chat), then checks what landed in the database.
+import { readFileSync } from "node:fs";
 import { register } from "node:module";
 import { psql, startShim } from "../forms/rpc_shim.mjs";
 
@@ -54,23 +55,78 @@ try {
   process.env.NEXT_PUBLIC_SUPABASE_URL = `http://127.0.0.1:${port}`;
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_local_harness";
 
-  // Products: Linzzy only, both ranges covered by the category map. ------------------------------------------
+  // Products: Linzzy only, Lexta's Drive catalogue wording, no prototype claims, no image from a real Lexta domain. ---
   {
-    const { products: list, live } = await products.getLinzzyProducts();
-    const linzzy = (await q(`select string_agg(p.slug, ',' order by p.slug) from public.products p join public.brands b on b.id = p.brand_id where b.slug = 'linzzy' and p.is_published`)).split(",");
-    const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug <> 'linzzy' and p.is_published`)).split("|");
-    check(live && list.length === linzzy.length && list.every((p) => linzzy.includes(p.slug)), `products: the ${linzzy.length} published Linzzy products, read live`, list.map((p) => p.slug));
-    check(!list.some((p) => p.comingSoon), "products: no coming soon items (Lexta has announced none for Linzzy)");
-    check(!list.some((p) => other.includes(p.name) && !linzzy.includes(p.slug)), "products: no Yazz or Hooch product");
-    check(list.find((p) => p.slug === "sanitary-napkins")?.range === "feminine-care" && list.find((p) => p.slug === "baby-wipes")?.range === "baby-care"
-      && list.find((p) => p.slug === "baby-care")?.range === "baby-care", "products: Personal care goes to Feminine Care, Baby care to Baby Care");
-    const wipes = list.find((p) => p.slug === "baby-wipes");
-    check(wipes?.long.startsWith("Ultra mild") && wipes?.says === "A gentle touch for life's little messes." && wipes?.images[0]?.src === "/images/original/baby-wipes.webp",
-      "products: the database text wins; a row with a catalogue slug borrows Lexta's extras and, having no photo, the catalogue pack shot", wipes);
-    await q(`update public.products set is_published = false where slug = 'baby-care' and brand_id = (select id from public.brands where slug = 'linzzy')`);
-    const after = await products.getLinzzyProducts();
-    check(!after.products.some((p) => p.slug === "baby-care"), "products: an unpublished product disappears from the site");
-    await q(`update public.products set is_published = true where slug = 'baby-care' and brand_id = (select id from public.brands where slug = 'linzzy')`);
+    const CATALOGUE_SLUGS = ["heavy-flow-sanitary-towels", "cool-mint-sanitary-towels", "extra-long-sanitary-towels", "panty-liners", "baby-diapers", "baby-wipes"];
+    const REAL_HOST = /^https?:\/\/(www\.)?(lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com)\//i;
+    const PROTOTYPE_CLAIMS = /fragrance[ -]free|clinical|ultra mild|formulated for sensitive skin/i;
+    const linzzyBrand = "(select id from public.brands where slug = 'linzzy')";
+    const clean = (list) => !PROTOTYPE_CLAIMS.test(JSON.stringify(list)) && !list.some((p) => p.images.some((i) => REAL_HOST.test(i.src)));
+
+    // After 0016 (the harness applies every migration): the six Drive products, read live, in Product Management's order.
+    {
+      const { products: list, live } = await products.getLinzzyProducts();
+      const linzzy = (await q(`select string_agg(p.slug, ',' order by p.sort_order, p.name) from public.products p where p.brand_id = ${linzzyBrand} and p.is_published`)).split(",");
+      const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug <> 'linzzy' and p.is_published`)).split("|");
+      check(live && JSON.stringify(linzzy) === JSON.stringify(CATALOGUE_SLUGS) && JSON.stringify(list.map((p) => p.slug)) === JSON.stringify(CATALOGUE_SLUGS),
+        "0016: the six Drive products are the published Linzzy products, read live in Product Management's order", { linzzy, site: list.map((p) => p.slug) });
+      check(!list.some((p) => p.comingSoon), "products: no coming soon items (Lexta has announced none for Linzzy)");
+      check(!list.some((p) => other.includes(p.name)), "products: no Yazz or Hooch product");
+      check(list.filter((p) => p.range === "feminine-care").length === 4 && list.filter((p) => p.range === "baby-care").length === 2, "products: Feminine care and Baby care categories map onto the two ranges");
+      const wipes = list.find((p) => p.slug === "baby-wipes");
+      check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet and unexpected messes") && wipes.features.includes("80 wipes per pack")
+        && wipes.says === "A gentle touch for life's little messes." && wipes.images[0]?.src === "/images/original/baby-wipes.webp"
+        && JSON.stringify(wipes.skus.map((x) => x.code)) === JSON.stringify(["TBC-LINZZY-108", "TBC-LINZZY-109", "TBC-LINZZY-110"]),
+        "0016: the prototype Baby wipes row now carries Lexta's Drive wording, its three variants and the site's own pack shot", wipes);
+      check(clean(list), "products: no prototype claim (fragrance free, clinical, ultra mild) and no image from a real Lexta domain", list.map((p) => p.images));
+      const old = await q(`select string_agg(slug || ':' || is_published, ',' order by slug) from public.products where brand_id = ${linzzyBrand} and slug in ('sanitary-napkins', 'baby-care')`);
+      check(old === "baby-care:false,sanitary-napkins:false", "0016: the two prototype umbrella rows are unpublished, not deleted", old);
+    }
+
+    // The live database today (before 0016): the three prototype rows only, with their claims and hotlinked photos.
+    // The site must still show Lexta's six products in Drive wording, without the umbrella rows or the photos.
+    await q(`update public.products set is_published = (slug in ('sanitary-napkins', 'baby-wipes', 'baby-care')) where brand_id = ${linzzyBrand};
+      update public.products set name = 'Baby wipes', short_description = 'Ultra mild, fragrance free wipes in 80 piece packs.',
+        long_description = 'Ultra mild, fragrance free wipes in 80 piece packs, formulated for sensitive skin and built to hold up to the job.',
+        key_features = array['Ultra mild', 'Fragrance free', 'Formulated for sensitive skin', '80 piece packs'], usage_instructions = null
+        where brand_id = ${linzzyBrand} and slug = 'baby-wipes';
+      update public.product_images set is_primary = false where product_id = (select id from public.products where brand_id = ${linzzyBrand} and slug = 'baby-wipes');
+      insert into public.product_images (product_id, external_url, alt_text, sort_order, is_primary)
+        select id, 'https://www.lextagh.com/wp-content/uploads/2026/06/linzzy-wipes-poster.jpg', 'Linzzy poster', 1, true from public.products where brand_id = ${linzzyBrand} and slug = 'baby-wipes';`);
+    {
+      const { products: list, live } = await products.getLinzzyProducts();
+      check(live && JSON.stringify(list.map((p) => p.slug)) === JSON.stringify(CATALOGUE_SLUGS),
+        "before 0016: the full six product catalogue shows, in Lexta's order, and the umbrella rows Sanitary napkins and Baby care are skipped", list.map((p) => p.slug));
+      const wipes = list.find((p) => p.slug === "baby-wipes");
+      check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet") && wipes.short.startsWith("80 wipes in a resealable pack")
+        && wipes.features[0] === "Convenient resealable packaging" && wipes.usage?.startsWith("Open the resealable lid") && wipes.ingredients?.startsWith("[PLACEHOLDER"),
+        "before 0016: the database Baby wipes row shows the Drive wording (name, texts, features, usage, ingredients)", wipes);
+      check(wipes?.images.length === 1 && wipes.images[0].src === "/images/original/baby-wipes.webp", "before 0016: the hotlinked www.lextagh.com photo is never used; the catalogue pack shot is shown instead", wipes?.images);
+      check(clean(list), "before 0016: no prototype claim and no image from a real Lexta domain anywhere", list.map((p) => [p.slug, p.images.map((i) => i.src)]));
+      check(products.isBlockedImage("https://lextagh.com/a.jpg") && products.isBlockedImage("https://WWW.hoochfoods.com/a.png") && products.isBlockedImage("http://yazzproducts.com/x")
+        && products.isBlockedImage("https://www.linzzyproducts.com/x") && !products.isBlockedImage("/images/original/baby-wipes.webp") && !products.isBlockedImage("https://cdn.example.com/lextagh.com.jpg"),
+        "image filter: the four real domains, with or without www, are blocked; the site's own files and other hosts are not");
+    }
+
+    // A product staff create later still shows (after the catalogue), and disappears when unpublished.
+    await q(`insert into public.products (brand_id, slug, name, category, short_description, is_published, sort_order) values (${linzzyBrand}, 'linzzy-test-new', 'Linzzy Test New', 'Baby care', 'Added by staff', true, 5)`);
+    {
+      const { products: list } = await products.getLinzzyProducts();
+      check(list.at(-1)?.slug === "linzzy-test-new" && list.at(-1)?.range === "baby-care" && list.length === 7, "a product staff add shows on the site", list.map((p) => p.slug));
+      await q(`update public.products set is_published = false where brand_id = ${linzzyBrand} and slug = 'linzzy-test-new'`);
+      const after = await products.getLinzzyProducts();
+      check(!after.products.some((p) => p.slug === "linzzy-test-new"), "products: an unpublished staff product disappears from the site");
+      await q(`delete from public.products where brand_id = ${linzzyBrand} and slug = 'linzzy-test-new'`);
+    }
+
+    // Back to the state after 0016: delete the test photo and run the migration again (it is idempotent).
+    await q(`delete from public.product_images where external_url like 'https://www.lextagh.com/%';
+      update public.product_images set is_primary = true where external_url = '/images/original/baby-wipes.webp';
+      ${readFileSync(new URL("../../../migrations/0016_linzzy_catalogue_products.sql", import.meta.url), "utf8")}`);
+    const restored = await products.getLinzzyProducts();
+    const sameAgain = await q(`select string_agg(slug, ',' order by sort_order) from public.products where brand_id = ${linzzyBrand} and is_published`);
+    check(sameAgain === CATALOGUE_SLUGS.join(",") && restored.products.find((p) => p.slug === "baby-wipes")?.images[0]?.src === "/images/original/baby-wipes.webp",
+      "0016 run a second time: back to the six products, nothing duplicated", sameAgain);
   }
 
   // Where to Buy: only stockists that carry Linzzy. -----------------------------------------------------------
@@ -114,21 +170,22 @@ try {
   // Consumer form, a problem with a product: a complaint, brand Linzzy, product linked. -----------------------
   {
     const s = await core.handleConsumer(fd({
-      topic: "problem", name: "Kofi Owusu", email: mail("kofi"), phone: "+233 24 123 4567", region: "ashanti", product: "sanitary-napkins",
+      topic: "problem", name: "Kofi Owusu", email: mail("kofi"), phone: "+233 24 123 4567", region: "ashanti", product: "heavy-flow-sanitary-towels",
       batch: "Batch: LZ-2291", purchase_place: "Kejetia market", purchase_date: "2026-10-02", message: "The adhesive did not hold.", privacy: "yes",
-    }), { "sanitary-napkins": "Sanitary napkins" });
+    }), { "heavy-flow-sanitary-towels": "Linzzy Heavy Flow Sanitary Towels" });
     check(s.status === "success" && /^LX-\d{4}-\d{4,}$/.test(s.reference ?? "") && s.message.includes("case number"), `problem report returns a case number (${s.reference})`, s);
     const row = await q(`select b.slug || '|' || c.channel || '|' || coalesce(p.slug, '') || '|' || coalesce(c.batch_number, '') || '|' || coalesce(c.purchase_place, '') || '|' || coalesce(c.purchase_date::text, '') || '|' || replace(c.description, E'\\n', '~')
       from public.complaints c join public.brands b on b.id = c.brand_id left join public.products p on p.id = c.product_id where c.case_number = '${s.reference}'`);
     const [brand, channel, product, batch, place, date, desc] = row.split("|");
     check(brand === "linzzy" && channel === "website", "complaint: brand linzzy, channel website", row);
-    check(product === "sanitary-napkins" && batch === "LZ-2291" && place === "Kejetia market" && date === "2026-10-02", "complaint: product linked, batch, place and date saved", row);
-    check(desc.startsWith("Product: Sanitary napkins~Region: Ashanti"), "complaint: product and region at the top of the text", desc);
+    check(product === "heavy-flow-sanitary-towels" && batch === "LZ-2291" && place === "Kejetia market" && date === "2026-10-02", "complaint: product linked, batch, place and date saved", row);
+    check(desc.startsWith("Product: Linzzy Heavy Flow Sanitary Towels~Region: Ashanti"), "complaint: product and region at the top of the text", desc);
 
-    // A product the database does not know (shown from the fallback catalogue) still lands, named in the text.
-    const s2 = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi"), product: "heavy-flow-sanitary-towels", message: "Torn pack.", privacy: "yes" }), { "heavy-flow-sanitary-towels": "Linzzy Heavy Flow Sanitary Towels" });
+    // A product the database does not know as published (an unpublished prototype row, or one shown from the catalogue
+    // while 0016 is not applied) still lands, named in the text.
+    const s2 = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi"), product: "sanitary-napkins", message: "Torn pack.", privacy: "yes" }), { "sanitary-napkins": "Sanitary napkins" });
     const row2 = await q(`select coalesce(c.product_id::text, 'none') || '|' || replace(c.description, E'\\n', '~') from public.complaints c where c.case_number = '${s2.reference}'`);
-    check(s2.status === "success" && row2.startsWith("none|Product: Linzzy Heavy Flow Sanitary Towels"), "complaint: an unknown product is named in the text instead of being refused", { s2, row2 });
+    check(s2.status === "success" && row2.startsWith("none|Product: Sanitary napkins"), "complaint: an unknown product is named in the text instead of being refused", { s2, row2 });
 
     const future = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi2"), purchase_date: "2999-01-01", message: "x", privacy: "yes" }));
     check(future.status === "error" && future.fieldErrors?.purchase_date, "complaint: a purchase date in the future is refused", future);

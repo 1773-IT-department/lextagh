@@ -1,5 +1,5 @@
 import "server-only";
-import { productImageUrl } from "@lexta/db";
+import { sharedProductImageUrl } from "@lexta/db";
 import type { BuilderProduct } from "@/components/orders/OrderBuilder";
 import { brandName, type CatalogueProduct, type OrdersAccess } from "./orders";
 
@@ -11,7 +11,7 @@ export function toBuilderProducts(access: OrdersAccess, products: CatalogueProdu
     brandName: brandName(access, p.brand_id),
     name: p.name,
     category: p.category,
-    imageUrl: p.image ? productImageUrl(p.image) : null,
+    imageUrl: p.image ? sharedProductImageUrl(p.image) : null,
     skus: p.skus.map((s) => ({ id: s.id, code: s.sku_code, variant: s.variant_name, pack: s.pack_size_label })),
   }));
 }

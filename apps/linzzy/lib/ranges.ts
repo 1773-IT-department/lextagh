@@ -39,8 +39,8 @@ export type RangeInfo = {
   rangeBody: string;
   /** A numbered how to panel. */
   guide: { eyebrow: string; title: string; items: string[]; warning?: string };
-  /** "Good to know" cards. */
-  habits: { title: string; items: { title: string; body: string }[] };
+  /** "Good to know" cards, and an optional link to the rest of them on Tips & Advice. */
+  habits: { title: string; items: { title: string; body: string }[]; more?: { href: string; label: string } };
   /** Tips & Advice category for the "Read more" links. */
   tipsCategory: "feminine-care" | "baby-care";
   seo: { title: string; description: string };
@@ -78,7 +78,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       cta: "Discover Feminine Care",
     },
     features: [
-      { icon: "drop", title: "Absorb, Lock and Breathe", body: "The design positioning behind the Linzzy sanitary towel range." },
+      { icon: "drop", title: "Absorb, Lock and Breathe", body: "Featuring the brand's Absorb, Lock and Breathe design." },
       { icon: "ruler", title: "Different lengths", body: "155 mm liners and 260 mm, 290 mm and 330 mm towels, for different coverage preferences." },
       { icon: "sparkle", title: "Cool Mint variant", body: "A cooling-style option for those who prefer it and tolerate its cooling sensation." },
       { icon: "heart", title: "Comfort-focused design", body: "Developed for different menstrual flows, coverage preferences and everyday routines." },
@@ -101,11 +101,10 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       items: [
         { title: "Know Your Flow", body: "Choose sanitary protection according to your bleeding pattern, preferred fit and absorbency needs. Check the product label before use." },
         { title: "Freshness Starts with Good Habits", body: "Change sanitary towels approximately every 4 to 6 hours or sooner when needed. Change panty liners whenever damp or soiled." },
-        { title: "Prepared Wherever You Go", body: "Carry spare sanitary towels, clean underwear and a disposal bag to stay prepared at school, work or while travelling." },
-        { title: "Little Care, Everyday Confidence", body: "Panty liners are suitable for light spotting or small amounts of moisture, not for managing heavy menstrual bleeding." },
         { title: "Comfort Comes First", body: "Stop using any menstrual product that causes irritation. Fragrance or cooling sensations do not necessarily mean better hygiene." },
-        { title: "Know Your Cycle, Know Your Body", body: "Record your period dates and symptoms to understand your usual pattern and recognise changes worth discussing with a healthcare professional." },
       ],
+      // Three of Lexta's six quick tips; all six are on Tips & Advice.
+      more: { href: "/tips#quick-tips", label: "All six quick tips" },
     },
     tipsCategory: "feminine-care",
     seo: {

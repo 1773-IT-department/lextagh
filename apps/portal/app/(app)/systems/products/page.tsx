@@ -1,6 +1,6 @@
 import { Select } from "@lexta/ui";
 import Link from "next/link";
-import { productImageUrl, type ProductImage } from "@lexta/db";
+import { sharedProductImageUrl, type ProductImage } from "@lexta/db";
 import { getProductAccess } from "@/lib/products";
 import { createClient } from "@/lib/supabase/server";
 
@@ -133,7 +133,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                           <td className="pcell">
                             <span className="pthumb">
                               {/* eslint-disable-next-line @next/next/no-img-element */}
-                              {img ? <img src={productImageUrl(img)} alt="" loading="lazy" /> : <span aria-hidden="true">No image</span>}
+                              {img && sharedProductImageUrl(img) ? <img src={sharedProductImageUrl(img)!} alt="" loading="lazy" /> : <span aria-hidden="true">{img ? "Site file" : "No image"}</span>}
                             </span>
                             <span>
                               <Link href={`/systems/products/${p.id}`} className="pname">{p.name}</Link>

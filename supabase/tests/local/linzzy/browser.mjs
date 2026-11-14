@@ -12,7 +12,7 @@
 // Build the site for the harness first (see run.sh). Screenshots go to LINZZY_SCREENSHOTS (default: a linzzy-screens folder
 // in the temp directory). Every server it starts is stopped at the end.
 import { spawn } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
@@ -85,6 +85,22 @@ function watch(page) {
   return () => { const out = buf; buf = []; return out; };
 }
 
+/** Before a screenshot: every lazy image is made eager, the page is scrolled slowly to the end and back, and the fonts and
+ *  every image have finished loading, so no picture is caught half loaded. */
+async function settle(page) {
+  await page.evaluate(async () => {
+    document.querySelectorAll("img[loading=lazy]").forEach((i) => { i.loading = "eager"; });
+    for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 120)); }
+    window.scrollTo(0, 0);
+    await document.fonts.ready;
+    await Promise.all([...document.images].map((i) => (i.complete ? null : new Promise((r) => { i.addEventListener("load", r, { once: true }); i.addEventListener("error", r, { once: true }); setTimeout(r, 8000); }))));
+  });
+  await sleep(400);
+}
+
+/** Lexta's real domains: no link, picture or background on the site may point at one. */
+const REAL_DOMAIN = /^https?:\/\/(www\.)?(lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com)(\/|$)/i;
+
 const PAGES = [
   ["home", "/"], ["products", "/products"], ["range-feminine-care", "/products/feminine-care"], ["range-baby-care", "/products/baby-care"],
   ["about", "/about"], ["tips", "/tips"], ["tips-baby-care", "/tips?category=baby-care"], ["article-feminine", "/tips/know-your-flow"],
@@ -116,26 +132,81 @@ try {
       drain();
       const resp = await page.goto(`${SITE}${url}`, { waitUntil: "load" });
       await page.waitForLoadState("networkidle", { timeout: 8000 }).catch(() => {});
-      await page.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 50)); } window.scrollTo(0, 0); });
-      await sleep(500);
-      const info = await page.evaluate(() => ({
+      await settle(page);
+      const info = await page.evaluate((realSource) => ({
         sw: document.scrollingElement.scrollWidth, w: innerWidth, h1: document.querySelector("h1")?.textContent ?? "", h1s: document.querySelectorAll("h1").length,
         noAlt: [...document.querySelectorAll("img:not([alt])")].length, main: !!document.querySelector("main#main"),
         dashes: (document.body.innerText.match(/.{0,20}(?:[–—]| - ).{0,20}/g) ?? []).slice(0, 3),
         real: [...document.querySelectorAll("a[href]")].map((a) => a.href).filter((h) => !h.startsWith("mailto:") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h)),
         placeholderPhones: /009-215-5599|info@example\.com/.test(document.body.innerText),
-      }));
+        realImages: (() => {
+          const real = new RegExp(realSource, "i");
+          const srcs = [...document.querySelectorAll("img")].flatMap((i) => [i.getAttribute("src") ?? "", i.currentSrc, ...(i.getAttribute("srcset") ?? "").split(",").map((x) => x.trim().split(" ")[0])]);
+          const nextImg = srcs.map((x) => { try { const u = new URL(x, location.href); return u.pathname === "/_next/image" ? u.searchParams.get("url") ?? "" : u.href; } catch { return x; } });
+          const backgrounds = [...document.querySelectorAll("*")].flatMap((e) => [...getComputedStyle(e).backgroundImage.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map((m) => m[1]));
+          return [...nextImg, ...backgrounds].filter((x) => real.test(x));
+        })(),
+        prototypeClaims: (document.body.innerText.match(/.{0,30}(?:fragrance[ -]free|clinical).{0,30}/gi) ?? []).slice(0, 3),
+      }), REAL_DOMAIN.source);
       const problems = drain();
       check(resp?.status() === 200 && info.h1 && info.h1s === 1 && info.main && info.noAlt === 0 && info.sw <= info.w && problems.length === 0 && info.dashes.length === 0
         && info.real.length === 0 && !info.placeholderPhones,
         `${kind} ${url}: 200, one h1, main landmark, alt text, no sideways scroll, no errors, no dashes, no link to a real Lexta domain`, { status: resp?.status(), ...info, problems });
+      check(info.realImages.length === 0, `${kind} ${url}: no image or CSS background from lextagh.com, yazzproducts.com, linzzyproducts.com or hoochfoods.com`, info.realImages);
+      check(info.prototypeClaims.length === 0, `${kind} ${url}: no "fragrance free" or "clinical" claim`, info.prototypeClaims);
       await page.screenshot({ path: path.join(OUT, `${name}-${kind === "phone" ? 390 : 1440}.png`), fullPage: true });
     }
     // The product window, as a screenshot too.
     await page.goto(`${SITE}/products/baby-care#product-baby-wipes`);
+    await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await Promise.all([...document.querySelectorAll("dialog img")].map((i) => { i.loading = "eager"; return i.decode().catch(() => {}); }));
+    });
     await sleep(600);
     await page.screenshot({ path: path.join(OUT, `product-window-${kind === "phone" ? 390 : 1440}.png`) });
     await ctx.close();
+  }
+
+  // The live database before 0016: the three prototype rows, with their claims and hotlinked lextagh.com photos.
+  // The pages must show Lexta's six products in Drive wording and never draw a picture from a real Lexta domain.
+  {
+    const brand = "(select id from public.brands where slug = 'linzzy')";
+    const refresh = async () => {
+      await fetch(`${SITE}/api/revalidate`, { method: "POST", headers: { "x-revalidate-secret": REVALIDATE_SECRET, "content-type": "application/json" }, body: JSON.stringify({ tags: ["products"] }) });
+      for (const u of ["/", "/products", "/products/feminine-care", "/products/baby-care"]) await fetch(`${SITE}${u}`);
+      await sleep(1500);
+    };
+    await q(`update public.products set is_published = (slug in ('sanitary-napkins', 'baby-wipes', 'baby-care')) where brand_id = ${brand};
+      update public.products set name = 'Baby wipes', long_description = 'Ultra mild, fragrance free wipes in 80 piece packs, formulated for sensitive skin.',
+        short_description = 'Ultra mild, fragrance free wipes in 80 piece packs.', key_features = array['Ultra mild', 'Fragrance free'] where brand_id = ${brand} and slug = 'baby-wipes';
+      update public.product_images set is_primary = false where product_id = (select id from public.products where brand_id = ${brand} and slug = 'baby-wipes');
+      insert into public.product_images (product_id, external_url, alt_text, sort_order, is_primary)
+        select id, 'https://www.lextagh.com/wp-content/uploads/2026/06/linzzy-wipes-poster.jpg', 'Linzzy poster', 1, true from public.products where brand_id = ${brand} and slug = 'baby-wipes';`);
+    await refresh();
+    const ctx = await context("desktop");
+    const page = await ctx.newPage();
+    for (const u of ["/", "/products", "/products/feminine-care", "/products/baby-care", "/products/baby-care#product-baby-wipes"]) {
+      await page.goto(`${SITE}${u}`);
+      await settle(page);
+      const seen = await page.evaluate((realSource) => {
+        const real = new RegExp(realSource, "i");
+        const srcs = [...document.querySelectorAll("img")].map((i) => i.getAttribute("src") ?? "");
+        const backgrounds = [...document.querySelectorAll("*")].flatMap((e) => [...getComputedStyle(e).backgroundImage.matchAll(/url\(["']?([^"')]+)["']?\)/g)].map((m) => m[1]));
+        return { real: [...srcs, ...backgrounds].filter((x) => real.test(x)), claims: /fragrance[ -]free|clinical|ultra mild/i.test(document.body.innerText),
+          cards: [...document.querySelectorAll("main article h3")].map((h) => h.textContent?.trim()) };
+      }, REAL_DOMAIN.source);
+      check(seen.real.length === 0 && !seen.claims, `before 0016, ${u}: no picture from a real Lexta domain and no prototype claim`, seen);
+      if (u === "/products") {
+        check(seen.cards.length === 6 && seen.cards.includes("Linzzy Baby Wipes") && seen.cards.includes("Linzzy Heavy Flow Sanitary Towels") && !seen.cards.includes("Sanitary napkins") && !seen.cards.includes("Baby care"),
+          "before 0016, products page: Lexta's six products, the prototype umbrella cards skipped", seen.cards);
+      }
+    }
+    await ctx.close();
+    await q(`delete from public.product_images where external_url like 'https://www.lextagh.com/%';
+      update public.product_images set is_primary = true where external_url = '/images/original/baby-wipes.webp';
+      ${readFileSync(path.join(ROOT, "supabase/migrations/0016_linzzy_catalogue_products.sql"), "utf8")}`);
+    await refresh();
   }
 
   // Linzzy data only ----------------------------------------------------------------------------------------
@@ -156,6 +227,7 @@ try {
     const shops = await page.locator("#where-to-buy li h3").allInnerTexts();
     check(shops.includes("Demo Shop Adabraka") && shops.includes("Demo Chemist Ho"), "where to buy: the active Linzzy stockists are listed", shops);
     check(!shops.includes("Demo Mart Kejetia") && !shops.includes("Demo Pharmacy Osu") && !shops.includes("Demo Supermarket Tema") && !shops.includes("Demo Provisions Madina"), "where to buy: no Yazz or Hooch only shop, no closed shop", shops);
+    await page.locator(".leaflet-marker-icon").nth(2).waitFor({ timeout: 15000 }).catch(() => {}); // the map loads after the list
     const pins = await page.locator(".leaflet-marker-icon").count();
     check(pins >= 3, `where to buy: the Leaflet map shows the shops with a position and the head office (${pins} pins)`);
     await page.locator("#wtb-region").selectOption("ashanti").catch(async () => { await page.locator("#wtb-region").evaluate((s) => { s.value = "ashanti"; s.dispatchEvent(new Event("change", { bubbles: true })); }); });
@@ -164,7 +236,7 @@ try {
     check(remembered === "ashanti", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
     await page.goto(`${SITE}/contact?product=baby-wipes#where-to-buy`);
     await page.getByText(/We are adding Linzzy stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
-    check(await page.getByText("Looking for Baby wipes?").count() === 1, "where to buy: the product is named");
+    check(await page.getByText("Looking for Linzzy Baby Wipes?").count() === 1, "where to buy: the product is named");
     await ctx.close();
 
     const nojs = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
@@ -245,9 +317,9 @@ try {
       "map: a stockist name with HTML shows as text in the list and the pin tooltip, and never runs", { tip });
 
     await page.goto(`${SITE}/products/baby-care`);
-    const opener = page.locator("main article").filter({ hasText: "Baby wipes" }).getByRole("link", { name: /View details/ });
+    const opener = page.locator("main article").filter({ hasText: "Linzzy Baby Wipes" }).getByRole("link", { name: /View details/ });
     await opener.click();
-    const dialog = page.getByRole("dialog", { name: "Baby wipes" });
+    const dialog = page.getByRole("dialog", { name: "Linzzy Baby Wipes" });
     await dialog.waitFor({ state: "visible" });
     check(await dialog.isVisible() && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Close product details", "product window: opens on View details, focus on Close");
     check(await dialog.getByRole("link", { name: /Where to buy/ }).getAttribute("href") === "/contact?product=baby-wipes#where-to-buy"
@@ -258,7 +330,7 @@ try {
     check(!(await dialog.isVisible()) && /View details/.test(await page.evaluate(() => document.activeElement?.textContent ?? "")), "product window: Escape closes it and focus returns to its link");
     check(!/add to cart|GH₵|checkout/i.test(await page.locator("body").innerText()), "range page: no cart, checkout or prices");
     await page.goto(`${SITE}/products/baby-care#product-baby-wipes`);
-    await page.getByRole("dialog", { name: "Baby wipes" }).waitFor({ state: "visible" });
+    await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
     await sleep(200);
     await page.keyboard.press("Escape");
     await sleep(300);
@@ -316,7 +388,7 @@ try {
     check(await page.locator("#c-batch").isVisible(), "consumer form: the batch, place and date fields show for a product problem");
     await page.fill("#c-name", "Kofi JS");
     await page.fill("#c-phone", "+233 20 555 0101");
-    await page.locator("#c-product").evaluate((s) => { s.value = "sanitary-napkins"; s.dispatchEvent(new Event("change", { bubbles: true })); });
+    await page.locator("#c-product").evaluate((s) => { s.value = "heavy-flow-sanitary-towels"; s.dispatchEvent(new Event("change", { bubbles: true })); });
     await page.fill("#c-batch", "BW-77");
     await page.fill("#c-date", "2026-10-20");
     await page.fill("#c-message", "The pack was torn when opened.");
@@ -325,7 +397,7 @@ try {
     await ok.waitFor({ timeout: 15000 });
     const caseNo = /LX-\d{4}-\d{4,}/.exec(await ok.innerText())?.[0];
     const crow = caseNo ? await q(`select b.slug || '|' || coalesce(p.slug, '') || '|' || coalesce(c.batch_number, '') from public.complaints c join public.brands b on b.id = c.brand_id left join public.products p on p.id = c.product_id where c.case_number = '${caseNo}'`) : "";
-    check(crow === "linzzy|sanitary-napkins|BW-77", "consumer form (JS): a product problem becomes a Linzzy complaint with product and batch", { caseNo, crow });
+    check(crow === "linzzy|heavy-flow-sanitary-towels|BW-77", "consumer form (JS): a product problem becomes a Linzzy complaint with product and batch", { caseNo, crow });
 
     const trade = page.locator("#trade form");
     await page.fill("#t-name", "Yaw JS");

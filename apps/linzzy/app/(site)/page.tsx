@@ -121,7 +121,7 @@ export default async function HomePage() {
               </div>
               <Link href="/products" className="lz-textlink">View all products <Icon name="arrow" size={17} /></Link>
             </div>
-            <div className={s.featuredGrid}>
+            <div className={s.featuredGrid} style={{ ["--cols" as string]: featured.length, ["--cols-md" as string]: Math.min(featured.length, 2) }}>
               {featured.map((p) => <ProductCard key={p.slug} product={p} detailsHref={`/products/${p.range}#${productAnchor(p.slug)}`} />)}
             </div>
           </div>
@@ -164,7 +164,7 @@ export default async function HomePage() {
             <span className="lz-sticker lz-sticker--mint">{BRAND.parentCorner.title}</span>
             <h2 id="corner-title" className={s.cornerTitle}>{BRAND.parentCorner.tagline}</h2>
             {BRAND.parentCorner.body.map((p) => <p key={p}>{p}</p>)}
-            <Link href="/tips#parent-corner" className="lz-btn lz-btn--mint" style={{ marginTop: 26 }}>Join Linzzy Parent Corner <Icon name="arrow" size={18} /></Link>
+            <Link href="/tips#parent-corner" className="lz-btn lz-btn--mint" style={{ marginTop: 26 }}>Read Parent Corner <Icon name="arrow" size={18} /></Link>
           </div>
         </div>
       </section>

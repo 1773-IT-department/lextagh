@@ -70,14 +70,17 @@ export default function StockistMap({ stockists, selected, onSelect, viewKey }: 
   };
 
   // Moves the view: to the chosen shop, or to fit the region's shops. Not on search typing, so pan and zoom stay.
-  const fit = (animate = true) => {
+  // With "reduce motion" switched on, the view jumps instead of flying or sliding.
+  const fit = (wanted = true) => {
     const leaflet = L.current;
     const m = map.current;
     if (!leaflet || !m) return;
+    const animate = wanted && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const { stockists, selected } = latest.current;
     const placed = stockists.filter((x) => x.position);
     const sel = placed.find((x) => x.id === selected);
-    if (sel) m.flyTo([sel.position!.lat, sel.position!.lng], 13, { duration: .6 });
+    if (sel && animate) m.flyTo([sel.position!.lat, sel.position!.lng], 13, { duration: .6 });
+    else if (sel) m.setView([sel.position!.lat, sel.position!.lng], 13, { animate: false });
     else if (placed.length === 1) m.setView([placed[0].position!.lat, placed[0].position!.lng], 12, { animate });
     else if (placed.length > 1) m.fitBounds(leaflet.latLngBounds(placed.map((x) => [x.position!.lat, x.position!.lng] as [number, number])), { padding: [40, 40], maxZoom: 12, animate });
     else m.setView(GHANA, 6, { animate });

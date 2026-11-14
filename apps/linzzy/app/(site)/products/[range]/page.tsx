@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ range: st
 /** Towel and liner lengths in the Feminine Care packs (Lexta's pack contents), as a scale. */
 const LENGTHS = [
   { mm: 155, name: "Panty Liners", note: "Light days" },
-  { mm: 260, name: "Cool Mint", note: "Mixed-length pack" },
+  { mm: 260, name: "Cool Mint (mixed pack)", note: "260 mm and 290 mm towels" },
   { mm: 290, name: "Heavy Flow", note: "Heavier-flow days" },
   { mm: 330, name: "Extra Long", note: "Extended coverage" },
 ];
@@ -191,6 +191,9 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
             </div>
           ))}
         </div>
+        {r.habits.more && (
+          <Link href={r.habits.more.href} className="lz-textlink" style={{ marginTop: 28 }}>{r.habits.more.label} <Icon name="arrow" size={17} /></Link>
+        )}
       </section>
 
       {reads.length > 0 && (

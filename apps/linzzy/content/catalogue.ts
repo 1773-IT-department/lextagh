@@ -2,12 +2,13 @@
  * The Linzzy catalogue as Lexta wrote it ("Linzzy Website Content.docx", Google Drive, Linzzy Tab Content, 3. Products
  * Page; docs/content/linzzy/products.md), structured for Product Management.
  *
- * The site always shows the products in the database (lib/products.ts); this list is:
- *   1. what the site shows if the database cannot be reached,
- *   2. the product page extras (headline, recommended use, skin sensitivity, "Linzzy Says") a database row with the
- *      same slug borrows, and
- *   3. the data entry sheet for Product Management. The database still holds the 3 Linzzy products seeded from the
- *      Lexta prototype (0004); staff (or a data migration, see CONTENT-NEEDED.md) bring it up to this list.
+ * This list is the authority for Linzzy product wording (lib/products.ts, mergeLinzzyProducts):
+ *   1. a database row with the same slug shows these words (name, texts, features, how to use, ingredients and the
+ *      product page extras); the database supplies the SKU codes, photos, published state and order,
+ *   2. a product of this list the database lacks is shown from here, so the full range always shows,
+ *   3. it is what the site shows if the database cannot be reached, and
+ *   4. it is the data entry sheet for Product Management. Migration 0016 (written, not applied: Desmond decides) writes
+ *      these six products and unpublishes the three rows seeded from the Lexta prototype (0004).
  * Pack contents are as written by Lexta. SKU codes are still to come. Pack shots come from the original
  * linzzyproducts.com (public/images/original), as allowed for gaps; every one is listed in CONTENT-NEEDED.md.
  * Not used, because Lexta's content says they must be verified first: "0% alcohol and parabens" on the wipes packs, and

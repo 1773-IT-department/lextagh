@@ -22,6 +22,19 @@ export function productImageUrl(image: Pick<ProductImage, "storage_path" | "exte
 }
 
 /**
+ * True for a path such as /images/original/pad-heavy-flow.webp (allowed since 0016): a file the brand's own website
+ * ships in its public folder. Only that website can show it; the Lexta site and the portal treat it as no picture.
+ */
+export function isBrandSiteImage(image: Pick<ProductImage, "storage_path" | "external_url">): boolean {
+  return !image.storage_path && !!image.external_url?.startsWith("/");
+}
+
+/** Address of a product image that any app can show, or null for a brand website's own file (see isBrandSiteImage). */
+export function sharedProductImageUrl(image: Pick<ProductImage, "storage_path" | "external_url">): string | null {
+  return isBrandSiteImage(image) ? null : productImageUrl(image);
+}
+
+/**
  * Published products of one brand with their active SKUs and images, in display order.
  * For the websites: uses the publishable key, so Row Level Security only ever returns published data.
  * Requests are cached under the "products" tag, so a portal save refreshes the pages.

@@ -50,13 +50,14 @@ site or listed here for Desmond to confirm.
 ## Product data (Product Management)
 
 - The database still holds the 3 Linzzy products seeded from the Lexta prototype (migration 0004): "Sanitary
-  napkins", "Baby wipes" and "Baby care". Lexta's real catalogue (6 products: Heavy Flow, Cool Mint and Extra Long
-  sanitary towels, Panty Liners, Baby Diapers and Baby Wipes) is structured in `content/catalogue.ts`. Staff can enter it
-  in the portal, or 1773 can turn it into a data migration on request (no migration was written or applied). Until
-  then the site shows the 3 seeded products; the catalogue is what the site shows if the database cannot be reached.
-- The seeded "Baby wipes" row calls the wipes "fragrance free"; Lexta's content gives Rose and Lavender perfumes.
-  Staff should correct the row. (The site shows the database text, with Lexta's skin sensitivity advice added.)
-- The seeded product images point at lextagh.com; please upload the pack shots in the portal instead.
+  napkins", "Baby wipes" and "Baby care", with invented claims ("clinical anti leak barriers", "fragrance free") and
+  photos hotlinked from lextagh.com. The site no longer shows any of that: Lexta's Drive catalogue
+  (`content/catalogue.ts`, 6 products) wins for every product wording, the two umbrella rows without a Drive product
+  are skipped, products the database lacks are shown from the catalogue, and no image from lextagh.com,
+  yazzproducts.com, linzzyproducts.com or hoochfoods.com is ever shown (`lib/products.ts`).
+- Migration `supabase/migrations/0016_linzzy_catalogue_products.sql` is written but **not applied**: it unpublishes the
+  two umbrella rows, corrects the "Baby wipes" row in place and writes the six Drive products with their pack sizes and
+  pack shots. Desmond decides whether to apply it. It also changes the Lexta site's Our Brands page (see the PR notes).
 - SKU codes for every product (all `TBC-LINZZY-...` in the catalogue).
 - Diaper sizes: only Medium (42, 6 to 9 kg) and Large (40, 9 to 13 kg) are confirmed by Lexta. The original site also
   lists Small (44, 3 to 6 kg) and Extra Large (38, over 13 kg): please confirm against current packaging.

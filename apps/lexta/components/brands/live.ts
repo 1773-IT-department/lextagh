@@ -7,7 +7,7 @@
  * If the database cannot be reached, or the site has no Supabase settings, a brand falls back to the approved
  * static cards in ./data.ts and a warning is logged, so the page never breaks.
  */
-import { getPublishedProducts, type PublishedProduct } from "@lexta/db";
+import { getPublishedProducts, isBrandSiteImage, type PublishedProduct } from "@lexta/db";
 import { hoochProducts, linzzyProducts, yazzProducts, type ProductCard, type ProductImage, type ProductMedia } from "./data";
 
 export const BRAND_SLUGS = ["yazz", "linzzy", "hooch"] as const;
@@ -32,7 +32,9 @@ function localMedia(hint: ProductCard | undefined): ProductMedia | undefined {
 
 /** Turns one published product into the card the page already draws. */
 export function toProductCard(product: PublishedProduct, hint?: ProductCard): ProductCard {
-  let images: ProductImage[] = product.images.map((i) => ({ src: i.url, alt: i.alt_text }));
+  // A path such as /images/original/pad-heavy-flow.webp (0016) is a file of the brand's own website, not of this site:
+  // it is left out, so the card falls back to the prototype's local pack shot or the styled placeholder.
+  let images: ProductImage[] = product.images.filter((i) => !isBrandSiteImage(i)).map((i) => ({ src: i.url, alt: i.alt_text }));
 
   // Before/after strip (Yazz washing powder): kept while the product still has those two exact images.
   let beforeAfter: ProductCard["beforeAfter"];

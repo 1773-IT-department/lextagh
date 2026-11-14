@@ -57,7 +57,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
             </div>
             <div className={s.grid3}>{list.map((a) => <ArticleCard key={a.slug} article={a} />)}</div>
             {c.slug === "feminine-care" && (
-              <div style={{ marginTop: 64 }}>
+              <div id="quick-tips" style={{ marginTop: 64, scrollMarginTop: 120 }}>
                 <h2 className={s.sectionTitle} style={{ marginBottom: 40 }}>Six Quick Tips</h2>
                 <div className={s.quick}>
                   {QUICK_TIPS.map((t) => (
@@ -90,6 +90,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
               <p className={s.questionLabel}>This month&apos;s Parent Corner question</p>
               <p className={s.questionText}>&ldquo;{month.question}&rdquo;</p>
               <p className={s.questionTheme}>Community theme: {month.theme}</p>
+              <p className={s.questionShare}>Would you like to share your answer or ask a question of your own? Write to us through the <Link href="/contact?topic=question#message">Contact page</Link>.</p>
             </div>
             <p style={{ marginTop: 28, fontFamily: "var(--lz-display)", fontWeight: 800, color: "var(--lz-ink)" }}>Parenting comes with plenty of questions, and finding reliable information matters.</p>
             <ul className={s.topics}>{PARENT_CORNER.topics.map((t) => <li key={t}>{t}</li>)}</ul>

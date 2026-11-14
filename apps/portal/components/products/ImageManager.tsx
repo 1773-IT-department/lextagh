@@ -87,8 +87,14 @@ export default function ImageManager({
           {images.map((img, i) => (
             <li key={img.id} className={img.is_primary ? "primary" : undefined}>
               <div className="thumb">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt={img.alt_text} loading="lazy" />
+                {img.url.startsWith("/") ? (
+                  // A path such as /images/original/pad-heavy-flow.webp is a file the brand website ships (0016): only
+                  // that website can show it, so the portal names it instead of drawing a broken picture.
+                  <span className="small">{img.url}</span>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={img.url} alt={img.alt_text} loading="lazy" />
+                )}
                 {img.is_primary && <span className="badge on">Main image</span>}
               </div>
               <AltEditor
@@ -97,7 +103,7 @@ export default function ImageManager({
                 disabled={!canEdit || busy}
                 onSave={(value) => run(() => updateImageAlt(productId, img.id, value), "Alt text saved.")}
               />
-              <span className="hint">{img.is_upload ? "Uploaded file" : "Linked image"}</span>
+              <span className="hint">{img.is_upload ? "Uploaded file" : img.url.startsWith("/") ? "File on the brand website" : "Linked image"}</span>
               {canEdit && (
                 <div className="img-actions">
                   {!img.is_primary && <button type="button" className="btn small light" disabled={busy} onClick={() => run(() => setPrimaryImage(productId, img.id))}>Make main</button>}

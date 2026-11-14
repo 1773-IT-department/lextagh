@@ -192,10 +192,10 @@ set session_replication_role = origin;`);
 const asUser = (id, sql) => q(`select set_config('request.jwt.claim.sub', '${id}', false); set role authenticated; ${sql}; reset role;`);
 const lines = (codes, qty) => `(select jsonb_agg(jsonb_build_object('sku_id', s.id, 'quantity', ${qty})) from public.product_skus s where s.sku_code in (${codes.map((c) => `'${c}'`).join(", ")}))`;
 await asUser(U.dist, `select public.save_distributor_order(null, jsonb_build_object('delivery_region_id', ${region("ashanti")}, 'delivery_address', 'Demo Warehouse, Adum, Kumasi',
-  'distributor_notes', 'Please deliver before Friday.', 'lines', ${lines(["TBC-YAZZ-001", "TBC-YAZZ-002", "TBC-LINZZY-004"], 12)}), true)`);
+  'distributor_notes', 'Please deliver before Friday.', 'lines', ${lines(["TBC-YAZZ-001", "TBC-YAZZ-002", "TBC-LINZZY-108"], 12)}), true)`);
 await asUser(U.dist, `select public.save_distributor_order(null, jsonb_build_object('delivery_region_id', ${region("ashanti")}, 'delivery_address', 'Demo Warehouse, Adum, Kumasi',
   'lines', ${lines(["TBC-YAZZ-005", "TBC-YAZZ-006"], 30)}), true)`);
-await asUser(U.dist, `select public.save_distributor_order(null, jsonb_build_object('lines', ${lines(["TBC-LINZZY-001"], 5)}), false)`);
+await asUser(U.dist, `select public.save_distributor_order(null, jsonb_build_object('lines', ${lines(["TBC-LINZZY-101"], 5)}), false)`);
 const firstOrder = (await q(`select id from public.distributor_orders where status = 'submitted' order by created_at limit 1`)).trim();
 await asUser(U.rep, `select public.set_distributor_order_status('${firstOrder}', 'confirmed', 'On the Tuesday truck.')`);
 await asUser(U.rep, `insert into public.distributor_order_staff_notes (order_id, body) values ('${firstOrder}', 'Credit limit checked with finance.')`);
