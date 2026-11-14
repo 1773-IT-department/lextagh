@@ -1,0 +1,50 @@
+/* The food stage: poster first, the live 3D scene fades in over it. */
+.stage { position: relative; width: 100%; aspect-ratio: 1 / 1; isolation: isolate; }
+.stage[data-vessel="glass"] { aspect-ratio: 4 / 5; }
+.band { aspect-ratio: 5 / 4; }
+
+.poster {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; z-index: 0;
+  animation: hcBob 5.5s ease-in-out infinite; transition: opacity .6s ease;
+  filter: drop-shadow(0 18px 24px rgba(107, 52, 16, .18));
+}
+.stage[data-shown] .poster { opacity: 0; animation: none; }
+
+.canvas { position: absolute; inset: 0; z-index: 1; opacity: 0; transition: opacity .6s ease; }
+.stage[data-shown] .canvas { opacity: 1; }
+.canvas canvas { outline: none; }
+
+.hint {
+  position: absolute; left: 50%; bottom: 6%; z-index: 3; translate: -50% 0; display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 999px; background: #fff; border: 2px solid var(--hc-ink); box-shadow: 3px 3px 0 var(--hc-ink);
+  font-family: var(--hc-display); font-weight: 600; font-size: 14px; color: var(--hc-ink); white-space: nowrap; pointer-events: none;
+  animation: hcHint 2.4s ease-in-out infinite;
+}
+.pause {
+  position: absolute; right: 10px; top: 10px; z-index: 3; display: inline-flex; align-items: center; gap: 6px; min-height: 36px;
+  padding: 6px 12px; border-radius: 999px; border: 2px solid var(--hc-ink); background: rgba(255, 255, 255, .92); color: var(--hc-ink);
+  font-family: var(--hc-display); font-weight: 600; font-size: 13px; cursor: pointer; opacity: .75; transition: opacity .2s, transform .2s;
+}
+.pause:hover, .pause:focus-visible { opacity: 1; transform: scale(1.04); }
+
+.burst {
+  position: absolute; z-index: 4; pointer-events: none; translate: -50% -50%; font-family: var(--hc-display); font-weight: 700;
+  font-size: clamp(26px, 3.4vw, 40px); color: var(--hc-red); -webkit-text-stroke: 2px var(--hc-ink); paint-order: stroke fill;
+  text-shadow: 3px 3px 0 var(--hc-sun); animation: hcBurst .9s cubic-bezier(.2, .9, .3, 1.3) forwards;
+}
+
+@keyframes hcBob { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -10px; rotate: -1.2deg; } }
+@keyframes hcHint { 0%, 100% { translate: -50% 0; } 50% { translate: -50% -5px; } }
+@keyframes hcBurst {
+  0% { scale: .3; rotate: -12deg; opacity: 0; }
+  30% { scale: 1.15; rotate: 6deg; opacity: 1; }
+  100% { scale: 1; rotate: -4deg; opacity: 0; translate: -50% -140%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster, .hint { animation: none; }
+}
+@media (max-width: 640px) {
+  .hint { font-size: 12.5px; padding: 6px 12px; }
+  .pause { font-size: 12px; min-height: 34px; padding: 5px 10px; }
+}
