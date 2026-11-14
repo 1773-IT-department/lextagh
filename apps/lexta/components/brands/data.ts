@@ -127,23 +127,18 @@ export const linzzyProducts: ProductCard[] = [
 ];
 
 export const hoochProducts: ProductCard[] = [
+  // Lexta's two Drive cereals (as migration 0017 writes them), shown only when Product Management can't be read. The
+  // pictures are shared pack shots made from Lexta's own Hooch artwork, shipped by this site too (public/images/hooch).
   {
-    slug: "super-crunchy-corn-flakes",
-    name: "Super Crunchy Corn Flakes",
-    description: "Super classic crunchy, everyday goodness. 10 individual packs of 50g in every 500g product, enriched with vitamins.",
-    media: { kind: "single", image: { src: "https://www.chopboxonline.com/wp-content/uploads/2022/08/NewBookImages-53-1.png", alt: "Hooch Super Crunchy Corn Flakes, 375g" } },
+    slug: "cornflakes",
+    name: "Hooch® Cornflakes",
+    description: "Start your morning with the golden crunch of Hooch® Cornflakes. With its enjoyable crispy texture and convenient individual portions, it's an easy breakfast option for the whole family. Each 500g product contains 10 smaller packs of 50g, allowing family members to prepare their own cereal portions with less measuring.",
+    media: { kind: "single", image: { src: "/images/hooch/cornflakes-bowl.webp", alt: "A box of Hooch® Cornflakes, 500g, with fresh strawberries" } },
   },
   {
     slug: "frosted-flakes",
-    name: "Frosted Flakes",
-    description: "Sweet crunch, happy mornings. A crispy texture with a sweet frosted finish, in 10 individual packs of 37.5g in every 375g product.",
-    // The prototype editor left a fixed 390 x 248 size on this photo slot; kept so the card looks as approved.
-    media: { kind: "photo", placeholder: "Hooch Frosted Flakes pack shot", src: "/pasted-1788770879108-0-mtqzzvrf-xf3v.png", alt: "Hooch Frosted Flakes pack", w: 1080, h: 1080, size: { width: 390, height: 248 } },
-  },
-  {
-    slug: "choco-flakes",
-    name: "Choco Flakes",
-    description: "The same fortified grain base, finished with cocoa. Available in 375g.",
-    media: { kind: "single", image: { src: "https://www.chopboxonline.com/wp-content/uploads/2022/08/18-7.png", alt: "Hooch Choco Flakes, 375g" } },
+    name: "Hooch® Frosted Flakes",
+    description: "Add a little sweetness to your breakfast routine with Hooch® Frosted Flakes. Combining a crispy texture with a sweet frosted finish, it's a delightful choice for families who enjoy a sweeter cereal. Each 375g product contains 10 smaller packs of 37.5g, conveniently portioned for everyday breakfast preparation.",
+    media: { kind: "single", image: { src: "/images/hooch/frosted-flakes-bowl.webp", alt: "A box of Hooch® Frosted Flakes with fresh strawberries" } },
   },
 ];

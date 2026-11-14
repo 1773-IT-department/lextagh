@@ -1,0 +1,3 @@
+Fredoka (Milena Brandao, Hafontia) and Nunito (Vernon Adams, Cyreal, Jacques Le Bailly) are licensed under the SIL Open
+Font License, Version 1.1 (https://openfontlicense.org). Latin subsets of the variable fonts (from the @fontsource
+packages), self-hosted here so builds do not depend on reaching Google.

@@ -1,0 +1,54 @@
+.hero { padding: 64px 0 60px; background: var(--hc-sky-2); border-bottom: 2px solid var(--hc-ink); position: relative; overflow: hidden; }
+.hero::after { content: ""; position: absolute; right: -80px; top: -90px; width: 320px; aspect-ratio: 1; border-radius: var(--hc-blob); background: var(--hc-sun); border: 2px solid var(--hc-ink); animation: hcMorph 12s ease-in-out infinite; }
+.hero > div { position: relative; z-index: 1; }
+.heroTitle { margin-top: 20px; max-width: 920px; font-size: clamp(42px, 6.4vw, 90px); line-height: .94; font-weight: 700; letter-spacing: -.055em; }
+.heroTitle span { color: var(--hc-sky-deep); }
+.heroBody { margin-top: 18px; max-width: 620px; font-size: 18px; line-height: 1.65; color: var(--hc-ink); }
+
+.faqWrap { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 48px; align-items: start; padding-top: 56px; padding-bottom: 96px; }
+.faq { min-width: 0; }
+.faqTools { display: flex; flex-direction: column; gap: 16px; }
+.faqChips { display: flex; flex-wrap: wrap; gap: 10px; }
+.faqSearch { position: relative; display: flex; align-items: center; }
+.faqSearch svg { position: absolute; left: 18px; color: var(--hc-cocoa); pointer-events: none; }
+.faqSearch input { width: 100%; min-height: 54px; padding: 12px 18px 12px 50px; border-radius: 999px; border: 2px solid var(--hc-ink); background: #fff; font-size: 16px; color: var(--hc-ink); }
+.faqSearch input:focus-visible { outline: 3px solid var(--hc-red-deep); outline-offset: 2px; }
+.faqEmpty { margin-top: 24px; padding: 20px; border-radius: 20px; border: 2px dashed var(--hc-cocoa); }
+.faqGroup { margin-top: 40px; }
+.faqHead { display: flex; align-items: center; gap: 12px; font-size: 28px; font-weight: 700; letter-spacing: -.03em; margin-bottom: 16px; }
+.faqHead span { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border-radius: 50%; background: var(--hc-sun); border: 2px solid var(--hc-ink); }
+.faqItem { margin-top: 12px; border: 2px solid var(--hc-ink); border-radius: 22px; background: #fff; transition: box-shadow .2s; }
+.faqItem[open] { box-shadow: var(--hc-shadow-sm); background: var(--hc-sun-3); }
+.faqItem summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 60px; padding: 14px 18px 14px 22px; cursor: pointer; list-style: none;
+  font-family: var(--hc-display); font-weight: 700; font-size: 18px; line-height: 1.3; color: var(--hc-ink);
+}
+.faqItem summary::-webkit-details-marker { display: none; }
+.faqItem summary:focus-visible { outline-offset: -3px; border-radius: 20px; }
+.faqIcon { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--hc-ink); color: #fff; }
+.minus { display: none !important; }
+.faqItem[open] .plus { display: none !important; }
+.faqItem[open] .minus { display: inline-block !important; }
+.faqAnswer { padding: 0 22px 20px; font-size: 16px; line-height: 1.7; color: var(--hc-text); }
+.faqAnswer :global(.hc-textlink) { margin-top: 10px; font-size: 14.5px; }
+
+.faqSide { position: sticky; top: 100px; display: flex; flex-direction: column; gap: 22px; }
+.help { padding: 26px 22px; border-radius: 28px; background: var(--hc-sun); border: 2px solid var(--hc-ink); box-shadow: var(--hc-shadow); }
+.helpIcon { display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%; background: #fff; border: 2px solid var(--hc-ink); color: var(--hc-red-deep); }
+.help h2, .bulk h2 { margin-top: 12px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+.help p, .bulk p { margin: 8px 0 18px; font-size: 15px; line-height: 1.6; color: var(--hc-ink); }
+.bulk { padding: 26px 22px; border-radius: 28px; background: var(--hc-sky-2); border: 2px solid var(--hc-ink); box-shadow: 6px 6px 0 var(--hc-sky-deep); }
+.bulk h2 { margin-top: 0; }
+
+@media (max-width: 960px) {
+  .faqWrap { grid-template-columns: 1fr; }
+  .faqSide { position: static; }
+}
+@media (max-width: 640px) {
+  .hero { padding: 40px 0 44px; }
+  .hero::after { width: 180px; right: -80px; top: -70px; }
+  .faqWrap { padding-top: 36px; padding-bottom: 72px; }
+  .faqChips { flex-wrap: nowrap; overflow-x: auto; padding: 4px 4px 10px; margin: 0 -4px; }
+  .faqItem summary { font-size: 16.5px; padding-left: 18px; }
+  .faqHead { font-size: 24px; }
+}
