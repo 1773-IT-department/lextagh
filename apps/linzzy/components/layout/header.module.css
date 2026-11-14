@@ -1,0 +1,80 @@
+/* Header: a floating cream bar with a 2px ink rule, the Linzzy mark, chunky nav links with a squiggle underline. */
+.header {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 12px var(--lz-gutter); background: rgba(255, 250, 244, .94); backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 2px solid var(--lz-ink);
+}
+.brand { display: inline-flex; padding: 2px; border-radius: 14px; transition: transform .2s; }
+.brand:hover { transform: rotate(-4deg) scale(1.04); }
+.logo { width: auto; height: 50px; }
+
+.nav { display: flex; align-items: center; gap: 6px; font-family: var(--lz-display); font-size: 15.5px; font-weight: 700; }
+.link {
+  position: relative; display: inline-flex; align-items: center; min-height: 44px; padding: 6px 12px; border-radius: 999px;
+  color: var(--lz-ink); white-space: nowrap; transition: background-color .15s;
+}
+.link:hover { background: var(--lz-lilac-2); color: var(--lz-ink); }
+.link[aria-current="page"] { background: var(--lz-ink); color: #fff; }
+
+.drop { position: relative; display: inline-flex; align-items: center; }
+.drop .link { padding-right: 4px; }
+.caret {
+  display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 36px; padding: 0; border: 0; border-radius: 999px;
+  background: none; color: var(--lz-ink); cursor: pointer; transition: transform .2s, background-color .15s;
+}
+.caret:hover { background: var(--lz-lilac-2); }
+/* Without JavaScript the lists open on hover and keyboard focus. With JavaScript (html[data-js]) only the state the
+   header sets (aria-expanded, data-open) opens them, so Escape and clicks outside really close them. */
+.drop[data-open] .caret, :global(html:not([data-js])) .drop:hover .caret { transform: rotate(180deg); }
+.panelWrap {
+  position: absolute; top: 100%; left: 0; padding-top: 12px; z-index: 30;
+  visibility: hidden; opacity: 0; transform: translateY(-6px) rotate(-1deg); transition: opacity .16s, transform .16s, visibility 0s .16s;
+}
+:global(html:not([data-js])) .drop:hover .panelWrap, :global(html:not([data-js])) .drop:focus-within .panelWrap, .drop[data-open] .panelWrap {
+  visibility: visible; opacity: 1; transform: none; transition: opacity .16s, transform .2s cubic-bezier(.2, .9, .3, 1.3);
+}
+.panel {
+  list-style: none; margin: 0; display: flex; flex-direction: column; min-width: 250px; background: #fff; border: 2px solid var(--lz-ink);
+  border-radius: 20px; box-shadow: var(--lz-shadow); padding: 8px; font-size: 15px;
+}
+.item { display: flex; align-items: center; gap: 10px; color: var(--lz-ink); padding: 10px 12px; border-radius: 12px; white-space: nowrap; }
+.item svg { color: var(--lz-berry-deep); }
+.item:hover, .item:focus-visible { background: var(--lz-lilac-2); color: var(--lz-ink); }
+
+.actions { display: flex; align-items: center; gap: 12px; }
+.cta { white-space: nowrap; }
+
+.mobile { display: none; position: relative; }
+.mobile > summary { list-style: none; }
+.mobile > summary::-webkit-details-marker { display: none; }
+.burger {
+  display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 16px;
+  background: var(--lz-lilac); color: var(--lz-ink); cursor: pointer; border: 2px solid var(--lz-ink); box-shadow: 3px 3px 0 var(--lz-ink);
+}
+.burgerClose { display: none !important; }
+.mobile[open] .burgerOpen { display: none !important; }
+.mobile[open] .burgerClose { display: inline-block !important; }
+.sheet {
+  position: fixed; left: 10px; right: 10px; top: 82px; max-height: calc(100dvh - 96px); overflow-y: auto; z-index: 60;
+  display: flex; flex-direction: column; padding: 14px 18px 20px; background: var(--lz-cream); border: 2px solid var(--lz-ink);
+  border-radius: 24px; box-shadow: var(--lz-shadow); font-family: var(--lz-display);
+}
+.sheetGroup { display: flex; flex-direction: column; padding-bottom: 6px; border-bottom: 2px dashed var(--lz-line); }
+.sheetLink { display: block; padding: 12px 4px; font-size: 20px; font-weight: 800; color: var(--lz-ink); border-bottom: 2px dashed var(--lz-line); letter-spacing: -.01em; }
+.sheetGroup .sheetLink { border-bottom: 0; }
+.sheetLink[aria-current="page"], .sheetSub[aria-current="page"] { color: var(--lz-berry-deep); }
+.sheetSub { display: flex; align-items: center; gap: 10px; padding: 9px 4px 9px 14px; font-size: 16px; font-weight: 600; color: var(--lz-text); }
+.sheetSub svg { color: var(--lz-berry-deep); }
+
+@media (max-width: 1240px) {
+  .nav { gap: 0; font-size: 15px; }
+  .link { padding: 6px 9px; }
+}
+@media (max-width: 1080px) {
+  .nav { display: none; }
+  .mobile { display: block; }
+}
+@media (max-width: 520px) {
+  .cta { display: none; }
+  .logo { height: 44px; }
+}

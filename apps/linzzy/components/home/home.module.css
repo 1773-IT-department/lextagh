@@ -1,0 +1,134 @@
+/* Home. Hero with a blob photo collage and floating pack stickers, journey cards in the two moods, why cards, tips,
+   Parent Corner band and the two closing cards. */
+.hero {
+  position: relative; overflow: hidden; padding: 64px 0 76px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(143, 233, 201, .55) 0 160px, transparent 161px),
+    radial-gradient(circle at 6% 92%, rgba(201, 180, 255, .55) 0 220px, transparent 221px),
+    var(--lz-cream);
+}
+.heroGrid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.heroText { position: relative; z-index: 2; }
+.heroTitle {
+  margin-top: 22px; font-size: clamp(48px, 7.4vw, 112px); line-height: .92; font-weight: 800; letter-spacing: -.055em; color: var(--lz-ink);
+}
+.heroPill {
+  display: inline-block; padding: 0 .22em .07em; margin: .04em 0; border-radius: 999px; background: var(--lz-lilac); border: 3px solid var(--lz-ink);
+  transform: rotate(-3deg); box-shadow: 6px 6px 0 var(--lz-ink);
+}
+.heroSub { margin-top: 28px; max-width: 560px; font-family: var(--lz-display); font-size: clamp(19px, 1.8vw, 24px); line-height: 1.3; font-weight: 700; color: var(--lz-plum); letter-spacing: -.01em; }
+.heroBody { margin-top: 14px; max-width: 540px; font-size: 17px; line-height: 1.7; color: var(--lz-text); }
+.heroActions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+
+.collage { position: relative; height: 600px; }
+.blobBig {
+  position: absolute; right: 0; top: 0; width: 86%; height: 82%; border: 3px solid var(--lz-ink); box-shadow: 10px 10px 0 var(--lz-berry);
+  background: var(--lz-lilac-2); animation: lzMorph 14s ease-in-out infinite;
+}
+.blobSmall {
+  position: absolute; left: 0; bottom: 0; width: 46%; aspect-ratio: 1; border: 3px solid var(--lz-ink); box-shadow: 8px 8px 0 var(--lz-mint-deep);
+  border-radius: var(--lz-blob-2); background: var(--lz-mint-2); animation: lzMorph 11s ease-in-out infinite reverse;
+}
+.pack { position: absolute; z-index: 3; height: auto; filter: drop-shadow(6px 8px 0 rgba(35, 16, 58, .9)); animation: lzFloat 6s ease-in-out infinite; }
+.packA { width: 33%; left: 6%; top: 8%; rotate: -10deg; }
+.packB { width: 21%; right: 2%; bottom: 0; rotate: 8deg; animation-delay: -3s; }
+.stickA { position: absolute; z-index: 4; right: 6%; top: 76%; font-size: 15px; }
+.stickB { position: absolute; z-index: 4; left: 30%; top: -10px; transform: rotate(5deg); font-size: 15px; }
+.starA { position: absolute; z-index: 2; color: var(--lz-berry); left: 44%; bottom: 8%; animation: lzFloat 5s ease-in-out infinite; }
+.starB { position: absolute; z-index: 2; color: var(--lz-mint-deep); right: 0; top: 52%; }
+
+/* Care that grows with you: the two journeys. */
+.growsHead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 48px; align-items: end; }
+.growsIntro { display: flex; flex-direction: column; gap: 12px; }
+.journeys { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 52px; }
+.journey {
+  position: relative; display: flex; flex-direction: column; border: 2px solid var(--lz-ink); border-radius: 36px; overflow: hidden;
+  transition: transform .25s cubic-bezier(.2, .9, .3, 1.3);
+}
+.journey[data-mood="bold"] { background: var(--lz-lilac); box-shadow: 10px 10px 0 var(--lz-ink); }
+.journey[data-mood="soft"] { background: var(--lz-mint-2); box-shadow: 10px 10px 0 var(--lz-mint-deep); border-radius: 48px; }
+.journey:hover { transform: translateY(-4px) rotate(-.5deg); }
+.journey[data-mood="soft"]:hover { transform: translateY(-4px) rotate(.5deg); }
+.journeyPic { height: 300px; margin: 22px 22px 0; border: 2px solid var(--lz-ink); background: #fff; }
+.journey[data-mood="soft"] .journeyPic { border-radius: 40px 40px 160px 40px; }
+.journeyText { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 26px 30px 32px; flex: 1; }
+.journeyText p { font-size: 15.5px; line-height: 1.7; color: var(--lz-ink); }
+.journeyEyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--lz-display); font-weight: 800; text-transform: uppercase; letter-spacing: .12em; font-size: 13px !important; }
+.journeyTitle { font-size: clamp(28px, 3vw, 40px); line-height: 1; font-weight: 800; letter-spacing: -.035em; }
+.journey[data-mood="soft"] .journeyTitle { font-weight: 700; }
+.journeySign { margin: 8px 0 10px; font-size: 15px !important; }
+.journeyText :global(.lz-btn) { margin-top: auto; }
+
+.sectionHead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 20px 40px; margin-bottom: 40px; }
+
+.featured { padding: 88px 0; background: var(--lz-lilac-3); border-block: 2px solid var(--lz-ink); }
+.featuredGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px; }
+
+/* Why families choose Linzzy: four tilted cards. */
+.whyGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 48px; }
+.whyCard {
+  display: flex; flex-direction: column; gap: 12px; padding: 28px 24px 30px; border: 2px solid var(--lz-ink); border-radius: var(--lz-radius);
+  box-shadow: var(--lz-shadow); transition: transform .2s cubic-bezier(.2, .9, .3, 1.3);
+}
+.whyCard:nth-child(1) { background: var(--lz-lilac-2); rotate: -1.5deg; }
+.whyCard:nth-child(2) { background: var(--lz-mint-2); rotate: 1deg; }
+.whyCard:nth-child(3) { background: #fff3c4; rotate: -1deg; }
+.whyCard:nth-child(4) { background: var(--lz-berry-soft); rotate: 1.5deg; }
+.whyCard:hover { transform: translateY(-6px); rotate: 0deg; }
+.whyCard h3 { font-size: 22px; line-height: 1.1; font-weight: 800; letter-spacing: -.02em; }
+.whyCard p { font-size: 15px; line-height: 1.6; color: var(--lz-text); }
+.whyIcon {
+  display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: #fff;
+  border: 2px solid var(--lz-ink); color: var(--lz-berry-deep);
+}
+
+.tips { padding: 88px 0; background: #fff; border-top: 2px solid var(--lz-ink); }
+
+/* Parent Corner: the ink band. */
+.corner { background: var(--lz-ink); color: #f1eafb; padding: 88px 0; overflow: hidden; }
+.cornerGrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.cornerPic { aspect-ratio: 1.15; border: 3px solid #fff; box-shadow: 10px 10px 0 var(--lz-mint); border-radius: var(--lz-blob-2); animation: lzMorph 16s ease-in-out infinite; }
+.cornerText p { margin-top: 14px; font-size: 17px; line-height: 1.7; }
+.cornerTitle { margin-top: 22px; color: #fff; font-size: clamp(34px, 4.6vw, 60px); line-height: 1; font-weight: 800; letter-spacing: -.04em; }
+
+/* The two closing cards. */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.duoCard {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 40px 36px; border: 2px solid var(--lz-ink); border-radius: 36px;
+  box-shadow: var(--lz-shadow); color: var(--lz-ink);
+}
+.duoCard[data-tone="butter"] { background: #fff3c4; }
+.duoCard[data-tone="lilac"] { background: var(--lz-lilac-2); }
+.duoCard h2 { font-size: clamp(28px, 3vw, 40px); line-height: 1; font-weight: 800; letter-spacing: -.035em; }
+.duoCard p { font-size: 16px; line-height: 1.7; color: var(--lz-text); }
+.duoCard :global(.lz-btn) { margin-top: 12px; }
+.duoCard > svg { color: var(--lz-berry-deep); }
+
+@media (max-width: 1180px) {
+  .featuredGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .whyGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  .heroGrid, .growsHead, .cornerGrid { grid-template-columns: 1fr; }
+  .collage { height: 520px; max-width: 620px; width: 100%; margin: 0 auto; }
+  .journeys, .duo { grid-template-columns: 1fr; }
+  .growsHead { gap: 20px; }
+}
+@media (max-width: 640px) {
+  .hero { padding: 36px 0 52px; }
+  .heroTitle { margin-top: 18px; }
+  .heroPill { box-shadow: 4px 4px 0 var(--lz-ink); border-width: 2px; }
+  .collage { height: 380px; }
+  .stickA, .stickB { font-size: 13px; padding: 6px 12px; }
+  .stickA { right: 0; top: 80%; }
+  .stickB { left: 24%; top: -6px; }
+  .journeys { margin-top: 36px; gap: 28px; }
+  .journeyPic { height: 220px; margin: 16px 16px 0; }
+  .journeyText { padding: 22px 20px 26px; }
+  .journey[data-mood="bold"], .journey[data-mood="soft"] { box-shadow: 6px 6px 0 var(--lz-ink); }
+  .journey[data-mood="soft"] { box-shadow: 6px 6px 0 var(--lz-mint-deep); }
+  .featured, .tips, .corner { padding: 56px 0; }
+  .featuredGrid { grid-template-columns: 1fr; }
+  .whyGrid { grid-template-columns: 1fr; gap: 20px; }
+  .duoCard { padding: 30px 22px; }
+}
