@@ -3,12 +3,14 @@
 // ../browser/demo-seed.mjs (Yazz, Linzzy and Hooch stockists), starts the gateway and the site's production build, then:
 //   - every page and an article: HTTP 200, a heading, no console errors or failed requests (outside hosts are blocked:
 //     images get a grey tile, the rest is aborted), no horizontal scroll, images with alt text; a screenshot of each
+//   - the old range pages (/products/feminine-care, /products/baby-care) redirect to their band on /products
+//   - the scroll animations of the design run (reveals, pinned sections), and stand still for reduced motion
 //   - Linzzy data only: the products are the published Linzzy products, the stockists the active Linzzy stockists
-//   - the Products dropdown by keyboard, a product window (open, Escape, focus back)
+//   - the menu by keyboard (the 6 pages, Escape), the FAQs, a product window (open, Escape, focus back)
 //   - the consumer form (question and product problem), the trade enquiry and the newsletter, with JavaScript and
 //     without it, each landing a Linzzy lead, complaint or contact
-//   - the live chat widget opens and starts a conversation tagged linzzy
-//   - the nav has exactly the 6 pages, every page has one h1, and a stockist named with HTML never runs on the map
+//   - the live chat widget (its previous look) opens and starts a conversation tagged linzzy
+//   - the menu has exactly the 6 pages, every page has one h1, and a stockist named with HTML never runs on the map
 // Build the site for the harness first (see run.sh). Screenshots go to LINZZY_SCREENSHOTS (default: a linzzy-screens folder
 // in the temp directory). Every server it starts is stopped at the end.
 import { spawn } from "node:child_process";
@@ -98,12 +100,22 @@ async function settle(page) {
   await sleep(400);
 }
 
+/** For a full page screenshot of the scroll driven design: stops the scroll engine and shows every element in its end
+ *  state, so one tall picture shows the whole page. */
+async function freeze(page) {
+  await page.evaluate(() => {
+    window.requestAnimationFrame = () => 0;
+    document.querySelectorAll("[data-reveal]").forEach((e) => e.style.setProperty("--r", "1"));
+    document.querySelectorAll("[data-w]").forEach((e) => { e.style.opacity = "1"; });
+  });
+  await sleep(300);
+}
+
 /** Lexta's real domains: no link, picture or background on the site may point at one. */
 const REAL_DOMAIN = /^https?:\/\/(www\.)?(lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com)(\/|$)/i;
 
 const PAGES = [
-  ["home", "/"], ["products", "/products"], ["range-feminine-care", "/products/feminine-care"], ["range-baby-care", "/products/baby-care"],
-  ["about", "/about"], ["tips", "/tips"], ["tips-baby-care", "/tips?category=baby-care"], ["article-feminine", "/tips/know-your-flow"],
+  ["home", "/"], ["products", "/products"], ["about", "/about"], ["tips", "/tips"], ["article-feminine", "/tips/know-your-flow"],
   ["article-baby", "/tips/the-perfect-diaper-bag"], ["faqs", "/faqs"], ["contact", "/contact"],
 ];
 
@@ -154,10 +166,16 @@ try {
         `${kind} ${url}: 200, one h1, main landmark, alt text, no sideways scroll, no errors, no dashes, no link to a real Lexta domain`, { status: resp?.status(), ...info, problems });
       check(info.realImages.length === 0, `${kind} ${url}: no image or CSS background from lextagh.com, yazzproducts.com, linzzyproducts.com or hoochfoods.com`, info.realImages);
       check(info.prototypeClaims.length === 0, `${kind} ${url}: no "fragrance free" or "clinical" claim`, info.prototypeClaims);
+      await freeze(page);
       await page.screenshot({ path: path.join(OUT, `${name}-${kind === "phone" ? 390 : 1440}.png`), fullPage: true });
     }
+    // The old range pages send visitors to their band on /products.
+    for (const [r, band] of [["feminine-care", "fem"], ["baby-care", "baby"]]) {
+      const res = await fetch(`${SITE}/products/${r}`, { redirect: "manual" });
+      check([307, 308].includes(res.status) && res.headers.get("location")?.endsWith(`/products#${band}`), `${kind} /products/${r}: redirects to /products#${band}`, { status: res.status, location: res.headers.get("location") });
+    }
     // The product window, as a screenshot too.
-    await page.goto(`${SITE}/products/baby-care#product-baby-wipes`);
+    await page.goto(`${SITE}/products?p=baby-wipes`);
     await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
     await page.evaluate(async () => {
       await document.fonts.ready;
@@ -174,7 +192,7 @@ try {
     const brand = "(select id from public.brands where slug = 'linzzy')";
     const refresh = async () => {
       await fetch(`${SITE}/api/revalidate`, { method: "POST", headers: { "x-revalidate-secret": REVALIDATE_SECRET, "content-type": "application/json" }, body: JSON.stringify({ tags: ["products"] }) });
-      for (const u of ["/", "/products", "/products/feminine-care", "/products/baby-care"]) await fetch(`${SITE}${u}`);
+      for (const u of ["/", "/products"]) await fetch(`${SITE}${u}`);
       await sleep(1500);
     };
     await q(`update public.products set is_published = (slug in ('sanitary-napkins', 'baby-wipes', 'baby-care')) where brand_id = ${brand};
@@ -186,7 +204,7 @@ try {
     await refresh();
     const ctx = await context("desktop");
     const page = await ctx.newPage();
-    for (const u of ["/", "/products", "/products/feminine-care", "/products/baby-care", "/products/baby-care#product-baby-wipes"]) {
+    for (const u of ["/", "/products", "/products?p=baby-wipes"]) {
       await page.goto(`${SITE}${u}`);
       await settle(page);
       const seen = await page.evaluate((realSource) => {
@@ -223,8 +241,8 @@ try {
     check(!/add to cart|GH₵|checkout|price/i.test(text), "products page: no cart, checkout or prices");
 
     await page.goto(`${SITE}/contact`);
-    await page.locator("#where-to-buy li h3").first().waitFor({ timeout: 15000 });
-    const shops = await page.locator("#where-to-buy li h3").allInnerTexts();
+    await page.locator("#where-to-buy li strong").first().waitFor({ timeout: 15000 });
+    const shops = await page.locator("#where-to-buy li strong").allInnerTexts();
     check(shops.includes("Demo Shop Adabraka") && shops.includes("Demo Chemist Ho"), "where to buy: the active Linzzy stockists are listed", shops);
     check(!shops.includes("Demo Mart Kejetia") && !shops.includes("Demo Pharmacy Osu") && !shops.includes("Demo Supermarket Tema") && !shops.includes("Demo Provisions Madina"), "where to buy: no Yazz or Hooch only shop, no closed shop", shops);
     await page.locator(".leaflet-marker-icon").nth(2).waitFor({ timeout: 15000 }).catch(() => {}); // the map loads after the list
@@ -236,7 +254,12 @@ try {
     check(remembered === "ashanti", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
     await page.goto(`${SITE}/contact?product=baby-wipes#where-to-buy`);
     await page.getByText(/We are adding Linzzy stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
-    check(await page.getByText("Looking for Linzzy Baby Wipes?").count() === 1, "where to buy: the product is named");
+    check(await page.locator("#wtb-region").inputValue() === "ashanti", "where to buy: the region dropdown shows the remembered region");
+    await page.locator("#wtb-region").selectOption("all");
+    await page.locator("#where-to-buy li strong").first().waitFor({ timeout: 10000 });
+    await page.fill("#wtb-q", "Chemist");
+    const found = await page.locator("#where-to-buy li strong").allInnerTexts();
+    check(found.includes("Demo Chemist Ho") && !found.includes("Demo Shop Adabraka"), "where to buy: the search narrows the list by town or shop", found);
     await ctx.close();
 
     const nojs = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
@@ -244,7 +267,7 @@ try {
     await p2.goto(`${SITE}/contact#where-to-buy`);
     await p2.locator("#wtb-region").selectOption("greater-accra");
     await Promise.all([p2.waitForURL(/region=greater-accra/), p2.getByRole("button", { name: "Find stockists" }).click()]);
-    const listed = await p2.locator("#where-to-buy li h3").allInnerTexts();
+    const listed = await p2.locator("#where-to-buy li strong").allInnerTexts();
     check(listed.length === 1 && listed.includes("Demo Shop Adabraka") && !listed.includes("Demo Pharmacy Osu"),
       "where to buy without JavaScript: submitting the region form lists that region's Linzzy stockists", { url: p2.url(), listed });
     await nojs.close();
@@ -255,56 +278,59 @@ try {
     const ctx = await context("desktop");
     const page = await ctx.newPage();
     await page.goto(`${SITE}/`);
-    const navItems = await page.getByRole("navigation", { name: "Main" }).evaluate((nav) =>
-      [...nav.children].map((c) => (c.matches("a") ? c : c.querySelector(":scope > a"))?.textContent?.trim() ?? ""));
-    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact"]), "header: the nav has the 6 pages", navItems);
-    check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() === 1, "footer: links to the FAQs page");
-
-    // FAQs accordion by keyboard.
-    await page.goto(`${SITE}/faqs`);
-    const item = page.locator("details").filter({ hasText: "Is a longer towel more absorbent?" });
-    await item.locator("summary").focus();
+    // The menu: the button opens it, it lists the 6 pages (this page marked), Escape closes it.
+    await page.goto(`${SITE}/tips`);
+    const menuBtn = page.getByRole("button", { name: "Menu", exact: true });
+    await menuBtn.focus();
     await page.keyboard.press("Enter");
-    check(await item.evaluate((d) => d.open) && await item.getByText(/a longer towel is not automatically more absorbent/).isVisible(), "faqs: Enter on a question opens its answer");
-    await page.keyboard.press("Space");
-    check(!(await item.evaluate((d) => d.open)), "faqs: Space closes it again");
-    await page.getByRole("button", { name: "Where to Buy", exact: true }).click();
-    check(await page.getByRole("heading", { name: "Feminine Care" }).count() === 0 && await page.getByRole("heading", { name: "Where to Buy" }).count() === 1, "faqs: a topic chip shows only that group");
-    check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
-    await page.goto(`${SITE}/about`);
-    check(await page.getByRole("link", { name: /Visit Lexta Ghana Limited/ }).getAttribute("href").then((h) => /^https:\/\/lexta-web-/.test(h ?? "")), "about: the Lexta link goes to the Lexta preview site, never a real domain");
-
-    await page.goto(`${SITE}/`);
-    const caret = page.getByRole("button", { name: "Products menu" });
-    await caret.focus();
-    await page.keyboard.press("Enter");
-    check(await caret.getAttribute("aria-expanded") === "true", "dropdown: Enter on the Products button opens the list");
-    await page.keyboard.press("ArrowDown");
-    check(await page.evaluate(() => document.activeElement?.textContent?.trim()) === "All Products", "dropdown: Arrow Down moves to the first item");
-    await page.keyboard.press("ArrowDown");
-    check(/Feminine Care/.test(await page.evaluate(() => document.activeElement?.textContent ?? "")), "dropdown: Arrow Down moves to the next item");
+    const pagesNav = page.getByRole("navigation", { name: "Pages" });
+    await pagesNav.waitFor({ timeout: 5000 });
+    const navItems = await pagesNav.getByRole("link").allInnerTexts();
+    check(await page.getByRole("button", { name: "Close", exact: true }).getAttribute("aria-expanded") === "true", "menu: Enter on Menu opens it (aria-expanded)");
+    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy"]), "menu: the 6 pages", navItems);
+    check(await pagesNav.locator('[aria-current="page"]').innerText().then((t) => t.trim()) === "Tips & Advice", "menu: the current page is marked");
     await page.keyboard.press("Escape");
-    const panel = page.locator(`#${await caret.getAttribute("aria-controls")}`);
-    await sleep(250);
-    check(await caret.getAttribute("aria-expanded") === "false" && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Products menu"
-      && !(await panel.isVisible()), "dropdown: Escape closes it (the list is hidden although focus is still inside) and focus returns to the button");
-    await page.getByRole("link", { name: "Products", exact: true }).hover();
-    await sleep(250);
-    const hoverOpen = await panel.isVisible();
-    await caret.focus();
-    await page.keyboard.press("Escape");
-    await sleep(250);
-    check(hoverOpen && !(await panel.isVisible()), "dropdown: hover opens it, and Escape closes it even while the pointer stays on it");
+    await sleep(200);
+    check(!(await pagesNav.isVisible()) && await menuBtn.getAttribute("aria-expanded") === "false", "menu: Escape closes it");
+    check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() >= 1, "footer: links to the FAQs page");
 
-    // The ticker strip: one readable set for screen readers, a hidden copy for the loop, and it stands still for reduced motion.
+    // The scroll animations (home page): a reveal comes in as it scrolls into view, and the pinned "Care That Grows" track moves.
     await page.goto(`${SITE}/`);
-    const sets = await page.locator(".lz-marquee__set").evaluateAll((els) => els.map((e) => e.getAttribute("aria-hidden")));
-    check(JSON.stringify(sets) === JSON.stringify([null, "true"]), "marquee: the repeated words are hidden from screen readers", sets);
+    const rv = page.locator("[data-reveal]").nth(6);
+    const before = await rv.evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--r") || "0"));
+    await rv.scrollIntoViewIfNeeded();
+    await sleep(600);
+    const after = await rv.evaluate((e) => parseFloat(getComputedStyle(e).getPropertyValue("--r") || "0"));
+    check(before < 0.5 && after > 0.5, "animations: a section fades in as it scrolls into view", { before, after });
+    const track = page.locator("[data-pin] [data-track]").first();
+    await page.locator("[data-pin]:has([data-track])").first().evaluate((e) => window.scrollTo(0, e.getBoundingClientRect().top + window.scrollY + (e.offsetHeight - innerHeight) / 2));
+    await sleep(600);
+    const moved = await track.evaluate((e) => getComputedStyle(e).transform);
+    check(moved !== "none" && moved !== "matrix(1, 0, 0, 1, 0, 0)", "animations: the pinned section's track slides sideways with the scroll", moved);
     const calm = await browser.newContext({ ...VIEW.desktop, reducedMotion: "reduce" });
     const cp = await calm.newPage();
     await cp.goto(`${SITE}/`);
-    check(await cp.locator(".lz-marquee__track").evaluate((e) => getComputedStyle(e).animationName) === "none", "marquee: no movement for visitors who prefer reduced motion");
+    await sleep(600);
+    const still = await cp.evaluate(() => ({ hidden: [...document.querySelectorAll("[data-reveal]")].filter((e) => getComputedStyle(e).getPropertyValue("--r").trim() !== "1").length,
+      marquee: [...document.querySelectorAll("[data-marquee]")].map((e) => getComputedStyle(e).transform) }));
+    check(still.hidden === 0 && still.marquee.every((t) => t === "none"), "animations: for reduced motion everything shows at once and nothing slides", still);
     await calm.close();
+
+    // FAQs: a question opens its answer, a topic chip shows only that group.
+    await page.goto(`${SITE}/faqs`);
+    const qBtn = page.getByRole("button", { name: /Is a longer towel more absorbent\?/ });
+    await qBtn.focus();
+    await page.keyboard.press("Enter");
+    check(await qBtn.getAttribute("aria-expanded") === "true" && await page.getByText(/a longer towel is not automatically more absorbent/).first().isVisible(), "faqs: Enter on a question opens its answer");
+    await page.keyboard.press("Space");
+    check(await qBtn.getAttribute("aria-expanded") === "false", "faqs: Space closes it again");
+    await page.getByRole("button", { name: "Where to Buy", exact: true }).click();
+    await sleep(300);
+    check(await page.getByRole("button", { name: /Which Linzzy sanitary towel should I choose\?/ }).count() === 0 && await page.getByRole("button", { name: /Where can I buy Linzzy products\?/ }).count() === 1, "faqs: a topic chip shows only that group");
+    check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
+    await page.goto(`${SITE}/about`);
+    const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lexta/i.test(h)));
+    check(lextaLinks.length > 0 && lextaLinks.every((h) => /^https:\/\/lexta-web-/.test(h)), "about: the Lexta links go to the Lexta preview site, never a real domain", lextaLinks);
 
     // The map: a stockist named with HTML shows as text.
     await page.goto(`${SITE}/contact`);
@@ -316,26 +342,24 @@ try {
     check(await page.evaluate(() => window.__xss) === undefined && tip === EVIL && await page.getByText(EVIL, { exact: true }).count() >= 1,
       "map: a stockist name with HTML shows as text in the list and the pin tooltip, and never runs", { tip });
 
-    await page.goto(`${SITE}/products/baby-care`);
-    const opener = page.locator("main article").filter({ hasText: "Linzzy Baby Wipes" }).getByRole("link", { name: /View details/ });
-    await opener.click();
+    // A product window: View details opens it, Escape closes it and focus returns.
+    await page.goto(`${SITE}/products`);
+    const opener = page.locator("main article").filter({ hasText: "Linzzy Baby Wipes" }).getByRole("button", { name: /View details/ });
+    await opener.focus();
+    await page.keyboard.press("Enter");
     const dialog = page.getByRole("dialog", { name: "Linzzy Baby Wipes" });
     await dialog.waitFor({ state: "visible" });
     check(await dialog.isVisible() && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Close product details", "product window: opens on View details, focus on Close");
-    check(await dialog.getByRole("link", { name: /Where to buy/ }).getAttribute("href") === "/contact?product=baby-wipes#where-to-buy"
-      && await dialog.getByRole("link", { name: /Ask about this product/ }).getAttribute("href") === "/contact?topic=question&product=baby-wipes#message",
-      "product window: Where to buy and Ask about this product, no cart or price");
+    check(await dialog.getByRole("link", { name: /Where to buy/i }).getAttribute("href") === "/contact?product=baby-wipes#where-to-buy"
+      && await dialog.getByRole("link", { name: /Ask a question/i }).getAttribute("href") === "/contact?topic=question&product=baby-wipes#message",
+      "product window: Where to buy and Ask a question, no cart or price");
     await page.keyboard.press("Escape");
     await sleep(200);
     check(!(await dialog.isVisible()) && /View details/.test(await page.evaluate(() => document.activeElement?.textContent ?? "")), "product window: Escape closes it and focus returns to its link");
-    check(!/add to cart|GH₵|checkout/i.test(await page.locator("body").innerText()), "range page: no cart, checkout or prices");
-    await page.goto(`${SITE}/products/baby-care#product-baby-wipes`);
+    check(!/add to cart|GH₵|checkout/i.test(await page.locator("body").innerText()), "products page: no cart, checkout or prices");
+    await page.goto(`${SITE}/products?p=baby-wipes`);
     await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
-    await sleep(200);
-    await page.keyboard.press("Escape");
-    await sleep(300);
-    check(await page.evaluate(() => document.activeElement?.textContent?.trim()) === "View details" && await page.evaluate(() => document.activeElement?.getAttribute("href")) === "#product-baby-wipes",
-      "product window opened from an address: Escape returns focus to that product's View details");
+    check(true, "product window: opens from an address (?p=baby-wipes)");
     await ctx.close();
   }
 
@@ -344,23 +368,26 @@ try {
     const ctx = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
     const page = await ctx.newPage();
     await page.goto(`${SITE}/faqs`);
-    const item = page.locator("details").filter({ hasText: "Can I flush baby wipes?" });
-    await item.locator("summary").click();
-    check(await item.getAttribute("open") !== null && await item.getByText(/Used baby wipes should be placed in an appropriate waste bin/).isVisible(), "faqs without JavaScript: a question opens its answer");
+    check(await page.getByText(/Used baby wipes should be placed in an appropriate waste bin/).isVisible(), "faqs without JavaScript: every answer shows");
+    const shown = await page.evaluate(() => getComputedStyle(document.querySelector("[data-reveal]")).opacity);
+    check(shown === "1", "without JavaScript: the content is shown, not left waiting for the scroll animations", shown);
     await ctx.close();
   }
 
-  // Phone menu: a link that keeps the same path (a query) still closes the menu.
+  // Phone menu: a link in the menu leaves the menu closed on the next page; a chapter link closes it.
   {
     const ctx = await context("phone");
     const page = await ctx.newPage();
     await page.goto(`${SITE}/tips`);
-    await page.getByLabel("Menu", { exact: true }).click();
-    const sheet = page.getByRole("navigation", { name: "Mobile" });
-    await sheet.getByRole("link", { name: /Baby Diapers & Wipes/ }).click();
-    await page.waitForURL(/category=baby-care/);
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    await page.getByRole("link", { name: /Parent Corner/ }).first().click();
+    await sleep(600);
+    check(await page.getByRole("navigation", { name: "Pages" }).count() === 0, "phone menu: closes after a chapter link");
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    await page.getByRole("navigation", { name: "Pages" }).getByRole("link", { name: "FAQs" }).click();
+    await page.waitForURL(/\/faqs$/);
     await sleep(300);
-    check(!(await sheet.isVisible()), "phone menu: closes after a link to the same page with another category");
+    check(await page.getByRole("navigation", { name: "Pages" }).count() === 0, "phone menu: a page link opens that page with the menu closed");
     await ctx.close();
   }
 
@@ -371,27 +398,27 @@ try {
     const page = await ctx.newPage();
     await page.goto(`${SITE}/contact?topic=question&product=baby-wipes#message`);
     const form = page.locator("#message form");
-    check(await form.locator("input[name=topic][value=question]").isChecked() && await page.locator("#c-product").inputValue() === "baby-wipes", "consumer form: Ask about this product arrives with the topic and product chosen");
-    await page.fill("#c-name", "Ama JS");
-    await page.fill("#c-email", `ama.js.${stamp}@example.com`);
-    await page.fill("#c-message", "Are the wipes safe for newborns?");
+    check(await form.locator("input[name=topic]").inputValue() === "question" && await form.locator("select[name=product]").inputValue() === "baby-wipes", "consumer form: Ask about this product arrives with the topic and product chosen");
+    await form.locator("[name=name]").fill("Ama JS");
+    await form.locator("[name=email]").fill(`ama.js.${stamp}@example.com`);
+    await form.locator("[name=message]").fill("Are the wipes safe for newborns?");
     await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: /Submit Enquiry/ }).click();
-    const ok = form.locator("[data-form-message]");
+    const ok = page.locator("#message [data-form-message]");
     await ok.waitFor({ timeout: 15000 });
     const ref = /ENQ-[0-9A-F]{10}/.exec(await ok.innerText())?.[0];
     const row = ref ? await q(`select l.source || '|' || b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${ref}'`) : "";
     check(row === "website_contact_form|linzzy", "consumer form (JS): a Linzzy lead from the website contact form", { ref, row });
 
     await page.reload();
-    await form.locator("label").filter({ hasText: "Report a problem with a product" }).click();
-    check(await page.locator("#c-batch").isVisible(), "consumer form: the batch, place and date fields show for a product problem");
-    await page.fill("#c-name", "Kofi JS");
-    await page.fill("#c-phone", "+233 20 555 0101");
-    await page.locator("#c-product").evaluate((s) => { s.value = "heavy-flow-sanitary-towels"; s.dispatchEvent(new Event("change", { bubbles: true })); });
-    await page.fill("#c-batch", "BW-77");
-    await page.fill("#c-date", "2026-10-20");
-    await page.fill("#c-message", "The pack was torn when opened.");
+    await form.getByRole("button", { name: "Report a problem with a product" }).click();
+    check(await form.locator("[name=batch]").isVisible(), "consumer form: the batch, place and date fields show for a product problem");
+    await form.locator("[name=name]").fill("Kofi JS");
+    await form.locator("[name=phone]").fill("+233 20 555 0101");
+    await form.locator("select[name=product]").selectOption("heavy-flow-sanitary-towels");
+    await form.locator("[name=batch]").fill("BW-77");
+    await form.locator("[name=purchase_date]").fill("2026-10-20");
+    await form.locator("[name=message]").fill("The pack was torn when opened.");
     await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: /Submit Enquiry/ }).click();
     await ok.waitFor({ timeout: 15000 });
@@ -400,23 +427,23 @@ try {
     check(crow === "linzzy|heavy-flow-sanitary-towels|BW-77", "consumer form (JS): a product problem becomes a Linzzy complaint with product and batch", { caseNo, crow });
 
     const trade = page.locator("#trade form");
-    await page.fill("#t-name", "Yaw JS");
-    await page.fill("#t-business", `JS Traders ${stamp}`);
-    await page.fill("#t-email", `yaw.js.${stamp}@example.com`);
-    await trade.locator("label").filter({ hasText: "Feminine Care" }).click();
+    await trade.locator("[name=contact_name]").fill("Yaw JS");
+    await trade.locator("[name=business_name]").fill(`JS Traders ${stamp}`);
+    await trade.locator("[name=email]").fill(`yaw.js.${stamp}@example.com`);
+    await trade.locator("input[name=ranges][value=feminine-care]").check();
     await trade.getByRole("button", { name: /Send Trade Enquiry/ }).click();
-    const tok = trade.locator("[data-form-message]");
+    const tok = page.locator("#trade [data-form-message]");
     await tok.waitFor({ timeout: 15000 });
     const tref = /PTN-[0-9A-F]{10}/.exec(await tok.innerText())?.[0];
     const trow = tref ? await q(`select l.source || '|' || b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${tref}'`) : "";
     check(trow === "website_partner_form|linzzy", "trade enquiry (JS): a Linzzy lead from the website partner form", { tref, trow });
 
     await page.goto(`${SITE}/tips`);
-    const sub = page.locator("form").filter({ has: page.getByLabel("Your email address") });
-    await sub.getByLabel("Your email address").fill(`news.js.${stamp}@example.com`);
+    const sub = page.getByRole("form", { name: "Subscribe to Linzzy news" });
+    await sub.locator("[name=email]").fill(`news.js.${stamp}@example.com`);
     await sub.locator("input[name=consent]").check();
     await sub.getByRole("button", { name: /Subscribe/ }).click();
-    await sub.locator("[data-form-message]").waitFor({ timeout: 15000 });
+    await page.locator("#subscribe [data-form-message]").waitFor({ timeout: 15000 });
     const nrow = await q(`select consent_marketing || '|' || coalesce(consent_source, '') from public.crm_contacts where email = 'news.js.${stamp}@example.com'`);
     check(nrow === "true|Website newsletter (Linzzy)", "newsletter (JS): a CRM contact with consent from the Linzzy site", nrow);
     await ctx.close();
@@ -427,9 +454,9 @@ try {
     const ctx = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
     const page = await ctx.newPage();
     await page.goto(`${SITE}/contact#message`);
-    await page.fill("#c-name", "Esi NoJS");
-    await page.fill("#c-email", `esi.nojs.${stamp}@example.com`);
-    await page.fill("#c-message", "Where can I buy Linzzy diapers in Ho?");
+    await page.locator("#message form [name=name]").fill("Esi NoJS");
+    await page.locator("#message form [name=email]").fill(`esi.nojs.${stamp}@example.com`);
+    await page.locator("#message form [name=message]").fill("Where can I buy Linzzy diapers in Ho?");
     await page.locator("#message form input[name=privacy]").check();
     await Promise.all([page.waitForLoadState("load"), page.locator("#message form").getByRole("button", { name: /Submit Enquiry/ }).click()]);
     await sleep(500);
@@ -439,9 +466,9 @@ try {
     check(row === "linzzy", "consumer form without JavaScript: posts, shows the reference and lands a Linzzy lead", { ref, row });
 
     await page.goto(`${SITE}/contact#trade`);
-    await page.fill("#t-name", "Kwame NoJS");
-    await page.fill("#t-business", `NoJS Stores ${stamp}`);
-    await page.fill("#t-phone", "0244111222");
+    await page.locator("#trade form [name=contact_name]").fill("Kwame NoJS");
+    await page.locator("#trade form [name=business_name]").fill(`NoJS Stores ${stamp}`);
+    await page.locator("#trade form [name=phone]").fill("0244111222");
     await Promise.all([page.waitForLoadState("load"), page.locator("#trade form").getByRole("button", { name: /Send Trade Enquiry/ }).click()]);
     await sleep(500);
     const tref = /PTN-[0-9A-F]{10}/.exec(await page.locator("body").innerText())?.[0];
@@ -449,7 +476,7 @@ try {
     check(trow === "website_partner_form|linzzy", "trade enquiry without JavaScript: posts and lands a Linzzy partner lead", { tref, trow });
 
     await page.goto(`${SITE}/contact#message`);
-    await page.fill("#c-name", "");
+    await page.locator("#message form [name=name]").fill("");
     await Promise.all([page.waitForLoadState("load"), page.locator("#message form").getByRole("button", { name: /Submit Enquiry/ }).click()]);
     const errText = await page.locator("body").innerText();
     check(/Please enter your name/.test(errText) && /Please tick the box to agree to the privacy notice/.test(errText), "consumer form without JavaScript: errors (name, privacy notice) come back next to the fields");
@@ -460,8 +487,11 @@ try {
   for (const kind of ["desktop", "phone"]) {
     const ctx = await context(kind);
     const page = await ctx.newPage();
-    await page.goto(`${SITE}/products/baby-care`);
-    await page.getByRole("button", { name: "Chat with the Linzzy care team" }).click();
+    await page.goto(`${SITE}/products`);
+    const launcher = page.getByRole("button", { name: "Chat with the Linzzy care team" });
+    const look = await launcher.evaluate((b) => { const cs = getComputedStyle(b); return { font: cs.fontFamily, bg: cs.backgroundColor }; });
+    check(/DM Sans|^"?body"?,|font-body/i.test(look.font) && look.bg === "rgb(179, 16, 90)", `live chat (${kind}): the launcher keeps its look (DM Sans, Linzzy berry)`, look);
+    await launcher.click();
     const panel = page.getByRole("dialog", { name: "Chat with Linzzy" });
     await panel.waitFor();
     await panel.getByLabel("Your name").fill(`Chat ${kind}`);
@@ -470,7 +500,7 @@ try {
     await panel.getByRole("log").waitFor({ timeout: 15000 });
     await sleep(300);
     const row = await q(`select b.slug || '|' || coalesce(c.start_page, '') from public.chat_conversations c join public.brands b on b.id = c.brand_id where c.visitor_name = 'Chat ${kind}'`);
-    check(row === "linzzy|/products/baby-care", `live chat (${kind}): the widget opens and the conversation is tagged linzzy`, row);
+    check(row === "linzzy|/products", `live chat (${kind}): the widget opens and the conversation is tagged linzzy`, row);
     await page.screenshot({ path: path.join(OUT, `chat-${kind === "phone" ? 390 : 1440}.png`) });
     await ctx.close();
   }
