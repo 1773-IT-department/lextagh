@@ -180,11 +180,11 @@ try {
 
     // Recipe filter chips.
     await page.goto(`${SITE}/recipes?3d=off`);
-    await page.getByRole("button", { name: "Snack", exact: true }).click();
+    await page.getByRole("button", { name: "Snacks", exact: true }).click();
     const snack = await page.locator("main a[href^='/recipes/']").count();
     await page.getByRole("button", { name: "All ideas" }).click();
     const all = await page.locator("main a[href^='/recipes/']").count();
-    check(snack === 2 && all === 4, "recipes: the Snack chip shows the two snack ideas, All ideas all four", { snack, all });
+    check(snack === 1 && all === 4, "recipes: the Snacks chip shows the one snack idea, All ideas all four", { snack, all });
 
     // The "You need" tick list by keyboard.
     await page.goto(`${SITE}/recipes/classic-hooch-bowl?3d=off`);

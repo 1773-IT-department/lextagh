@@ -5,7 +5,7 @@ import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import RealPhoto from "@/components/fun/RealPhoto";
 import { BRAND } from "@/content/brand";
-import { lexta } from "@/lib/site";
+import { contact, lexta } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About Hooch®",
@@ -73,7 +73,7 @@ export default function AboutPage() {
             </ul>
             <div className={s.actions}>
               <a href={`${lexta.csr}#programmes`} target="_blank" rel="noopener" className="hc-btn hc-btn--red">Lexta&apos;s community programmes <Icon name="arrow" size={18} /></a>
-              <a href={`mailto:marketing@lextagh.com?subject=${encodeURIComponent("Hooch community proposal")}`} className="hc-btn">Send a proposal</a>
+              <a href={`mailto:${contact.partnershipsEmail}?subject=${encodeURIComponent("Partner With Hooch")}`} className="hc-btn">Partner With Hooch</a>
             </div>
           </div>
         </div>

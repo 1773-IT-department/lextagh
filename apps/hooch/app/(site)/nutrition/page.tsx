@@ -45,7 +45,7 @@ export default async function NutritionPage() {
           </div>
           <div className={s.panel} data-tone="red" data-reveal="" style={{ "--d": ".1s" } as React.CSSProperties}>
             <h2>On the pack</h2>
-            <p>Both Hooch® cereals are enriched with vitamins. Ingredients, as Lexta lists them, are on each product page.</p>
+            <p>Both Hooch® cereals are enriched with vitamins. You will find the full ingredient list for each cereal on its product page.</p>
             <p><strong>Allergens:</strong> {ALLERGEN_NOTE}</p>
             <div className={s.actions}>
               {products.map((p) => <Link key={p.slug} href={`/products/${p.slug}`} className="hc-btn hc-btn--sm">{p.name} <Icon name="arrow" size={16} /></Link>)}

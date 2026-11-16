@@ -16,7 +16,11 @@ export type Recipe = {
   /** Lexta's method, as written. */
   method: string;
   minutes: number;
-  /** Breakfast or snack, for the filter chips. */
+  /**
+   * Breakfast or snack, for the filter chips. Lexta files all four recipes under Breakfast Ideas & Recipes; only the
+   * After-School Crunch is a snack in Lexta's own words ("A Little Crunch for Snack Time"). No Desserts group: none of
+   * the four recipes is a dessert (see docs/content/hooch/PLACEHOLDERS.md).
+   */
   moment: "Breakfast" | "Snack";
   /** Which cereal it uses (product slugs). */
   cereals: string[];
@@ -66,7 +70,7 @@ export const RECIPES: Recipe[] = [
     strap: "Crunch Meets Creamy Goodness.",
     method: "Layer plain yoghurt, fresh fruit and Hooch® Cornflakes in a glass. Serve immediately to enjoy the crunchy texture.",
     minutes: 5,
-    moment: "Snack",
+    moment: "Breakfast",
     cereals: ["cornflakes"],
     youNeed: ["Plain yoghurt", "Fresh fruit", "Hooch® Cornflakes"],
     image: { src: "/images/hooch/photo-bowl-berries.webp", alt: "Crunchy golden flakes with fresh strawberries", position: "70% 50%" },
