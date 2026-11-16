@@ -3,6 +3,7 @@ import Figure from "@/components/management/Figure";
 import FeedRow from "@/components/management/FeedRow";
 import ManagementHeader from "@/components/management/ManagementHeader";
 import MiniChart from "@/components/management/MiniChart";
+import SharePanel from "@/components/pwa/SharePanel";
 import { formatNumber, systemHref } from "@/lib/dashboard";
 import { MANAGEMENT_BASE, managementHref, NO_MANAGEMENT_ACCESS, plural, presentFeed, type FeedPage } from "@/lib/management";
 import { loadNumbers, loadSeries, managementContext } from "@/lib/management-data";
@@ -143,6 +144,13 @@ export default async function ManagementOverview({ searchParams }: { searchParam
             {presentFeed(feed.items, ctx.brandNames).map((i) => <FeedRow key={i.key} item={i} />)}
           </ol>
         )}
+      </section>
+
+      {/* Install links for the two phone apps. Only admin and management reach this page (managementContext). */}
+      <section aria-labelledby="mgmt_apps" className="pwa-share-grid">
+        <h2 id="mgmt_apps" className="section-title">Phone apps for the field</h2>
+        <SharePanel app="field-sales" compact />
+        <SharePanel app="csr" compact />
       </section>
     </>
   );

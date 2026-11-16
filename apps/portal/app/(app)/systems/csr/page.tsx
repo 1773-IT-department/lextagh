@@ -5,6 +5,8 @@ import CsrTabs from "@/components/csr/CsrTabs";
 import { PAGE_SIZE } from "@/lib/crm";
 import { brandName, csrFilterQuery, formatCount, formatDay, getCsrAccess, NO_CSR_ACCESS, parseCsrFilters, type CsrFilters } from "@/lib/csr";
 import { createClient } from "@/lib/supabase/server";
+import SharePanel from "@/components/pwa/SharePanel";
+import { canSharePwa } from "@/lib/pwa";
 
 export const metadata = { title: "CSR activities | Lexta Business System" };
 
@@ -176,6 +178,7 @@ export default async function CsrPage({ searchParams }: { searchParams: Promise<
           )}
         </>
       )}
+      {canSharePwa("csr", access.role) && <SharePanel app="csr" />}
     </>
   );
 }

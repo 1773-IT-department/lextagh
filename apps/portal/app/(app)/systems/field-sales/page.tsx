@@ -8,6 +8,8 @@ import {
   brandNames, fieldFilterArgs, fieldFilterQuery, getFieldAccess, NO_FIELD_ACCESS, parseFieldFilters, type FieldAccess, type FieldFilters,
 } from "@/lib/field-sales";
 import { createClient } from "@/lib/supabase/server";
+import SharePanel from "@/components/pwa/SharePanel";
+import { canSharePwa } from "@/lib/pwa";
 
 export const metadata = { title: "Field sales | Lexta Business System" };
 
@@ -185,6 +187,7 @@ async function AllVisits({ access, params }: { access: FieldAccess; params: Sear
           )}
         </>
       )}
+      {canSharePwa("field-sales", access.role) && <SharePanel app="field-sales" />}
     </>
   );
 }

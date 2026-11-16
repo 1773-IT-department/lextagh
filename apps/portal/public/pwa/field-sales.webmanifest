@@ -1,0 +1,22 @@
+{
+  "id": "/systems/field-sales",
+  "name": "Lexta Field Sales",
+  "short_name": "Field Sales",
+  "description": "Log shop visits on your phone: the shop, a photo, what happened and your location.",
+  "start_url": "/systems/field-sales?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0b2f3d",
+  "background_color": "#0b2f3d",
+  "lang": "en-GH",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/pwa/field-sales-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/field-sales-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/field-sales-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Start a visit", "short_name": "Start visit", "url": "/systems/field-sales/visit?source=app", "icons": [{ "src": "/pwa/field-sales-192.png", "sizes": "192x192" }] }
+  ]
+}
