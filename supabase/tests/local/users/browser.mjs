@@ -143,6 +143,33 @@ try {
   check(await admin.locator(".users-audit").getByText("Role changed: Sales rep to Customer care").isVisible(), "the history shows the change in words");
   await admin.screenshot({ path: `${OUT}/user-detail-1440.png`, fullPage: true });
 
+  // Accepted already: sending the invite again sends a choose a password link instead --------------------------------
+  await q(`update auth.users set email_confirmed_at = now() where id = '${invited.id}'`);
+  await admin.reload();
+  await admin.getByRole("button", { name: "Send the invite again" }).click();
+  await admin.locator(".alert.ok", { hasText: "had already accepted the invite" }).waitFor();
+  check(mails().filter((m) => m.kind === "reset" && m.email === "ama.rep@lexta.test").length === 1, "an accepted login gets a choose a password link when the invite is sent again");
+  check(await q(`select count(*) from public.user_admin_audit where target_id = '${invited.id}' and action = 'invite_resent'`) === "2", "both resends are recorded");
+
+  // Remove a login, then invite the address again ------------------------------------------------------------------------
+  await admin.getByRole("button", { name: "Remove login" }).waitFor();
+  check(await admin.getByRole("button", { name: "Remove login" }).isDisabled(), "remove waits for the confirm box");
+  await admin.getByLabel("Yes, remove ama.rep@lexta.test").check();
+  await admin.getByRole("button", { name: "Remove login" }).click();
+  await admin.waitForURL((u) => u.pathname === "/systems/users");
+  await admin.getByText("ama.rep@lexta.test was removed").waitFor();
+  check(await q(`select count(*) from auth.users where id = '${invited.id}'`) === "0" && await q(`select count(*) from public.profiles where id = '${invited.id}'`) === "0", "removing deletes the login and its profile");
+  check(await q(`select count(*) from public.user_admin_audit where action = 'removed' and target_email = 'ama.rep@lexta.test' and actor_id = '${ADMIN}'`) === "1", "the removal is recorded");
+  check(!(await admin.locator(".users-table").getByText("Ama Rep").count()), "the removed login leaves the list");
+  const inv3 = admin.locator("form.users-form");
+  await inv3.getByLabel("Email", { exact: true }).fill("ama.rep@lexta.test");
+  await choose(inv3, "Role", "Management");
+  await inv3.getByRole("button", { name: "Send invite" }).click();
+  await admin.getByText("Invite sent to ama.rep@lexta.test").waitFor();
+  check(true, "a removed address can be invited again");
+  await go(admin, `${PORTAL}/systems/users/${ADMIN}`);
+  check(!(await admin.getByRole("button", { name: "Remove login" }).count()), "an admin cannot remove their own login");
+
   // Switch the manager off and on -------------------------------------------------------------------------------------
   await go(admin, `${PORTAL}/systems/users/${MANAGER}`);
   await admin.getByLabel("Login switched on").uncheck();

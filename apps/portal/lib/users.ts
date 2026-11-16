@@ -61,6 +61,7 @@ export const AUDIT_LABELS: Record<string, string> = {
   reactivated: "Switched on",
   distributor_linked: "Linked to a distributor",
   distributor_unlinked: "Unlinked from a distributor",
+  removed: "Removed",
 };
 
 /** Is the 0019 database update in place? (Its functions are missing until it is applied.) */

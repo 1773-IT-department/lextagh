@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { CrmFormState } from "@/app/(app)/systems/crm/actions";
 import { ownDbMessage } from "@/lib/db-errors";
 import { requireSession } from "@/lib/session";
@@ -88,4 +89,16 @@ export async function emailUser(_prev: CrmFormState, form: FormData): Promise<Cr
   const r = await callAdminUsers({ action: kind, user_id: id });
   revalidatePath(`${USERS_BASE}/${id}`);
   return r.ok ? { message: r.message } : { error: r.error };
+}
+
+/** Removes a login for good: the person can no longer sign in and the email can be invited again. */
+export async function removeUser(_prev: CrmFormState, form: FormData): Promise<CrmFormState> {
+  if (!(await isAdmin())) return { error: "Only an admin can manage logins." };
+  const id = String(form.get("id") ?? "");
+  if (!UUID.test(id)) return { error: "This login could not be found." };
+  if (form.get("confirm") !== "on") return { error: "Tick the box to confirm you want to remove this login.", fieldErrors: { confirm: "Tick to confirm." } };
+  const r = await callAdminUsers({ action: "remove", user_id: id });
+  if (!r.ok) return { error: r.error };
+  revalidatePath(USERS_BASE);
+  redirect(`${USERS_BASE}?removed=${encodeURIComponent(r.message)}`);
 }

@@ -1,5 +1,5 @@
 // Supabase Edge Function: admin-users. The privileged half of Users and access in the Lexta Business System
-// (apps/portal/app/(app)/systems/users): sending invites, resending them, password reset emails and blocking sign in
+// (apps/portal/app/(app)/systems/users): sending invites, resending them, password reset emails, removing logins and blocking sign in
 // for a switched off login. Runs inside Supabase with the built in SUPABASE_SERVICE_ROLE_KEY; the portal only ever
 // sends the signed in admin's own access token.
 //
@@ -46,6 +46,11 @@ const deps: Deps = {
   },
   async sendPasswordReset(email, redirectTo) {
     const { error } = await admin.auth.resetPasswordForEmail(email, { redirectTo });
+    return error?.message ?? null;
+  },
+  async deleteUser(id) {
+    const { error } = await admin.auth.admin.deleteUser(id);
+    if (error) console.error("[admin-users] delete failed", error.message);
     return error?.message ?? null;
   },
   async apply(a) {

@@ -42,10 +42,11 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
       <div className="page-head">
         <div>
           <h1>Users and access</h1>
-          <p className="small">Everyone who can sign in to the Business System: invite people, set their role and brands, switch logins off, and send password reset emails. Every change is recorded.</p>
+          <p className="small">Everyone who can sign in to the Business System: invite people, set their role and brands, switch logins off or remove them, and send password reset emails. Every change is recorded.</p>
         </div>
       </div>
 
+      {params.removed && <div className="alert ok" role="status">{params.removed.slice(0, 300)}</div>}
       {missing && <div className="alert error" role="alert">Users and access needs its database update (0019) before it can show logins. Ask your developer to apply it.</div>}
       {failed && <div className="alert error" role="alert">We could not load the logins. Please refresh the page.</div>}
       {!ready && <div className="alert info" role="status">Invites and password reset emails are not switched on yet: the admin-users function still has to be deployed in Supabase. You can still change roles, brands and access here.</div>}

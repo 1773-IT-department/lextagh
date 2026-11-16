@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Select } from "@lexta/ui";
 import type { AppRole } from "@lexta/db";
-import { emailUser, inviteUser, saveUser } from "@/app/(app)/systems/users/actions";
+import { emailUser, inviteUser, removeUser, saveUser } from "@/app/(app)/systems/users/actions";
 import FormAlerts from "@/components/crm/FormAlerts";
 import { useCrmForm } from "@/components/crm/useCrmForm";
 
@@ -155,15 +155,34 @@ export function EditUserForm({ values, roles, brands, organisations, self }: {
   );
 }
 
-export function EmailButtons({ id, invited }: { id: string; invited: boolean }) {
+export function EmailButtons({ id, accepted }: { id: string; accepted: boolean }) {
   const { state, pending, onSubmit } = useCrmForm(emailUser);
   return (
     <form className="users-emails" onSubmit={onSubmit}>
       <FormAlerts state={state} />
       <input type="hidden" name="id" value={id} />
+      {accepted && <p className="small">They have already accepted the invite, so sending it again emails them a new link to choose their password.</p>}
       <div className="form-actions">
-        {invited && <button className="btn light" type="submit" name="kind" value="resend_invite" disabled={pending}>Send the invite again</button>}
+        <button className="btn light" type="submit" name="kind" value="resend_invite" disabled={pending}>Send the invite again</button>
         <button className="btn light" type="submit" name="kind" value="reset_password" disabled={pending}>Send a password reset email</button>
+      </div>
+    </form>
+  );
+}
+
+export function RemoveUserForm({ id, email }: { id: string; email: string }) {
+  const { state, pending, onSubmit, fe } = useCrmForm(removeUser);
+  const [sure, setSure] = useState(false);
+  return (
+    <form className="users-remove" onSubmit={onSubmit}>
+      <FormAlerts state={state} />
+      <input type="hidden" name="id" value={id} />
+      <label className="users-switch">
+        <input type="checkbox" name="confirm" checked={sure} onChange={(e) => setSure(e.target.checked)} aria-invalid={!!fe.confirm} />
+        Yes, remove {email}
+      </label>
+      <div className="form-actions">
+        <button className="btn danger" type="submit" disabled={pending || !sure}>{pending ? "Removing..." : "Remove login"}</button>
       </div>
     </form>
   );
