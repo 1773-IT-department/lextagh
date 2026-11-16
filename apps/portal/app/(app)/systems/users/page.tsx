@@ -19,15 +19,19 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
   const statusF = params.status ?? "";
 
   const supabase = await createClient();
-  const [{ rows, missing, failed }, ready, brandsRes, orgsRes] = await Promise.all([
+  const [{ rows, missing, failed }, ready, brandsRes, orgsRes, removedRes] = await Promise.all([
     listUsers(),
     functionReady(),
     supabase.from("brands").select("slug, name").eq("is_active", true).order("name"),
     supabase.from("crm_organisations").select("id, name, kind").eq("kind", "distributor").order("name").limit(2000),
+    supabase.from("user_admin_audit").select("id, created_at, actor_id, target_email").eq("action", "removed")
+      .order("created_at", { ascending: false }).limit(50),
   ]);
   const brands = (brandsRes.data ?? []) as { slug: string; name: string }[];
   const brandName = (s: string) => brands.find((b) => b.slug === s)?.name ?? s;
   const organisations = ((orgsRes.data ?? []) as { id: string; name: string }[]).map((o) => ({ id: o.id, label: o.name }));
+  const removed = (removedRes.data ?? []) as { id: string; created_at: string; actor_id: string | null; target_email: string }[];
+  const nameOf = (pid: string | null) => { const r = rows.find((x) => x.id === pid); return r ? r.full_name || r.email : "Someone"; };
   const roles = ROLE_ORDER.map((r) => ({ value: r, label: ROLE_LABELS[r] }));
 
   const shown = rows.filter((u) =>
@@ -117,6 +121,17 @@ export default async function UsersPage({ searchParams }: { searchParams: Promis
           </div>
         )}
       </section>
+
+      {removed.length > 0 && (
+        <section className="panel" aria-labelledby="removed_title">
+          <h2 id="removed_title">Removed logins <span className="small">(latest {removed.length})</span></h2>
+          <ul className="users-audit">
+            {removed.map((a) => (
+              <li key={a.id}><b>{a.target_email}</b><span className="hint">Removed {formatWhen(a.created_at)}, by {nameOf(a.actor_id)}</span></li>
+            ))}
+          </ul>
+        </section>
+      )}
     </>
   );
 }

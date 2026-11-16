@@ -161,6 +161,7 @@ try {
   check(await q(`select count(*) from auth.users where id = '${invited.id}'`) === "0" && await q(`select count(*) from public.profiles where id = '${invited.id}'`) === "0", "removing deletes the login and its profile");
   check(await q(`select count(*) from public.user_admin_audit where action = 'removed' and target_email = 'ama.rep@lexta.test' and actor_id = '${ADMIN}'`) === "1", "the removal is recorded");
   check(!(await admin.locator(".users-table").getByText("Ama Rep").count()), "the removed login leaves the list");
+  check(await admin.locator("section", { hasText: "Removed logins" }).getByText("ama.rep@lexta.test").isVisible(), "the list shows who was removed");
   const inv3 = admin.locator("form.users-form");
   await inv3.getByLabel("Email", { exact: true }).fill("ama.rep@lexta.test");
   await choose(inv3, "Role", "Management");
