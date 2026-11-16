@@ -19,7 +19,7 @@ hotlinks yazzproducts.com: images were downloaded, optimised with sharp (WebP, a
 | TikTok link `https://www.tiktok.com/@yazzproducts` | same | same |
 | Lavender baby wipes pack size: 80 pieces (printed "80 pcs" on the Lavender pack photo) | https://yazzproducts.com/product/yazz-baby-wipe-lavender/ | `content/catalogue.ts`, baby wipes, Lavender |
 | Fluoride toothpaste pack size: 150g ("NET WT:150g" on the pack photo) | https://yazzproducts.com/product/yazz-toothpaste-fluoride/ | `content/catalogue.ts`, Fluoride toothpaste |
-| News story "Yazz Is the Preferred Sanitary and Hygiene Brand in 2022" (Home Builders Africa Awards), reworded, citation quoted | https://yazzproducts.com/yazz-is-the-preferred-sanitary-and-hygiene-brand-in-2022/ | `content/articles.ts`, News category, `/tips/yazz-preferred-sanitary-and-hygiene-brand-2022` (date December 2022). Its photo was not used (the award backdrop shows other brands' logos), so the article shows the photo placeholder |
+| News story "Yazz Is the Preferred Sanitary and Hygiene Brand in 2022" (Home Builders Africa Awards), word for word as published on 2 December 2022 (rewrite of 16 November 2026), citation quoted | https://yazzproducts.com/yazz-is-the-preferred-sanitary-and-hygiene-brand-in-2022/ | `content/articles.ts`, News category, `/tips/yazz-preferred-sanitary-and-hygiene-brand-2022` (date December 2022). Its photo was not used (the award backdrop shows other brands' logos), so the article shows the photo placeholder |
 
 ### Images (all in `apps/yazz/public/images/original/`)
 

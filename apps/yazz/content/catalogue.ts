@@ -4,8 +4,9 @@
  *
  * The site always shows the products in the database (lib/products.ts); this list is only:
  *   1. what the site shows if the database cannot be reached, and
- *   2. the data entry sheet for Product Management. The database still holds the 8 products seeded from the Lexta
- *      prototype (0004); staff (or a data migration, see CONTENT-NEEDED.md) bring it up to this list.
+ *   2. the data entry sheet for Product Management. Migration supabase/migrations/0021_yazz_products_from_drive.sql
+ *      writes this same list (words, SKU codes, pack sizes and pack shots) into the database, replacing the 8 rows
+ *      seeded from the Lexta prototype (0004). Keep the two in step: a change here needs the same change there.
  * Pack contents are as written by Lexta. SKU codes and some pack counts are still to come (marked placeholders).
  * Gaps only (never Lexta's wording) are filled from Yazz's original website, yazzproducts.com: the pack shots in
  * public/images/original and two pack sizes. Each one is listed in docs/content/yazz/ORIGINAL-SITE.md.
@@ -14,7 +15,7 @@
  */
 import type { YazzProduct } from "../lib/products";
 
-const QUALITY = ["Certified ISO 9001:2000", "Passed strict quality inspection"];
+const QUALITY = ["[PLACEHOLDER: confirm current ISO certification and year]", "Passed strict quality inspection"];
 const IRRITATION =
   "In the highly unlikely event of irritation, please discontinue use and report it on +233 50 996 7400 (WhatsApp) or support@yazzproducts.com.";
 const SUFFOCATION = "Warning: to avoid danger of suffocation, keep the product away from infants and children.";
@@ -74,7 +75,7 @@ export const CATALOGUE: YazzProduct[] = [
     features: ["24 hours protection", "New and improved thick panty liner", "Lengths of 150mm and 180mm", ...QUALITY],
     usage: `${IRRITATION} ${SUFFOCATION}`,
     ingredients: null,
-    skus: [sku("Regular (yellow pack)", PACK), sku("Pink", PACK), sku("Extra long and thick, minty (pink)", "24 minty liners")],
+    skus: [sku("Regular (yellow pack)", PACK), sku("Pink", "24 minty liners"), sku("Extra long and thick, minty (pink)", "24 minty liners")],
     images: [
       { src: "/images/original/panty-liner.webp", alt: "Yazz panty liner pack in yellow" },
     ],
@@ -87,7 +88,7 @@ export const CATALOGUE: YazzProduct[] = [
     features: ["Elastic waist", "Up to 12 hours leakage protection", "Cottony soft", "Super absorbent"],
     usage: `${DIAPER_USE} ${DIAPER_CAUTION}`,
     ingredients: null,
-    skus: [sku("Small, 3 to 6kg", "15 pieces"), sku("Medium, 6 to 9kg", "12 pieces"), sku("Large", "11 pieces"), sku("Extra large, over 13kg", "8 pieces")],
+    skus: [sku("Small, 3 to 6kg", "15 pieces"), sku("Medium, 6 to 9kg", "12 pieces"), sku("Large, [PLACEHOLDER: weight range]", "11 pieces"), sku("Extra large, 13kg and above", "8 pieces")],
     images: [
       { src: "/images/original/baby-diapers.webp", alt: "Yazz baby diapers, medium and large packs" },
       { src: "/images/original/baby-diapers-super-absorbency.webp", alt: "Yazz baby diapers pack, super absorbency, size L" },
@@ -102,18 +103,18 @@ export const CATALOGUE: YazzProduct[] = [
     ingredients: null,
     skus: [
       sku("Small, 4 to 8kg", "54 pieces"), sku("Medium, 6 to 11kg", "52 pieces"), sku("Large, 9 to 14kg", "50 pieces"),
-      sku("Extra large, 12 to 17kg", "48 pieces"), sku("Extra extra large, 15kg and over", "46 pieces"),
+      sku("Extra large, 12 to 17kg", "48 pieces"), sku("Extra extra large, 15kg", "46 pieces"),
     ],
     images: [],
   },
   {
     slug: "baby-wipes", name: "Yazz baby wipes", range: "baby-care", category: "Baby care",
     short: "Alcohol free, multi-purpose baby wipes in Lavender, Castor Oil and Aloe Vera.",
-    long: "Gentle, alcohol free wipes for delicate skin. Aloe Vera: super soft for sensitive skin, gently cleanses while helping soothe and hydrate. Castor Oil: deep moisture, soft skin and a gentle clean that helps protect skin from dryness. Lavender: gentle, effective cleansing that leaves skin fresh, soft and comforted.",
+    long: "Gentle, alcohol free wipes for delicate skin. Aloe Vera: super soft for sensitive skin, gently cleanses while helping soothe and hydrate. Castor Oil: deep moisture, soft skin and a gentle clean that helps protect skin from dryness. Lavender: [PLACEHOLDER: Lavender wipes description; Lexta's text repeats the Aloe Vera copy].",
     features: ["Multi-purpose cleaning", "Alcohol free", "Leaves skin soft and nourished", "Gentle, effective cleansing", "Suitable for everyday use"],
     usage: WIPES_WARNING,
     ingredients:
-      "Lavender: benzalkonium chloride, methyichloroisthiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated lavender extract, propylene glycol, water. Castor Oil and Aloe Vera: benzalkonium chloride, methyichloroisthiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated castor oil, propylene glycol, water.",
+      "Lavender: benzalkonium chloride, methylchloroisothiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated lavender extract, propylene glycol, water. Castor Oil and Aloe Vera: benzalkonium chloride, methylchloroisothiazolinone, methylisothiazolinone, PEG-75 lanolin, fragrance, PEG-40, hydrogenated castor oil, propylene glycol, water.",
     skus: [sku("Lavender", "80 pieces"), sku("Castor Oil", "80 pieces"), sku("Castor Oil", "40 pieces"), sku("Aloe Vera", "80 pieces"), sku("Aloe Vera", "40 pieces")],
     images: [],
   },

@@ -48,7 +48,7 @@ export default function FaqsPage() {
           </div>
           <div className={s.bulk}>
             <h2>Buying in bulk?</h2>
-            <p>Distributors, wholesalers, shops and institutions can send our trade team an enquiry.</p>
+            <p>Distributors, wholesalers, shops and institutions can send Lexta Ghana Limited a trade enquiry.</p>
             <Link href="/contact#trade" className="yz-textlink">Trade enquiry <Icon name="arrow" size={15} /></Link>
           </div>
         </aside>

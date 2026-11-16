@@ -28,20 +28,21 @@ as a marked placeholder block:
 
 ## Product data (Product Management)
 
-- The database still holds the 8 Yazz products seeded from the Lexta prototype (migration 0004). Lexta's real catalogue
-  (17 products: pads, liners, diapers, pull up pants, wipes, five toothpastes, toothbrushes, washing powder and five
-  tissue products) is structured in `content/catalogue.ts`. Staff can enter it in the portal, or 1773 can turn it into a
-  data migration on request (it would also change the Yazz cards on the Lexta Our Brands page and two harness suites
-  that expect the 8 seeded products). Until then the site shows the 8 seeded products; the catalogue is what the site
-  shows if the database cannot be reached.
+- Lexta's real catalogue (16 products on sale: pads, liners, diapers, pull up pants, wipes, five toothpastes,
+  toothbrushes, washing powder and four tissue products; plus pocket tissue and dental floss coming soon) is structured
+  in `content/catalogue.ts`. Migration `supabase/migrations/0021_yazz_products_from_drive.sql` writes it into Product
+  Management and archives the 8 prototype rows (0004). It is written but not applied yet: the lead applies it after
+  review. Until then the site shows the prototype rows. It also changes the Yazz cards on the Lexta Our Brands page and
+  any harness suite that expects the 8 seeded products.
 - SKU codes for every product (all `TBC-YAZZ-...` for now).
-- Pack sizes not in the document: regular (yellow) and pink panty liners, Total Care toothpaste, each toothbrush, Mama
-  Yazz, individual wrap toilet tissue and individual tissue. (Lavender wipes, 80 pieces, and Fluoride toothpaste, 150g,
-  were filled from the original site's pack photos.)
+- Pack sizes not in the document: regular (yellow) panty liner, Total Care toothpaste, each toothbrush, Mama Yazz,
+  individual wrap toilet tissue and individual tissue. (Lavender wipes, 80 pieces, and Fluoride toothpaste, 150g, were
+  filled from the original site's pack photos.) Large diaper weight range. The full list is in
+  `docs/content/yazz/PLACEHOLDERS.md`.
 - To confirm against the original site (see ORIGINAL-SITE.md): Mama Yazz is sold there as a 2 ply kitchen towel with a
   "Medium" size; a 10 roll toilet tissue pack and a "Prince" toothbrush are listed there but not in Drive.
-- To confirm: "Certified ISO09001:2000" as written (shown as "Certified ISO 9001:2000"); the wipes ingredient spellings
-  ("methyichloroisthiazolinone" is copied as written); small spelling fixes made in the toothpaste ingredients
+- To confirm: "Certified ISO09001:2000" as written (now shown as a placeholder until Lexta confirms the current
+  certification and year); the wipes ingredient spelling (corrected to "methylchloroisothiazolinone"); small spelling fixes made in the toothpaste ingredients
   ("sodium lauryl sulfate", "honeysuckle", "flavour").
 - Pocket Tissue and Yazz Dental Floss are shown with a Coming soon badge and no Where to buy link. They come from the
   static catalogue, so they show even when Product Management has no row for them. Dental Floss needs a pack shot and
