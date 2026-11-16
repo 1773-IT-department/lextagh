@@ -12,6 +12,9 @@
 //               authenticated, request.jwt.claim.sub set), so Row Level Security, grants and triggers decide as on
 //               Supabase. Enough for the portal screens, not a full PostgREST.
 //   /storage/v1 the Storage stand in of ../forms/rpc_shim.mjs (upload, signed links, remove), as the caller
+//   /functions/v1/admin-users  only with GATEWAY_FUNCTIONS=1: the admin-users Edge Function's own logic
+//               (supabase/functions/admin-users/handler.ts) with a stand in for the Auth admin API
+//               (../users/functions_shim.mjs). Without it the path answers 404, like a function that is not deployed.
 import { createHmac, createSign, createVerify, generateKeyPairSync, randomUUID, timingSafeEqual } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import http from "node:http";
@@ -79,7 +82,15 @@ async function answerAuth(req, url, body, send) {
   if (req.method === "POST" && url.pathname === "/auth/v1/token") {
     const grant = url.searchParams.get("grant_type");
     let user = null;
-    if (grant === "password" && body.password === PASSWORD) user = await userJson(`lower(email) = lower(${lit(body.email ?? "")})`);
+    if (grant === "password" && body.password === PASSWORD) {
+      user = await userJson(`lower(email) = lower(${lit(body.email ?? "")})`);
+      // A banned login cannot sign in (Users and access blocks switched off logins); a sign in is recorded.
+      if (user) {
+        const banned = await psql(`select coalesce(banned_until > now(), false) from auth.users where id = ${lit(user.id)};`);
+        if (banned.out === "t") return send(400, { code: 400, error_code: "user_banned", msg: "User is banned" });
+        await psql(`update auth.users set last_sign_in_at = now(), email_confirmed_at = coalesce(email_confirmed_at, now()) where id = ${lit(user.id)};`);
+      }
+    }
     if (grant === "refresh_token") {
       const id = String(body.refresh_token ?? "").split(".")[0];
       if (/^[0-9a-f-]{36}$/.test(id)) user = await userJson(`id = ${lit(id)}`);
@@ -350,6 +361,11 @@ const server = http.createServer(async (req, res) => {
     const raw = Buffer.concat(chunks).toString();
     const body = raw ? JSON.parse(raw) : {};
     if (url.pathname.startsWith("/auth/v1/")) return await answerAuth(req, url, body, send);
+    if (url.pathname === "/functions/v1/admin-users" && process.env.GATEWAY_FUNCTIONS === "1") {
+      const { answerAdminUsers } = await import("../users/functions_shim.mjs");
+      return await answerAdminUsers(req, body, send, verify);
+    }
+    if (url.pathname.startsWith("/functions/v1/")) return send(404, { code: "NOT_FOUND", message: "Requested function was not found" });
     if (url.pathname.startsWith("/rest/v1/")) {
       const who = callerOf(req.headers, verify);
       if (!who) return send(401, { code: "PGRST301", message: "JWT invalid" });

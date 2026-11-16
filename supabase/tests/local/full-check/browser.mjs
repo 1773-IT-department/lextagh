@@ -718,7 +718,7 @@ try {
   {
     await admin.page.goto(`${PORTAL}/systems/users`);
     const t = await admin.page.locator("main").innerText();
-    flow("systems", "users and access: placeholder shows for admin", /Users and access/.test(t), t.slice(0, 200));
+    flow("systems", "users and access: the login list shows for admin", /Users and access/.test(t), t.slice(0, 200));
   }
 
   // ---------------------------------------------------------------- Internal links
