@@ -46,6 +46,10 @@ export async function answerAdminUsers(req, body, send, verify) {
       return r.code === 0 ? null : r.err;
     },
     async sendPasswordReset(email, redirectTo) { mail("reset", email, redirectTo); return null; },
+    async deleteUser(id) {
+      const r = await psql(`delete from auth.users where id = ${lit(id)};`);
+      return r.code === 0 ? null : r.err;
+    },
     async apply(a) {
       const r = await psql(`set role service_role; select public.admin_apply_user(${lit(a.actor)}, ${lit(a.target)}, ${lit(a.fullName)},
         ${lit(a.phone)}, ${lit(a.role)}::public.app_role, ${arr(a.brands)}, ${a.active}, ${lit(a.organisation)}::uuid, ${a.quiet});`);

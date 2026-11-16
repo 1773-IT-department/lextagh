@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EditUserForm, EmailButtons } from "@/components/users/UserForms";
+import { EditUserForm, EmailButtons, RemoveUserForm } from "@/components/users/UserForms";
 import { requireSession } from "@/lib/session";
 import { createClient } from "@/lib/supabase/server";
 import { ROLE_LABELS } from "@/lib/systems";
@@ -79,9 +79,17 @@ export default async function UserPage({ params }: { params: Promise<{ id: strin
       <section className="panel" aria-labelledby="email_title">
         <h2 id="email_title">Emails</h2>
         {ready
-          ? <EmailButtons id={u.id} invited={u.status === "invited"} />
+          ? <EmailButtons id={u.id} accepted={u.status !== "invited"} />
           : <p className="small">Invite and password reset emails are not switched on yet: the admin-users function still has to be deployed in Supabase.</p>}
       </section>
+
+      {ready && u.id !== profile.id && (
+        <section className="panel" aria-labelledby="remove_title">
+          <h2 id="remove_title">Remove this login</h2>
+          <p className="small">Deletes the login for good: {u.email} can no longer sign in, and you can invite the address again later. Records they made (leads, visits, orders, notes) stay. To stop someone for a while instead, switch the login off above.</p>
+          <RemoveUserForm id={u.id} email={u.email} />
+        </section>
+      )}
 
       <section className="panel" aria-labelledby="audit_title">
         <h2 id="audit_title">History</h2>
