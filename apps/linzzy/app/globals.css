@@ -38,27 +38,27 @@
   --lz-blob: 58% 42% 55% 45% / 52% 45% 55% 48%;
   --lz-blob-2: 42% 58% 38% 62% / 55% 38% 62% 45%;
 
-  /* The shared dropdown and date field (packages/ui), in Linzzy plum and berry instead of Lexta teal. */
-  --lx-select-accent: #4a1a6b;
-  --lx-select-accent-dark: #23103a;
+  /* The shared dropdown and date field (packages/ui), in the redesign's berry and plum with Hanken Grotesk. */
+  --lx-select-accent: #c2185b;
+  --lx-select-accent-dark: #5b1a7a;
   --lx-select-ink: #23103a;
-  --lx-select-muted: #65577a;
+  --lx-select-muted: #7a6890;
   --lx-select-danger: #b3105a;
-  --lx-select-outline: 3px solid #b3105a;
-  --lx-select-ring: rgba(179, 16, 90, .22);
-  --lx-select-soft: #f5f0ff;
+  --lx-select-outline: 2px solid #c2185b;
+  --lx-select-ring: 0 0 0 4px rgba(194, 24, 91, .16);
+  --lx-select-soft: #fbeff5;
   --lx-select-option-color: #3a2a50;
-  --lx-select-option-disabled: #a99cba;
-  --lx-select-panel-border: #23103a;
-  --lx-select-panel-shadow: 6px 6px 0 #23103a;
-  --lx-select-scroll: #c9b4ff;
-  --lx-select-scroll-track: #f5f0ff;
-  --lx-select-tint: rgba(201, 180, 255, .45);
-  --lx-select-region-hover-shadow: 4px 4px 0 #23103a;
-  --lx-select-tint-border: #4a1a6b;
+  --lx-select-option-disabled: #b3a7c4;
+  --lx-select-panel-border: #efe3f5;
+  --lx-select-panel-shadow: 0 24px 48px rgba(35, 16, 58, .22), 0 2px 8px rgba(35, 16, 58, .08);
+  --lx-select-scroll: #e6c3d6;
+  --lx-select-scroll-track: #fbf8ff;
+  --lx-select-tint: rgba(194, 24, 91, .1);
+  --lx-select-region-hover-shadow: 0 8px 22px rgba(194, 24, 91, .18);
+  --lx-select-tint-border: #c2185b;
   --lx-select-day-disabled: #c4b8d3;
-  --lx-select-line: #e6dcf3;
-  --lx-select-option-size: 14.5px;
+  --lx-select-line: #f1e6f6;
+  --lx-select-option-size: 15px;
 
   /* The shared live chat (packages/chat), in Linzzy colours. No bottom bar on phones, so the panel uses the full height. */
   --chat-accent: #b3105a;
@@ -111,3 +111,18 @@ button, input, select, textarea { font-family: inherit; }
 
 /* The live chat button and panel, in the site's previous DM Sans text (Desmond keeps the current chat look). */
 .lz-chat { font-family: var(--lz-body); font-size: 16px; line-height: 1.6; color: var(--lz-text); }
+
+/* Contact: the six topic buttons sit on one row on wide screens and wrap on phones. */
+@media (min-width: 900px) {
+  .lz-topics { flex-wrap: nowrap !important; }
+  .lz-topics > .lz-topic { flex: 1 1 0; min-width: 0; padding: 12px 8px !important; font-size: 13px !important; line-height: 1.25; text-align: center; }
+}
+
+/* Linzzy dropdowns (packages/ui Select): room for the chevron, berry underline on hover and focus, Hanken Grotesk list. */
+.lz-sel { width: 100%; }
+.lz-sel > select { width: 100%; padding-right: 40px !important; cursor: pointer; font-family: "Hanken Grotesk", system-ui, sans-serif !important; transition: border-color .2s ease; }
+.lz-sel:hover > select, .lz-sel > select:focus { border-bottom-color: #c2185b !important; }
+.lz-sel-dark { --lx-select-accent: #f48fb1; }
+.lz-sel-dark:hover > select, .lz-sel-dark > select:focus { border-bottom-color: #f48fb1 !important; }
+[data-lx-select-panel] { font-family: "Hanken Grotesk", system-ui, sans-serif; border-radius: 14px; padding: 6px; }
+[data-lx-select-panel] [role="option"] { border-radius: 10px; letter-spacing: 0; text-transform: none; }
