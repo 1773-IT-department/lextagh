@@ -7,6 +7,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@lexta/chat": "workspace:*",
     "@lexta/db": "workspace:*",
     "@lexta/ui": "workspace:*",
     "@supabase/ssr": "^0.7.0",

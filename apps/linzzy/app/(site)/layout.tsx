@@ -1,19 +1,16 @@
 import type { ReactNode } from "react";
 import ChatLauncher from "@/components/chat/ChatLauncher";
-import SiteFooter from "@/components/layout/SiteFooter";
-import SiteHeader from "@/components/layout/SiteHeader";
 
-/** Every Linzzy page: skip link, header, the page, footer and the live chat button. */
+/**
+ * Every Linzzy page: the skip link, the page (each page carries the prototype's own header, menu and footer) and the
+ * live chat button, which keeps its previous look (DM Sans, Linzzy berry).
+ */
 export default function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <a href="#main" className="lz-skip">Skip to content</a>
-      <div className="lz-frame">
-        <SiteHeader />
-        <main id="main" tabIndex={-1}>{children}</main>
-        <SiteFooter />
-      </div>
-      <ChatLauncher />
+      <main id="main" tabIndex={-1} style={{ outline: "none" }}>{children}</main>
+      <div className="lz-chat"><ChatLauncher /></div>
     </>
   );
 }

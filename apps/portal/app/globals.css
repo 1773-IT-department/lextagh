@@ -342,6 +342,9 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .pipe.ch-closed { border-top-color: #6b7f88; }
 .chat-filters { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
 .chat-unread-total { margin: 4px 0 0; font-weight: 600; }
+.chat-alerts { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+.chat-alerts .small { margin: 0; max-width: 260px; }
+.nav-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 8px; border-radius: 10px; background: #d92d2d; color: #fff; font-size: 11px; font-weight: 700; line-height: 1; vertical-align: middle; }
 .badge.chs { background: #e8f4f8; color: var(--navy); }
 .badge.chs.ch-open { background: #e1f5fa; color: #0b6d88; }
 .badge.chs.ch-closed { background: var(--soft); color: var(--muted); border: 1px solid var(--line); }

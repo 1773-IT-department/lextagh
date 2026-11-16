@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lexta/db", "@lexta/ui"],
+  transpilePackages: ["@lexta/chat", "@lexta/db", "@lexta/ui"],
   // The phone apps (lib/pwa.ts): the service worker is always checked for a newer version, and the manifests are
   // served with their own content type.
   async headers() {

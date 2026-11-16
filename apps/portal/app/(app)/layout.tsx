@@ -6,6 +6,7 @@ import SideNav from "@/components/SideNav";
 import { requireSession } from "@/lib/session";
 import { ACTION_PREFIX, PATH_HEADER } from "@/lib/supabase/middleware";
 import { isManager } from "@/lib/management";
+import ChatWatcher from "@/components/chat/ChatWatcher";
 import { DISTRIBUTOR_HOME, DISTRIBUTOR_NAV, distributorMayRender, ROLE_LABELS, systemPath, systemsFor } from "@/lib/systems";
 
 export const dynamic = "force-dynamic";
@@ -25,8 +26,12 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     ? DISTRIBUTOR_NAV
     : [...(isManager(role) ? [] : [{ href: "/", label: "Home" }]), ...systemsFor(role).map((s) => ({ href: systemPath(s), label: s.name }))];
 
+  // Live chat alerts (sound, tab title, menu badge) for everyone who can see the inbox, on every page.
+  const watchesChat = role !== "distributor" && systemsFor(role).some((s) => s.slug === "chat");
+
   return (
     <div className="shell">
+      {watchesChat && <ChatWatcher />}
       <aside className="side">
         <div className="brand">Lexta<span>Business System</span></div>
         <SideNav items={items} />
