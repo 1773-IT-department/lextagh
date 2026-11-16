@@ -44,6 +44,9 @@ function canRun3d(): boolean {
 
 const SHOUTS = ["Crunch!", "Munch!", "Yum!", "Crunch!", "Pop!"];
 
+/** Always shown on the live stage, before and after the visitor plays with it (Desmond, 16 Nov 2026). */
+export const STAGE_HINT = "Tap a box to shake out the flakes, or drag to spin it!";
+
 export default function FoodStage({
   config, poster, label, priority = false, variant = "detail", hint = true, className,
 }: {
@@ -63,7 +66,6 @@ export default function FoodStage({
   const [shown, setShown] = useState(false);
   const paused = useMotionPaused();
   const [settled, setSettled] = useState(false);
-  const [tapped, setTapped] = useState(false);
   const [bursts, setBursts] = useState<{ id: number; x: number; y: number; word: string }[]>([]);
   const burstId = useRef(0);
 
@@ -81,7 +83,6 @@ export default function FoodStage({
   }, [mode]);
 
   const onCrunch = useCallback((x: number, y: number) => {
-    setTapped(true);
     const id = ++burstId.current;
     setBursts((b) => [...b.slice(-3), { id, x, y, word: SHOUTS[id % SHOUTS.length] }]);
     window.setTimeout(() => setBursts((b) => b.filter((v) => v.id !== id)), 900);
@@ -128,7 +129,7 @@ export default function FoodStage({
       ))}
       {shown && !still && (
         <>
-          {hint && !tapped && <span className={s.hint} aria-hidden="true"><Icon name="hand" size={16} /> Tap a box, or drag to spin it!</span>}
+          {hint && <span className={s.hint} aria-hidden="true"><Icon name="hand" size={16} /> {STAGE_HINT}</span>}
           <MotionToggle className={s.pause} />
         </>
       )}

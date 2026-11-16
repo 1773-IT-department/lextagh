@@ -76,6 +76,13 @@ try {
   // Site, desktop -----------------------------------------------------------------------------------------
   const desk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const site = await desk.newPage();
+  // Every chime that is due is announced as an "lx-chat-sound" event (packages/chat/src/sound.ts); count them.
+  const SOUNDS = () => {
+    window.__sounds = [];
+    document.addEventListener("lx-chat-sound", (e) => window.__sounds.push(e.detail));
+  };
+  const sounds = (page) => page.evaluate(() => window.__sounds ?? []);
+  await site.addInitScript(SOUNDS);
   const jsBefore = [];
   site.on("request", (r) => { if (r.resourceType() === "script") jsBefore.push(r.url()); });
   await site.goto(SITE, { waitUntil: "networkidle" });
@@ -100,12 +107,14 @@ try {
   const auto = await site.getByRole("log").innerText();
   check(auto.includes("A member of the team will reply shortly") || auto.includes("[PLACEHOLDER: Lexta chat office hours]"), "1440: the fixed reply or out of hours note shows after the first message", auto);
   await site.screenshot({ path: `${OUT}/site-1440-thread.png` });
+  check((await sounds(site)).length === 0, "1440: no chime for the visitor's own first message");
   const conv = JSON.parse(await site.evaluate(() => localStorage.getItem("lexta-chat-v1")));
   check(/^[0-9a-f]{64}$/.test(conv?.token ?? ""), "1440: the conversation id and token are kept in localStorage");
 
   // Portal, desktop: customer care answers -------------------------------------------------------------------
   const pdesk = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const portal = await pdesk.newPage();
+  await portal.addInitScript(SOUNDS);
   await portal.goto(`${PORTAL}/login`);
   await portal.getByLabel("Email").fill("care@lexta.test");
   await portal.getByLabel("Password").fill("harness-password");
@@ -115,6 +124,14 @@ try {
   await portal.goto(`${PORTAL}/systems/chat`);
   await portal.getByText("Ama Owusu").first().waitFor();
   check(await portal.getByText("Unread", { exact: true }).first().isVisible(), "the inbox marks the new chat unread");
+  check(await portal.getByRole("button", { name: "Sound on" }).isVisible()
+    && (await portal.getByRole("button", { name: "Turn on desktop alerts" }).isVisible() || await portal.getByText("Desktop alerts are blocked").isVisible()),
+    "the inbox has sound and desktop alert controls (desktop alerts only on request)");
+  await portal.locator(".nav-badge").first().waitFor({ timeout: 15000 }).catch(() => {});
+  // The watcher sets the title on its next round (every 5 seconds), after the page set its own.
+  await portal.waitForFunction(() => /^\(1\) /.test(document.title), null, { timeout: 15000 }).catch(() => {});
+  check((await portal.locator("nav[aria-label='Systems'] .nav-badge").innerText().catch(() => "")) === "1" && /^\(1\) /.test(await portal.title()),
+    "the menu and the tab title show 1 unread chat", { title: await portal.title() });
   await portal.screenshot({ path: `${OUT}/portal-1440-inbox.png`, fullPage: true });
   await portal.getByRole("link", { name: /Ama Owusu/ }).click();
   await portal.waitForURL(/\/systems\/chat\/[0-9a-f-]{36}/);
@@ -135,12 +152,37 @@ try {
   check(visitorLog.includes("Efua, Lexta") && !visitorLog.includes("stockist lead") && !visitorLog.includes("Asante"),
     "the visitor sees the reply by polling, with the first name only and no internal note", visitorLog);
   await site.screenshot({ path: `${OUT}/site-1440-reply.png` });
-
+  check((await sounds(site)).filter((k) => k === "incoming").length === 1, "1440: the team's reply chimes once for the visitor", await sounds(site));
+  
   // A visitor message appears in the open portal thread without a manual refresh.
   await site.getByLabel("Your message").fill("Thank you! Do you deliver to shops?");
   await site.keyboard.press("Enter");
   await portal.getByText("Do you deliver to shops?").waitFor({ timeout: 20000 });
   check(true, "a new visitor message appears in the portal thread without a manual refresh");
+  check((await sounds(site)).length === 1, "1440: the visitor's own message does not chime for them", await sounds(site));
+  await portal.waitForFunction(() => (window.__sounds ?? []).includes("new"), null, { timeout: 20000 }).catch(() => {});
+  check((await sounds(portal)).includes("new"), "portal: a new visitor message chimes for staff, wherever they are in the system", await sounds(portal));
+  const staffChimes = (await sounds(portal)).length;
+
+  // A reply while the visitor has the panel closed: the chat button shows the count, then clears when opened.
+  await site.getByRole("button", { name: "Close chat" }).click();
+  await portal.getByRole("checkbox", { name: "Internal note" }).uncheck();
+  await portal.getByLabel("Reply to the visitor").fill("Yes, we deliver to shops in Kumasi.");
+  await portal.getByRole("button", { name: "Send reply" }).click();
+  await portal.getByText("Sent.").waitFor();
+  const badge = site.getByRole("button", { name: "Chat with the Lexta team, 1 new message" });
+  await badge.waitFor({ timeout: 30000 }).catch(() => {});
+  check(await badge.isVisible(), "1440: with the panel closed, a team reply shows a count on the chat button");
+  check((await sounds(site)).filter((k) => k === "incoming").length === 2, "1440: and chimes", await sounds(site));
+  await site.screenshot({ path: `${OUT}/site-1440-unread-badge.png` });
+  await badge.click();
+  await site.getByRole("log").getByText("we deliver to shops in Kumasi").waitFor();
+  check(await site.getByRole("button", { name: "Close chat" }).isVisible(), "1440: opening the panel shows the reply");
+  check((await sounds(portal)).length === staffChimes, "portal: a staff member's own reply does not chime for staff", await sounds(portal));
+  // Sound can be muted by the visitor; the choice is remembered.
+  await site.getByRole("button", { name: "Turn chat sounds off" }).click();
+  check(await site.evaluate(() => localStorage.getItem("lx-chat-muted")) === "1", "1440: the visitor can mute chat sounds (remembered)");
+  await site.getByRole("button", { name: "Turn chat sounds on" }).click();
 
   // Reload keeps the conversation.
   await site.reload({ waitUntil: "networkidle" });
@@ -269,7 +311,8 @@ try {
   await pm.getByLabel("Email").fill("admin@lexta.test");
   await pm.getByLabel("Password").fill("harness-password");
   await pm.getByRole("button", { name: /sign in/i }).click();
-  await pm.waitForURL(`${PORTAL}/`);
+  // Admin and management land on the management overview.
+  await pm.waitForURL(new RegExp(`^${PORTAL}/(management)?$`));
   await pm.goto(`${PORTAL}/systems/chat`);
   await pm.getByText("Kofi Mensah").first().waitFor();
   check(await pm.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "390: the inbox has no sideways scroll");
