@@ -16,8 +16,10 @@ site or listed here for Desmond to confirm.
 - Not built as the wireframe asks, because it conflicts with the agreed 6 page design or scope:
   - Separate "Feminine Care" and "Baby Care" top menu tabs: they are under one Products tab with a dropdown, so the
     nav keeps exactly the 6 approved pages (Home, Products, About Us, Tips & Advice, FAQs, Contact).
-  - "Community Impact" tab: no CSR page on brand sites. The footer, the home page ("Explore Our Community
-    Initiatives") and the contact page link to the Lexta site's CSR page instead.
+  - "Community Impact" tab: no CSR page on brand sites. The footer of every page ("Community Impact (CSR)") links to
+    the Lexta site's CSR page, and the contact page's CSR card sends proposals to the partnerships email. The home
+    page does not carry Lexta's "Caring Beyond Our Products / Explore Our Community Initiatives" block: the approved
+    home design has no slot for it (see docs/content/linzzy/PLACEHOLDERS.md, "Not done: needs a design change").
   - "Where to Buy" as its own tab: it is part of Contact & Where to Buy, with a Where to Buy button in the header.
   - Hero "Shop the Range": there is no shop, so the button says "Explore Our Products".
   - "Enquiry → marketing@lextagh.com (proposed interim)" and "complaints → designated customer-care inbox (confirm)":
@@ -49,15 +51,17 @@ site or listed here for Desmond to confirm.
 
 ## Product data (Product Management)
 
-- The database still holds the 3 Linzzy products seeded from the Lexta prototype (migration 0004): "Sanitary
-  napkins", "Baby wipes" and "Baby care", with invented claims ("clinical anti leak barriers", "fragrance free") and
-  photos hotlinked from lextagh.com. The site no longer shows any of that: Lexta's Drive catalogue
-  (`content/catalogue.ts`, 6 products) wins for every product wording, the two umbrella rows without a Drive product
-  are skipped, products the database lacks are shown from the catalogue, and no image from lextagh.com,
-  yazzproducts.com, linzzyproducts.com or hoochfoods.com is ever shown (`lib/products.ts`).
-- Migration `supabase/migrations/0016_linzzy_catalogue_products.sql` is written but **not applied**: it unpublishes the
-  two umbrella rows, corrects the "Baby wipes" row in place and writes the six Drive products with their pack sizes and
-  pack shots. Desmond decides whether to apply it. It also changes the Lexta site's Our Brands page (see the PR notes).
+- Migration `supabase/migrations/0016_linzzy_catalogue_products.sql` is **applied**: the six Drive products are
+  published in Product Management with Lexta's wording, pack sizes and pack shots, the seeded "Baby wipes" row was
+  corrected in place, and the two prototype umbrella rows ("Sanitary napkins" and "Baby care", with invented claims
+  such as "clinical anti leak barriers") are unpublished, so the site cannot show them. Product Management now decides
+  what shows and how it reads; `content/catalogue.ts` is the fallback if the database cannot be reached and supplies
+  the product page extras the database has no column for (headline, recommended use, skin sensitivity, "Linzzy Says").
+  No image from lextagh.com, yazzproducts.com, linzzyproducts.com or hoochfoods.com is ever shown (`lib/products.ts`).
+- The product cards show the database's one line summary (short description, written by 1773 from Lexta's facts);
+  the product details panel shows Lexta's full description. Lexta's headline, key features, recommended use, how to
+  use, skin sensitivity and allergy precautions and "Linzzy Says" line are in the database or catalogue but the
+  approved panel design has no place for them: see PLACEHOLDERS.md, "Not done: needs a design change".
 - SKU codes for every product (all `TBC-LINZZY-...` in the catalogue).
 - Diaper sizes: only Medium (42, 6 to 9 kg) and Large (40, 9 to 13 kg) are confirmed by Lexta. The original site also
   lists Small (44, 3 to 6 kg) and Extra Large (38, over 13 kg): please confirm against current packaging.
@@ -71,7 +75,11 @@ site or listed here for Desmond to confirm.
   the @linzzyproducts.com mailboxes exist before go-live, or say which addresses to use.
 - Linzzy consumer care hours (also the live chat office hours).
 - TikTok and X links for @Linzzyproducts (Facebook and Instagram come from the original site).
-- The phone number written "+233 02235296" is shown as +233 302 235 296; please confirm.
+- The phone number written "+233 02235296" is shown as +233 302 235 296 (as on the original linzzyproducts.com);
+  please confirm.
+- Trade enquiry form: Lexta gave no volume bands, so the expected monthly volume list shows a marked placeholder
+  option until Lexta's sales team gives them. The "I am a" options follow Lexta's segments (distributor or
+  wholesaler, modern trade or supermarket, other business).
 - The Lexta head office pin on the map is placed approximately at Dzorwulu; exact coordinates welcome.
 - Lexta's Contact form asks for an optional product photo or document upload. The complaint intake has no attachment
   field, so it is not built; the care team can ask for a photo by email or WhatsApp. Adding uploads would need a
@@ -80,8 +88,14 @@ site or listed here for Desmond to confirm.
 ## Words still to come
 
 - FAQs: Lexta sent no Linzzy FAQ list. The FAQs page uses Lexta's own wording from the product page, the articles and
-  the About and Contact pages. More questions can be added to `content/faqs.ts` on request.
+  the About and Contact pages; the questions and grouping are 1773's, so Lexta should approve the page as a whole. More
+  questions can be added to `components/linzzy/faq-data.ts` on request.
 - Article dates: none given, so none are shown.
+- Reading times: Lexta's own figure for the two articles that give one (3 minutes each); the others are worked out
+  from the word count at 200 words a minute, rounded up.
+- Tips & Advice sign up: Lexta's master content lists "Newsletter / educational updates" (opt in, with unsubscribe
+  and a privacy notice) as a shared form, so the Tips page offers Linzzy educational updates by email. Lexta to
+  confirm what the updates will contain and who sends them.
 
 ## In Lexta's documents but outside the agreed scope (not built)
 
@@ -90,7 +104,9 @@ site or listed here for Desmond to confirm.
   "Submit a Community Proposal" button. Brand sites have no CSR pages; links go to the Lexta site's CSR page, and
   proposals to the partnerships email.
 - Linzzy Parent Corner submissions: the "Share Your Story" form, story spotlight, photo upload with child photo consent,
-  "Submit Your Question" and the expert reviewed Q&A. Only the editorial text is on Tips & Advice (welcome, this
-  month's question from Lexta's monthly themes, the topics). The home page button "Join Linzzy Parent Corner" opens it.
+  "Submit Your Question" and the expert reviewed Q&A. Only the editorial text is on Tips & Advice (welcome, Lexta's
+  featured question "What's One Baby Care Tip You Wish You Had Known Earlier?", the topics); answers go through the
+  Contact page. The monthly themes are not rotated, so the page never shows a stale month. The home page button
+  "Read Parent Corner" opens it.
 - Shop, cart and prices (the original site's store notice and 0 GHS prices are not reused).
 - Product finder, quizzes, parenting tools, diaper planner or finder, games, an AI chatbot and a news CMS.

@@ -40,6 +40,11 @@ export type Article = {
   category: CategorySlug;
   /** The article's own category in Lexta's document, shown as its topic label. */
   topic: string;
+  /**
+   * Reading time in minutes: Lexta's own figure where the Drive gives one ("Long Days, Busy Schedules": 3-minute read;
+   * "Is Your Baby Wearing the Right Diaper Size?": 3 minutes); otherwise the article's word count (title, lede, body,
+   * sign off and question) divided by 200 words a minute, rounded up.
+   */
   readMinutes: number;
   /** A photo, or null for a marked placeholder. */
   image: { src: string; alt: string } | null;
@@ -97,7 +102,7 @@ Remember that a longer towel is not automatically more absorbent. Always check t
     slug: "period-hygiene-101", category: "feminine-care", topic: "Menstrual Hygiene",
     title: "Period Hygiene 101: Healthy Habits for Every Menstrual Cycle",
     lede: "Good menstrual hygiene is not about complicated routines. It is about simple, consistent habits that help you feel clean and comfortable throughout your period.",
-    readMinutes: 2, image: null, imageNeeded: "clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)",
+    readMinutes: 1, image: null, imageNeeded: "clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)",
     says: "Good period care begins with everyday habits.",
     community: "Which period hygiene habit would you encourage every young woman to practice?",
     body: `## Five habits worth practicing
@@ -120,7 +125,7 @@ A practical hygiene routine helps you manage menstruation more comfortably at sc
     slug: "long-days-busy-schedules", category: "feminine-care", topic: "Lifestyle & Period Preparation",
     title: "Long Days, Busy Schedules: Staying Prepared During Your Period",
     lede: "From early lectures to office meetings, market days and long journeys, life does not stop because your period has arrived.",
-    readMinutes: 2, image: { src: "/images/original/banner-on-the-go.webp", alt: "A young woman on the go with her handbag, beside packs of Linzzy sanitary towels" },
+    readMinutes: 3, image: { src: "/images/original/banner-on-the-go.webp", alt: "A young woman on the go with her handbag, beside packs of Linzzy sanitary towels" },
     says: "Your schedule may be busy, but your comfort still matters.",
     community: "What's the most useful item in your emergency period pouch?",
     body: `A little preparation can make your day easier.
@@ -182,7 +187,7 @@ If you notice irritation, stop using the product and consider seeking profession
     slug: "period-care-in-warm-weather", category: "feminine-care", topic: "Period Comfort & Seasonal Care",
     title: "Period Care in Ghana's Warm Weather: Comfort, Clothing and Hygiene",
     lede: "Ghana's warm weather can make everyday menstrual care feel more challenging, particularly during long commutes, outdoor activities and busy working days.",
-    readMinutes: 2, image: { src: "/images/original/flow-focus-grow.webp", alt: "A young woman in a yoga pose next to a stack of Linzzy sanitary towel packs" },
+    readMinutes: 1, image: { src: "/images/original/flow-focus-grow.webp", alt: "A young woman in a yoga pose next to a stack of Linzzy sanitary towel packs" },
     says: "Every season deserves thoughtful care.",
     community: "How do you stay comfortable during your period on particularly warm days?",
     body: `Understanding the relationship between heat, sweat and personal hygiene can help you create a comfortable routine.
@@ -330,7 +335,7 @@ Avoid fastening diapers too tightly, rubbing the skin aggressively, leaving babi
     slug: "is-your-baby-wearing-the-right-diaper-size", category: "baby-care", topic: "Diaper Fit & Comfort",
     title: "Is Your Baby Wearing the Right Diaper Size? Signs Every Parent Should Know",
     lede: "Babies grow quickly, and their diaper needs change along the way. A diaper that fitted comfortably last month may no longer provide the same level of comfort today.",
-    readMinutes: 2, image: { src: "/images/nursery/joyful-baby.webp", alt: "A happy baby lying on a blanket beside Linzzy Baby Diapers in sizes M and L" },
+    readMinutes: 3, image: { src: "/images/nursery/joyful-baby.webp", alt: "A happy baby lying on a blanket beside Linzzy Baby Diapers in sizes M and L" },
     says: "The right fit supports every little move.",
     community: "How did you know it was time to change your baby's diaper size?",
     body: `Choosing the right diaper size is important for freedom of movement, effective containment and everyday comfort.
@@ -551,7 +556,9 @@ export const PARENT_CORNER = {
     "Recognising when professional medical advice may be needed",
     "Common baby care myths and misconceptions",
   ],
-  /** Lexta's monthly themes; the page shows the current month's. */
+  /** The question the Tips page shows: Lexta's featured "This Month's Parent Corner Question" (not tied to a month). */
+  question: "What's One Baby Care Tip You Wish You Had Known Earlier?",
+  /** Lexta's suggested monthly themes, kept for reference only: the page does not rotate them, so nothing goes stale. */
   months: [
     { theme: "New Beginnings", question: "What surprised you most about becoming a parent?" },
     { theme: "Little Moments of Love", question: "How do you bond with your baby during daily routines?" },

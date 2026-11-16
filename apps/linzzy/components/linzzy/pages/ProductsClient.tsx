@@ -10,8 +10,8 @@ import type { ProtoProduct } from "../model";
 
 const CHAPTERS: [string, string, string][] = [["top", "00", "Our Collection"], ["fem", "01", "Feminine Care"], ["baby", "02", "Baby Care"], ["distributors", "03", "Distributors"]];
 const BANDS = [
-  { id: "fem" as const, num: "01", label: "02 Feminine Care", eyebrow: "Linzzy Feminine Care", title: "Comfort Through Every Cycle", lead: "Your period is personal, and your choice of sanitary protection should reflect your individual needs.", bg: "#3a1150", accent: "#F48FB1", body: "#eee5f7", cat: "Feminine Care" },
-  { id: "baby" as const, num: "02", label: "03 Baby Care", eyebrow: "Linzzy Baby Care", title: "Little Beginnings Deserve Loving Care", lead: "From your baby's earliest days to the exciting stages of growth, Linzzy Baby Care supports the everyday hygiene routines of parents and caregivers.", bg: "#0B3D2E", accent: "#9EE6C8", body: "#e6fbf2", cat: "Baby Care" },
+  { id: "fem" as const, num: "01", label: "02 Feminine Care", eyebrow: "Linzzy Feminine Care", title: "Comfort Through Every Cycle", lead: "Your period is personal, and your choice of sanitary protection should reflect your individual needs. Discover the Linzzy Feminine Care Collection, featuring sanitary towels and panty liners developed for different menstrual flows, coverage preferences and everyday routines.", bg: "#3a1150", accent: "#F48FB1", body: "#eee5f7", cat: "Feminine Care" },
+  { id: "baby" as const, num: "02", label: "03 Baby Care", eyebrow: "Linzzy Baby Care", title: "Little Beginnings Deserve Loving Care", lead: "From your baby's earliest days to the exciting stages of growth, Linzzy Baby Care supports the everyday hygiene routines of parents and caregivers. Explore our baby diapers and wipes, created for families who value comfort, cleanliness and convenient care.", bg: "#0B3D2E", accent: "#9EE6C8", body: "#e6fbf2", cat: "Baby Care" },
 ];
 const two = (n: number) => String(n).padStart(2, "0");
 
@@ -62,7 +62,9 @@ export default function ProductsClient({ products }: { products: ProtoProduct[] 
     babyCount: two(bands[1].items.length),
     bands,
     hasDetail: !!d,
-    detail: d || {},
+    // The panel's description slot shows Lexta's full product description (Drive, "3. Products Page"); the cards keep
+    // the short summary. No other product page field has a slot in the approved panel design (see PLACEHOLDERS.md).
+    detail: d ? { ...d, desc: d.long } : {},
     closeDetail: () => setDetail(null),
     stop: (e: { stopPropagation: () => void }) => e.stopPropagation(),
   };

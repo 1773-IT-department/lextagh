@@ -248,9 +248,9 @@ export default function ContactView({ v: vals }: { v: any }) {
               {"\n      "}
               {vals.wtbEmpty ? (
               <p style={{"margin":"0","fontSize":"16px","lineHeight":"1.6","color":"#d9cdea"} as CSSProperties}>
-                {"We are adding Linzzy stockists "}
+                {"No Linzzy stockists are listed "}
                 {vals.wtbWhere}
-                {". Try another region, or "}
+                {" yet. Try another region, or "}
                 <a href="/contact?topic=stockist#message" onClick={vals.askStockist} style={{"color":"#9EE6C8","textDecoration":"underline"} as CSSProperties}>
                   {"ask us"}
                 </a>
@@ -267,7 +267,7 @@ export default function ContactView({ v: vals }: { v: any }) {
           </div>
           {"\n  "}
           <p style={{"margin":"20px 0 0","fontSize":"14px","color":"#d9cdea"} as CSSProperties}>
-            {"Shops are listed by Lexta's sales team. Your shop stocks Linzzy and is not listed? "}
+            {"Your shop stocks Linzzy and is not listed? "}
             <a href="#trade" onClick={vals.jump.trade} style={{"color":"#9EE6C8","textDecoration":"underline"} as CSSProperties}>
               {"Tell us"}
             </a>
@@ -293,7 +293,7 @@ export default function ContactView({ v: vals }: { v: any }) {
               </h2>
               {"\n      "}
               <p style={{"margin":"0 0 36px","fontSize":"17px","color":"#3d2a55"} as CSSProperties}>
-                {"Complete the contact form and select the subject that best describes your enquiry."}
+                {"Complete the contact form and select the subject that best describes your enquiry. Send your proposal to marketing@linzzyproducts.com."}
               </p>
               {"\n      "}
               {vals.msgSent ? (
@@ -306,7 +306,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                     </p>
                     {"\n          "}
                     <p style={{"margin":"8px 0 0","fontSize":"16px"} as CSSProperties}>
-                      {"Our team will review it and reply by email or phone."}
+                      {"Your message goes to the Linzzy team."}
                     </p>
                     {vals.msg.state.message ? <p role="status" data-form-message="" tabIndex={-1} style={{ margin: "12px 0 0", fontSize: 16, fontWeight: 600 }}>{vals.msg.state.message}</p> : null}
                     {"\n        "}
@@ -627,7 +627,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                     </p>
                     {"\n          "}
                     <p style={{"margin":"8px 0 0","fontSize":"16px"} as CSSProperties}>
-                      {"Our sales team will be in touch."}
+                      {"Your enquiry goes to the Linzzy team."}
                     </p>
                     {vals.trade.state.message ? <p role="status" data-form-message="" tabIndex={-1} style={{ margin: "12px 0 0", fontSize: 16, fontWeight: 600 }}>{vals.trade.state.message}</p> : null}
                     {"\n        "}
@@ -693,16 +693,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                             {"Choose a volume"}
                           </option>
                           <option style={{"color":"#0B3D2E"} as CSSProperties}>
-                            {"Under 10 cartons a month"}
-                          </option>
-                          <option style={{"color":"#0B3D2E"} as CSSProperties}>
-                            {"10 to 50 cartons a month"}
-                          </option>
-                          <option style={{"color":"#0B3D2E"} as CSSProperties}>
-                            {"50 to 200 cartons a month"}
-                          </option>
-                          <option style={{"color":"#0B3D2E"} as CSSProperties}>
-                            {"Over 200 cartons a month"}
+                            {"[PLACEHOLDER: monthly volume bands, from Lexta's sales team]"}
                           </option>
                           <option style={{"color":"#0B3D2E"} as CSSProperties}>
                             {"Not sure yet"}

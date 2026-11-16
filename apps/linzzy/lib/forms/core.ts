@@ -137,7 +137,7 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 }
 
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Linzzy team and your reference is ${ref}.`;
-const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}; our consumer care team will contact you.`;
+const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report goes to the Linzzy consumer care team.`;
 
 export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
   if (trapped(fd)) {
@@ -181,7 +181,7 @@ const TRADE_MESSAGES: Fields = {
   phone: "Please enter a valid phone number, for example +233 24 123 4567.",
   region: "Please choose a region from the list.",
   trading_location: "Please check your town or trading location.",
-  years_trading: "Please check the years trading.",
+  years_trading: "Please check the years in business.",
   volume: "Please choose an expected volume from the list.",
   message: "Please check your message.",
 };
@@ -199,7 +199,7 @@ export function buildTrade(fd: FormData, rangeNames: Record<string, string> = {}
   checkEmailPhone(v, errors);
   if (v.region && (!SLUG.test(v.region) || v.region.length > 60)) errors.region = TRADE_MESSAGES.region;
   checkMax(v, "trading_location", LIMITS.location, "Town or trading location", errors);
-  checkMax(v, "years_trading", LIMITS.years, "Years trading", errors);
+  checkMax(v, "years_trading", LIMITS.years, "Years in business", errors);
   if (v.volume && !VOLUMES.includes(v.volume)) errors.volume = TRADE_MESSAGES.volume;
   const interest = ranges.length ? `Linzzy ranges of interest: ${ranges.map((r) => rangeNames[r]).join(", ")}` : "";
   const message = [interest, v.message].filter(Boolean).join("\n\n");
@@ -224,7 +224,7 @@ export function buildTrade(fd: FormData, rangeNames: Record<string, string> = {}
   };
 }
 
-const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Linzzy trade team and your reference is ${ref}.`;
+const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Linzzy team and your reference is ${ref}.`;
 
 export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}): Promise<FormState> {
   if (trapped(fd)) {
@@ -245,7 +245,7 @@ export async function handleTrade(fd: FormData, rangeNames: Record<string, strin
 
 const NEWSLETTER_MESSAGES: Fields = {
   email: "Please enter a valid email address.",
-  consent: "Please tick the box to agree to receive our emails.",
+  consent: "Please tick the box to agree to receive our educational updates by email.",
 };
 
 export function buildNewsletter(fd: FormData) {
@@ -258,7 +258,7 @@ export function buildNewsletter(fd: FormData) {
   return { values: v, errors, payload: { brand: BRAND, email: v.email, consent_marketing: true as const } };
 }
 
-const newsletterThanks = (ref: string) => `Thank you, you are subscribed to Linzzy news. Your reference is ${ref}.`;
+const newsletterThanks = (ref: string) => `Thank you, you have opted in to Linzzy educational updates. Your reference is ${ref}.`;
 
 export async function handleNewsletter(fd: FormData): Promise<FormState> {
   if (trapped(fd)) {
