@@ -6,6 +6,16 @@ const PUBLIC_PATHS = ["/login", "/forgot-password"];
 /** JSON routes of field sales: shops, saving a visit, adding and showing photos. */
 const FIELD_JSON_ROUTE = /^\/systems\/field-sales\/(shops|visits(\/[0-9a-f-]{36}\/photos(\/[0-9a-f-]{36})?)?)$/;
 
+/**
+ * The phone apps' public files and install pages (lib/pwa.ts): anyone may open an install page, the manifests, icons,
+ * service worker and offline page. Using the apps themselves still needs a login.
+ */
+export const isPwaPublicPath = (path: string) =>
+  /^\/install\/(field-sales|csr)$/.test(path) ||
+  /^\/pwa\/[a-z0-9-]+\.(webmanifest|png)$/.test(path) ||
+  path === "/lexta-sw.js" ||
+  path === "/offline.html";
+
 /** Request header with the path being opened, for server components (they cannot read the URL themselves). */
 export const PATH_HEADER = "x-lexta-path";
 /** Marks the path header of a server action request: "action:" and the page it was sent from. */
@@ -43,7 +53,7 @@ export async function updateSession(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.includes(path) || path.startsWith("/auth/");
+  const isPublic = PUBLIC_PATHS.includes(path) || path.startsWith("/auth/") || isPwaPublicPath(path);
   if (!user && !isPublic) {
     // The field sales phone app's JSON routes answer 401 instead of the login page, so the phone can say the session
     // ended rather than retry a page it cannot read.

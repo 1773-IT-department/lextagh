@@ -48,6 +48,10 @@ await q(`insert into auth.users (id, email, raw_app_meta_data, raw_user_meta_dat
 await q(`insert into public.profile_brands (profile_id, brand_id)
   select '00000000-0000-0000-0000-00000000f103'::uuid, id from public.brands where slug = 'yazz'
   union all select '00000000-0000-0000-0000-00000000f104'::uuid, id from public.brands where slug = 'hooch'`);
+// Migration 0018 seeds the 16 shops Lexta publishes on yazzproducts.com. This check counts and orders its own shops,
+// so the throwaway database starts without the seeded ones.
+await q(`delete from public.stockist_brands where stockist_id in (select id from public.stockists where created_by is null);
+  delete from public.stockists where created_by is null`);
 await q(`insert into public.stockists (id, name, outlet_type, region_id, town, latitude, longitude) values
   ('00000000-0000-0000-0000-00000000f201', 'Osu Mini Mart', 'supermarket', (select id from public.regions where slug = 'greater-accra'), 'Osu', 5.556000, -0.182000),
   ('00000000-0000-0000-0000-00000000f202', 'Labone Pharmacy', 'pharmacy', (select id from public.regions where slug = 'greater-accra'), 'Labone', 5.565000, -0.170000),

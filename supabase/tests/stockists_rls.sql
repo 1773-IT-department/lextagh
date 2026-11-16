@@ -64,10 +64,18 @@ begin
   if not exists (select 1 from public.regions where slug = 'liberia-monrovia' and not is_in_ghana) then
     raise exception 'FAIL: Liberia (Monrovia) missing or not flagged as outside Ghana';
   end if;
-  if (select count(*) from public.stockists where name not like 'Test %') <> 0 then
-    raise exception 'FAIL: the migration must not seed any stockists';
+  -- 0018 adds the 16 shops Lexta publishes on yazzproducts.com/distributors, each linked to Yazz only; nothing else.
+  if (select count(*) from public.stockists where name not like 'Test %') <> 16 then
+    raise exception 'FAIL: expected only the 16 original Yazz stockists from 0018, got %', (select count(*) from public.stockists where name not like 'Test %');
   end if;
-  raise notice 'PASS: 16 Ghana regions plus Liberia (Monrovia); no stockists seeded';
+  if exists (
+    select 1 from public.stockists s where s.name not like 'Test %'
+      and (s.created_by is not null or not s.is_active
+        or (select array_agg(b.slug) from public.stockist_brands sb join public.brands b on b.id = sb.brand_id where sb.stockist_id = s.id) is distinct from array['yazz'])
+  ) then
+    raise exception 'FAIL: an original stockist is not an active, Yazz only row from 0018';
+  end if;
+  raise notice 'PASS: 16 Ghana regions plus Liberia (Monrovia); only the 16 original Yazz stockists seeded';
 end $$;
 
 -- Website visitors (anon) --------------------------------------------------------------

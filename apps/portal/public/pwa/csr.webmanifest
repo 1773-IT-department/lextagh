@@ -1,0 +1,22 @@
+{
+  "id": "/systems/csr",
+  "name": "Lexta CSR Tracker",
+  "short_name": "CSR Tracker",
+  "description": "Log CSR activities on your phone: when, where, how many people it reached, with photos.",
+  "start_url": "/systems/csr?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0d8ba8",
+  "background_color": "#0d8ba8",
+  "lang": "en-GH",
+  "categories": ["business", "productivity"],
+  "icons": [
+    { "src": "/pwa/csr-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/csr-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/csr-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Log an activity", "short_name": "New activity", "url": "/systems/csr/new?source=app", "icons": [{ "src": "/pwa/csr-192.png", "sizes": "192x192" }] }
+  ]
+}
