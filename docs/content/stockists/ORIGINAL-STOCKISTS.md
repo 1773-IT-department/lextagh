@@ -29,7 +29,7 @@ Where to Buy on the Lexta site and the Yazz, Linzzy and Hooch sites reads `publi
 | 15 | Yazz Pro | distributor | Ashanti | Kumasi |  | 0544 350 828 | 6.698561, -1.623309 | Kumasi, Ashanti Region, Ghana |
 | 16 | Shoprite Accra Mall | supermarket | Greater Accra | Accra | Accra Mall, Tetteh Quarshie Avenue | 0508444218 | 5.563219, -0.210213 | Tetteh Quarshie Ave, Accra |
 
-By region: Greater Accra 7 (6 distributors and Shoprite Accra Mall), Ashanti 3, Central 2 (Central Region and Kasoa), Northern 1, Upper West 1, Eastern 1. By type: 15 distributors, 1 supermarket (the source's "Modern Trade").
+By region: Greater Accra 8 (7 distributors and Shoprite Accra Mall), Ashanti 3, Central 2 (Central Region and Kasoa), Northern 1, Upper West 1, Eastern 1. By type: 15 distributors, 1 supermarket (the source's "Modern Trade").
 
 ## Mapping and data quality
 

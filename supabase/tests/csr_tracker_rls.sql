@@ -6,6 +6,11 @@
 
 begin;
 
+-- 0018 seeds the 16 shops Lexta publishes on yazzproducts.com. This file builds its own shops and counts them, so it
+-- starts without the seeded ones (removed inside this transaction, rolled back at the end).
+delete from public.stockist_brands where stockist_id in (select id from public.stockists where created_by is null and name not like 'Test %');
+delete from public.stockists where created_by is null and name not like 'Test %';
+
 -- Helpers ----------------------------------------------------------------------------------------------
 create function pg_temp.u(label text) returns uuid language sql immutable as $$
   select case label
