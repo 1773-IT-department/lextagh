@@ -162,12 +162,14 @@ try {
     check(!shops.includes("Demo Mart Kejetia") && !shops.includes("Demo Chemist Ho") && !shops.includes("Demo Provisions Madina"), "where to buy: no Hooch or Linzzy only shop, no closed shop", shops);
     const pins = await page.locator(".leaflet-marker-icon").count();
     check(pins >= 4, `where to buy: the Leaflet map shows the shops with a position and the head office (${pins} pins)`);
-    await page.locator("#wtb-region").selectOption("ashanti").catch(async () => { await page.locator("#wtb-region").evaluate((s) => { s.value = "ashanti"; s.dispatchEvent(new Event("change", { bubbles: true })); }); });
-    await page.getByText(/We are adding Yazz stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: Ashanti (only a Hooch shop) shows the friendly empty message"), (e) => check(false, "where to buy: Ashanti empty message", e.message));
+    // Volta: only a non Yazz demo shop and none of the 16 original Yazz shops from migration 0018 (those are in Greater
+    // Accra, Ashanti, Central, Eastern, Northern and Upper West).
+    await page.locator("#wtb-region").selectOption("volta").catch(async () => { await page.locator("#wtb-region").evaluate((s) => { s.value = "volta"; s.dispatchEvent(new Event("change", { bubbles: true })); }); });
+    await page.getByText(/We are adding Yazz stockists in Volta/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: Volta (no Yazz shop) shows the friendly empty message"), (e) => check(false, "where to buy: Volta empty message", e.message));
     const remembered = await page.evaluate(() => localStorage.getItem("yazz-region"));
-    check(remembered === "ashanti", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
+    check(remembered === "volta", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
     await page.goto(`${SITE}/contact?product=toothpaste#where-to-buy`);
-    await page.getByText(/We are adding Yazz stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
+    await page.getByText(/We are adding Yazz stockists in Volta/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
     check(await page.getByText("Looking for Toothpaste?").count() === 1, "where to buy: the product is named");
     await ctx.close();
 
@@ -177,7 +179,8 @@ try {
     await p2.locator("#wtb-region").selectOption("greater-accra");
     await Promise.all([p2.waitForURL(/region=greater-accra/), p2.getByRole("button", { name: "Find stockists" }).click()]);
     const listed = await p2.locator("#where-to-buy li h3").allInnerTexts();
-    check(listed.length === 3 && listed.includes("Demo Shop Adabraka") && !listed.includes("Demo Provisions Madina"),
+    // 3 active demo Yazz shops plus the 8 original Greater Accra Yazz shops from migration 0018.
+    check(listed.length === 11 && listed.includes("Demo Shop Adabraka") && listed.includes("Shoprite Accra Mall") && !listed.includes("Demo Provisions Madina"),
       "where to buy without JavaScript: submitting the region form lists that region's Yazz stockists", { url: p2.url(), listed });
     await nojs.close();
   }

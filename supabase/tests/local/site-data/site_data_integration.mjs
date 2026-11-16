@@ -188,6 +188,10 @@ try {
 
   // ---------- Stockists ----------
   {
+    // Migration 0018 seeds the 16 shops Lexta publishes on yazzproducts.com. These checks count their own shops, so the
+    // throwaway database starts without the seeded ones.
+    await q(`delete from public.stockist_brands where stockist_id in (select id from public.stockists where created_by is null);
+      delete from public.stockists where created_by is null`);
     await q(`
       insert into public.stockists (id, name, outlet_type, region_id, town, address, phone, opening_hours, is_active) values
         ('00000000-0000-0000-0000-00000000d001', 'Site test Osu supermarket', 'supermarket', (select id from public.regions where slug = 'greater-accra'), 'Osu', 'Oxford Street', '+233 30 000 0001', 'Mon to Sat, 8am to 8pm', true),
