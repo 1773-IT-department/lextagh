@@ -7,7 +7,7 @@
 //   - Hooch data only: the two Drive cereals, no Choco Flakes, Hooch stockists only
 //   - the live 3D scene: it loads on a capable browser (?3d=on), draws, fades in over the poster, a tap makes a "crunch",
 //     the Pause motion button works; with reduced motion the poster stays and nothing moves
-//   - the nav has exactly Lexta's six tabs; recipe filter chips; the pack toy and the "You need" tick list by keyboard
+//   - the nav has exactly Lexta's six tabs; recipe filter chips; the "You need" tick list by keyboard; no pack toy
 //   - the consumer form (question, recipe idea and a product problem) and the trade enquiry, with and without JavaScript
 //   - the live chat widget opens and starts a conversation tagged hooch
 // Build the site for the harness first (see run.sh). Screenshots go to HOOCH_SCREENSHOTS (default: a hooch-screens folder
@@ -193,12 +193,11 @@ try {
     for (let i = 0; i < n; i += 1) { await items.nth(i).focus(); await page.keyboard.press("Enter"); }
     check(n === 3 && await page.getByText("Ready? Pour, add and enjoy!").isVisible(), "recipe: ticking every item by keyboard shows the ready message");
 
-    // The pack toy by keyboard.
+    // The tap a pack toy was removed (Desmond, 16 Nov 2026): the 10 packs band keeps its heading, text and family guide only.
     await page.goto(`${SITE}/?3d=off`);
-    const pack = page.getByRole("button", { name: "Pack 3 of 10" });
-    await pack.focus();
-    await page.keyboard.press("Space");
-    check(await pack.getAttribute("aria-pressed") === "true", "home: a pack opens from the keyboard");
+    const band = page.locator("section[aria-labelledby='packs-title']");
+    check(await band.getByRole("button", { name: /^Pack \d+ of 10$/ }).count() === 0 && await page.getByText("Tap a pack to open it.").count() === 0
+      && await band.locator("table").count() === 1, "home: the 10 packs band has no pack toy, and keeps the family guide");
     await ctx.close();
   }
 
@@ -214,6 +213,18 @@ try {
       label: el.querySelector("[role=img]")?.getAttribute("aria-label") ?? "", posterHidden: el.querySelector("img")?.getAttribute("aria-hidden") === "true" }));
     check(live.mode === "live" && live.shown && live.canvas && /3D model of the Hooch® Cornflakes box/.test(live.label) && live.posterHidden,
       "3D: on a capable browser the live scene loads, fades in over the poster and is described for screen readers", live);
+    // The hint explains both the tap and the drag, and stays after the visitor has tapped and dragged.
+    const HINT = "Tap a box to shake out the flakes, or drag to spin it!";
+    const hintShown = () => stage.getByText(HINT).isVisible();
+    const before = await hintShown();
+    const area = await stage.boundingBox();
+    await page.mouse.click(area.x + area.width / 2, area.y + area.height * 0.5);
+    await page.mouse.move(area.x + area.width * 0.4, area.y + area.height * 0.5);
+    await page.mouse.down();
+    await page.mouse.move(area.x + area.width * 0.7, area.y + area.height * 0.5, { steps: 6 });
+    await page.mouse.up();
+    await sleep(400);
+    check(before && await hintShown(), "3D: the tap and drag hint is shown, and still shown after a tap and a drag", { before });
     const pause = stage.getByRole("button", { name: /Pause motion/ });
     await pause.click();
     check(await stage.getByRole("button", { name: /Play motion/ }).getAttribute("aria-pressed") === "true" && await page.evaluate(() => document.documentElement.dataset.motion) === "paused",
