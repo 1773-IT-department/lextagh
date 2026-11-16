@@ -105,7 +105,7 @@ try {
   await site.getByRole("button", { name: "Start chat" }).click();
   await site.getByRole("log").getByText("where can I buy Yazz").waitFor();
   const auto = await site.getByRole("log").innerText();
-  check(auto.includes("A member of the team will reply shortly") || auto.includes("[PLACEHOLDER: Lexta chat office hours]"), "1440: the fixed reply or out of hours note shows after the first message", auto);
+  check(auto.includes("Your message is with our team, and they will reply here") || auto.includes("[PLACEHOLDER: Lexta chat office hours]"), "1440: the fixed reply or out of hours note shows after the first message", auto);
   await site.screenshot({ path: `${OUT}/site-1440-thread.png` });
   check((await sounds(site)).length === 0, "1440: no chime for the visitor's own first message");
   const conv = JSON.parse(await site.evaluate(() => localStorage.getItem("lexta-chat-v1")));

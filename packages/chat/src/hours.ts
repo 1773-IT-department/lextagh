@@ -15,7 +15,7 @@ export function chatTeamAvailable(now: Date = new Date()): boolean {
 }
 
 /** The one fixed reply, shown after the visitor's first message. */
-export const CHAT_AUTO_REPLY = "Thank you. A member of the team will reply shortly.";
+export const CHAT_AUTO_REPLY = "Thank you. Your message is with our team, and they will reply here.";
 
 /** Shown instead of the fixed reply outside office hours, and above the start form. */
 export const chatOutOfHours = (officeHoursText: string, supportEmail: string) =>
