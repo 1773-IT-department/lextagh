@@ -7,6 +7,7 @@ import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
 import { lextaSiteUrl as LEXTA } from "@/lib/site";
 import { Err, FormError, Honeypot, fieldAria } from "../FormBits";
+import { Select } from "@lexta/ui";
 
 export default function ContactView({ v: vals }: { v: any }) {
   return (
@@ -214,7 +215,7 @@ export default function ContactView({ v: vals }: { v: any }) {
             {"\n    "}
             <label style={{"display":"flex","flexDirection":"column","gap":"8px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.12em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
               {"Your region\n      "}
-              <select id="wtb-region" name="region" value={vals.region} onChange={vals.onRegion} style={{"height":"58px","padding":"0 4px","border":"0","borderBottom":"2px solid #fff","fontSize":"20px","fontWeight":"600","background":"transparent","color":"#fff","outline":"none"} as CSSProperties}>
+              <Select wrapperClassName="lz-sel lz-sel-dark" nativeOnTouch={false} id="wtb-region" name="region" value={vals.region} onChange={vals.onRegion} style={{"height":"58px","padding":"0 4px","border":"0","borderBottom":"2px solid #fff","fontSize":"20px","fontWeight":"600","background":"transparent","color":"#fff","outline":"none"} as CSSProperties}>
                 {(vals.regionOpts ?? []).map((r: any, i3: number) => (
                   <Fragment key={i3}>
                     <option value={r.v} style={{"color":"#23103a"} as CSSProperties}>
@@ -222,7 +223,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                     </option>
                   </Fragment>
                 ))}
-              </select>
+              </Select>
               {"\n    "}
             </label>
             {"\n    "}
@@ -327,12 +328,12 @@ export default function ContactView({ v: vals }: { v: any }) {
                         {"What is it about?"}
                       </p>
                       {"\n            "}
-                      <div style={{"display":"flex","flexWrap":"wrap","gap":"2px"} as CSSProperties}>
+                      <div className="lz-topics" style={{"display":"flex","flexWrap":"wrap","gap":"2px"} as CSSProperties}>
                         {"\n              "}
                         {(vals.topics ?? []).map((c: any, i4: number) => (
                           <Fragment key={i4}>
                             {"\n                "}
-                            <button type="button" aria-pressed={c.on} onClick={c.onClick} style={css(`cursor:pointer;padding:12px 16px;font-weight:600;font-size:14px;border:1px solid #23103a;background:${c.bg};color:${c.fg}`)}>
+                            <button type="button" aria-pressed={c.on} onClick={c.onClick} className="lz-topic" style={css(`cursor:pointer;padding:12px 16px;font-weight:600;font-size:14px;border:1px solid #23103a;background:${c.bg};color:${c.fg}`)}>
                               {c.label}
                             </button>
                             {"\n              "}
@@ -377,7 +378,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                       {"\n            "}
                       <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"} as CSSProperties}>
                         {"Region (optional)\n              "}
-                        <select name="region" defaultValue={vals.msg.v.region ?? vals.initialRegion} style={{"height":"50px","padding":"0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"17px","background":"transparent","color":"#23103a","outline":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
+                        <Select wrapperClassName="lz-sel" nativeOnTouch={false} name="region" defaultValue={vals.msg.v.region ?? vals.initialRegion} style={{"height":"50px","padding":"0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"17px","background":"transparent","color":"#23103a","outline":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
                           <option value="">
                             {"Choose your region"}
                           </option>
@@ -388,13 +389,13 @@ export default function ContactView({ v: vals }: { v: any }) {
                               </option>
                             </Fragment>
                           ))}
-                        </select>
+                        </Select>
                         {"\n            "}
                       </label>
                       {"\n            "}
                       <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"} as CSSProperties}>
                         {"Product (optional)\n              "}
-                        <select name="product" defaultValue={vals.msg.v.product ?? vals.initialProduct} style={{"height":"50px","padding":"0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"17px","background":"transparent","color":"#23103a","outline":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
+                        <Select wrapperClassName="lz-sel" nativeOnTouch={false} name="product" defaultValue={vals.msg.v.product ?? vals.initialProduct} style={{"height":"50px","padding":"0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"17px","background":"transparent","color":"#23103a","outline":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
                           <option value="">
                             {"Choose a product"}
                           </option>
@@ -405,7 +406,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                               </option>
                             </Fragment>
                           ))}
-                        </select>
+                        </Select>
                         {"\n            "}
                       </label>
                       {"\n          "}
@@ -672,10 +673,10 @@ export default function ContactView({ v: vals }: { v: any }) {
                           <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
                             {f.label}
                             {f.name === "region" ? (
-                              <select name="region" defaultValue={vals.trade.v.region ?? ""} {...fieldAria(vals.trade.state, "region", "t-region-error")} style={{"height":"46px","padding":"0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"17px","background":"transparent","color":"#fff","outline":"none","letterSpacing":"0","textTransform":"none","fontWeight":"400"} as CSSProperties}>
+                              <Select wrapperClassName="lz-sel lz-sel-dark" nativeOnTouch={false} name="region" defaultValue={vals.trade.v.region ?? ""} {...fieldAria(vals.trade.state, "region", "t-region-error")} style={{"height":"46px","padding":"0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"17px","background":"transparent","color":"#fff","outline":"none","letterSpacing":"0","textTransform":"none","fontWeight":"400"} as CSSProperties}>
                                 <option value="" style={{"color":"#0B3D2E"} as CSSProperties}>{"Choose a region"}</option>
                                 {(vals.regionOptsOnly ?? []).map((r: any) => <option key={r.v} value={r.v} style={{"color":"#0B3D2E"} as CSSProperties}>{r.l}</option>)}
-                              </select>
+                              </Select>
                             ) : (
                               <input name={f.name} type={f.type} autoComplete={f.auto} required={f.required} maxLength={f.max} defaultValue={vals.trade.v[f.name] ?? ""} {...fieldAria(vals.trade.state, f.name, `t-${f.name}-error`)} style={{"height":"46px","padding":"0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"17px","background":"transparent","color":"#fff","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties} />
                             )}
@@ -687,7 +688,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                       {"\n            "}
                       <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
                         {"Expected monthly volume (optional)\n              "}
-                        <select name="volume" defaultValue={vals.trade.v.volume ?? ""} style={{"height":"46px","padding":"0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"16px","background":"transparent","color":"#fff","outline":"none","letterSpacing":"0","textTransform":"none","fontWeight":"400"} as CSSProperties}>
+                        <Select wrapperClassName="lz-sel lz-sel-dark" nativeOnTouch={false} name="volume" defaultValue={vals.trade.v.volume ?? ""} style={{"height":"46px","padding":"0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"16px","background":"transparent","color":"#fff","outline":"none","letterSpacing":"0","textTransform":"none","fontWeight":"400"} as CSSProperties}>
                           <option value="" style={{"color":"#0B3D2E"} as CSSProperties}>
                             {"Choose a volume"}
                           </option>
@@ -706,7 +707,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                           <option style={{"color":"#0B3D2E"} as CSSProperties}>
                             {"Not sure yet"}
                           </option>
-                        </select>
+                        </Select>
                         {"\n            "}
                       </label>
                       {"\n          "}
