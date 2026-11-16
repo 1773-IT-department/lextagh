@@ -710,3 +710,44 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .nav-progress.on span { animation: none; width: 100%; opacity: .8; }
   .nav-pending.on { animation: none; }
 }
+
+/* Phone apps (lib/pwa.ts): install pages, install banner and the share panel ------------------------------------- */
+.pwa-install { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 28px 16px calc(28px + env(safe-area-inset-bottom)); background: var(--pwa-bg, var(--navy)); }
+.pwa-card { width: 100%; max-width: 420px; background: #fff; border-radius: 20px; padding: 28px 22px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,.18); }
+.pwa-icon { width: 96px; height: 96px; border-radius: 22px; box-shadow: 0 6px 18px rgba(11,47,61,.2); }
+.pwa-card h1 { font-size: 24px; margin: 16px 0 6px; color: var(--navy); }
+.pwa-desc { color: var(--muted); margin: 0 0 22px; line-height: 1.6; }
+.pwa-panel { display: grid; gap: 12px; text-align: left; }
+.pwa-lead { margin: 0; line-height: 1.6; }
+.pwa-big { height: 56px; font-size: 17px; }
+.pwa-center { text-align: center; margin: 0; }
+.pwa-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.pwa-steps li { display: flex; gap: 12px; align-items: flex-start; background: var(--soft); border: 1px solid var(--line); border-radius: 12px; padding: 12px; line-height: 1.5; }
+.pwa-step-icon { flex: 0 0 36px; height: 36px; border-radius: 10px; background: #fff; border: 1px solid #cfe3ea; color: var(--teal-dark); display: inline-flex; align-items: center; justify-content: center; }
+.pwa-step-num { font-weight: 800; }
+.pwa-after { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); text-align: left; }
+.pwa-after h2 { font-size: 15px; margin: 0 0 6px; color: var(--navy); }
+.pwa-after p { margin: 0; color: var(--muted); line-height: 1.6; font-size: 14px; }
+.pwa-foot { color: rgba(255,255,255,.75); font-size: 13px; margin: 18px 0 0; }
+
+.pwa-banner { display: flex; gap: 12px; align-items: center; background: var(--navy); color: #fff; border-radius: 12px; padding: 12px 14px; margin: 0 0 16px; }
+.pwa-banner img { width: 40px; height: 40px; border-radius: 10px; flex: 0 0 40px; }
+.pwa-banner p { margin: 0; flex: 1; font-size: 14px; line-height: 1.4; }
+.pwa-banner .btn { height: 38px; padding: 0 14px; font-size: 14px; }
+.pwa-banner-close { background: transparent; border: 0; color: #fff; opacity: .8; font-size: 22px; line-height: 1; width: 36px; height: 36px; cursor: pointer; border-radius: 8px; }
+.pwa-banner-close:hover, .pwa-banner-close:focus-visible { opacity: 1; background: rgba(255,255,255,.12); }
+
+.pwa-share { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+.pwa-share h2 { margin: 0 0 4px; font-size: 17px; }
+.pwa-share-link { display: flex; gap: 8px; margin: 12px 0; }
+.pwa-share-link input { flex: 1; min-width: 0; height: 40px; border: 1px solid #cfe3ea; border-radius: 9px; padding: 0 12px; font: inherit; font-size: 14px; color: var(--ink); background: var(--soft); }
+.pwa-share-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.pwa-qr { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
+.pwa-qr svg { display: block; width: 148px; height: 148px; }
+.pwa-qr span { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
+.pwa-share-grid { display: grid; gap: 16px; }
+@media (max-width: 640px) {
+  .pwa-share { grid-template-columns: 1fr; }
+  .pwa-qr { justify-self: start; }
+}
