@@ -25,7 +25,12 @@ create table auth.users (
   email text,
   raw_app_meta_data jsonb not null default '{}'::jsonb,
   raw_user_meta_data jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  -- Sign in state, as on Supabase (read by public.admin_users_list in 0019).
+  invited_at timestamptz,
+  email_confirmed_at timestamptz,
+  last_sign_in_at timestamptz,
+  banned_until timestamptz
 );
 
 -- Same contract as Supabase: the signed in user's id comes from the JWT "sub" claim.
