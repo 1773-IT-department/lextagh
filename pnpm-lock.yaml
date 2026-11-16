@@ -158,6 +158,9 @@ importers:
 
   apps/portal:
     dependencies:
+      '@lexta/chat':
+        specifier: workspace:*
+        version: link:../../packages/chat
       '@lexta/db':
         specifier: workspace:*
         version: link:../../packages/db

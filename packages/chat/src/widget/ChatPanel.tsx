@@ -4,14 +4,18 @@ import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type K
 import { CHAT_LIMITS, type ChatVisitorMessage } from "@lexta/db";
 import type { ChatBrandConfig } from "../config";
 import { CHAT_AUTO_REPLY, chatOutOfHours, chatTeamAvailable } from "../hours";
+import { chatSoundMuted, playChatSound, primeChatSound, setChatSoundMuted, setChatTitleAlert } from "../sound";
 import s from "./panel.module.css";
 
 // The live chat panel: a short start form, then the conversation. Everything goes through this site's own
 // /api/chat route; the browser never holds a database key or the shared secret. The conversation id and its random
 // token are kept in localStorage so the chat survives a reload (and simply starts fresh when storage is blocked).
-// While the panel is open it asks for new messages every few seconds; when it is closed it does not ask at all.
+// While the panel is open it asks for new messages every few seconds. While it is closed (or the tab is in the
+// background) and a chat is going, it asks less often, so a reply from the team still makes a soft chime, shows a
+// count on the chat button and in the tab title. A closed chat is not asked about until the visitor opens the panel.
 
 const POLL_MS = 4000;
+const BACKGROUND_POLL_MS = 12000;
 const MAX_BACKOFF_MS = 30000;
 const genericError = (email: string) => `Sorry, that did not go through. Please try again in a moment, or email ${email}.`;
 
@@ -63,7 +67,9 @@ const timeOf = (iso: string) => {
   return Number.isNaN(d.getTime()) ? "" : d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 };
 
-export default function ChatPanel({ open, onClose, config }: { open: boolean; onClose: () => void; config: ChatBrandConfig }) {
+export default function ChatPanel({ open, onClose, config, onUnread }: {
+  open: boolean; onClose: () => void; config: ChatBrandConfig; onUnread?: (count: number) => void;
+}) {
   const ids = useId();
   const { brandName, storageKey, supportEmail } = config;
   const GENERIC = genericError(supportEmail);
@@ -78,6 +84,12 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
   const [draft, setDraft] = useState("");
   const [ended, setEnded] = useState(false);
   const lastSeq = useRef(0);
+  // Sound and unread: the first read after loading only fills in the history (no chime); after that, every new
+  // message from the team chimes, and counts as unread until the visitor has the panel open in a visible tab.
+  const primed = useRef(false);
+  const [unread, setUnread] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const attention = useRef(open);
   // The id of a start or message that has not gone through yet, with what it carried. Trying the same thing again
   // (after a timeout or a server error) reuses the id, so the database recognises the retry and never saves twice;
   // anything changed gets a new id.
@@ -95,7 +107,36 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
   useEffect(() => {
     setSession(loadSession(storageKey));
     setReady(true);
+    setMuted(chatSoundMuted());
+    primeChatSound();
   }, [storageKey]);
+
+  // Is the visitor looking at the chat? (Open panel in a visible tab.) Then nothing is unread.
+  useEffect(() => {
+    const look = () => {
+      attention.current = open && document.visibilityState === "visible";
+      if (attention.current) setUnread(0);
+    };
+    look();
+    document.addEventListener("visibilitychange", look);
+    return () => document.removeEventListener("visibilitychange", look);
+  }, [open]);
+
+  useEffect(() => {
+    onUnread?.(unread);
+    setChatTitleAlert(document.visibilityState === "hidden" ? unread : 0);
+  }, [unread, onUnread]);
+  useEffect(() => {
+    const clear = () => { if (document.visibilityState === "visible") setChatTitleAlert(0); };
+    document.addEventListener("visibilitychange", clear);
+    return () => { document.removeEventListener("visibilitychange", clear); setChatTitleAlert(0); };
+  }, []);
+
+  const toggleMute = () => {
+    const next = !muted;
+    setMuted(next);
+    setChatSoundMuted(next);
+  };
 
   // Focus the first thing to do when the panel opens.
   useEffect(() => {
@@ -105,6 +146,12 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
   }, [open, ready, session]);
 
   const merge = useCallback((incoming: ChatVisitorMessage[]) => {
+    const fresh = primed.current ? incoming.filter((m) => m.sender !== "visitor" && m.seq > lastSeq.current) : [];
+    primed.current = true;
+    if (fresh.length) {
+      playChatSound("incoming", chatSoundMuted());
+      if (!attention.current) setUnread((n) => n + fresh.length);
+    }
     if (!incoming.length) return;
     setLines((prev) => {
       const byId = new Map(prev.map((l) => [l.id, l]));
@@ -117,6 +164,8 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
   }, []);
 
   const forget = useCallback((message: string) => {
+    primed.current = false;
+    setUnread(0);
     saveSession(storageKey, null);
     setSession(null);
     setLines([]);
@@ -125,15 +174,17 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
     setError(message);
   }, [storageKey]);
 
-  // Poll for new messages while the panel is open and the tab is visible.
+  // Poll for new messages: often while the panel is open in a visible tab, less often otherwise (not at all for a chat
+  // the team has closed while the panel is closed).
   useEffect(() => {
-    if (!open || !session) return;
+    if (!session || (!open && status === "closed")) return;
     let stop = false;
     let timer = 0;
     let wait = POLL_MS;
     const tick = async () => {
       if (stop) return;
-      if (document.visibilityState === "visible") {
+      const looking = open && document.visibilityState === "visible";
+      {
         const r = await api<{ reference: string; status: string; messages: ChatVisitorMessage[] }>({
           action: "read", conversationId: session.id, token: session.token, after: lastSeq.current,
         }, GENERIC);
@@ -141,7 +192,7 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
         if (r.ok) {
           merge(r.messages);
           setStatus(r.status);
-          wait = POLL_MS;
+          wait = looking ? POLL_MS : BACKGROUND_POLL_MS;
         } else if (r.code === "not_found") {
           forget(r.message);
           return;
@@ -157,7 +208,7 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => { stop = true; window.clearTimeout(timer); document.removeEventListener("visibilitychange", onVisible); };
-  }, [open, session, merge, forget, GENERIC]);
+  }, [open, session, status, merge, forget, GENERIC]);
 
   // Keep the newest message in view.
   useEffect(() => {
@@ -193,6 +244,7 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
     saveSession(storageKey, next);
     setEnded(false);
     lastSeq.current = 0;
+    primed.current = true;
     setLines([{ id: "first", seq: 0, sender: "visitor", body: get("message").trim(), created_at: new Date().toISOString(), staff_name: null }]);
     setSession(next);
   }
@@ -229,6 +281,8 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
     setSession(null);
     setLines([]);
     lastSeq.current = 0;
+    primed.current = false;
+    setUnread(0);
     setError("");
     setEnded(false);
     setStatus("open");
@@ -256,6 +310,14 @@ export default function ChatPanel({ open, onClose, config }: { open: boolean; on
           <p className={s.sub}>{session ? `You are chatting with the ${config.teamName}.` : "A real person from our team will answer."}</p>
         </div>
         <div className={s.headActions}>
+          <button type="button" className={s.close} onClick={toggleMute} aria-pressed={muted}
+            aria-label={muted ? "Turn chat sounds on" : "Turn chat sounds off"} title={muted ? "Sounds off" : "Sounds on"}>
+            {muted ? (
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4zM16 9l5 6M21 9l-5 6" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" /></svg>
+            )}
+          </button>
           {session && <button type="button" className={s.textButton} onClick={newChat}>New chat</button>}
           <button type="button" className={s.close} onClick={onClose} aria-label="Close chat">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" /></svg>

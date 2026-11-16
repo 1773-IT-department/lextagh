@@ -5,6 +5,7 @@
     "./config": "./src/config.ts",
     "./hours": "./src/hours.ts",
     "./server": "./src/server.ts",
+    "./sound": "./src/sound.ts",
     "./visitor": "./src/visitor.ts",
     "./widget": "./src/widget/ChatLauncher.tsx"
   },

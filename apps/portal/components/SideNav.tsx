@@ -2,6 +2,7 @@
 
 import Link, { useLinkStatus } from "next/link";
 import { usePathname } from "next/navigation";
+import { ChatNavBadge } from "@/components/chat/ChatAlertControls";
 
 /** The label of a menu link, marked while the page it opens is loading (the click answers at once). */
 function NavLabel({ label }: { label: string }) {
@@ -22,7 +23,7 @@ export default function SideNav({ items }: { items: { href: string; label: strin
   return (
     <nav aria-label="Systems">
       {items.map((i) => (
-        <Link key={i.href} href={i.href} aria-current={i.href === current ? "page" : undefined}><NavLabel label={i.label} /></Link>
+        <Link key={i.href} href={i.href} aria-current={i.href === current ? "page" : undefined}><NavLabel label={i.label} />{i.href === "/systems/chat" && <ChatNavBadge />}</Link>
       ))}
     </nav>
   );
