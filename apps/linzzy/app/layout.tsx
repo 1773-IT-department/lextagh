@@ -4,10 +4,11 @@ import type { ReactNode } from "react";
 import { metadataBase } from "@/lib/site";
 import "./globals.css";
 
-// Bricolage Grotesque (display) and DM Sans (text): free Google fonts (SIL Open Font License, app/fonts/OFL.txt), the
-// variable latin files kept in the repo and served by next/font from this site: no request to Google from visitors'
-// browsers or from the build, and no layout shift.
-const display = localFont({ src: "./fonts/BricolageGrotesque-latin.woff2", weight: "200 800", variable: "--font-display", display: "swap" });
+import "./linzzy-hover.css";
+
+// The pages use DM Serif Display and Hanken Grotesk (app/globals.css, public/fonts). DM Sans (SIL Open Font License,
+// public/fonts/OFL.txt) is kept for the live chat button and panel, which keep their previous look. All served from this
+// site: no request to Google from visitors' browsers or from the build.
 const body = localFont({
   src: [
     { path: "./fonts/DMSans-latin.woff2", weight: "100 1000", style: "normal" },
@@ -32,8 +33,14 @@ export const viewport: Viewport = { themeColor: "#23103a", width: "device-width"
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-GH" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+    <html lang="en-GH" className={body.variable}>
+      <body>
+        {/* Without JavaScript the scroll animations cannot run: show everything in its end state. */}
+        <noscript>
+          <style>{"[data-reveal]{--r:1!important}[data-pin]{--p:1!important}[data-w]{opacity:1!important}:has(>[data-track]){overflow-x:auto!important}[data-faq-a]{display:block!important}"}</style>
+        </noscript>
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,0 +1,4 @@
+DM Serif Display (Colophon Foundry), Hanken Grotesk (Hanken Design Co.) and DM Sans (Colophon Foundry, Jonny Pinhorn,
+Indian Type Foundry; app/fonts, for the live chat) are licensed under the SIL Open Font License, Version 1.1
+(https://openfontlicense.org). Latin subsets, as served by Google Fonts, self-hosted here so builds and visitors' browsers
+do not depend on reaching Google.
