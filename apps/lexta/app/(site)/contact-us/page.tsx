@@ -34,13 +34,13 @@ type Dept = { title: string; text: string; email: string; accent?: boolean; seco
 const departments: Dept[] = [
   {
     title: "Sales and distribution", accent: true, email: "marketing@lextagh.com",
-    text: "Distributor appointments, trade terms, stock availability and route coverage.",
+    text: "Distributor, wholesaler and modern trade enquiries, stock availability and coverage in your region.",
     second: { label: "+233 (0) 501 619 588", href: "tel:+233501619588" },
   },
   {
     title: "Consumer care", email: "support@lextagh.com",
-    text: "Product questions, quality concerns and batch enquiries for Yazz, Linzzy and Hooch.",
-    second: { label: "+233 (0) 302 235 296", href: "tel:+233302235296" },
+    text: "Product questions, complaints, quality concerns and batch enquiries for Yazz, Linzzy and Hooch. Consumer Reports line:",
+    second: { label: "+233 (0) 509 967 400", href: "tel:+233509967400" },
   },
   {
     title: "Media and communications", email: "marketing@lextagh.com",
@@ -59,9 +59,9 @@ const directionsUrl = "https://www.google.com/maps/search/?api=1&query=" +
   encodeURIComponent("Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra");
 
 const visitFacts = [
-  { title: "Office hours", text: "Monday to Friday, 8am to 5pm. Saturdays by arrangement." },
-  { title: "Deliveries and collections", text: "Trade collections from 8am to 3pm at the goods gate, with an order reference." },
-  { title: "Postal address", text: "P. O. Box AN 19064, Accra North, Ghana." },
+  { title: "Office hours", text: "[PLACEHOLDER: Lexta office hours]" },
+  { title: "Deliveries and collections", text: "[PLACEHOLDER: trade collection hours and point]" },
+  { title: "Postal address", text: "[PLACEHOLDER: Lexta postal address (P. O. Box)]" },
 ];
 
 export default function ContactPage() {
@@ -79,7 +79,7 @@ export default function ContactPage() {
                 Talk to the right <span style={{ color: "#3fc0dd" }}>team directly</span>
               </h1>
               <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 560, textWrap: "pretty" }}>
-                Distribution, bulk orders, consumer care, media or careers. Pick the route that fits and you reach the people who can actually answer.
+                Distribution, bulk orders, consumer care, media or careers. Pick the route that fits and your message goes to the team that handles it.
               </p>
             </div>
             <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 50px rgba(4,26,34,.34)" }}>
@@ -101,15 +101,16 @@ export default function ContactPage() {
             <div style={{ padding: "32px 30px 34px", borderRight: "1px solid rgba(18,163,196,.16)" }}>
               <div style={cardLabel}>Head office</div>
               <div style={{ marginTop: 12, fontSize: 14, lineHeight: 1.8, color: "#12313d", fontWeight: 600 }}>Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.</div>
-              <div style={cardNote}>P. O. Box AN 19064, Accra North</div>
+              <div style={cardNote}>[PLACEHOLDER: Lexta postal address (P. O. Box)]</div>
             </div>
             <div style={{ padding: "32px 30px 34px", borderRight: "1px solid rgba(18,163,196,.16)" }}>
               <div style={cardLabel}>Call us</div>
               <div style={linkStack}>
                 <a href="tel:+233501619588" style={cardLink}>+233 (0) 501 619 588</a>
                 <a href="tel:+233302235296" style={cardLink}>+233 (0) 302 235 296</a>
+                <a href="tel:+233302662970" style={cardLink}>+233 (0) 302 662 970</a>
               </div>
-              <div style={cardNote}>Monday to Friday, 8am to 5pm GMT</div>
+              <div style={cardNote}>WhatsApp Customer Care: <a href="https://wa.me/233544351010" style={{ color: "inherit" }}>+233 (0) 544 351 010</a>. [PLACEHOLDER: phone line opening hours]</div>
             </div>
             <div style={{ padding: "32px 30px 34px" }}>
               <div style={cardLabel}>Email us</div>
@@ -117,7 +118,7 @@ export default function ContactPage() {
                 <a href="mailto:marketing@lextagh.com" style={cardLink}>marketing@lextagh.com</a>
                 <a href="mailto:hr@lextagh.com" style={cardLink}>hr@lextagh.com</a>
               </div>
-              <div style={cardNote}>We reply within two working days</div>
+              <div style={cardNote}>Messages go to monitored Lexta inboxes</div>
             </div>
           </div>
         </div>
@@ -165,7 +166,7 @@ export default function ContactPage() {
             <div style={eyebrow}>Visit us</div>
             <h2 style={h2}>Lexta Square, Dzorwulu</h2>
             <p style={{ margin: "18px 0 0", fontSize: 14, lineHeight: 1.9, color: "#5d7883" }}>
-              Our head office and main manufacturing site sit on the Olusegun Obasanjo Highway in Dzorwulu, Accra. Visitors are welcome by appointment; factory tours require prior clearance for hygiene and safety reasons.
+              Our head office is at Lexta Square on the Olusegun Obasanjo Highway in Dzorwulu, Accra. Visitors are welcome by appointment.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))", gap: 22, marginTop: 28 }}>
               {visitFacts.map((f) => (
@@ -207,7 +208,7 @@ export default function ContactPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Want to carry our brands?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              We appoint distributors across Ghana and into Liberia, with trade terms, merchandising support and a field team behind you.
+              Distributors, wholesalers and modern trade partners across Ghana and Liberia: select your partnership type and share your region and contact details.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>

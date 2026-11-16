@@ -11,7 +11,7 @@ import p from "@/components/proto.module.css";
 
 // Title and description from careers.html.
 const title = "Careers | Lexta Ghana";
-const description = "Current openings at Lexta Ghana across manufacturing, quality, sales, marketing, supply chain and support functions.";
+const description = "Current openings at Lexta Ghana. Grow with a company that believes in people and possibilities, in production, sales, logistics, marketing and administration.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -34,19 +34,22 @@ const h2: CSSProperties = { margin: "14px 0 0", fontSize: 34, lineHeight: 1.15, 
 const body: CSSProperties = { margin: "16px 0 0", fontSize: 14, lineHeight: 1.9, color: "#5d7883" };
 const statNum: CSSProperties = { fontSize: 28, fontWeight: 800, color: "#fff", letterSpacing: "-.03em" };
 const statLabel: CSSProperties = { marginTop: 4, fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,.75)" };
+/** A figure Lexta has not confirmed yet shows its [PLACEHOLDER: ...] note, sized to fit the figure's slot. */
+const statPlaceholder: CSSProperties = { fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: "#fff" };
 
 
+// Specific employee benefits need Lexta HR to confirm them; until then each card shows a placeholder.
 const benefits = [
-  { title: "Health cover", text: "Medical cover for you, extended to dependants for permanent staff, plus on-site first aid and periodic screening." },
-  { title: "Pension and statutory benefits", text: "SSNIT tier one and tier two contributions handled properly and on time, with clear payslips every month." },
-  { title: "Training budget", text: "Technical certification, safety and compliance training and professional development, funded rather than encouraged." },
-  { title: "Performance bonus", text: "Annual review with a bonus tied to targets you can see and influence, not a number decided in a closed room." },
-  { title: "Staff product allocation", text: "A monthly allocation of Yazz, Linzzy and Hooch products for your household." },
-  { title: "Internal mobility", text: "Open roles are advertised internally first, and we back moves between functions where the fit is right." },
+  { title: "Health cover", text: "[PLACEHOLDER: medical cover offered to staff and dependants]" },
+  { title: "Pension and statutory benefits", text: "SSNIT contributions as Ghanaian law requires. [PLACEHOLDER: any pension benefits beyond the statutory scheme]" },
+  { title: "Training and development", text: "Training, mentorship and clear career pathways, in line with our Growth pillar. [PLACEHOLDER: training programmes or budget offered]" },
+  { title: "Pay and reward", text: "[PLACEHOLDER: bonus or reward scheme, if any]" },
+  { title: "Staff products", text: "[PLACEHOLDER: staff product allowance, if any]" },
+  { title: "Moving within Lexta", text: "[PLACEHOLDER: internal vacancy and transfer policy]" },
 ];
 
 const steps = [
-  { n: "1", title: "Application", text: "Send your CV and a short note on why the role fits. You get a confirmation, not silence." },
+  { n: "1", title: "Application", text: "Send your CV and a short note on why the role fits. You receive a confirmation with your reference." },
   { n: "2", title: "Conversation", text: "A call with HR, then an interview with the hiring manager and the team you would work with." },
   { n: "3", title: "Practical exercise", text: "For technical and commercial roles, a task drawn from the actual job. Nothing artificial." },
   { n: "4", title: "Offer and onboarding", text: "References, a written offer with the terms spelled out, and a structured first few weeks." },
@@ -67,8 +70,8 @@ export default async function CareersPage() {
   const stats = [
     { value: String(jobs.length), label: "Roles open today", accent: true },
     { value: String(new Set(jobs.map((j) => j.department)).size), label: "Departments hiring" },
-    { value: "2 wks", label: "Typical time to first reply" },
-    { value: "4", label: "Locations across Ghana" },
+    { value: "[PLACEHOLDER: typical time to first reply]", label: "Typical time to first reply" },
+    { value: "[PLACEHOLDER: number of locations]", label: "Locations across Ghana" },
   ];
 
   return (
@@ -93,7 +96,7 @@ export default async function CareersPage() {
               Build something people <span style={{ color: "#3fc0dd" }}>use every day</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration. Here is where we are hiring right now.
+              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration. To enquire about careers, use the Careers form. Here is where we are hiring right now.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="#openings" padding="12px 12px 12px 20px">Browse open roles</ArrowButton>
@@ -108,7 +111,7 @@ export default async function CareersPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: 18, marginTop: 52, maxWidth: 900 }}>
             {stats.map((s) => (
               <div key={s.label} style={{ borderTop: `3px solid ${s.accent ? "#3fc0dd" : "rgba(255,255,255,.28)"}`, paddingTop: 14 }}>
-                <div style={statNum}>{s.value}</div>
+                <div style={s.value.startsWith("[PLACEHOLDER") ? statPlaceholder : statNum}>{s.value}</div>
                 <div style={statLabel}>{s.label}</div>
               </div>
             ))}
@@ -127,7 +130,7 @@ export default async function CareersPage() {
           <div style={{ maxWidth: 640 }}>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>What you get</div>
             <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>The terms behind the job title</h2>
-            <p style={{ ...body, color: "rgba(255,255,255,.82)" }}>Details vary by role and level, and we set them out plainly in the offer rather than after you sign.</p>
+            <p style={{ ...body, color: "rgba(255,255,255,.82)" }}>Details vary by role and level and are set out in the written offer.</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 24, marginTop: 44 }}>
             {benefits.map((b) => (
@@ -145,7 +148,7 @@ export default async function CareersPage() {
           <div style={{ maxWidth: 620 }}>
             <div style={eyebrow}>How we hire</div>
             <h2 style={h2}>Four steps, and we tell you where you stand</h2>
-            <p style={body}>Most processes close within three to four weeks of the advert coming down.</p>
+            <p style={body}>[PLACEHOLDER: typical length of the hiring process]</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 20, marginTop: 42 }}>
             {steps.map((s) => (
@@ -168,7 +171,7 @@ export default async function CareersPage() {
             <div style={eyebrow}>Apply</div>
             <h2 style={{ ...h2, fontSize: 32, lineHeight: 1.18 }}>Nothing open that fits? Tell us anyway</h2>
             <p style={{ ...body, marginTop: 18 }}>
-              We keep general applications on file and go back to them first when a role opens. Send us the function you are interested in and where you are based.
+              General applications go to our HR team and, with your consent, are kept on file for future roles. Send us the function you are interested in and where you are based.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>hr@lextagh.com</div>

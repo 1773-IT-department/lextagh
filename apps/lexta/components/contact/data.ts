@@ -22,14 +22,14 @@ export const reasons: Reason[] = [
     messagePlaceholder: "How can we help?",
   },
   {
-    key: "Distribution", tag: "DS", desc: "Become a distributor or discuss trade terms and coverage.", email: "marketing@lextagh.com",
+    key: "Distribution", tag: "DS", desc: "Distributor, wholesaler or modern trade enquiries and coverage.", email: "marketing@lextagh.com",
     formTitle: "Distribution enquiry", formNote: "Include your trading location and the brands you are interested in.",
     extraLabel: "Business name", extraPlaceholder: "Registered trading name",
     messagePlaceholder: "Where do you trade, what volumes do you handle, and which brands interest you?",
   },
   {
     key: "Bulk orders", tag: "BQ", desc: "Institutional, hospitality or wholesale quantities.", email: "marketing@lextagh.com",
-    formTitle: "Bulk order request", formNote: "Give us quantities and delivery timing and we will quote.",
+    formTitle: "Bulk order request", formNote: "Give us quantities and delivery timing so the team can prepare a quote.",
     extraLabel: "Products and quantities", extraPlaceholder: "e.g. 500 cartons Mama Yazz tissue",
     messagePlaceholder: "Products, quantities, delivery location and when you need them.",
   },
@@ -41,7 +41,7 @@ export const reasons: Reason[] = [
   },
   {
     key: "Media", tag: "PR", desc: "Interviews, brand assets and campaign detail.", email: "marketing@lextagh.com",
-    formTitle: "Media enquiry", formNote: "We aim to respond to press within two working days.",
+    formTitle: "Media enquiry", formNote: "Media enquiries go to our corporate affairs team.",
     extraLabel: "Publication or outlet", extraPlaceholder: "Where you are writing for",
     messagePlaceholder: "What you are working on, what you need from us, and your deadline.",
   },
@@ -53,13 +53,17 @@ export const reasons: Reason[] = [
   },
 ];
 
-export const regions = ["Greater Accra", "Ashanti", "Western", "Eastern", "Central", "Volta", "Northern", "Outside Ghana"];
+/** Ghana's 16 regions, then Outside Ghana. Each label maps to a region slug in lib/forms/core.ts (REGION_SLUGS). */
+export const regions = [
+  "Ahafo", "Ashanti", "Bono", "Bono East", "Central", "Eastern", "Greater Accra", "North East", "Northern", "Oti",
+  "Savannah", "Upper East", "Upper West", "Volta", "Western", "Western North", "Outside Ghana",
+];
 
 export const faqs: { q: string; a: string; links?: TextLink[] }[] = [
-  { q: "How do I become a Lexta distributor?", a: "Write to marketing@lextagh.com with your business name, trading location, current product lines and the volumes you handle. Our regional sales manager for your area will contact you to discuss coverage, credit and merchandising support. Appointments are made on territory need, so we will be straight with you about whether your area is already covered." },
-  { q: "Where can I buy your products?", a: "Yazz, Linzzy and Hooch are stocked in supermarkets, pharmacies, open markets and general trade outlets across Ghana, and through selected distributors in Liberia. If you cannot find a product near you, send us your location and we will tell you the nearest stockist." },
-  { q: "I have a concern about a product I bought. What should I do?", a: "Contact consumer care on support@lextagh.com or +233 (0) 302 235 296 with the product name, the batch code printed on the pack, where you bought it and the date. The batch code lets our quality team trace the exact production run, and we will come back to you with what we find." },
-  { q: "Do you supply institutions, hotels and hospitals directly?", a: "Yes. Institutional and hospitality volumes are handled by our key accounts team. Send your requirement and delivery schedule to marketing@lextagh.com for a quotation, including whether you need scheduled recurring deliveries." },
-  { q: "Can I visit the factory?", a: "Visits are possible by appointment. Because our lines run to hygiene and safety standards, factory access needs prior clearance and protective equipment we provide on site. Write to marketing@lextagh.com at least a week ahead with your preferred date and the size of your group." },
-  { q: "How do I apply for a job?", a: "All current openings are listed on our Careers page with full briefs and reference numbers. Apply through the role itself, or send a general application if nothing open fits. We keep general applications on file and go back to them first when a role opens.", links: [{ phrase: "Careers page", href: "/careers" }] },
+  { q: "How do I become a Lexta distributor?", a: "Write to marketing@lextagh.com, or use the Partner With Us form, with your business name, partnership type (distributor, wholesaler or modern trade), region and contact details, the product lines you carry and the volumes you handle. Your enquiry goes to the trade desk, which reviews coverage in your area. [PLACEHOLDER: distributor appointment process and terms]" },
+  { q: "Where can I buy your products?", a: "Yazz, Linzzy and Hooch are stocked in supermarkets, pharmacies, open markets and general trade outlets across Ghana, and in Liberia through our subsidiary in Monrovia. If you cannot find a product near you, use the stockist finder on our Home page or send us your location." },
+  { q: "I have a concern about a product I bought. What should I do?", a: "Contact consumer care on support@lextagh.com or the Consumer Reports line, +233 (0) 509 967 400, with the product name, the batch code printed on the pack, where you bought it and the date. Your report goes to our consumer care team, and the batch code helps our quality team trace the product." },
+  { q: "Do you supply institutions, hotels and hospitals directly?", a: "Send your requirement and delivery schedule to marketing@lextagh.com for a quotation, including whether you need recurring deliveries. [PLACEHOLDER: how Lexta handles institutional and hospitality supply]" },
+  { q: "Can I visit Lexta?", a: "Visits to Lexta Square are by appointment. Write to marketing@lextagh.com with your preferred date and the size of your group. [PLACEHOLDER: visitor and site tour policy]" },
+  { q: "How do I apply for a job?", a: "All current openings are listed on our Careers page with full briefs and reference numbers. Apply through the role itself, or send a general application if nothing open fits. With your consent, general applications are kept on file for future roles.", links: [{ phrase: "Careers page", href: "/careers" }] },
 ];

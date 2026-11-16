@@ -27,6 +27,8 @@ const h2: CSSProperties = { margin: "14px 0 0", fontWeight: 700, letterSpacing: 
 const body: CSSProperties = { fontSize: 14, lineHeight: 1.9, color: "#5d7883" };
 const card: CSSProperties = { background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 16px 34px rgba(11,60,78,.1)" };
 const fill: CSSProperties = { position: "absolute", inset: 0 };
+/** A figure Lexta has not confirmed yet shows its [PLACEHOLDER: ...] note, sized to fit the figure's slot. */
+const placeholderFigure: CSSProperties = { fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: "#fff" };
 const slotFill: CSSProperties = { display: "block", width: "100%", height: "100%" };
 const ghostBtn: CSSProperties = {
   display: "inline-flex", alignItems: "center", background: "rgba(255,255,255,.14)", border: "1px solid rgba(255,255,255,.55)",
@@ -168,17 +170,17 @@ const reach: (Photo & { title: string; text: string })[] = [
   },
   {
     placeholder: "Monrovia operation photo", ...photos.truck, alt: ALT.truck, title: "Liberia",
-    text: "A wholly owned subsidiary in Monrovia, operating since 2010 and serving as the base for our regional growth.",
+    text: "A wholly owned subsidiary in Monrovia, serving as the base for our regional growth.",
   },
   {
     placeholder: "Regional distribution photo", ...photos.stall, alt: ALT.stall, title: "West Africa and beyond",
-    text: "Active expansion plans into additional markets across the sub-region, built on the same standards that established us at home.",
+    text: "An ambition to serve families throughout Africa, built on the same standards that established us at home.",
   },
 ];
 
 const csrStats = [
-  { figure: "10M+", label: "Lives touched by our products" },
-  { figure: "100+", label: "Schools reached with health education" },
+  { figure: "[PLACEHOLDER: lives touched figure]", label: "Lives touched by our products" },
+  { figure: "[PLACEHOLDER: number of schools reached]", label: "Schools reached with health education" },
   { figure: "Free", label: "Screening clinics with MWAG" },
 ];
 
@@ -200,7 +202,7 @@ export default function AboutUsPage() {
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>About Lexta Ghana</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(30px,6vw,52px)", lineHeight: 1.08, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-              We make what we sell, <span style={{ color: "#3fc0dd" }}>under our own roof</span>
+              Dependable everyday products, <span style={{ color: "#3fc0dd" }}>proudly from Ghana</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>{description}</p>
           </div>
@@ -262,7 +264,7 @@ export default function AboutUsPage() {
               Lexta Ghana Limited was established in 2002 by Martin Brobbey, following more than ten years in the United Kingdom and a return home with a clear ambition: to improve everyday living through quality consumer products that ordinary Ghanaian households could actually afford.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
-              The company began as a supplier of home care products. It has since grown into one of Ghana&apos;s established consumer goods manufacturers, expanding across home care, personal care and food, and building a distribution network that reaches supermarkets, pharmacies, market traders and neighbourhood shops nationwide.
+              The company began as a supplier of home care products. It has since grown from a single category supplier into a leader in home and personal care, expanding into food and bringing Yazz, Linzzy and Hooch to supermarkets, pharmacies, market traders and neighbourhood shops across Ghana.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
               Our mission is to combine quality, innovation and affordability in products that meet family needs and deliver value to stakeholders. Our vision is to be the preferred choice for family-care products across Africa.
@@ -293,7 +295,7 @@ export default function AboutUsPage() {
               Our operational philosophy rests on a single conviction: real care requires uncompromising standards.
             </p>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-              We have grown from a local supplier into a competitive pan-African enterprise by investing where it matters. Rigorous quality control. Manufacturing infrastructure that can move at the pace the market demands. Distribution networks that carry our promises intact from our factory floor to a shelf in a village shop.
+              We have grown from a local supplier by investing where it matters. Rigorous quality control. Production that keeps pace with the market. Distribution that carries our products from Accra to shelves across Ghana and into Liberia.
             </p>
             <div style={{ marginTop: 26, fontSize: 18, fontWeight: 700, color: "#3fc0dd" }}>Affordable, accessible, and made with care.</div>
           </div>
@@ -410,7 +412,7 @@ export default function AboutUsPage() {
               Our strategic direction and operational integrity are anchored by an experienced leadership team. We combine seasoned industry veterans with forward-thinking professionals who share a single commitment: delivering exceptional value to our consumers while driving sustainable growth for our stakeholders.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
-              Our governance structure ensures that we operate with transparency, uphold our core values, and maintain our position as a trusted manufacturer in the West African consumer goods sector.
+              Our governance structure ensures that we operate with transparency, uphold our core values, and maintain our position as a trusted Ghanaian consumer-goods company.
             </p>
           </div>
 
@@ -476,7 +478,7 @@ export default function AboutUsPage() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(130px,1fr))", gap: 16 }}>
             {csrStats.map((st) => (
               <div key={st.label} style={{ border: "1px solid rgba(255,255,255,.35)", borderRadius: 12, padding: "22px 16px" }}>
-                <div style={{ fontSize: 26, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }}>{st.figure}</div>
+                <div style={st.figure.startsWith("[PLACEHOLDER") ? placeholderFigure : { fontSize: 26, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }}>{st.figure}</div>
                 <div style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: "rgba(255,255,255,.82)" }}>{st.label}</div>
               </div>
             ))}

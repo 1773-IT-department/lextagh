@@ -3,6 +3,7 @@ import { articles, type Article } from "./articles";
 export * from "./articles";
 export * from "./boilerplate";
 export * from "./categories";
+export * from "./held";
 
 /** The fields a News card shows (all the News grid sends to the browser). */
 export type CardArticle = Pick<Article, "slug" | "title" | "category" | "date" | "excerpt" | "image">;
