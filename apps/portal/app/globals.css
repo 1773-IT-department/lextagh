@@ -741,9 +741,12 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .pwa-banner-close { background: transparent; border: 0; color: #fff; opacity: .8; font-size: 22px; line-height: 1; width: 36px; height: 36px; cursor: pointer; border-radius: 8px; }
 .pwa-banner-close:hover, .pwa-banner-close:focus-visible { opacity: 1; background: rgba(255,255,255,.12); }
 
-.pwa-share { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+.pwa-share { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; min-width: 0; max-width: 100%; box-sizing: border-box; }
+.pwa-share > * { min-width: 0; }
+.pwa-share p { overflow-wrap: anywhere; }
 .pwa-share h2 { margin: 0 0 4px; font-size: 17px; }
-.pwa-share-link { display: flex; gap: 8px; margin: 12px 0; }
+.pwa-share-link { display: flex; gap: 8px; margin: 12px 0; min-width: 0; }
+.pwa-share-link .btn { flex: 0 0 auto; white-space: nowrap; }
 .pwa-share-link input { flex: 1; min-width: 0; height: 40px; border: 1px solid #cfe3ea; border-radius: 9px; padding: 0 12px; font: inherit; font-size: 14px; color: var(--ink); background: var(--soft); }
 .pwa-share-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .pwa-qr { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 10px; text-align: center; }
@@ -751,6 +754,6 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .pwa-qr span { display: block; font-size: 12px; color: var(--muted); margin-top: 6px; }
 .pwa-share-grid { display: grid; gap: 16px; }
 @media (max-width: 640px) {
-  .pwa-share { grid-template-columns: 1fr; }
+  .pwa-share { grid-template-columns: minmax(0, 1fr); }
   .pwa-qr { justify-self: start; }
 }
