@@ -307,7 +307,7 @@ export default function ChatPanel({ open, onClose, config, onUnread }: {
       <div className={s.head}>
         <div>
           <h2 id={`${ids}-title`} className={s.title}>Chat with {brandName}</h2>
-          <p className={s.sub}>{session ? `You are chatting with the ${config.teamName}.` : "A real person from our team will answer."}</p>
+          <p className={s.sub}>{session ? `You are chatting with the ${config.teamName}.` : "Send us a message and our team will reply here."}</p>
         </div>
         <div className={s.headActions}>
           <button type="button" className={s.close} onClick={toggleMute} aria-pressed={muted}
