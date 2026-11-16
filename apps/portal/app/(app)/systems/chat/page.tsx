@@ -1,6 +1,7 @@
 import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { CHAT_CONVERSATION_COLUMNS, CHAT_STATUSES, chatStatusLabel, isChatUnread, type ChatConversation } from "@lexta/db";
+import ChatAlertControls from "@/components/chat/ChatAlertControls";
 import InboxPoller from "@/components/chat/InboxPoller";
 import { chatAgo, chatSiteName, chatStaffName, getChatAccess, NO_CHAT_ACCESS } from "@/lib/chat";
 import { cleanSearch, PAGE_SIZE } from "@/lib/crm";
@@ -73,12 +74,15 @@ export default async function ChatInboxPage({ searchParams }: { searchParams: Pr
           <h1>Live chat</h1>
           <p className="small">
             Chats from the website widget, newest activity first. Open means the visitor is waiting for a reply. New
-            messages appear here by themselves.
+            messages appear here by themselves, with a soft chime.
           </p>
         </div>
-        <p className="small chat-unread-total" aria-live="polite">
-          {unreadRes.error ? "" : unread === 0 ? "Nothing unread" : `${unread} unread ${unread === 1 ? "chat" : "chats"}`}
-        </p>
+        <div>
+          <p className="small chat-unread-total" aria-live="polite">
+            {unreadRes.error ? "" : unread === 0 ? "Nothing unread" : `${unread} unread ${unread === 1 ? "chat" : "chats"}`}
+          </p>
+          <ChatAlertControls />
+        </div>
       </div>
 
       {params.deleted && <div className="alert ok" role="status">The chat was deleted.</div>}

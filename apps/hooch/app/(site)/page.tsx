@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleCard, ProductCard, RecipeCard } from "@/components/cards/Cards";
 import { Bouncy, Floaters, MilkWave } from "@/components/fun/Decor";
-import PackRow from "@/components/home/PackRow";
 import s from "@/components/home/home.module.css";
 import Icon from "@/components/Icon";
 import Marquee from "@/components/Marquee";
@@ -74,8 +73,6 @@ export default async function HomePage() {
           <div data-reveal="">
             <h2 id="packs-title" className={s.packsTitle}>{BRAND.sections.tenPacks}</h2>
             <p className={s.packsText}>Hooch® Cornflakes, 500g: 10 individual packs of 50g. Hooch® Frosted Flakes, 375g: 10 individual packs of 37.5g.</p>
-            <p className={s.packsHint}><Icon name="hand" size={18} /> Tap a pack to open it.</p>
-            <PackRow flavour="classic" />
           </div>
           <div className={s.guide} data-reveal="" style={{ "--d": ".1s" } as React.CSSProperties}>
             <h3>{FAMILY_GUIDE.title}</h3>
