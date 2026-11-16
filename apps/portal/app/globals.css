@@ -713,3 +713,19 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .nav-progress.on span { animation: none; width: 100%; opacity: .8; }
   .nav-pending.on { animation: none; }
 }
+
+/* Users and access */
+.users-checks { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 6px; }
+.users-checks label, .users-switch { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; cursor: pointer; }
+.users-brands { border: 0; padding: 0; margin: 0; min-width: 0; }
+.users-brands legend { font-size: 13px; font-weight: 600; margin-bottom: 4px; padding: 0; }
+.badge.users-active { background: #e7f7ee; color: #146c43; }
+.badge.users-invited, .badge.users-never_signed_in { background: #eaf4fb; color: #0b5a85; }
+.badge.users-no_role { background: #fff4e5; color: #8a4b00; }
+.badge.users-deactivated { background: #f3f3f3; color: #555; }
+.users-audit { list-style: none; margin: 0; padding: 0; }
+.users-audit li { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-bottom: 1px solid #e6eef2; }
+.users-audit li:last-child { border-bottom: 0; }
+.users-emails .form-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.users-table .hint { display: block; }
+.users-checks input[type="checkbox"], .users-switch input[type="checkbox"] { width: 18px; height: 18px; flex: none; margin: 0; padding: 0; }

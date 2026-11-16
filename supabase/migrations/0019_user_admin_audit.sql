@@ -1,6 +1,7 @@
 -- 0019_user_admin_audit: Users and access (the admin screen in the Business System).
 --
--- WRITTEN, NOT APPLIED. Desmond decides whether and when to apply it to the live project.
+-- WRITTEN, NOT APPLIED. Desmond decides whether and when to apply it to the live project (with the admin-users Edge
+-- Function deployed at the same time).
 --
 -- What it adds:
 --   1. public.user_admin_audit: one row per change an admin makes to a login (invite, resend, role, brands, details,

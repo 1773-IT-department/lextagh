@@ -30,8 +30,9 @@ export async function answerAdminUsers(req, body, send, verify) {
     async invite(email, fullName, redirectTo) {
       const existing = await one(`select row_to_json(u) from (select id, email, email_confirmed_at from auth.users where lower(email) = lower(${lit(email)})) u;`);
       if (existing?.email_confirmed_at) return { user: null, error: "A user with this email address has already been registered" };
-      const user = existing ?? await one(`select row_to_json(u) from (insert into auth.users (email, raw_user_meta_data, invited_at)
-        values (${lit(email)}, ${lit(JSON.stringify(fullName ? { full_name: fullName } : {}))}::jsonb, now()) returning id, email) u;`);
+      const user = existing ?? await one(`with u as (insert into auth.users (email, raw_user_meta_data, invited_at)
+        values (${lit(email)}, ${lit(JSON.stringify(fullName ? { full_name: fullName } : {}))}::jsonb, now()) returning id, email)
+        select row_to_json(u) from u;`);
       if (existing) await psql(`update auth.users set invited_at = now() where id = ${lit(existing.id)};`);
       mail("invite", email, redirectTo);
       return { user, error: null };
