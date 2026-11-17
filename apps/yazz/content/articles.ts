@@ -54,6 +54,13 @@ export type Article = {
   readMinutes: number;
   /** A prototype photo, or null for a branded placeholder block. */
   image: { src: string; alt: string } | null;
+  /**
+   * Who reviewed the article and when ("2026-01", month only), for Lexta's "author/reviewer, date" (website-copy.md:134).
+   * Shown after the author on the article page only when set; unset on every article until Lexta sends reviewer names
+   * and review dates (CONTENT-NEEDED.md).
+   */
+  reviewer?: string;
+  reviewDate?: string;
   /** A range page the article links to ("Related products"). */
   range?: "feminine-care" | "oral-care" | "baby-care" | "home-care" | "home-tissue";
   body: string;

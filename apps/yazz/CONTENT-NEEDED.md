@@ -74,6 +74,10 @@ as a marked placeholder block:
 - Home & Tissue tips (kitchen hygiene, tissue handling, cleaning routines, waste reduction): topics only, no text.
 - Parenting editorial (pregnancy, 0 to 12 months, 12 to 24 months): topics only, no text.
 - The undated articles (Just 4 Parents and the topic pages) need dates if Lexta wants them shown.
+- Article reviewers (waiting on Lexta): Lexta asks for "author/reviewer, date" on every article (website-copy.md:134).
+  Articles now take an optional `reviewer` and `reviewDate` (`content/articles.ts`), shown after the author as
+  "Reviewed by ..., Month Year" only when set. None is set yet: send the reviewer's name and role, and the review date,
+  for each article.
 
 ## In Lexta's documents but outside the agreed scope (not built)
 

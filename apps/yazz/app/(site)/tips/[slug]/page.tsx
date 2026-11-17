@@ -54,6 +54,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <div className={s.artMeta}>
             <span><Icon name="clock" size={15} /> {article.readMinutes} min read</span>
             <span><Icon name="edit" size={15} /> {article.date ? `Yazz®, ${monthLabel(article.date)}` : "Yazz®"}</span>
+            {article.reviewer && (
+              <span><Icon name="check" size={15} /> Reviewed by {article.reviewer}{article.reviewDate ? `, ${monthLabel(article.reviewDate)}` : ""}</span>
+            )}
           </div>
         </div>
         <div className={s.artPic}>
