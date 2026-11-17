@@ -129,3 +129,12 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
   "Read Parent Corner" opens it.
 - Shop, cart and prices (the original site's store notice and 0 GHS prices are not reused).
 - Product finder, quizzes, parenting tools, diaper planner or finder, games, an AI chatbot and a news CMS.
+
+## Drive requests built 17 November 2026 (Desmond approved)
+- **Lexta family in the footer**: links to Lexta and the two sister brand sites. They use NEXT_PUBLIC_YAZZ_SITE_URL,
+  NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, falling back to the Vercel previews; Desmond sets the
+  real domains only at go-live (.env.example).
+- **Community Impact** in the menu (desktop last item, phone menu last): a link out to the Lexta CSR page, not a page.
+- **Breadcrumbs** (Home > Page) on the inner pages.
+- Breadcrumbs sit above the eyebrow on About, Contact, FAQs, Tips and the articles. **Products has none**: its opening
+  is a pinned, animated scene with the title laid over it, where a row would clash. The old range addresses redirect.

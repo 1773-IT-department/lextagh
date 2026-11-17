@@ -71,3 +71,12 @@ Each item below appears on the site as a placeholder or is a decision to confirm
 - "Share Your Hooch® Recipe" with uploads and admin approval for publishing: a moderated publishing flow is a new
   feature. The button sends the idea to the Hooch team through the contact form (a CRM lead).
 - Phase 2: games and library (Ludu, Oware), stories, comics, merchandise, online checkout.
+
+## Drive requests built 17 November 2026 (Desmond approved)
+- **Lexta family in the footer**: links to Lexta and the two sister brand sites. They use NEXT_PUBLIC_YAZZ_SITE_URL,
+  NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, falling back to the Vercel previews; Desmond sets the
+  real domains only at go-live (.env.example).
+- **Community Impact** in the menu (desktop last item, phone menu last): a link out to the Lexta CSR page, not a page.
+- **Breadcrumbs** (Home > Page) on the inner pages.
+- **Our Products menu** in the header lists the two cereal pages (Lexta's "Our Cereals (menu)"); the phone menu lists
+  them under Our Products.

@@ -108,3 +108,12 @@ The contract allows 6 pages per brand site and no CSR pages, shop, quizzes, pare
 
 - Better panty liner pack shot: the one from the original site is only 225 x 225 px and looks soft in the product window.
 - Product Management: the seeded "Tissue" product lists pocket tissues while Lexta's content calls Pocket Tissue "coming soon". The site hides the coming soon card while a live product sells pocket tissues; staff should correct the product.
+
+## Drive requests built 17 November 2026 (Desmond approved)
+- **Lexta family in the footer**: links to Lexta and the two sister brand sites. They use NEXT_PUBLIC_YAZZ_SITE_URL,
+  NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, falling back to the Vercel previews; Desmond sets the
+  real domains only at go-live (.env.example).
+- **Community Impact** in the menu (desktop last item, phone menu last): a link out to the Lexta CSR page, not a page.
+- **Breadcrumbs** (Home > Page) on the inner pages.
+- **Privacy notice tick box** on the consumer form ("I agree to the privacy notice.", linking the Lexta Privacy Policy),
+  required and refused on the server when unticked, as on the Hooch and Linzzy forms.
