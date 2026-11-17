@@ -61,13 +61,13 @@ try {
     const db = list.filter((p) => !p.comingSoon || yazz.includes(p.slug));
     const soon = list.filter((p) => p.comingSoon && !yazz.includes(p.slug)).map((p) => p.slug).sort();
     check(live && db.length === yazz.length && db.every((p) => yazz.includes(p.slug)), `products: the ${yazz.length} published Yazz products, read live`, list.map((p) => p.slug));
-    check(JSON.stringify(soon) === JSON.stringify(["dental-floss"]), "products: Dental Floss is added as coming soon; Pocket Tissue is not, because the seeded Tissue product already sells pocket tissues", soon);
+    check(JSON.stringify(soon) === JSON.stringify(["dental-floss", "pocket-tissue"]), "products: Dental Floss and Pocket Tissue, which no live product sells since 0021, are added as coming soon", soon);
     check(!list.some((p) => other.includes(p.name) && !yazz.includes(p.slug)), "products: no Linzzy or Hooch product");
     const ranges = new Set(list.map((p) => p.range));
     check(["feminine-care", "oral-care", "home-tissue", "baby-care", "home-care"].every((r) => ranges.has(r)), "products: the seeded categories map onto all five ranges", [...ranges]);
     check(list.find((p) => p.slug === "washing-powder")?.range === "home-care" && list.find((p) => p.slug === "baby-wipes")?.range === "baby-care"
-      && list.find((p) => p.slug === "sanitary-pads-and-panty-liners")?.range === "feminine-care" && list.find((p) => p.slug === "tissue")?.range === "home-tissue",
-      "products: Cleaning goes to Home Care, Baby care to Baby Care, Personal care to Feminine Care, tissue to Home & Tissue");
+      && list.find((p) => p.slug === "sanitary-pads")?.range === "feminine-care" && list.find((p) => p.slug === "individual-tissue")?.range === "home-tissue",
+      "products: washing powder goes to Home Care, wipes to Baby Care, pads to Feminine Care, tissue to Home & Tissue");
     await q(`update public.products set is_published = false where slug = 'toothbrushes' and brand_id = (select id from public.brands where slug = 'yazz')`);
     const after = await products.getYazzProducts();
     check(!after.products.some((p) => p.slug === "toothbrushes"), "products: an unpublished product disappears from the site");
@@ -122,9 +122,9 @@ try {
     check(desc.startsWith("Product: Toothbrushes~Region: Ashanti"), "complaint: product and region at the top of the text", desc);
 
     // A product the database does not know (shown from the fallback catalogue) still lands, named in the text.
-    const s2 = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi"), product: "sanitary-pads", message: "Torn pack." }), { "sanitary-pads": "Yazz sanitary pads" });
+    const s2 = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi"), product: "pocket-tissue", message: "Torn pack." }), { "pocket-tissue": "Yazz pocket tissue" });
     const row2 = await q(`select coalesce(c.product_id::text, 'none') || '|' || replace(c.description, E'\\n', '~') from public.complaints c where c.case_number = '${s2.reference}'`);
-    check(s2.status === "success" && row2.startsWith("none|Product: Yazz sanitary pads"), "complaint: an unknown product is named in the text instead of being refused", { s2, row2 });
+    check(s2.status === "success" && row2.startsWith("none|Product: Yazz pocket tissue"), "complaint: an unknown product is named in the text instead of being refused", { s2, row2 });
 
     const future = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi2"), purchase_date: "2999-01-01", message: "x" }));
     check(future.status === "error" && future.fieldErrors?.purchase_date, "complaint: a purchase date in the future is refused", future);

@@ -144,10 +144,11 @@ try {
     const yazz = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug = 'yazz' and p.is_published`)).split("|");
     const other = (await q(`select string_agg(p.name, '|') from public.products p join public.brands b on b.id = p.brand_id where b.slug in ('linzzy', 'hooch') and p.is_published`)).split("|");
     const cards = await page.locator("main article h3").allInnerTexts();
-    // Plus Lexta's coming soon items from content/catalogue.ts, which show even without a database row. Pocket tissue is
-    // left out because the seeded "Tissue" product already sells pocket tissues (no card both on sale and coming soon).
-    const soon = ["Yazz dental floss"].filter((n) => !yazz.includes(n));
-    check(!cards.includes("Yazz pocket tissue"), "products page: no coming soon card for pocket tissue, which a live product already sells", cards);
+    // Plus Lexta's coming soon items from content/catalogue.ts, which show even without a database row. Since 0021 no
+    // live product sells pocket tissues (the prototype "Tissue" row is archived), so pocket tissue is coming soon too.
+    const soon = ["Yazz dental floss", "Yazz pocket tissue"].filter((n) => !yazz.includes(n));
+    const pocket = page.locator("main article").filter({ hasText: "Yazz pocket tissue" });
+    check(await pocket.getByText("Coming soon", { exact: true }).count() === 1, "products page: pocket tissue, which no live product sells, has a Coming soon badge", cards);
     check(yazz.every((n) => cards.includes(n)) && soon.every((n) => cards.includes(n)) && cards.length === yazz.length + soon.length,
       `products page: one card for each of the ${yazz.length} Yazz products and the ${soon.length} coming soon items`, cards);
     const floss = page.locator("main article").filter({ hasText: "Yazz dental floss" });
@@ -168,9 +169,9 @@ try {
     await page.getByText(/We are adding Yazz stockists in Volta/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: Volta (no Yazz shop) shows the friendly empty message"), (e) => check(false, "where to buy: Volta empty message", e.message));
     const remembered = await page.evaluate(() => localStorage.getItem("yazz-region"));
     check(remembered === "volta", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
-    await page.goto(`${SITE}/contact?product=toothpaste#where-to-buy`);
+    await page.goto(`${SITE}/contact?product=toothpaste-herbal#where-to-buy`);
     await page.getByText(/We are adding Yazz stockists in Volta/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
-    check(await page.getByText("Looking for Toothpaste?").count() === 1, "where to buy: the product is named");
+    check(await page.getByText(/Looking for Yazz Herbal toothpaste\?/i).count() === 1, "where to buy: the product is named");
     await ctx.close();
 
     const nojs = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
@@ -300,9 +301,9 @@ try {
   {
     const ctx = await context("desktop");
     const page = await ctx.newPage();
-    await page.goto(`${SITE}/contact?topic=question&product=toothpaste#message`);
+    await page.goto(`${SITE}/contact?topic=question&product=toothpaste-herbal#message`);
     const form = page.locator("#message form");
-    check(await form.locator("input[name=topic][value=question]").isChecked() && await page.locator("#c-product").inputValue() === "toothpaste", "consumer form: Ask about this product arrives with the topic and product chosen");
+    check(await form.locator("input[name=topic][value=question]").isChecked() && await page.locator("#c-product").inputValue() === "toothpaste-herbal", "consumer form: Ask about this product arrives with the topic and product chosen");
     await page.fill("#c-name", "Ama JS");
     await page.fill("#c-email", `ama.js.${stamp}@example.com`);
     await page.fill("#c-message", "Is the toothpaste safe for children?");
