@@ -255,10 +255,11 @@ export default function CorporateSocialResponsibilityPage() {
       <section data-reveal="1" data-screen-label="Programme grid" style={{ background: "#fff", padding: "70px 28px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <h2 style={{ ...h2Mid, maxWidth: 600 }}>Initiatives by brand</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 16, marginTop: 38 }}>
+          {/* Eight cards since the three Hooch programmes joined (L4): four to a row instead of the prototype's five. */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,minmax(0,1fr))", gap: 16, marginTop: 38 }}>
             {programmes.map((pr) => (
               <div key={pr.title} style={{ background: "#fff", borderRadius: 14, padding: "26px 20px 28px", boxShadow: "0 16px 34px rgba(11,60,78,.1)", display: "flex", flexDirection: "column" }}>
-                <div style={eyebrow}>{pr.tag}</div>
+                <div style={eyebrow}>{pr.tag}{pr.proposed && <span style={{ color: "#8aa4ad" }}> · Proposed</span>}</div>
                 <h3 style={{ margin: "12px 0 0", fontSize: 18, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em" }}>{pr.title}</h3>
                 <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883" }}>{pr.text}</p>
                 {/* Every card proposes a partnership for its own programme (Partner With Us, CSR route, initiative chosen). */}

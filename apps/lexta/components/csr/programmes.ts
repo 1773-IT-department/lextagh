@@ -42,6 +42,20 @@ export const programmes: Programme[] = [
     slug: "clean-hands-green-land", tag: "Responsible consumption", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
     text: "Clean homes and a cleaner environment belong together. This proposed programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
   },
+  // Hooch's community programmes (docs/content/hooch/website-copy.md:83-85; the Hooch site links here). Lexta calls
+  // UtooCan and Achievers Corner proposed. No photos: the cards have none.
+  {
+    slug: "stay-in-school", tag: "Hooch", title: "Stay in School", brand: "Hooch",
+    text: "Education-support and girl-child empowerment programme.",
+  },
+  {
+    slug: "utoocan", tag: "Hooch", title: "UtooCan, Anyone Can Be a Hero", brand: "Hooch", proposed: true,
+    text: "A proposed platform celebrating everyday acts of kindness and initiative.",
+  },
+  {
+    slug: "achievers-corner", tag: "Hooch", title: "Achievers Corner", brand: "Hooch", proposed: true,
+    text: "A proposed school reading-club concept to encourage curiosity and learning.",
+  },
 ];
 
 /** The Dignity Project band above the cards (Lexta's own label for it, CSR page "Flagship programmes"). */

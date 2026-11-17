@@ -45,6 +45,11 @@ Each item below appears on the site as a placeholder or is a decision to confirm
 9. **Social links**: Lexta names no Hooch Facebook, Instagram or TikTok accounts (placeholders in the footer and on
    Contact). Only the Lexta WhatsApp channel links out.
 
+- **Community programmes on the Lexta CSR page (17 November 2026, Desmond approved)**: Stay in School, UtooCan and
+  Achievers Corner are now cards on the Lexta CSR page (tagged Hooch; UtooCan and Achievers Corner marked Proposed),
+  one Drive line each, no photos. The Hooch links go to its #programmes section. Lexta to send fuller descriptions
+  and photos when they have them.
+
 ## Contact
 10. **Email addresses**: decided by Desmond on 17 November 2026: use the Drive document's info@, marketing@ and
     support@hoochfoods.com (not the PDF's @linzzyproducts.com addresses). hoochfoods.com does not serve a working site

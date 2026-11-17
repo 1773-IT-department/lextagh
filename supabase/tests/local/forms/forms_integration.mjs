@@ -147,6 +147,9 @@ try {
     const programmes = await import("../../../../apps/lexta/components/csr/programmes.ts");
     check(programmes.CSR_INITIATIVES[0].title === "Empowered Periods, Dignity Project" && programmes.CSR_INITIATIVES.length === programmes.programmes.length + 1,
       "CSR initiatives: the Dignity Project band plus every programme card on the CSR page");
+    const hooch = programmes.programmes.filter((p) => p.tag === "Hooch").map((p) => [p.title, !!p.proposed]);
+    check(JSON.stringify(hooch) === JSON.stringify([["Stay in School", false], ["UtooCan, Anyone Can Be a Hero", true], ["Achievers Corner", true]]),
+      "CSR page: the three Hooch community programmes, UtooCan and Achievers Corner marked proposed");
     check(programmes.proposeHref("lexta-forest-project") === "/partner-with-us?route=CSR&initiative=lexta-forest-project#apply", "CSR cards link to the CSR route with the initiative");
     const biz = "Forest Friends " + stamp;
     const s = await core.handlePartner(fd({ route: "CSR", contact_name: "Abena Forest", business_name: biz, email: mail("abena"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", message: "We can plant trees in Ho.", website: "" }));

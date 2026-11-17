@@ -49,7 +49,7 @@ export default async function SiteFooter() {
         <nav aria-label="Lexta Ghana">
           <h2 className={s.head}>The Lexta family</h2>
           <ul>
-            <li><a href={lexta.csr} {...ext}>Community programmes <Icon name="arrow" size={13} /></a></li>
+            <li><a href={`${lexta.csr}#programmes`} {...ext}>Community programmes <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.careers} {...ext}>Careers <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.home} {...ext}>Lexta Ghana Limited <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.privacy} {...ext}>Privacy Policy <Icon name="arrow" size={13} /></a></li>
