@@ -180,7 +180,6 @@ export default function TipsView({ v: vals }: { v: any }) {
                         {"\n            "}
                         <p style={css(`margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:${s.tone}`)}>
                           {t.topic}
-                          {" · "}
                           {t.mins}
                         </p>
                         {"\n            "}
@@ -343,11 +342,10 @@ export default function TipsView({ v: vals }: { v: any }) {
                 </p>
                 {"\n        "}
                 <p style={{"margin":"0","fontSize":"15px","lineHeight":"1.55"} as CSSProperties}>
-                  {"Tell us what you've learned and why it matters through the "}
+                  {"Tell us what you've learned and why it matters. Your little discovery could become another parent's big help! "}
                   <a href="/contact#message" style={{"color":"#fff","textDecoration":"underline"} as CSSProperties}>
-                    {"Contact page"}
+                    {"Contact Linzzy →"}
                   </a>
-                  {". Your little discovery could become another parent's big help!"}
                 </p>
                 {"\n      "}
               </div>
@@ -394,10 +392,6 @@ export default function TipsView({ v: vals }: { v: any }) {
                   {"with Linzzy"}
                 </em>
               </h2>
-              {"\n      "}
-              <p style={{"margin":"16px 0 0","fontSize":"clamp(17px,1.4vw,20px)","color":"#1f3d33"} as CSSProperties}>
-                {"Opt in to receive Linzzy educational updates by email."}
-              </p>
               {"\n    "}
             </div>
             {"\n    "}

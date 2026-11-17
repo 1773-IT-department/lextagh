@@ -1,100 +1,102 @@
-# Linzzy site: placeholders and 1773-written copy
+# Linzzy site: placeholders, removals and sources (strict source sweep)
 
-Branch `content/linzzy-source-rewrite`. Sources, in order: Lexta's Drive ("Linzzy Website Content.docx", saved in
-`docs/content/linzzy/`), then the original linzzyproducts.com (`docs/content/linzzy/original-site/`), then copy 1773
-wrote from facts in those two. Every `[PLACEHOLDER: ...]` below is shown on the site so the design does not change.
+Branch `content/linzzy-strict-sources`, 17 November 2026. Desmond's rule: every piece of visible copy comes from Lexta's
+Drive (`docs/content/linzzy/`: website-copy.md, products.md, parent-corner.md, tips-and-advice/*.md, and the Linzzy rows
+of `docs/content/lexta/website-copy.md`) or from the current linzzyproducts.com (`docs/content/linzzy/original-site/`).
+Nothing from the Claude Design prototype and nothing 1773 wrote itself, even from source facts. Copy that could go
+without changing the layout was removed; copy whose slot would look empty was replaced with a Drive quote, or with a
+visible `[PLACEHOLDER: ...]`. Pure interface text (nav, buttons, form labels, errors, page and short section names) is
+allowed. Layout, styles, images, animations and the chat icon are unchanged.
+
+Check: every page of a production build (21 pages, all 12 articles, a product details panel) was read in a browser and
+every visible sentence over six words was matched against the sources (normalised, fuzzy). 701 sentences checked; what
+is left over is interface text, source text the extractor joined across elements, and image alt text (list kept in the
+session scratchpad, `strict-linzzy/unmatched.txt`).
 
 ## Placeholders on the site
 
-| Page | Slot | Placeholder text | Why it could not be filled | Who at Lexta likely knows |
-| --- | --- | --- | --- | --- |
-| Every page (footer) | Social links after WhatsApp, Facebook, Instagram | `[PLACEHOLDER: TikTok and X links from Lexta]` | Drive lists TikTok and X for @Linzzyproducts but gives no links; the original site has none | Marketing / social media team |
-| Contact, live chat | Consumer care hours (Get in Touch; chat office hours) | `[PLACEHOLDER: Linzzy consumer care hours]` | Office hours are a specific fact; no source gives them | Consumer care / customer service lead |
-| Contact, trade enquiry form | "Expected monthly volume (optional)" list option (new in this change; replaces invented carton bands "Under 10 / 10 to 50 / 50 to 200 / Over 200 cartons a month") | `[PLACEHOLDER: monthly volume bands, from Lexta's sales team]` | Trade volume thresholds are commercial terms; Lexta gave none for Linzzy and the original site's form had no volume field | Sales / commercial manager |
-| Tips & Advice, "Period Hygiene 101" card and article | Article photo | `[PLACEHOLDER: clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)]` | No matching photo in Drive or on the original site | Marketing (Lexta's thumbnail guide owner) |
-| Tips & Advice, "Keeping Your Baby Comfortable in Ghana's Warm Weather" card and article | Article photo | `[PLACEHOLDER: warm weather baby care scene with Linzzy Baby Diapers]` | No matching photo in Drive or on the original site | Marketing |
-| Products (data, not rendered) | Diaper sizes other than M and L | `[PLACEHOLDER: other sizes and pack quantities, confirmed against current packaging]` | Drive confirms only Medium and Large; the original site's Small and Extra Large are unverified. Filtered out of "In the pack" | Product / brand manager |
-| Products (data, not rendered) | Wipes ingredients | `[PLACEHOLDER: complete ingredient list for each wipes variant, from Lexta]` | Ingredients are a regulated fact; Lexta's "Required verification" table says to verify | Product / quality assurance |
+No new placeholders were needed: every slot that lost 1773 copy could be filled with Lexta's own words. The ones from
+before stay, because no source has the fact.
 
-To confirm (shown, not placeholders): the phone number Drive writes "+233 02235296" is shown as +233 302 235 296 (the
-original site's form); the info@, marketing@ and support@linzzyproducts.com mailboxes (Drive copy, mailboxes
-unconfirmed); whether Lexta wants trade enquirers asked "Years in business".
-
-## Rewritten in this change
-
-From the Drive (Drive wins):
-- Home, closing contact block: "We're Here to Listen" + Contact page line replaced by Drive's Home block "Stay
-  Connected with Linzzy / Have a question, product experience or suggestion? We would love to hear from you. Your
-  feedback matters because every experience helps us understand how we can serve you better." CTA "Contact Linzzy"
-  (Drive [CONTACT LINZZY]).
-- Products, Feminine Care band lead: Drive's second sentence added ("Discover the Linzzy Feminine Care Collection,
-  featuring sanitary towels and panty liners ...").
-- Products, Baby Care band lead: Drive's second sentence added ("Explore our baby diapers and wipes, created for
-  families who value comfort, cleanliness and convenient care.").
-- Products, details panel: the description slot now shows Lexta's full product description (database
-  long_description = Drive "3. Products Page") instead of the 1773 one line summary. Cards keep the summary.
-- FAQs, "Which Linzzy sanitary towel should I choose?": Cool Mint sentence restored to Drive wording with Lexta's
-  caveat "Cooling products may not suit everyone, particularly those with sensitive skin." (feminine-01).
-- Tips & Advice, Parent Corner question: Drive's featured question "What's One Baby Care Tip You Wish You Had Known
-  Earlier?" with its prompt ("Was it a smarter way to pack your diaper bag? ...") and "Tell us what you've learned and
-  why it matters ... Your little discovery could become another parent's big help!" The hard coded November theme
-  ("Family Support") and question are gone, so the card no longer goes stale.
-- Tips & Advice and articles, reading times: "Long Days, Busy Schedules" 3 min and "Is Your Baby Wearing the Right
-  Diaper Size?" 3 min (Drive's own figures).
-- Contact, Send Us a Message intro: Drive's "Send your proposal to marketing@linzzyproducts.com." added.
-
-Service promises reworded to what actually happens (brief rule 6):
-- Consumer form, "Report a problem" hint: "You will get a case number." to "Your report goes to our consumer care team."
-- Complaint confirmation: "our consumer care team will contact you" to "Your report goes to the Linzzy consumer care team."
-- Message confirmation: "Our team will review it and reply by email or phone." to "Your message goes to the Linzzy team."
-- Trade confirmation: "Our sales team will be in touch." to "Your enquiry goes to the Linzzy team."; server message
-  "reached the Linzzy trade team" to "reached the Linzzy team".
-- Where to Buy: "Shops are listed by Lexta's sales team." removed; "We are adding Linzzy stockists in X" to "No Linzzy
-  stockists are listed in X yet."
-
-## Expanded by 1773 (written from source facts)
-
-| Page | Slot | Text | Source facts used |
+| Page | Slot | Placeholder | Who at Lexta knows |
 | --- | --- | --- | --- |
-| Tips & Advice | Sign up block body | "Opt in to receive Linzzy educational updates by email." | Lexta master copy, shared forms table: "Newsletter / educational updates: Opt-in only; marketing list, unsubscribe and privacy notice required". Heading "Stay Connected with Linzzy" is Drive (Home) |
-| Tips & Advice | Sign up consent, confirmation, form label, error | "Yes, I agree to receive educational updates by email from Linzzy (Lexta Ghana Limited). I can unsubscribe at any time."; "Thank you. You have opted in to Linzzy educational updates."; "Please tick the box to agree to receive our educational updates by email." | Same Lexta row (opt in, unsubscribe required). Replaces "Linzzy news in your inbox", which no Lexta document mentions |
-| Tips & Advice, articles | Reading time on the other 10 articles | 1 or 2 min | Word count of each article (title, lede, body, sign off, question) at 200 words a minute, rounded up: Period Hygiene 101 and Period Care in Warm Weather 1 min; the rest 2 min |
-| Contact, trade form | "I am a" options | "Distributor or wholesaler", "Modern trade or supermarket", "Other business" | Lexta master copy "Distributor / Wholesaler / Modern Trade"; original linzzyproducts.com form Business Type "Wholesaler, Modern Trade, Supermarket, Other". Replaces "Shop, supermarket or pharmacy" and "School, clinic, hotel or office" (no source) |
-| Contact, trade form | Field label | "Years in business (optional)" (was "Years trading") | Neutral question, no claim; field kept so the form structure and database column do not change |
+| Every page (footer) | Social links after WhatsApp, Facebook, Instagram | `[PLACEHOLDER: TikTok and X links from Lexta]` | Marketing / social media team |
+| Contact, Get in Touch box; live chat office hours | Consumer care hours | `[PLACEHOLDER: Linzzy consumer care hours]` | Consumer care / customer service lead |
+| Contact, trade enquiry form | "Expected monthly volume" option | `[PLACEHOLDER: monthly volume bands, from Lexta's sales team]` | Sales / commercial manager |
+| Tips & Advice and article page, "Period Hygiene 101" | Article photo | `[PLACEHOLDER: clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)]` | Marketing (thumbnail guide owner) |
+| Tips & Advice and article page, "Keeping Your Baby Comfortable in Ghana's Warm Weather" | Article photo | `[PLACEHOLDER: warm weather baby care scene with Linzzy Baby Diapers]` | Marketing |
+| Products (data, not rendered) | Diaper sizes other than M and L | `[PLACEHOLDER: other sizes and pack quantities, confirmed against current packaging]` | Product / brand manager |
+| Products (data, not rendered) | Wipes ingredients | `[PLACEHOLDER: complete ingredient list for each wipes variant, from Lexta]` | Product / quality assurance |
 
-Already 1773-written before this change and kept (faithful to source facts, no new claims): product card one line
-summaries (database short_description, from Drive pack facts; staff can edit them in Product Management), the FAQ
-questions and page intro (answers are Lexta's sentences; Lexta should approve the page as a whole), UI and form
-microcopy, SEO descriptions, the 404 page.
+## Removed (no source; the layout works without it)
 
-## Not done: needs a design change
+| Page | What was removed | Note |
+| --- | --- | --- |
+| Tips & Advice cards, Home tips cards, article pages, "Keep Reading" cards | Reading times on 10 articles ("1 min read", "2 min read") | 1773's word count estimates. The two articles where the Drive gives a time keep "3 min read" |
+| Tips & Advice, Stay Connected | "Opt in to receive Linzzy educational updates by email." | Heading (Drive) and the sign up form stay; the heading sits alone, which reads fine |
+| Tips & Advice, Parent Corner question card | "... through the Contact page" | Now Drive's two lines word for word, followed by the link label "Contact Linzzy →" |
+| Every article, Community corner box | "Share your answer with us through the Contact page." | Replaced by the link label "Contact Linzzy →" (Drive CTA) |
+| Contact, Where to Buy | "Choose your region, search by town or shop, then tap a shop to see it on the map." | Form intro |
+| Contact, Where to Buy | "Your shop stocks Linzzy and is not listed? Tell us." | |
+| Contact, Send Us a Message | "An email address or a phone number, so we can reply." | Form hint (the validation message still says so if both are empty) |
+| Contact, Send Us a Message | "Please do not share sensitive health details in this form. We use your details only to answer you." | Form hint. Lead: Lexta may want a privacy line here; it needs Lexta's words |
+| Contact, both forms | Textarea placeholders "Tell us what you need, or what happened." and "Storage capacity, delivery needs, products and quantities." | |
+| Contact, topic hints | "Tell us the shop's name and town." (My shop does not stock Linzzy) and "Any other question for the Linzzy team." (Something else) | No hint shows for those two topics |
+| FAQs | "Where can I buy Linzzy products?" and "Can I buy Linzzy on this website?" with their answers | 1773 questions and answers; the "Where to Buy" FAQ group went with them and its one remaining question moved to About Linzzy |
+| FAQs | "Is a longer towel more absorbent?" | Its answer is now part of "How to make the right choice" (same Drive paragraph) |
+| FAQs | "Linzzy Medium (M) is for 6 to 9 kg and Large (L) for 9 to 13 kg." | 1773 sentence; the answer is now baby-03's paragraph word for word |
 
-1. **Product details panel, Lexta's product page fields.** The approved panel (components/linzzy/views/ProductsView.tsx,
-   dialog) has exactly: category label, name, one description paragraph, "In the pack", two buttons. There is no slot
-   for: the headline (e.g. "Extra Care for Your Heavier Days"), Key Product Features (list), Recommended Use, How to
-   Use, Skin Sensitivity & Allergy Precautions, the "Linzzy Says" line, or related articles. The data is ready
-   (database key_features and usage_instructions; content/catalogue.ts headline, recommended, sensitivity, says,
-   reads). Needed: below "In the pack", an expandable "Usage, Ingredients & Skin Sensitivity" block (Lexta's own
-   recommendation) with four labelled short sections (Recommended use, How to use, Skin sensitivity and allergy
-   precautions, Key features list), plus the headline as a line above the description and the "Linzzy Says" line
-   before the buttons. **Priority: the precautions are safety copy**, e.g. Cool Mint "Do not use on already irritated
-   or broken skin", Panty Liners "Not intended to replace sanitary towels during moderate or heavy menstrual bleeding",
-   Diapers "Never leave your baby unattended during a diaper change", Wipes "Never flush wipes down the toilet".
-2. **Home, "Caring Beyond Our Products"** (Drive Home: "At Linzzy, care extends beyond the products we provide. Through
-   community-focused education, hygiene awareness and social responsibility initiatives ..." [EXPLORE OUR COMMUNITY
-   INITIATIVES]). No slot on the home page. Would need a short band linking to the Lexta site's CSR page (not a CSR
-   page on the brand site, which CLAUDE.md puts out of scope). Desmond to decide.
-3. **Contact, "Your Voice Matters. Let's Keep the Conversation Going."** No slot; would need a line in the hero or
-   above Get in Touch.
-4. **Contact form fields "Subject" and "Optional Product Photograph or Supporting Document"** (Drive's suggested form
-   fields). Not built: a new field, and the upload needs a database change.
-5. **Tips & Advice section intro** ("The Linzzy Tips & Advice page will serve as an educational and supportive space
-   ...") and Lexta's four baby content categories with descriptions. The intro is kept in content/articles.ts as the
-   baby category blurb but the page has no slot for it.
-6. **Parent Corner participation** ("Share Your Parenting Story", "What Can You Share?", "How Linzzy Parent Corner
-   Works", submission form, expert reviewed Q&A). Needs a scope decision (LEXTA-CONTENT-GAPS D14) and new sections.
+## Replaced with Lexta's own words
 
-## Shared strings for the lead (packages/, not edited here)
+| Page | Before (1773 or prototype) | Now (source) |
+| --- | --- | --- |
+| Home featured cards, Products cards (DB short_description and content/catalogue.ts) | Six 1773 summaries, e.g. "Higher-absorbency towels for heavier days: 12 towels of 290 mm, plus 2 complimentary panty liners." | The sentence of each Drive description that names the product, e.g. "Linzzy Heavy Flow Sanitary Towels are designed for women who prefer higher absorbency during heavier menstrual flow." (products.md). Migration 0023 (written, not applied) puts the same words in the database |
+| Meta descriptions (site default, Home, About, Products, Tips, FAQs, Contact) | 1773 summaries | Drive sentences from the same page (website-copy.md, products.md) |
+| FAQs, all questions | 1773 questions ("Which Linzzy sanitary towel should I choose?" ...) | Lexta's own headings: article subheadings ("When might a panty liner be useful?", "How Should Baby Wipes Be Stored?" ...), article habit lines ("Change your sanitary towel regularly"), product page labels ("Linzzy Cool Mint: Skin Sensitivity & Allergy Precautions") and Contact page lines ("Interested in distributing or stocking Linzzy products?", "Consumer Feedback and Complaints") |
+| FAQs, answers | Several 1773 composites (diaper bag list, size signs, sensitive skin, product concern) | The Drive text under each heading, word for word (lists joined as sentences) |
+| FAQs, hero intro | "Answers on our sanitary towels, panty liners, baby diapers and baby wipes, and where to buy Linzzy." | "Have questions about our sanitary towels, panty liners, baby diapers or baby wipes?" (Contact) |
+| FAQs, side box heading | "Still have a question?" | "How Can We Help You?" (Contact) |
+| About, commitment eyebrows | "For women", "For babies and families" | "Feminine Care", "Baby Care" (brand positioning) |
+| Contact, Where to Buy heading | "Find Linzzy Near You" (prototype) | "Find a Stockist" (interface name of the section, as on the hero button) |
+| Contact, complaint checklist heading | "Reporting a concern?" | "Consumer Feedback and Complaints" (Contact) |
+| Contact, trade section | Eyebrow "Distributors and business enquiries", heading "Stock Linzzy in Your Shop or Region" | Eyebrow "Trade enquiries" (section name), heading "Distributors and Business Enquiries" (Contact) |
+| Contact, closing band | "Before You Write" / "Many questions about our products, periods, baby care and where to buy Linzzy are answered in our FAQs." | "Your Voice Matters." / "Let's Keep the Conversation Going." (Contact; this Drive line had no slot before) |
+| Contact, topic hints | Product information, Report a problem, Partnership hints written by 1773 | Contact page lines: "Have questions about our sanitary towels ...?", "If you have a concern about a Linzzy product, please contact our customer support team directly.", "For brand partnerships, media enquiries, educational campaigns and promotional collaborations, please contact our team." |
 
-- Live chat widget (packages/chat/src/widget/ChatPanel.tsx:310): "A real person from our team will answer." is an unconfirmed service
-  promise. Suggested: "Your message goes to the Linzzy care team." (or the shared equivalent for all four sites).
+## Kept, with source
+
+| Page | Copy | Source |
+| --- | --- | --- |
+| Home | Hero, Welcome, Care That Grows, Feminine and Baby chapters, Why Families Choose Linzzy (4 cards), Tips & Advice, Parent Corner, Stay Connected, Connect With Our Community, marquee lines | website-copy.md (Home, Contact); products.md sign offs ("Everyday care, made simple."); quick tips campaign line; "Absorb, Lock, Breathe" (Drive and linzzyproducts.com) |
+| About | Every block (hero, story, vision, mission, six values, commitments, Lexta family, promise) | website-copy.md (About) |
+| Products | Hero, band intros, product names, pack contents, details panel description | products.md |
+| Tips & Advice | Hero, section titles and taglines, 12 article cards (title, topic, lede), notices, Six Quick Tips, Parent Corner text, featured question, expert topics | tips-and-advice/*.md, quick-tips-and-thumbnail-guide.md, parent-corner.md |
+| Articles | All 12 bodies, headings, lists, tip boxes, "Linzzy Says", Community Corner questions; reading time on 2 | tips-and-advice/*.md (matched sentence by sentence) |
+| FAQs | Hero heading "Got a question? Let's explore it together.", side box line, all answers | parent-corner.md, website-copy.md, tips-and-advice/*.md, products.md |
+| Contact | Hero, How Can We Help (5 cards), Send Us a Message intro, checklist, Get in Touch block, trade intro | website-copy.md (Contact) |
+| Footer | Sign off, brand line, positioning, @Linzzyproducts, contact lines, Facebook and Instagram links | website-copy.md; original-site/contacts.md |
+
+Not counted as copy and unchanged: image alt text (describes each photo), the newsletter consent checkbox label (a form
+label; it states the opt in and unsubscribe Lexta's master copy requires), form confirmations and errors, the 404 page.
+
+## Not done: needs a design change (unchanged from the earlier rewrite)
+
+1. **Product details panel, Lexta's product page fields** (headline, key features, recommended use, how to use, skin
+   sensitivity and allergy precautions, "Linzzy Says", related articles). The data is ready (database and
+   content/catalogue.ts) but the approved panel has no slot. The precautions are safety copy; Lexta recommends an
+   expandable "Usage, Ingredients & Skin Sensitivity" section on every product.
+2. **Home, "Caring Beyond Our Products"** (Drive Home, links to the Lexta CSR page). No slot on the home page.
+3. **Contact form fields "Subject" and "Optional Product Photograph or Supporting Document"** (Drive's suggested fields):
+   a new field, and uploads need a database change.
+4. **Tips & Advice section intro and the four baby content categories** (00-section-intro-and-structure.md): no slot.
+5. **Parent Corner participation** (Share Your Parenting Story, How it Works, submission form, expert reviewed Q&A):
+   needs a scope decision (LEXTA-CONTENT-GAPS D14).
+
+Filled in this change: Contact's "Your Voice Matters. Let's Keep the Conversation Going." now has a slot (the closing
+band).
+
+## Not rendered, left as is
+
+`lib/ranges.ts` still holds copy for the old range pages, which now only redirect to /products; only the range names
+are used (form labels). The live chat strings are in `packages/chat` (shared, not edited here); "A real person from our
+team will answer." remains an unconfirmed service promise for the lead.

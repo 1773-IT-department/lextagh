@@ -18,7 +18,7 @@ import s from "../proto.module.css";
 
 const StockistMap = dynamic(() => import("../StockistMap"), { ssr: false });
 
-const CHAPTERS: [string, string, string][] = [["top", "00", "We're Here to Listen"], ["help", "01", "How Can We Help"], ["where-to-buy", "02", "Where to Buy"], ["message", "03", "Send Us a Message"], ["trade", "04", "Trade Enquiries"], ["before", "05", "Before You Write"]];
+const CHAPTERS: [string, string, string][] = [["top", "00", "We're Here to Listen"], ["help", "01", "How Can We Help"], ["where-to-buy", "02", "Where to Buy"], ["message", "03", "Send Us a Message"], ["trade", "04", "Trade Enquiries"], ["before", "05", "Your Voice Matters"]];
 const REMEMBER = "linzzy-region";
 const remember = (slug: string) => { try { localStorage.setItem(REMEMBER, slug); } catch { /* storage blocked */ } };
 const remembered = () => { try { return localStorage.getItem(REMEMBER) ?? ""; } catch { return ""; } };

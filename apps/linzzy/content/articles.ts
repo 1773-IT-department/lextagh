@@ -41,11 +41,11 @@ export type Article = {
   /** The article's own category in Lexta's document, shown as its topic label. */
   topic: string;
   /**
-   * Reading time in minutes: Lexta's own figure where the Drive gives one ("Long Days, Busy Schedules": 3-minute read;
-   * "Is Your Baby Wearing the Right Diaper Size?": 3 minutes); otherwise the article's word count (title, lede, body,
-   * sign off and question) divided by 200 words a minute, rounded up.
+   * Reading time in minutes, only where Lexta's Drive gives one ("Long Days, Busy Schedules": 3-minute read; "Is Your
+   * Baby Wearing the Right Diaper Size?": 3 minutes); null for the others, which show no reading time (strict source
+   * sweep: 1773's word count estimates were removed).
    */
-  readMinutes: number;
+  readMinutes: number | null;
   /** A photo, or null for a marked placeholder. */
   image: { src: string; alt: string } | null;
   imageNeeded?: string;
@@ -73,7 +73,7 @@ export const ARTICLES: Article[] = [
     slug: "know-your-flow", category: "feminine-care", topic: "Menstrual Health & Product Selection",
     title: "Know Your Flow: Choosing the Right Sanitary Towel for Your Period",
     lede: "Every period tells a different story. Some days your flow is light, other days it is heavier, and sometimes your routine demands extra preparation.",
-    readMinutes: 2, image: { src: "/images/original/cover-know-your-flow.webp", alt: "Linzzy Cool Mint, Heavy Flow and Extra Long sanitary towel packs side by side on a lilac background" },
+    readMinutes: null, image: { src: "/images/original/cover-know-your-flow.webp", alt: "Linzzy Cool Mint, Heavy Flow and Extra Long sanitary towel packs side by side on a lilac background" },
     says: "Your flow is personal. Your care should be too.",
     community: "What matters most when choosing a sanitary towel: length, absorbency or comfort?",
     body: `Understanding your menstrual flow can help you choose suitable sanitary protection and feel more prepared throughout your cycle.
@@ -102,7 +102,7 @@ Remember that a longer towel is not automatically more absorbent. Always check t
     slug: "period-hygiene-101", category: "feminine-care", topic: "Menstrual Hygiene",
     title: "Period Hygiene 101: Healthy Habits for Every Menstrual Cycle",
     lede: "Good menstrual hygiene is not about complicated routines. It is about simple, consistent habits that help you feel clean and comfortable throughout your period.",
-    readMinutes: 1, image: null, imageNeeded: "clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)",
+    readMinutes: null, image: null, imageNeeded: "clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)",
     says: "Good period care begins with everyday habits.",
     community: "Which period hygiene habit would you encourage every young woman to practice?",
     body: `## Five habits worth practicing
@@ -152,7 +152,7 @@ Menstrual symptoms vary. Gentle movement, adequate hydration, nutritious meals a
     slug: "panty-liners-explained", category: "feminine-care", topic: "Everyday Feminine Care",
     title: "Panty Liners Explained: When, Why and How to Use Them",
     lede: "Panty liners and sanitary towels may look similar, but they are designed for different needs.",
-    readMinutes: 2, image: { src: "/images/original/cover-panty-liners.webp", alt: "A pack of Linzzy Panty Liners on a soft lavender background" },
+    readMinutes: null, image: { src: "/images/original/cover-panty-liners.webp", alt: "A pack of Linzzy Panty Liners on a soft lavender background" },
     says: "Small essentials can make everyday routines easier.",
     community: "When do you find panty liners most useful?",
     body: `Understanding the difference can help you choose the right product for your routine.
@@ -187,7 +187,7 @@ If you notice irritation, stop using the product and consider seeking profession
     slug: "period-care-in-warm-weather", category: "feminine-care", topic: "Period Comfort & Seasonal Care",
     title: "Period Care in Ghana's Warm Weather: Comfort, Clothing and Hygiene",
     lede: "Ghana's warm weather can make everyday menstrual care feel more challenging, particularly during long commutes, outdoor activities and busy working days.",
-    readMinutes: 1, image: { src: "/images/original/flow-focus-grow.webp", alt: "A young woman in a yoga pose next to a stack of Linzzy sanitary towel packs" },
+    readMinutes: null, image: { src: "/images/original/flow-focus-grow.webp", alt: "A young woman in a yoga pose next to a stack of Linzzy sanitary towel packs" },
     says: "Every season deserves thoughtful care.",
     community: "How do you stay comfortable during your period on particularly warm days?",
     body: `Understanding the relationship between heat, sweat and personal hygiene can help you create a comfortable routine.
@@ -216,7 +216,7 @@ Carry spare products, drinking water and a small personal care pouch when spendi
     slug: "beyond-the-pad", category: "feminine-care", topic: "Menstrual Education & Empowerment",
     title: "Beyond the Pad: Understanding Your Menstrual Cycle and When to Seek Help",
     lede: "Menstruation is a natural biological process, but understanding your cycle involves more than knowing when to wear a sanitary towel.",
-    readMinutes: 2, image: { src: "/images/original/mother-daughter.webp", alt: "A mother handing her smiling daughter a pack of Linzzy sanitary towels" },
+    readMinutes: null, image: { src: "/images/original/mother-daughter.webp", alt: "A mother handing her smiling daughter a pack of Linzzy sanitary towels" },
     says: "Understanding your body is part of caring for yourself.",
     community: "What is one period-related question you wish had been answered when you first started menstruating?",
     body: `Learning about menstrual patterns can help you recognise changes and communicate concerns to a healthcare professional.
@@ -245,7 +245,7 @@ Menstrual education benefits young people, parents, teachers and communities. Ac
     slug: "the-perfect-diaper-bag", category: "baby-care", topic: "Baby Care Essentials",
     title: "The Perfect Diaper Bag: Everything You Need for a Day Out with Baby",
     lede: "Stepping out with your little one can be exciting, but every parent knows that babies come with surprises! From unexpected diaper changes to feeding breaks, a well-packed diaper bag can make outings easier and more enjoyable.",
-    readMinutes: 2, image: { src: "/images/nursery/diaper-bag.webp", alt: "A packed diaper bag with Linzzy Baby Wipes, a bottle and a soft toy, next to Linzzy Baby Diapers and baby clothes" },
+    readMinutes: null, image: { src: "/images/nursery/diaper-bag.webp", alt: "A packed diaper bag with Linzzy Baby Wipes, a bottle and a soft toy, next to Linzzy Baby Diapers and baby clothes" },
     says: "A prepared parent makes more room for happy little adventures.",
     community: "What's the one baby care item you never leave home without? Share your parenting essentials with the Linzzy community!",
     body: `At Linzzy, we believe preparation makes room for more beautiful moments with your baby.
@@ -289,7 +289,7 @@ Never leave your baby unattended on a changing surface, even for a moment.`,
     slug: "diaper-changing-made-easier", category: "baby-care", topic: "Baby Hygiene & Daily Care",
     title: "Diaper Changing Made Easier, Building a Comfortable Routine for Your Baby",
     lede: "Diaper changing is one of the most frequent activities in a baby's daily routine. Although it may seem simple, developing good changing habits can support cleanliness, comfort and healthy skin.",
-    readMinutes: 2, image: { src: "/images/nursery/mum-changing.webp", alt: "A smiling mother changing her laughing baby's diaper, with Linzzy Baby Diapers and Baby Wipes nearby" },
+    readMinutes: null, image: { src: "/images/nursery/mum-changing.webp", alt: "A smiling mother changing her laughing baby's diaper, with Linzzy Baby Diapers and Baby Wipes nearby" },
     says: "Every change is another opportunity to care.",
     community: "What helps keep your baby calm during diaper changes?",
     body: `Whether you are a first-time parent or an experienced caregiver, a consistent routine can make diaper changes smoother.
@@ -385,7 +385,7 @@ Always refer to the size information printed on the product packaging.
     slug: "baby-wipes-101", category: "baby-care", topic: "Baby Wipes & Hygiene",
     title: "Baby Wipes 101: How to Use, Store and Dispose of Wipes Responsibly",
     lede: "From diaper changes to everyday messes, baby wipes are a convenient part of many families' care routines.",
-    readMinutes: 2, image: { src: "/images/nursery/baby-wipes.webp", alt: "Linzzy Baby Wipes in yellow, pink and blue packs on a nursery shelf" },
+    readMinutes: null, image: { src: "/images/nursery/baby-wipes.webp", alt: "Linzzy Baby Wipes in yellow, pink and blue packs on a nursery shelf" },
     says: "Gentle care begins with thoughtful everyday choices.",
     community: "Do you keep baby wipes in your diaper bag, car or nursery? Tell us where they come in handy most.",
     body: `However, using wipes correctly is just as important as having them available.
@@ -437,7 +437,7 @@ Keep unused wipes and their packaging out of children's reach.
     slug: "keeping-your-baby-comfortable-in-warm-weather", category: "baby-care", topic: "Baby Comfort & Seasonal Care",
     title: "Keeping Your Baby Comfortable in Ghana's Warm Weather, Diapering and Skin Care Tips",
     lede: "Warm weather is part of everyday life for many families in Ghana and across West Africa. While babies enjoy comfort and movement, heat, sweat and moisture can sometimes make diapering more challenging.",
-    readMinutes: 2, image: null, imageNeeded: "warm weather baby care scene with Linzzy Baby Diapers",
+    readMinutes: null, image: null, imageNeeded: "warm weather baby care scene with Linzzy Baby Diapers",
     says: "Comfortable little moments make brighter days.",
     community: "What baby care routines have helped your family during Ghana's warmer months?",
     body: `Creating a comfortable changing routine can help reduce prolonged exposure to moisture and friction.
@@ -483,7 +483,7 @@ Maintaining cleanliness, changing soiled diapers promptly and using a suitable p
     slug: "little-changes-big-milestones", category: "baby-care", topic: "Parenting & Baby Development",
     title: "Little Changes, Big Milestones: Making Diaper Time Part of Your Baby's Development",
     lede: "Your baby's daily routine is filled with opportunities for connection, communication and learning.",
-    readMinutes: 2, image: { src: "/images/nursery/dad-playtime.webp", alt: "A father playing with his laughing baby on a play mat, with Linzzy Baby Diapers and Baby Wipes" },
+    readMinutes: null, image: { src: "/images/nursery/dad-playtime.webp", alt: "A father playing with his laughing baby on a play mat, with Linzzy Baby Diapers and Baby Wipes" },
     says: "Little moments today, brighter beginnings tomorrow.",
     community: "What's your favourite everyday bonding moment with your baby?",
     body: `Even a simple diaper change can become a meaningful moment of interaction between a parent and child.

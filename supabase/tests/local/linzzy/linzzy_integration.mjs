@@ -98,7 +98,7 @@ try {
       check(live && JSON.stringify(list.map((p) => p.slug)) === JSON.stringify(CATALOGUE_SLUGS),
         "before 0016: the full six product catalogue shows, in Lexta's order, and the umbrella rows Sanitary napkins and Baby care are skipped", list.map((p) => p.slug));
       const wipes = list.find((p) => p.slug === "baby-wipes");
-      check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet") && wipes.short.startsWith("80 wipes in a resealable pack")
+      check(wipes?.name === "Linzzy Baby Wipes" && wipes.long.startsWith("Little hands, tiny feet") && wipes.short.startsWith("Linzzy Baby Wipes offer a convenient cleaning option")
         && wipes.features[0] === "Convenient resealable packaging" && wipes.usage?.startsWith("Open the resealable lid") && wipes.ingredients?.startsWith("[PLACEHOLDER"),
         "before 0016: the database Baby wipes row shows the Drive wording (name, texts, features, usage, ingredients)", wipes);
       check(wipes?.images.length === 1 && /^\/images\/(original|linzzy)\/baby-wipes\.webp$/.test(wipes.images[0].src),
@@ -161,7 +161,7 @@ try {
       check(heavy && heavy.skus.length === 0, "after 0016: a product with every SKU switched off shows no codes (no catalogue TBC codes)", heavy?.skus);
     }
     await asStaff(`update public.product_skus set is_active = true where sku_code = 'TBC-LINZZY-101';
-      update public.products set name = 'Linzzy Panty Liners', short_description = 'A compact 155 mm liner for light spotting or small amounts of moisture, 30 in a pack.', is_published = true
+      update public.products set name = 'Linzzy Panty Liners', short_description = 'Linzzy Panty Liners offer a compact option for managing light spotting or small amounts of moisture.', is_published = true
         where brand_id = ${linzzyBrand} and slug = 'panty-liners'`);
     {
       const back = await q(`select string_agg(slug, ',' order by sort_order) from public.products where brand_id = ${linzzyBrand} and is_published`);
@@ -236,7 +236,7 @@ try {
     const biz = `Accra Wholesale ${stamp}`;
     const s = await core.handleTrade(fd({
       route: "distributor", contact_name: "Yaw Boateng", business_name: biz, email: mail("yaw"), phone: "0244000111", region: "greater-accra",
-      trading_location: "Makola", years_trading: "8", volume: "50 to 200 cartons a month", ranges: ["feminine-care", "baby-care", "bogus"], message: "We cover Accra Central.",
+      trading_location: "Makola", years_trading: "8", volume: "Not sure yet", ranges: ["feminine-care", "baby-care", "bogus"], message: "We cover Accra Central.",
     }), { "feminine-care": "Feminine Care", "baby-care": "Baby Care" });
     check(s.status === "success" && /^PTN-[0-9A-F]{10}$/.test(s.reference ?? ""), `trade enquiry returns a PTN reference (${s.reference})`, s);
     const row = await q(`select l.source || '|' || b.slug || '|' || coalesce(l.estimated_monthly_volume, '') || '|' || o.kind || '|' || replace(l.description, E'\\n', '~') || '|' ||
@@ -244,7 +244,7 @@ try {
       from public.crm_leads l join public.brands b on b.id = l.brand_id join public.crm_organisations o on o.id = l.organisation_id where l.intake_reference = '${s.reference}'`);
     const [source, brand, volume, kind, desc, orgBrands] = row.split("|");
     check(source === "website_partner_form" && brand === "linzzy" && kind === "distributor" && orgBrands === "linzzy", "trade lead: partner form, brand linzzy, a new distributor organisation tagged Linzzy", row);
-    check(volume === "50 to 200 cartons a month" && desc.includes("Linzzy ranges of interest: Feminine Care, Baby Care") && desc.includes("Region: Greater Accra"), "trade lead: volume, ranges of interest and region saved", row);
+    check(volume === "Not sure yet" && desc.includes("Linzzy ranges of interest: Feminine Care, Baby Care") && desc.includes("Region: Greater Accra"), "trade lead: volume, ranges of interest and region saved", row);
     const bad = await core.handleTrade(fd({ route: "retail", contact_name: "", business_name: "", email: "nope" }));
     check(bad.status === "error" && bad.fieldErrors?.contact_name && bad.fieldErrors?.business_name && bad.fieldErrors?.email, "trade form: name, business and a valid email are required", bad);
   }

@@ -4,7 +4,7 @@ import TipsClient from "@/components/linzzy/pages/TipsClient";
 
 export const metadata: Metadata = {
   title: "Tips & Advice",
-  description: "Linzzy Tips & Advice: practical articles on menstrual hygiene, choosing sanitary towels, diaper-changing routines, baby wipes, parenting and personal well-being.",
+  description: "We believe that informed care makes everyday life easier. Explore practical articles on menstrual hygiene, choosing sanitary towels, diaper-changing routines, baby wipes, parenting and personal well-being.",
   alternates: { canonical: "/tips" },
   openGraph: { title: "Tips & Advice | Linzzy", url: "/tips" },
 };

@@ -24,7 +24,8 @@ export type ProtoTip = {
   alt: string;
   ph: string;
   lede: string;
-  minutes: number;
+  /** Lexta's own reading time, or null when the Drive gives none (nothing is shown). */
+  minutes: number | null;
 };
 
 /**

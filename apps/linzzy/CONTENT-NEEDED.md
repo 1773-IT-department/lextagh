@@ -4,8 +4,9 @@ The site is built from Lexta's Linzzy content on Google Drive ("Linzzy Website C
 saved in `docs/content/linzzy/`: the website copy (Home, About Us, Contact Us), the products page, the twelve Tips & Advice
 articles with the six quick tips, and the Parent Corner editorial text. The original linzzyproducts.com
 (`docs/content/linzzy/original-site/`) only filled gaps: pack shots, lifestyle artwork, the logo and the Facebook and
-Instagram links. Drive wording was never changed (dashes only). Everything below is marked `[PLACEHOLDER: ...]` on the
-site or listed here for Desmond to confirm.
+Instagram links. Drive wording was never changed (dashes only). Since the strict source sweep (17 November 2026) no
+copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Everything below is marked
+`[PLACEHOLDER: ...]` on the site or listed here for Desmond to confirm.
 
 ## Lexta's instructions (yellow highlights), and how they were handled
 
@@ -58,8 +59,10 @@ site or listed here for Desmond to confirm.
   what shows and how it reads; `content/catalogue.ts` is the fallback if the database cannot be reached and supplies
   the product page extras the database has no column for (headline, recommended use, skin sensitivity, "Linzzy Says").
   No image from lextagh.com, yazzproducts.com, linzzyproducts.com or hoochfoods.com is ever shown (`lib/products.ts`).
-- The product cards show the database's one line summary (short description, written by 1773 from Lexta's facts);
-  the product details panel shows Lexta's full description. Lexta's headline, key features, recommended use, how to
+- The product cards show the database's short description, which is now the sentence of Lexta's own description that
+  names the product (strict source sweep; migration `0023_linzzy_products_strict_drive_text.sql` is written, **not
+  applied**: until Desmond applies it, the live site still shows the old 1773 one line summaries from 0016). The
+  product details panel shows Lexta's full description. Lexta's headline, key features, recommended use, how to
   use, skin sensitivity and allergy precautions and "Linzzy Says" line are in the database or catalogue but the
   approved panel design has no place for them: see PLACEHOLDERS.md, "Not done: needs a design change".
 - SKU codes for every product (all `TBC-LINZZY-...` in the catalogue).
@@ -87,15 +90,18 @@ site or listed here for Desmond to confirm.
 
 ## Words still to come
 
-- FAQs: Lexta sent no Linzzy FAQ list. The FAQs page uses Lexta's own wording from the product page, the articles and
-  the About and Contact pages; the questions and grouping are 1773's, so Lexta should approve the page as a whole. More
-  questions can be added to `components/linzzy/faq-data.ts` on request.
+- FAQs: Lexta sent no Linzzy FAQ list. Every question is now one of Lexta's own headings (article subheadings, product
+  page labels, Contact page lines) and every answer is the Drive text under it; only the grouping is 1773's. A list of
+  real customer questions from Lexta's care team would make the page better. More can be added to
+  `components/linzzy/faq-data.ts` on request.
 - Article dates: none given, so none are shown.
-- Reading times: Lexta's own figure for the two articles that give one (3 minutes each); the others are worked out
-  from the word count at 200 words a minute, rounded up.
+- Reading times: only Lexta's own figure, on the two articles that give one (3 minutes each); the other ten show none.
 - Tips & Advice sign up: Lexta's master content lists "Newsletter / educational updates" (opt in, with unsubscribe
-  and a privacy notice) as a shared form, so the Tips page offers Linzzy educational updates by email. Lexta to
-  confirm what the updates will contain and who sends them.
+  and a privacy notice) as a shared form, so the Tips page offers Linzzy educational updates by email. Lexta gave no
+  copy for it, so the block shows only its heading ("Stay Connected with Linzzy", Drive) and the form. Lexta to
+  confirm what the updates will contain and who sends them, and give a line for it if wanted.
+- Contact form: the privacy line under the message ("Please do not share sensitive health details ...") was 1773's and
+  was removed in the strict sweep; Lexta may want one in its own words.
 
 ## In Lexta's documents but outside the agreed scope (not built)
 

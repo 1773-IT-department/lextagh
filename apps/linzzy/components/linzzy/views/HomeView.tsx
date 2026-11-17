@@ -797,7 +797,6 @@ export default function HomeView({ v: vals }: { v: any }) {
                       {t.catLabel}
                       {" · "}
                       {t.topic}
-                      {" · "}
                       {t.mins}
                     </p>
                     {"\n          "}

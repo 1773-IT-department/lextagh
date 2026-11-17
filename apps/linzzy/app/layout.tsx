@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase,
   title: { default: "Linzzy | Gentle Care for Bright Beginnings", template: "%s | Linzzy" },
   description:
-    "Linzzy, a feminine, maternal and baby care brand of Lexta Ghana Limited: sanitary towels, panty liners, baby diapers and baby wipes. Find a stockist near you.",
+    "Linzzy is a feminine, maternal and baby care brand under Lexta Ghana Limited. Our product portfolio includes sanitary towels, panty liners, baby diapers and baby wipes, offering practical choices for different care routines.",
   applicationName: "Linzzy",
   openGraph: { siteName: "Linzzy", type: "website", locale: "en_GH", images: [{ url: "/images/nursery/diaper-bag.webp", width: 1400, height: 788, alt: "Linzzy Baby Wipes and Baby Diapers in a nursery" }] },
   twitter: { card: "summary_large_image" },

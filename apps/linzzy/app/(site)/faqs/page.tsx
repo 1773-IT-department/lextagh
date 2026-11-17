@@ -4,7 +4,7 @@ import FaqsClient from "@/components/linzzy/pages/FaqsClient";
 
 export const metadata: Metadata = {
   title: "FAQs",
-  description: "Answers on Linzzy sanitary towels, panty liners, baby diapers and baby wipes, where to buy Linzzy and who makes it.",
+  description: "Have questions about our sanitary towels, panty liners, baby diapers or baby wipes?",
   alternates: { canonical: "/faqs" },
   openGraph: { title: "FAQs | Linzzy", url: "/faqs" },
 };

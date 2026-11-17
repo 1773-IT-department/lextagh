@@ -39,7 +39,7 @@ export default function HomeClient({ featured, tips }: { featured: ProtoProduct[
     ].map((x) => ({ n: x[0], t: x[1], d: x[2], bg: x[3], fg: x[4], num: x[5], top: x[6] })),
     homeTips: tips.map((t, i) => {
       const g = tone(t.g);
-      return { ...t, img: t.img ?? "", tone: g.tone, catLabel: g.cat, mins: `${t.minutes} min read`, href: `/tips/${t.slug}`, open: h(() => go(`/tips/${t.slug}`)), speed: ["0.04", "0.14", "0.24"][i % 3], offset: ["0px", "80px", "160px"][i % 3] };
+      return { ...t, img: t.img ?? "", tone: g.tone, catLabel: g.cat, mins: t.minutes ? ` · ${t.minutes} min read` : "", href: `/tips/${t.slug}`, open: h(() => go(`/tips/${t.slug}`)), speed: ["0.04", "0.14", "0.24"][i % 3], offset: ["0px", "80px", "160px"][i % 3] };
     }),
   };
   return <HomeView v={v} />;
