@@ -13,6 +13,8 @@ export type ArticleData = {
   slug: string; title: string; lede: string; topic: string; minutes: number | null; body: string; g: "fem" | "baby";
   catLabel: string; img: { src: string; alt: string } | null; ph: string; says: string | null; community: string | null;
   notice: { title: string; text: string };
+  /** The product that goes with the article (its panel opens at /products?p=<slug>), or null. */
+  product: { slug: string; name: string } | null;
 };
 export type ReadData = { slug: string; title: string; topic: string; minutes: number | null; img: string | null; alt: string; ph: string };
 
@@ -75,6 +77,11 @@ export default function ArticleClient({ a, reads }: { a: ArticleData; reads: Rea
                 <p style={{ margin: "12px 0 0", fontFamily: serif, fontSize: "clamp(22px,2vw,28px)", lineHeight: 1.15 }}>{a.community}</p>
                 <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.5 }}><a href="/contact?topic=feedback#message" style={{ color: "#C2185B", textDecoration: "underline" }}>Contact Linzzy →</a></p>
               </div>
+            )}
+            {a.product && (
+              <p style={{ margin: 0, padding: 28, background: soft, fontSize: 15, lineHeight: 1.5 }}>
+                <a href={`/products?p=${encodeURIComponent(a.product.slug)}`} style={{ color: tone, fontWeight: 700, textDecoration: "underline" }}>See {a.product.name} →</a>
+              </p>
             )}
             <p style={{ margin: 0, padding: 28, background: "#fff", fontSize: 14, lineHeight: 1.6, color: "#3d2a55" }}><strong style={{ display: "block", marginBottom: 6, color: "#23103a" }}>{a.notice.title}</strong>{a.notice.text}</p>
           </aside>

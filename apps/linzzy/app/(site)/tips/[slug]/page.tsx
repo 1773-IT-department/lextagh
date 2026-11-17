@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ArticleClient from "@/components/linzzy/pages/ArticleClient";
 import { ARTICLES, articleBySlug, categoryOf, NOTICES } from "@/content/articles";
+import { getLinzzyProducts } from "@/lib/products";
+
+/** Rebuilt at most hourly, like /products, so the product link follows Product Management. */
+export const revalidate = 3600;
 
 export function generateStaticParams() {
   return ARTICLES.map((a) => ({ slug: a.slug }));
@@ -26,13 +30,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   if (!article) notFound();
   const same = ARTICLES.filter((a) => a.category === article.category);
   const i = same.indexOf(article);
+  // The product that goes with the article: the catalogue's `reads` in reverse, only when exactly one product on sale
+  // lists the article (Know Your Flow, read with all three towels, gets no product link).
+  const { products } = await getLinzzyProducts();
+  const related = products.filter((p) => !p.comingSoon && p.reads?.includes(article.slug));
+  const product = related.length === 1 ? { slug: related[0].slug, name: related[0].name } : null;
   const reads = [1, 2, 3].map((k) => same[(i + k) % same.length]).filter((a) => a !== article);
   return (
     <ArticleClient
       a={{
         slug: article.slug, title: article.title, lede: article.lede, topic: article.topic, minutes: article.readMinutes, body: article.body,
         g: article.category === "baby-care" ? "baby" : "fem", catLabel: categoryOf(article.category).label, img: article.image, ph: ph(article),
-        says: article.says, community: article.community, notice: NOTICES[article.category],
+        says: article.says, community: article.community, notice: NOTICES[article.category], product,
       }}
       reads={reads.map((a) => ({ slug: a.slug, title: a.title, topic: a.topic, minutes: a.readMinutes, img: a.image?.src ?? null, alt: a.image?.alt ?? "", ph: ph(a) }))}
     />

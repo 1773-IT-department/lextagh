@@ -481,7 +481,7 @@ export default function ProductsView({ v: vals }: { v: any }) {
                     {vals.detail.pack}
                   </p>
                   {/* Lexta's product page fields (Drive, "3. Products Page"): key features, one expandable
-                      "Usage, Ingredients & Skin Sensitivity" row and the "Linzzy Says" line. */}
+                      "Usage, Ingredients & Skin Sensitivity" row, related articles (Read more) and the "Linzzy Says" line. */}
                   {(vals.detail.features ?? []).length ? (
                     <div>
                       <p style={{"margin":"0 0 8px","fontSize":"12px","fontWeight":"600","letterSpacing":"0.14em","textTransform":"uppercase","color":"#7a6890"} as CSSProperties}>
@@ -512,6 +512,19 @@ export default function ProductsView({ v: vals }: { v: any }) {
                         ))}
                       </dl>
                     </details>
+                  ) : null}
+                  {(vals.detail.reads ?? []).length ? (
+                    <p style={{"margin":"0","fontSize":"15px","lineHeight":"1.5","color":"#3d2a55"} as CSSProperties}>
+                      <span style={{"display":"block","fontSize":"12px","fontWeight":"600","letterSpacing":"0.14em","textTransform":"uppercase","color":"#7a6890","marginBottom":"4px"} as CSSProperties}>
+                        {"Read more"}
+                      </span>
+                      {(vals.detail.reads ?? []).map((r: { slug: string; title: string }, i: number) => (
+                        <Fragment key={r.slug}>
+                          {i ? <br /> : null}
+                          <a href={`/tips/${r.slug}`} className="lzp3" style={{"color":"#23103a","textDecoration":"underline","textUnderlineOffset":"3px"} as CSSProperties}>{r.title}</a>
+                        </Fragment>
+                      ))}
+                    </p>
                   ) : null}
                   {vals.detail.says ? (
                     <p style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontStyle":"italic","fontSize":"clamp(20px,1.8vw,24px)","lineHeight":"1.2","color":"#23103a"} as CSSProperties}>
