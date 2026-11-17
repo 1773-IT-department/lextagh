@@ -437,6 +437,8 @@ Messages from the website forms land in the CRM by themselves:
 
 Leads from **Contact Us** and **Partner With Us** get a **Reply by** time: the reply time admin sets (24 hours until Lexta confirms its own) after the lead arrives. While such a lead is still at stage **New** after that time, the leads list shows **Overdue** next to its stage, and the management overview lists it under **Needs attention**. Moving the lead on to **Contacted** (or a later stage) once you have replied clears it.
 
+**Acknowledgement emails.** Once Desmond switches email on, everyone who sends a website form with an email address gets an acknowledgement with their reference, and a copy goes to the form's inbox (marketing@, support@, hr@ or the brand address). The reference is in the subject of both. Reply to the copy to answer the customer directly, and keep the reference in the subject so the thread stays together. The record itself is always in the Business System: search for the reference.
+
 ### Website lead managers (admin only)
 
 Admin chooses who gets new website leads.

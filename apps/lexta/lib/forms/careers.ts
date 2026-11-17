@@ -24,6 +24,7 @@ import {
   type JobApplicationPayload,
 } from "@lexta/db";
 import { visitorKey } from "../visitor";
+import { acknowledged, type FormContext } from "@lexta/forms/core";
 import { formsConfigured, HONEYPOT_FIELD, msgUnavailable, payloadTooLarge, type FormState } from "./core";
 
 export { visitorKey };
@@ -171,7 +172,7 @@ export async function buildApplication(fd: FormData): Promise<{ values: Fields; 
 const keep = (v: Fields, cvOk: boolean): Fields => (cvOk ? v : { ...v, cv_path: "", cv_name: "" });
 
 /** The application form's server work. Never shows database details. ip: the visitor's address (see signTicketRequest). */
-export async function handleApplication(fd: FormData, ctx: { ip: string } = { ip: "" }): Promise<FormState> {
+export async function handleApplication(fd: FormData, ctx: FormContext & { ip: string } = { ip: "" }): Promise<FormState> {
   const trap = fd.get(HONEYPOT_FIELD);
   if (typeof trap === "string" && trap.trim() !== "") {
     const ref = fakeApplicationReference();
@@ -223,7 +224,15 @@ export async function handleApplication(fd: FormData, ctx: { ip: string } = { ip
     }
 
     const result = await submitJobApplication(payload);
-    if (result.ok) return { status: "success", reference: result.reference, message: applicationThanks(result.reference), values: {} };
+    if (result.ok) {
+      // Acknowledgement to the applicant and the copy for hr@ (P1). The CV stays in the Business System, never in email.
+      return acknowledged({ status: "success", reference: result.reference, message: applicationThanks(result.reference), values: {} }, ctx, (reference) => ({
+        kind: "application", site: "Lexta Ghana", form: "Careers application", reference, routeTo: CAREERS_EMAIL,
+        name: values.name, email: values.email, phone: values.phone || undefined,
+        details: [["Role", values.opening || "General application"], ["Area of interest", values.interest], ["CV", values.cv_name ? `${values.cv_name} (in the Business System)` : undefined],
+          ["Message", values.message]],
+      }));
+    }
     if (result.reason === "rate_limited") return { status: "error", message: MSG_APPLICATION_RATE_LIMITED, values: keep(values, true) };
     if (result.reason === "invalid") {
       const field = result.field ?? "";

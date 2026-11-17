@@ -170,6 +170,50 @@ try {
     check((await counts()) !== before && none.status === "error", "only the valid submissions were saved");
   }
 
+  // Acknowledgement emails (P1): each form hands its acknowledgement to ctx.notify after a real submission, with the
+  // routing inbox of that form; nothing for a refused form or a bot. Then the real sender with a stubbed provider.
+  {
+    const acks = [];
+    const notify = (a) => acks.push(a);
+    const c = await core.handleContact(fd({ reason: "Distribution", name: "Ack Contact", email: mail("ackc"), region: "Volta", message: "Hello", website: "" }), { notify });
+    const cc = await core.handleContact(fd({ reason: "Consumer care", name: "Ack Care", email: mail("ackcc"), phone: "0244555666", detail: "batch 77", message: "Torn", website: "" }), { notify });
+    const p = await core.handlePartner(pfd({ route: "Retail", contact_name: "Ack Partner", business_name: "Ack Ltd " + stamp, email: mail("ackp"), website: "" }), { notify });
+    const n = await core.handleNewsletter(fd({ email: mail("ackn"), consent: "yes", website: "" }), { notify });
+    await core.handleContact(fd({ reason: "Media", name: "", email: mail("ackbad"), message: "x", website: "" }), { notify });
+    await core.handleNewsletter(fd({ email: mail("ackbot"), consent: "yes", website: "bot" }), { notify });
+    const got = acks.map((a) => `${a.kind}|${a.reference}|${a.routeTo}|${a.email ?? ""}`);
+    const want = [
+      `enquiry|${c.reference}|marketing@lextagh.com|${mail("ackc")}`,
+      `complaint|${cc.reference}|support@lextagh.com|${mail("ackcc")}`,
+      `partner|${p.reference}|marketing@lextagh.com|${mail("ackp")}`,
+      `newsletter|${n.reference}|marketing@lextagh.com|${mail("ackn")}`,
+    ];
+    check(JSON.stringify(got) === JSON.stringify(want), "acknowledgements: one per saved submission, with its reference and routing inbox; none for refused forms or bots", got);
+    check(acks[1].phone === "0244555666" && acks[1].details.some(([l, v]) => l === "Product, batch or organisation" && v === "batch 77"), "acknowledgements: the team copy carries what was sent");
+
+    const { acknowledge } = await import("../../../../packages/forms/src/acknowledge.ts");
+    const realFetch = globalThis.fetch;
+    const sent = [];
+    // Off by default: no provider call at all.
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) { sent.push(JSON.parse(init.body)); return new Response("{\"id\":\"x\"}", { status: 200 }); } return realFetch(url, init); };
+    delete process.env.RESEND_API_KEY; delete process.env.MAIL_FROM;
+    await acknowledge(acks[0]);
+    check(sent.length === 0, "acknowledgements: off without RESEND_API_KEY and MAIL_FROM, nothing sent");
+    process.env.RESEND_API_KEY = "re_harness"; process.env.MAIL_FROM = "Lexta Ghana <no-reply@mail.example.com>";
+    await acknowledge(acks[1]);
+    check(sent.length === 2 && sent.every((m) => m.subject === `[${cc.reference}] Lexta Ghana: your report`) && sent.some((m) => m.to[0] === "support@lextagh.com" && m.reply_to === mail("ackcc")),
+      "acknowledgements: on with both set, the sender and the support inbox get the case number in the subject", sent.map((m) => [m.to, m.subject]));
+    // A broken provider never reaches the form: the submission still succeeds and nothing throws.
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) throw new TypeError("network down"); return realFetch(url, init); };
+    const after = [];
+    const s2 = await core.handleContact(fd({ reason: "General enquiry", name: "Ack Down", email: mail("ackdown"), region: "Volta", message: "Hi", website: "" }), { notify: (a) => after.push(acknowledge(a)) });
+    let threw = false;
+    try { await Promise.all(after); } catch { threw = true; }
+    check(s2.status === "success" && !threw, "acknowledgements: a failed send never fails the form");
+    globalThis.fetch = realFetch;
+    delete process.env.RESEND_API_KEY; delete process.env.MAIL_FROM;
+  }
+
   // Newsletter: a contact with marketing consent, no lead.
   {
     const email = mail("news");

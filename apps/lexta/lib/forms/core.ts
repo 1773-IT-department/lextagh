@@ -36,7 +36,9 @@ import {
   tooLarge,
   trapped,
   unavailable,
+  acknowledged,
   type Fields,
+  type FormContext,
 } from "@lexta/forms/core";
 import { reasons as contactReasons } from "../../components/contact/data";
 import { CSR_BRANDS, CSR_INITIATIVES } from "../../components/csr/programmes";
@@ -56,9 +58,13 @@ export {
   msgUnavailable,
   PAYLOAD_MAX_BYTES,
   payloadTooLarge,
+  type FormContext,
   type FormState,
 } from "@lexta/forms/core";
 import type { FormState } from "@lexta/forms/core";
+
+/** The site's name in the acknowledgement emails (P1). */
+const SITE = "Lexta Ghana";
 
 const BRAND = "lexta";
 
@@ -184,7 +190,7 @@ export function buildContact(fd: FormData): { values: Fields; errors: Fields; ro
   return { values: v, errors, route: { kind: "enquiry", payload } };
 }
 
-export async function handleContact(fd: FormData): Promise<FormState> {
+export async function handleContact(fd: FormData, ctx: FormContext = {}): Promise<FormState> {
   const reasonLabel = String(fd.get("reason") ?? "");
   if (trapped(fd)) {
     const ref = fakeReference(CONTACT_REASONS[reasonLabel] === "consumer_care" ? "complaint" : "contact");
@@ -196,15 +202,21 @@ export async function handleContact(fd: FormData): Promise<FormState> {
   if (!formsConfigured()) return unavailable(values, email);
   if (payloadTooLarge(route.payload)) return tooLarge(values);
 
+  // Acknowledgement and the copy for the reason's inbox (marketing@, support@ or hr@, from the form's own list).
+  const ack = (kind: "complaint" | "enquiry") => (reference: string) => ({
+    kind, site: SITE, form: kind === "complaint" ? "Contact Us message (Consumer care)" : "Contact Us message", reference, routeTo: email,
+    name: values.name, email: values.email || undefined, phone: values.phone || undefined,
+    details: [["Reason", reasonLabel || "General enquiry"], ["Region", values.region], ["Product, batch or organisation", values.detail], ["Message", values.message]] as [string, string][],
+  });
   if (route.kind === "complaint") {
     const result = await safely(() => submitComplaint(route.payload));
-    return fromResult(result, values, { name: "name", email: "email", phone: "phone", message: "message", batch_number: "detail" }, CONTACT_MESSAGES,
-      complaintThanks, email);
+    return acknowledged(fromResult(result, values, { name: "name", email: "email", phone: "phone", message: "message", batch_number: "detail" }, CONTACT_MESSAGES,
+      complaintThanks, email), ctx, ack("complaint"));
   }
   const result = await safely(() => submitWebsiteEnquiry({ form: "contact", payload: route.payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "name", email: "email", phone: "phone", message: "message", organisation_name: "detail", detail: "detail", region: "region" },
-    CONTACT_MESSAGES, contactThanks, email);
+    CONTACT_MESSAGES, contactThanks, email), ctx, ack("enquiry"));
 }
 
 const contactThanks = (ref: string) => `Thank you. Your message has reached our team and your reference is ${ref}.`;
@@ -275,7 +287,7 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
 
 const partnerThanks = (ref: string) => `Thank you. Your application has reached our trade desk and your reference is ${ref}.`;
 
-export async function handlePartner(fd: FormData): Promise<FormState> {
+export async function handlePartner(fd: FormData, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("partner");
     return { status: "success", reference: ref, message: partnerThanks(ref), values: {} };
@@ -285,9 +297,14 @@ export async function handlePartner(fd: FormData): Promise<FormState> {
   if (!formsConfigured()) return unavailable(values, SALES_EMAIL);
   if (payloadTooLarge(payload)) return tooLarge(values);
   const result = await safely(() => submitWebsiteEnquiry({ form: "partner", payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "contact_name", organisation_name: "business_name", email: "email", phone: "phone", location: "trading_location", years_trading: "years_trading", message: "message" },
-    PARTNER_MESSAGES, partnerThanks, SALES_EMAIL);
+    PARTNER_MESSAGES, partnerThanks, SALES_EMAIL), ctx, (reference) => ({
+    kind: "partner", site: SITE, form: "Partner With Us application", reference, routeTo: SALES_EMAIL,
+    name: values.contact_name, email: values.email || undefined, phone: values.phone || undefined,
+    details: [["Route", values.route], ["Business name", values.business_name], ["Trading location", values.trading_location],
+      ["Years trading", values.years_trading], ["Message", payload.message]],
+  }));
 }
 
 // Newsletter ---------------------------------------------------------------------------------
@@ -314,7 +331,7 @@ export function buildNewsletter(fd: FormData) {
 
 const newsletterThanks = (ref: string) => `Thank you, you are subscribed. Your reference is ${ref}.`;
 
-export async function handleNewsletter(fd: FormData): Promise<FormState> {
+export async function handleNewsletter(fd: FormData, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("newsletter");
     return { status: "success", reference: ref, message: newsletterThanks(ref), values: {} };
@@ -323,5 +340,6 @@ export async function handleNewsletter(fd: FormData): Promise<FormState> {
   if (!payload) return invalid(values, errors);
   if (!formsConfigured()) return unavailable(values, SUPPORT_EMAIL);
   const result = await safely(() => submitWebsiteEnquiry({ form: "newsletter", payload }));
-  return fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, SUPPORT_EMAIL);
+  return acknowledged(fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, SUPPORT_EMAIL),
+    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "Newsletter sign up", reference, routeTo: SUPPORT_EMAIL, email: values.email }));
 }

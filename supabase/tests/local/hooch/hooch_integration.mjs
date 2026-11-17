@@ -197,6 +197,18 @@ try {
     check(s.status === "success" && row.startsWith("website_partner_form|hooch|") && row.includes("Hooch cereals of interest: Hooch® Cornflakes, Hooch® Frosted Flakes"), "trade lead: partner form, brand hooch, cereals of interest", { s, row });
   }
 
+  // Acknowledgements (P1): each Hooch form hands its acknowledgement over with the Hooch routing inbox.
+  {
+    const acks = [];
+    const notify = (a) => acks.push(a);
+    const c = await core.handleConsumer(fd({ topic: "problem", name: "Ack", email: mail("ack1"), message: "Soggy flakes.", privacy: "yes" }), {}, { notify });
+    const t = await core.handleTrade(fd({ route: "retail", contact_name: "Ack", business_name: `Ack Shop ${stamp}`, email: mail("ack2") }), {}, { notify });
+    const n = await core.handleNewsletter(fd({ email: mail("ack3"), consent: "yes" }), { notify });
+    const got = acks.map((a) => `${a.kind}|${a.site}|${a.reference}|${a.routeTo}`);
+    check(JSON.stringify(got) === JSON.stringify([`complaint|Hooch|${c.reference}|support@hoochfoods.com`, `partner|Hooch|${t.reference}|info@hoochfoods.com`,
+      `newsletter|Hooch|${n.reference}|marketing@hoochfoods.com`]), "acknowledgements: complaint to support@, trade to info@, newsletter to marketing@hoochfoods.com", got);
+  }
+
   // Honeypot. -----------------------------------------------------------------------------------------------------
   {
     const before = await counts();

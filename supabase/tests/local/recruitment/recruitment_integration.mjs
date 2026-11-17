@@ -138,6 +138,14 @@ try {
       "the file bytes are in the bucket");
   }
   {
+    // Acknowledgement (P1): the applicant and hr@lextagh.com, with the reference; the CV stays in the Business System.
+    const acks = [];
+    const s = await careers.handleApplication(fd({ ...base("ackapp"), cv: file(PDF, "ack.pdf") }), { ip: nextIp(), notify: (a) => acks.push(a) });
+    check(s.status === "success" && acks.length === 1 && acks[0].kind === "application" && acks[0].reference === s.reference && acks[0].routeTo === "hr@lextagh.com"
+      && acks[0].email === mail("ackapp") && acks[0].details.some(([l, v]) => l === "CV" && v === "ack.pdf (in the Business System)"),
+      "acknowledgement: the application goes to hr@lextagh.com, the CV named but not attached", acks);
+  }
+  {
     // A Word file the browser labelled application/octet-stream: stored with the Word type from its extension.
     const s = await apply(fd({ ...base("kofi"), cv: file(DOCX, "kofi.docx", "application/octet-stream") }));
     check(s.status === "success", "general application with a DOCX succeeds", s);

@@ -5,11 +5,13 @@
     "./core": "./src/core.ts",
     "./react": "./src/react.tsx",
     "./complaint-file": "./src/complaint-file.ts",
-    "./attachment": "./src/attachment.tsx"
+    "./attachment": "./src/attachment.tsx",
+    "./acknowledge": "./src/acknowledge.ts"
   },
   "dependencies": {
     "@lexta/db": "workspace:*",
-    "@lexta/chat": "workspace:*"
+    "@lexta/chat": "workspace:*",
+    "@lexta/mail": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.1.0"

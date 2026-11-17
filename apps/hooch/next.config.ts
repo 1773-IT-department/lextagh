@@ -11,7 +11,7 @@ import type { NextConfig } from "next";
  * Lexta's seventh item, "Meet hochiro, coming soon", and the Phase 2 games, comics and shop are not built (scope).
  */
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lexta/chat", "@lexta/db", "@lexta/forms", "@lexta/ui"],
+  transpilePackages: ["@lexta/chat", "@lexta/db", "@lexta/forms", "@lexta/mail", "@lexta/ui"],
 };
 
 export default nextConfig;

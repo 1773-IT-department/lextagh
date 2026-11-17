@@ -25,6 +25,17 @@ export async function checkComplaintAttachments({ core, actions, check, q, mail,
     check(row === "seal photo.jpg|image/jpeg|2048|true|1", `${brand} file: the photo is on the case like a staff file (record, path under the case, timeline entry)`, row);
   }
 
+  // Acknowledgement (P1): the complaint's acknowledgement goes to the brand's support inbox and names the file.
+  {
+    const acks = [];
+    const form = pf({ topic: "problem", name: "Ack File", email: mail(`${brand}-ack`), message: "Ack with a file." });
+    form.append("attachment", new File([JPG], "ack.jpg", { type: "image/jpeg" }));
+    const s = await core.handleConsumer(form, {}, { ...ip, notify: (a) => acks.push(a) });
+    check(s.status === "success" && acks.length === 1 && acks[0].kind === "complaint" && acks[0].reference === s.reference
+      && acks[0].routeTo === `support@${brand}products.com` && acks[0].details.some(([l, v]) => l === "File" && v?.startsWith("ack.jpg")),
+      `${brand} acknowledgement: the complaint goes to support@${brand}products.com with the file named`, acks);
+  }
+
   // With JavaScript: the browser gets a ticket, uploads straight to Storage, then sends the form with the path.
   {
     const t = await actions.requestComplaintUpload({ name: "receipt.png", size: PNG.length, head: PNG.subarray(0, 16).toString("base64") }, ip);
