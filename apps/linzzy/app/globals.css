@@ -122,6 +122,9 @@ button, input, select, textarea { font-family: inherit; }
 .lz-sel { width: 100%; }
 .lz-sel > select { width: 100%; padding-right: 40px !important; cursor: pointer; font-family: "Hanken Grotesk", system-ui, sans-serif !important; transition: border-color .2s ease; }
 .lz-sel:hover > select, .lz-sel > select:focus { border-bottom-color: #c2185b !important; }
+.lz-file { cursor: pointer; font-family: "Hanken Grotesk", system-ui, sans-serif !important; }
+.lz-file::file-selector-button { margin-right: 14px; border: 1px solid #23103a; padding: 10px 16px; background: transparent; color: #23103a; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+.lz-file:focus-visible { outline: 2px solid #c2185b; outline-offset: 2px; }
 .lz-sel-dark { --lx-select-accent: #f48fb1; }
 .lz-sel-dark:hover > select, .lz-sel-dark > select:focus { border-bottom-color: #f48fb1 !important; }
 [data-lx-select-panel] { font-family: "Hanken Grotesk", system-ui, sans-serif; border-radius: 14px; padding: 6px; }

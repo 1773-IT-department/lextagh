@@ -55,6 +55,9 @@
 .formIntro { margin: 8px 0 22px; font-size: 14px; line-height: 1.7; color: var(--yz-muted); }
 .consumer .problemOnly { display: none; }
 .consumer:has(input[name="topic"][value="problem"]:checked) .problemOnly { display: grid; }
+.consumer:has(input[name="topic"][value="problem"]:checked) .fileField { display: flex; }
+.file { padding: 9px 14px; cursor: pointer; }
+.file::file-selector-button { margin-right: 12px; border: 0; border-radius: 8px; padding: 6px 14px; background: var(--yz-sky); color: var(--yz-ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .sideCol { display: flex; flex-direction: column; gap: 16px; }
 .partnerCard { padding: 30px 26px; border-radius: 22px; background: var(--yz-deep); color: #fff; }
 .partnerCard svg { color: #ff8a95; }

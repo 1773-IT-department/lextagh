@@ -1,9 +1,10 @@
 "use client";
 
+import { ATTACHMENT_ACCEPT, useComplaintAttachment } from "@lexta/forms/attachment";
 import { useServerForm } from "@lexta/forms/react";
 import dynamic from "next/dynamic";
 import { useActionState, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
-import { submitConsumerForm, submitTradeForm } from "@/app/actions/forms";
+import { startComplaintUpload, submitConsumerForm, submitTradeForm } from "@/app/actions/forms";
 import { idleState } from "../FormBits";
 import { TOPICS, TRADE_ROUTES, type Topic } from "@/lib/forms/options";
 import { ALL_REGIONS, type RegionOption, type StockistItem } from "@/lib/where-to-buy";
@@ -48,7 +49,8 @@ export default function ContactClient({
   const req = useRef(0);
 
   const [msgState, msgAction, msgPending] = useActionState(submitConsumerForm, idleState);
-  const msg = useServerForm(msgState, msgAction, msgPending);
+  const file = useComplaintAttachment(startComplaintUpload);
+  const msg = useServerForm(msgState, msgAction, msgPending, file.prepare);
   const [tradeState, tradeAction, tradePending] = useActionState(submitTradeForm, idleState);
   const trade = useServerForm(tradeState, tradeAction, tradePending);
 
@@ -131,6 +133,7 @@ export default function ContactClient({
     today: new Date().toISOString().slice(0, 10),
     privacyUrl,
     msg: { ...msg, state: msgState, pending: msgPending, action: msgAction, v: msgState.values ?? {} },
+    file: { accept: ATTACHMENT_ACCEPT, error: file.error ?? msgState.fieldErrors?.attachment, clearError: file.clearError },
     msgSent: msgState.status === "success",
     msgOpen: msgState.status !== "success",
     route,

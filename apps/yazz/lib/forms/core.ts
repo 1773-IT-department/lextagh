@@ -28,6 +28,7 @@ import {
   fromResult,
   invalid,
   LIMITS,
+  MSG_CHECK_FIELDS,
   MSG_TOO_LONG,
   payloadTooLarge,
   read,
@@ -38,6 +39,7 @@ import {
   type Fields,
   type FormState,
 } from "@lexta/forms/core";
+import { ATTACHMENT_MESSAGES, attachmentValues, complaintAttachmentFrom, keepAttachment } from "@lexta/forms/complaint-file";
 import { contact } from "../site";
 import { isTopic, topicLabel, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
@@ -139,19 +141,32 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Yazz team and your reference is ${ref}.`;
 const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report has gone to our consumer care team.`;
 
-export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
+/** What the server action knows about the request: the visitor's address, for the file upload limits. */
+export type FormContext = { ip?: string };
+
+export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const problem = fd.get("topic") === "problem";
     const ref = fakeReference(problem ? "complaint" : "contact");
     return { status: "success", reference: ref, message: problem ? complaintThanks(ref) : consumerThanks(ref), values: {} };
   }
-  const { values, errors, route } = buildConsumer(fd, productNames);
+  const built = buildConsumer(fd, productNames);
+  const { errors, route } = built;
+  // A file the browser already uploaded is kept on an error, so the visitor does not choose it again.
+  const values = built.values.topic === "problem" ? { ...built.values, ...attachmentValues(fd) } : built.values;
   if (!route) return invalid(values, errors);
   const email = contact.supportEmail;
   if (!formsConfigured()) return unavailable(values, email);
   if (payloadTooLarge(route.payload)) return tooLarge(values);
 
   if (route.kind === "complaint") {
+    // The optional photo or document: uploaded with a one time ticket, then claimed by the complaint (0027).
+    const file = await complaintAttachmentFrom(fd, { ip: ctx.ip });
+    if (file.kind === "error") {
+      return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { attachment: file.message }, values: keepAttachment(values, file, true) };
+    }
+    if (file.kind === "ready") route.payload = { ...route.payload, attachment_path: file.path, attachment_name: file.name };
+    const kept = keepAttachment(values, file);
     let result = await safely(() => submitComplaint(route.payload));
     // A product the database does not know as a published Yazz product (for example one shown while the database was
     // unreachable) must not lose the complaint: send it again with the product named in the text instead.
@@ -160,9 +175,10 @@ export async function handleConsumer(fd: FormData, productNames: Record<string, 
       const message = route.productName && !rest.message.startsWith("Product:") ? `Product: ${route.productName}\n${rest.message}` : rest.message;
       result = await safely(() => submitComplaint({ ...rest, message: message.slice(0, LIMITS.message) }));
     }
-    return fromResult(result, values,
-      { name: "name", email: "email", phone: "phone", message: "message", batch_number: "batch", purchase_place: "purchase_place", purchase_date: "purchase_date", product: "product" },
-      CONSUMER_MESSAGES, complaintThanks, email);
+    const state = fromResult(result, kept,
+      { name: "name", email: "email", phone: "phone", message: "message", batch_number: "batch", purchase_place: "purchase_place", purchase_date: "purchase_date", product: "product", attachment: "attachment" },
+      { ...CONSUMER_MESSAGES, attachment: ATTACHMENT_MESSAGES.upload }, complaintThanks, email);
+    return state.fieldErrors?.attachment ? { ...state, values: keepAttachment(values, file, true) } : state;
   }
   const result = await safely(() => submitWebsiteEnquiry({ form: "contact", payload: route.payload }));
   return fromResult(result, values,

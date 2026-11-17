@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useRef, type CSSProperties, type FormEvent } from "react";
+import { startTransition, useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import type { FormState } from "./core";
 
 /** The form behaviour every website shares (item 19). Each site draws its own fields and messages around these. */
@@ -16,8 +16,16 @@ import type { FormState } from "./core";
  *   second submit is ignored.
  * When the answer arrives, focus moves to the first field with an error, or else to the thank you or error message.
  */
-export function useServerForm(state: FormState, formAction: (fd: FormData) => void, pending: boolean) {
+export function useServerForm(
+  state: FormState,
+  formAction: (fd: FormData) => void,
+  pending: boolean,
+  /** Optional work before sending (the complaint file upload); null stops the send. */
+  prepare?: (fd: FormData) => Promise<FormData | null>,
+) {
   const ref = useRef<HTMLFormElement>(null);
+  const [preparing, setPreparing] = useState(false);
+  const preparingRef = useRef(false);
   // The answer already handled, so focus moves once per answer (and never while the next one is on its way).
   const handled = useRef<FormState | null>(null);
 
@@ -37,12 +45,20 @@ export function useServerForm(state: FormState, formAction: (fd: FormData) => vo
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pending) return;
+    if (pending || preparingRef.current) return;
     const data = new FormData(e.currentTarget);
-    startTransition(() => formAction(data));
+    if (!prepare) {
+      startTransition(() => formAction(data));
+      return;
+    }
+    preparingRef.current = true;
+    setPreparing(true);
+    void prepare(data)
+      .then((ready) => { if (ready) startTransition(() => formAction(ready)); })
+      .finally(() => { preparingRef.current = false; setPreparing(false); });
   };
 
-  return { ref, onSubmit };
+  return { ref, onSubmit, preparing };
 }
 
 function clearTypedFields(form: HTMLFormElement) {
@@ -53,6 +69,7 @@ function clearTypedFields(form: HTMLFormElement) {
       el.selectedIndex = preset >= 0 ? preset : 0;
     } else if (el instanceof HTMLInputElement) {
       if (el.type === "checkbox") el.checked = false;
+      else if (el.type === "hidden" && el.name.startsWith("attachment_")) el.value = "";
       else if (!["radio", "hidden", "submit", "button"].includes(el.type)) el.value = "";
     }
   }

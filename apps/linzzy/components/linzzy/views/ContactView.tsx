@@ -445,6 +445,24 @@ export default function ContactView({ v: vals }: { v: any }) {
                       </textarea>
                       <Err id="c-message-error" msg={vals.msg.state.fieldErrors?.message} />
                     </label>
+                    {/* Optional Product Photograph or Supporting Document (Drive, Contact page): problem reports only, uploaded with a one time ticket. */}
+                    {vals.isProblem ? (
+                      <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"} as CSSProperties}>
+                        {"Product photo or document (optional)"}
+                        <input name="attachment" type="file" accept={vals.file.accept} onChange={vals.file.clearError} aria-invalid={vals.file.error ? true : undefined} aria-describedby={vals.file.error ? "c-attachment-error" : "c-attachment-hint"} className="lz-file" style={{"padding":"12px 0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"16px","background":"transparent","color":"#23103a","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties} />
+                        <span id="c-attachment-hint" style={{"fontSize":"14px","fontWeight":"400","letterSpacing":"0","textTransform":"none","color":"#7a6890"} as CSSProperties}>
+                          {"One JPG, PNG or PDF, up to 5 MB. A photograph of the product packaging helps us most."}
+                        </span>
+                        {vals.msg.v.attachment_path ? (
+                          <span style={{"fontSize":"14px","fontWeight":"400","letterSpacing":"0","textTransform":"none","color":"#23103a"} as CSSProperties}>
+                            <input type="hidden" name="attachment_path" value={vals.msg.v.attachment_path} />
+                            <input type="hidden" name="attachment_name" value={vals.msg.v.attachment_name ?? ""} />
+                            {`Attached: ${vals.msg.v.attachment_name || "your file"}. Choose a new file to replace it.`}
+                          </span>
+                        ) : null}
+                        <Err id="c-attachment-error" msg={vals.file.error} />
+                      </label>
+                    ) : null}
                     {"\n          "}
                     {"\n          "}
                     <label style={{"display":"flex","gap":"10px","alignItems":"center","fontSize":"14px"} as CSSProperties}>
@@ -458,8 +476,8 @@ export default function ContactView({ v: vals }: { v: any }) {
                     <Err id="c-privacy-error" msg={vals.msg.state.fieldErrors?.privacy} />
                     <FormError state={vals.msg.state} />
                     {"\n          "}
-                    <button type="submit" aria-disabled={vals.msg.pending || undefined} style={{"alignSelf":"flex-start","border":"0","cursor":"pointer","padding":"20px 32px","background":"#C2185B","color":"#fff","fontWeight":"700","fontSize":"14px","letterSpacing":"0.06em","textTransform":"uppercase"} as CSSProperties}>
-                      {"Submit Enquiry →"}
+                    <button type="submit" aria-disabled={vals.msg.pending || vals.msg.preparing || undefined} style={{"alignSelf":"flex-start","border":"0","cursor":"pointer","padding":"20px 32px","background":"#C2185B","color":"#fff","fontWeight":"700","fontSize":"14px","letterSpacing":"0.06em","textTransform":"uppercase"} as CSSProperties}>
+                      {vals.msg.preparing ? "Uploading..." : "Submit Enquiry →"}
                     </button>
                     {"\n        "}
                   </form>

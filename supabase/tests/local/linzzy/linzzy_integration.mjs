@@ -6,6 +6,7 @@
 import { readFileSync } from "node:fs";
 import { register } from "node:module";
 import { psql, startShim } from "../forms/rpc_shim.mjs";
+import { checkComplaintAttachments } from "../forms/attachment_checks.mjs";
 
 register(new URL("../forms/ts-hook.mjs", import.meta.url));
 
@@ -277,6 +278,12 @@ try {
     const c = await core.handleNewsletter(fd({ email: mail("bot"), consent: "yes", website: "x" }));
     check(a.status === "success" && /^LX-/.test(a.reference) && /^PTN-/.test(b.reference) && /^NWS-/.test(c.reference), "honeypot: bots get a thank you with a real looking reference");
     check((await counts()) === before, "honeypot: nothing reaches the CRM or the complaints tracker");
+  }
+
+  // Report a problem with a photo or document (X3, 0027). ------------------------------------------------------
+  {
+    const fileActions = await import("../../../../packages/forms/src/complaint-file.ts");
+    await checkComplaintAttachments({ core, actions: fileActions, check, q, mail, fd, brand: "linzzy" });
   }
 
   // Live chat: conversations from the Linzzy site are tagged linzzy. ------------------------------------------

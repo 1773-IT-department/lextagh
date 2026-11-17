@@ -21,6 +21,11 @@ const CALLS = {
     args: ["nonce", "issued_at", "ip_hash", "signature", "file_name"],
     sql: "select public.begin_job_cv_upload(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'signature', :'file_name');",
   },
+  // Complaint photo or document ticket (0027).
+  begin_complaint_file_upload: {
+    args: ["nonce", "issued_at", "ip_hash", "mime_type", "size_bytes", "signature", "file_name"],
+    sql: "select public.begin_complaint_file_upload(:'nonce'::uuid, :'issued_at'::bigint, :'ip_hash', :'mime_type', :'size_bytes'::integer, :'signature', :'file_name');",
+  },
   // Live chat (item 22): these return jsonb, sent back as JSON like PostgREST does.
   chat_start: {
     args: ["nonce", "issued_at", "ip_hash", "signature", "payload"], json: true,
