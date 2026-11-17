@@ -4,7 +4,7 @@
 /** The consumer form's topics. "problem" becomes a complaint; the others a CRM lead. */
 export const TOPICS = [
   { value: "question", label: "Product question", hint: "Ask us anything about a Yazz product." },
-  { value: "problem", label: "Report a problem with a product", hint: "A pack that did not meet our standard. You will get a case number." },
+  { value: "problem", label: "Report a problem with a product", hint: "A problem with a Yazz pack. Your report goes to our consumer care team." },
   { value: "feedback", label: "Feedback or product review", hint: "Tell us what you think of Yazz." },
   { value: "stockist", label: "My shop does not stock Yazz", hint: "Tell us the shop's name and town." },
   { value: "other", label: "Something else", hint: "Any other question for the Yazz team." },

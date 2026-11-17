@@ -80,7 +80,7 @@ export default function SiteFooter() {
       <div className={s.bottom}>
         <span>{BRAND.copyright}</span>
         <span>Yazz® A Trademark of Lexta Ghana Limited</span>
-        <span className={s.values}>Quality Products | Healthier Families | A Brighter Future</span>
+        <span className={s.values}>Quality | Reliability | Value</span>
       </div>
     </footer>
   );

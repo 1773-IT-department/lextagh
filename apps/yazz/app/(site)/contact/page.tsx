@@ -44,8 +44,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
     .filter((g) => g.options.length);
 
   const channels = [
-    { icon: "phone", tone: "#ED1B2E", title: "Consumer Care", body: "Product questions, feedback or a pack that did not meet our standard.", action: contact.whatsappCare, href: whatsapp(contact.whatsappCare), label: "WhatsApp" },
-    { icon: "truck", tone: "#0B4FA5", title: "Trade & Bulk Orders", body: "Distributors, wholesalers, shops and institutions: send us a trade enquiry.", action: "Trade enquiry", href: "#trade" },
+    { icon: "phone", tone: "#ED1B2E", title: "Consumer Care", body: "Product questions, complaints, feedback and product reviews.", action: contact.whatsappCare, href: whatsapp(contact.whatsappCare), label: "WhatsApp" },
+    { icon: "truck", tone: "#0B4FA5", title: "Trade & Stockists", body: "Distributors, wholesalers, shops and institutions: send us a trade enquiry.", action: "Trade enquiry", href: "#trade" },
     { icon: "pin", tone: "#15803D", title: "Find a Stockist", body: "Shops and distributors that stock Yazz, on the map.", action: "Open the locator", href: "#where-to-buy" },
     { icon: "mail", tone: "#EC1B7B", title: "Partnerships", body: "Partnerships and sponsorships with the Yazz team.", action: contact.partnershipsEmail, href: `mailto:${contact.partnershipsEmail}` },
   ];
@@ -86,14 +86,14 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
         <div className={s.formCard}>
           <p className="yz-eyebrow">Send us a message</p>
           <h2 id="message-title" className={s.formTitle}>How Can We Help?</h2>
-          <p className={s.formIntro}>Tell us the product, batch information, purchase location and what happened. Your enquiry is handled by our consumer care team.</p>
+          <p className={s.formIntro}>Tell us the product, batch information, purchase location and what happened. Your enquiry will be handled by our consumer care team.</p>
           <ConsumerForm regions={regions} products={groups} initialTopic={topic} initialProduct={product?.slug ?? ""} initialRegion={regionFromUrl && region !== ALL_REGIONS ? region : ""} />
         </div>
         <aside className={s.sideCol} aria-label="Contact details">
           <div className={s.partnerCard}>
             <Icon name="truck" size={26} />
             <h2>Become a Yazz Partner</h2>
-            <p>Distributor, wholesaler, shop or institution? Tell us your region and volumes and our trade team will come back to you.</p>
+            <p>Distributor, wholesaler, shop or institution? Tell us your region and volumes. Your enquiry goes to Lexta Ghana Limited.</p>
             <a href="#trade" className="yz-btn yz-btn--red">Trade enquiry <Icon name="arrow" size={16} /></a>
           </div>
           <div className={s.office}>
@@ -131,7 +131,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
           <div className={s.tradeIntro}>
             <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Trade &amp; distribution</p>
             <h2 id="trade-title">Stock Yazz in Your Shop or Region</h2>
-            <p>Distributors, wholesalers, shops, supermarkets, pharmacies and institutions: tell us about your business and what you would like to stock. Our trade team will come back to you with terms.</p>
+            <p>Distributors, wholesalers, shops, supermarkets, pharmacies and institutions: tell us about your business and what you would like to stock. Your enquiry goes to Lexta Ghana Limited.</p>
             <p className={`yz-script ${s.tradeScript}`} aria-hidden="true">More Products.<br />More Smiles. <span>♥</span></p>
           </div>
           <TradeForm regions={regions} />

@@ -21,7 +21,7 @@ export default function SubscribeForm() {
     <section className={s.subscribe} aria-labelledby={`${id}-title`}>
       <div className={s.subscribeText}>
         <h2 id={`${id}-title`} className={s.subscribeTitle}>Never Miss a<br /><em>Yazz Headline.</em></h2>
-        <p>New tips, products and announcements from Yazz®, straight to your inbox.</p>
+        <p>Leave your email address to hear about new Yazz® tips, products and announcements.</p>
       </div>
       <form ref={ref} action={action} onSubmit={onSubmit} className={s.subscribeForm} noValidate>
         <Honeypot />

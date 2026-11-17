@@ -17,7 +17,7 @@ export const CATEGORIES = [
     label: "Just 4 You",
     title: "Periods. Puberty. Protection. Confidence. Just 4 You.",
     blurb:
-      "The Yazz® space created to help you understand your period, care for yourself, choose the right menstrual protection and feel more confident through every stage of your journey.",
+      "The Yazz® space created to help you understand your period, care for yourself, choose the right menstrual protection and feel more confident through every stage of your journey. Know Your Body. Know Your Flow. Own Your Day.",
   },
   {
     slug: "just-4-parents",
@@ -71,9 +71,13 @@ export const TIP_LABEL: Record<CategorySlug, string> = {
   news: "Yazz®",
 };
 
-/** Shown under every Just 4 You and Just 4 Parents article (Lexta's own wording). */
+/** Shown under every Just 4 You article and on the Tips pages: Lexta's "A Note From Yazz®", word for word. */
 export const HEALTH_NOTE =
-  "Content within Yazz® Tips Just 4 You is intended for general education and does not replace professional medical advice, diagnosis or treatment. Menstrual cycles and puberty vary between individuals. If you are concerned about your health, menstrual cycle, puberty or symptoms you are experiencing, speak with a parent or trusted adult and seek advice from a qualified healthcare professional.";
+  "The information provided through Tips Just 4 You is for general educational purposes and does not replace professional medical advice, diagnosis or treatment. If you are concerned about your health, menstrual cycle, puberty or symptoms you are experiencing, speak with a parent or trusted adult and seek advice from a qualified healthcare professional where appropriate.";
+
+/** Shown under every Just 4 Parents article and its list: Lexta's "Important Health Information", word for word. */
+export const HEALTH_NOTE_PARENTS =
+  "Content within Yazz® Tips Just 4 You is intended for general education and should not replace individual advice, diagnosis or treatment from a qualified healthcare professional. Menstrual cycles and puberty vary between individuals. Parents and caregivers should seek professional medical advice when they have concerns about a young person's development, menstrual health, pain, bleeding, discharge or overall wellbeing.";
 
 const you = (a: Omit<Article, "category" | "topic" | "range"> & { topic?: Article["topic"] }): Article => ({
   category: "just-4-you", topic: { label: "Tips Just 4 You", tone: PINK }, range: "feminine-care", ...a,
@@ -263,7 +267,7 @@ If difficult emotions feel overwhelming, continue for a long time or interfere s
   }),
   you({
     slug: "personal-hygiene-during-puberty", title: "Personal Hygiene During Puberty", kicker: "Caring for Your Changing Body",
-    lede: "As your body changes, your personal-care routine may need to change too. Good hygiene is about caring for your health and feeling comfortable.",
+    lede: "As your body changes, your personal-care routine may need to change too. Good hygiene isn't about trying to look perfect. It's about caring for your health and feeling comfortable.",
     date: "2026-03", readMinutes: 3, image: null,
     body: `## Bathing
 
@@ -401,7 +405,7 @@ Recording the first day of each period can help you understand your cycle and es
   }),
   you({
     slug: "common-puberty-questions", title: "Common Puberty Questions", kicker: "You Asked. Yazz® Answers.",
-    lede: "Thirteen of the questions we hear most often about puberty and periods, answered simply.",
+    lede: "You asked. Yazz® answers: thirteen questions about puberty and periods, answered simply.",
     date: "2026-01", readMinutes: 4, image: null,
     body: `## When will I start puberty?
 
@@ -485,7 +489,7 @@ Never flush sanitary pads down the toilet. Always follow the usage and disposal 
 - Your comfort: choose protection that feels comfortable and secure for you.
 - Day or night: you may prefer different coverage depending on whether you're going about your day or sleeping.
 
-Compare the Yazz® options using the details on their approved packaging: pad lengths, pack contents and flow. Our Feminine Care page lists every Yazz® pad and panty liner.`,
+Compare the Yazz® options using the details on their approved packaging: pad lengths, pack contents and flow. You can see the Yazz® pads and panty liners on our Feminine Care page.`,
   }),
   you({
     slug: "feeling-fresh-every-day", title: "Feeling Fresh Every Day", kicker: "Freshness Begins with Good Personal Hygiene",
@@ -568,7 +572,7 @@ Periods are private, but they don't need to be shameful. Where appropriate, boys
   }),
   parents({
     slug: "preparing-her-for-her-first-period", title: "Preparing Her for Her First Period", kicker: "Preparation Begins Before the First Drop",
-    lede: "For a young person who hasn't been prepared for menstruation, an unexpected first period could be frightening. Preparing her beforehand gives her something extremely valuable: understanding.",
+    lede: "Imagine seeing unexpected blood without knowing why it's happening. For a young person who hasn't been prepared for menstruation, that experience could be frightening. Preparing her beforehand gives her something extremely valuable: understanding.",
     readMinutes: 3, image: null,
     body: `## Teach Her What to Expect
 
@@ -731,7 +735,7 @@ If menstruation is creating difficulties because of inadequate facilities, bully
   }),
   parents({
     slug: "supporting-confidence-during-puberty", title: "Supporting Confidence During Puberty", kicker: "Help Her Like Who She's Becoming, Not Chase a \"Perfect\" Body",
-    lede: "Puberty can make young people extremely aware of their appearance. Parents and caregivers have an important role in creating a healthier environment.",
+    lede: "Puberty can make young people extremely aware of their appearance. Bodies develop. Skin changes. Height, weight and body proportions change. Friends develop at different rates, and social media can create unrealistic comparisons. Parents and caregivers have an important role in creating a healthier environment.",
     readMinutes: 3, image: null,
     body: `## Be Careful with Body Comments
 
@@ -766,7 +770,7 @@ Help her understand that online images may be carefully selected, posed, filtere
   }),
   parents({
     slug: "separating-period-facts-from-myths", title: "Separating Period Facts from Myths", kicker: "What We Teach Matters",
-    lede: "Period myths can pass from one generation to another. Some may seem harmless. Others can create fear, shame or unhealthy hygiene practices.",
+    lede: "Period myths can pass from one generation to another. Some may seem harmless. Others can create fear, shame or unhealthy hygiene practices. Let's replace myths with reliable information.",
     readMinutes: 3, image: null,
     body: `## Myth: Menstruation is dirty.
 
@@ -838,7 +842,7 @@ Yazz toothbrushes have a unique bristle that helps remove plaque and stains, and
 > Dentist recommendation: change your toothbrush at least once every three months.`,
   },
   {
-    slug: "laundry-care-with-yazz-activ", title: "Laundry Care with Yazz® Activ", kicker: "Brighter and Fresher, Wash after Wash", category: "care-tips",
+    slug: "laundry-care-with-yazz-activ", title: "Laundry Care with Yazz® Activ", kicker: "Stay Bright, Fresher and Stain Free", category: "care-tips",
     topic: { label: "Home Care", tone: PURPLE }, date: null, readMinutes: 2, range: "home-care", image: null,
     lede: "Make everyday laundry care simpler with clear instructions for use, storage and responsible disposal.",
     body: `## Sort Your Laundry
@@ -884,23 +888,24 @@ Change used diapers to keep your baby comfortable, and throw them away immediate
 
 > Plastic bags are dangerous for children and must be kept out of reach.`,
   },
-  // News. Taken from Yazz's original website (docs/content/yazz/ORIGINAL-SITE.md) while Lexta has sent no news stories.
+  // News. Word for word from Yazz's original website (yazzproducts.com, post of 2 December 2022; see
+  // docs/content/yazz/ORIGINAL-SITE.md) while Lexta has sent no news stories. Kept exactly as published there.
   {
-    slug: "yazz-preferred-sanitary-and-hygiene-brand-2022", title: "Yazz Is the Preferred Sanitary and Hygiene Brand in 2022",
+    slug: "yazz-preferred-sanitary-and-hygiene-brand-2022", title: "Yazz is the preferred Sanitary and Hygiene brand in 2022",
     kicker: "Home Builders Africa Awards", category: "news",
     topic: { label: "News", tone: BLUE }, date: "2022-12", readMinutes: 2, image: null,
-    lede: "Yazz® has been named the most preferred sanitary and hygiene brand in Ghana for 2022 at the Home Builders Africa Awards.",
-    body: `Yazz®, the sanitary and hygiene brand of Lexta Ghana Limited, has been named the most preferred sanitary and hygiene brand in Ghana for the year 2022. According to the organisers of the Home Builders Africa Awards, Ghanaians widely choose Yazz® products because of their hygienic nature.
+    lede: "Lexta Ghana Limited sanitary products, Yazz, has been named as the most preferred sanitary and hygiene brand in Ghana for the year 2022.",
+    body: `The products, according to the organizers of the Home Builders Awards, are widely patronized by Ghanaians because of its hygienic nature.
 
-## About the Awards
+The Home Builders Africa Awards has been instituted to recognize industry players who have contributed immensely to the success and growth of Society.
 
-The Home Builders Africa Awards recognise industry players who have contributed to the success and growth of society, to encourage others to do their best for Ghana and Africa as a whole. The organisers named Yazz® the most preferred sanitary and hygiene brand for the quality and durability of its products.
+The achievements of industry players who stand tall in various sectors of society were recognized as a means to encouraging others to do their best for Mother Ghana and Africa as a whole.
 
-## The Citation
+And Yazz products were deemed by the organizers as the most preferred sanitary and hygiene brand due to their quality and durability. Lexta Ghana Limited produces a wide range of products including tooth pastes, sanitary pads and tissues.
 
-"In an era of a pandemic and several disease outbreaks, hygiene and sanitation cannot be overemphasized. The Yazz brand has stepped in to offer a wide range of products to improve hygiene and sanitation in our homes. Your success over the years has been driven by continuous investments in talents, research and development and an ambition to be the preferred brand in Ghana and Africa; aside promoting female hygiene and personal care. On this occasion, we honour YAZZ as the preferred sanitary and hygiene brand. Congratulations."
+A citation to celebrate the achievements of read as follows:
 
-> Lexta Ghana Limited makes a wide range of Yazz® products, including toothpastes, sanitary pads and tissues.`,
+"In an era of a pandemic and several disease outbreaks, hygiene and sanitation cannot be overemphasized. The Yazz brand has stepped in to offer a wide range of products to improve hygiene and sanitation in our homes. Your success over the years has been driven by continuous investments in talents, research and development and an ambition to be the preferred brand in Ghana and Africa; aside promoting female hygiene and personal care. On this occasion, we honour YAZZ as THE PREFERED SANITARY AND HYGIENE BRAND. Congratulations."`,
   },
 ];
 

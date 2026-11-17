@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import ArticleCard from "@/components/tips/ArticleCard";
 import SubscribeForm from "@/components/tips/SubscribeForm";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, CATEGORIES, HEALTH_NOTE, isCategory, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import { ARTICLES, CATEGORIES, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -80,7 +80,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
         )}
       </section>
 
-      {health && <p className={s.note}>{HEALTH_NOTE}</p>}
+      {health && <p className={s.note}>{category === "just-4-parents" ? HEALTH_NOTE_PARENTS : HEALTH_NOTE}</p>}
 
       <SubscribeForm />
     </>

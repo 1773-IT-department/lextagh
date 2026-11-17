@@ -134,7 +134,7 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 }
 
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Yazz team and your reference is ${ref}.`;
-const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}; our consumer care team will contact you.`;
+const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report has gone to our consumer care team.`;
 
 export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
   if (trapped(fd)) {
