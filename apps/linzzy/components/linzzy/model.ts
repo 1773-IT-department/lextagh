@@ -10,6 +10,8 @@ export type ProtoProduct = {
   img: string;
   alt: string;
   desc: string;
+  /** Lexta's full product description, shown in the product details panel (the cards keep the one line summary). */
+  long: string;
   pack: string;
 };
 
@@ -47,6 +49,7 @@ export function toProtoProduct(p: LinzzyProduct): ProtoProduct {
     img: img?.src ?? "",
     alt: img?.alt ?? p.name,
     desc: p.short,
+    long: p.long || p.short,
     pack: packText(p),
   };
 }

@@ -911,20 +911,20 @@ export default function HomeView({ v: vals }: { v: any }) {
           <div style={{"minHeight":"72vh","background":"#C2185B","color":"#fff","padding":"clamp(40px,6vw,100px) clamp(20px,5vw,80px)","display":"flex","flexDirection":"column","justifyContent":"flex-end","gap":"20px"} as CSSProperties}>
             {"\n    "}
             <h3 data-reveal="1" style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(44px,5.4vw,92px)","lineHeight":"0.92","letterSpacing":"-0.035em","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 80px))"} as CSSProperties}>
-              {"We're Here to "}
+              {"Stay Connected with "}
               <em>
-                {"Listen"}
+                {"Linzzy"}
               </em>
             </h3>
             {"\n    "}
             <p style={{"margin":"0","maxWidth":"520px","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.55","color":"#fff"} as CSSProperties}>
-              {"Every question matters, every experience counts and every piece of feedback helps us improve."}
+              {"Have a question, product experience or suggestion? We would love to hear from you. Your feedback matters because every experience helps us understand how we can serve you better."}
             </p>
             {"\n    "}
             <div style={{"display":"flex","flexWrap":"wrap","gap":"2px","marginTop":"10px"} as CSSProperties}>
               {"\n      "}
               <a className="lzha" href={vals.pageHref.contact} onClick={vals.page.contact} style={{"padding":"18px 26px","background":"#fff","color":"#C2185B","fontWeight":"700","fontSize":"14px","letterSpacing":"0.04em","textTransform":"uppercase"} as CSSProperties}>
-                {"Contact Us →"}
+                {"Contact Linzzy →"}
               </a>
               {"\n      "}
               <a className="lzh0" href={vals.pageHref.wtb} onClick={vals.page.wtb} style={{"padding":"18px 26px","background":"#23103a","color":"#fff","fontWeight":"700","fontSize":"14px","letterSpacing":"0.04em","textTransform":"uppercase"} as CSSProperties}>
