@@ -2,25 +2,25 @@
 
 export type NavLink = { label: string; href: string };
 
-/** Desktop header links, in prototype order. */
+/** Desktop header links: Lexta's top bar order, News before CSR (docs/content/lexta/website-copy.md:61). */
 export const headerLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
   { label: "Brands", href: "/our-brands" },
   { label: "People & Culture", href: "/people-and-culture" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
 ];
 
-/** Mobile drawer links, in prototype order (adds FAQs, says "Our Brands"). */
+/** Mobile drawer links, in the header order (adds FAQs, says "Our Brands"). */
 export const mobileLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
   { label: "Our Brands", href: "/our-brands" },
   { label: "People & Culture", href: "/people-and-culture" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
   { label: "FAQs", href: "/faqs" },
 ];
@@ -28,8 +28,8 @@ export const mobileLinks: NavLink[] = [
 export const footerQuickLinks: NavLink[] = [
   { label: "About Us", href: "/about-us" },
   { label: "Our Brands", href: "/our-brands" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
 ];
 
