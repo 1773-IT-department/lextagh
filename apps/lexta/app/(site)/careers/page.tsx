@@ -38,30 +38,23 @@ const statLabel: CSSProperties = { marginTop: 4, fontSize: 12, fontWeight: 600, 
 const statPlaceholder: CSSProperties = { fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: "#fff" };
 
 
-// Specific employee benefits need Lexta HR to confirm them; until then each card shows a placeholder.
+// Lexta has not listed staff benefits; Growth comes from lextagh.com (People), the rest waits for Lexta HR.
 const benefits = [
-  { title: "Health cover", text: "[PLACEHOLDER: medical cover offered to staff and dependants]" },
-  { title: "Pension and statutory benefits", text: "SSNIT contributions as Ghanaian law requires. [PLACEHOLDER: any pension benefits beyond the statutory scheme]" },
-  { title: "Training and development", text: "Training, mentorship and clear career pathways, in line with our Growth pillar. [PLACEHOLDER: training programmes or budget offered]" },
-  { title: "Pay and reward", text: "[PLACEHOLDER: bonus or reward scheme, if any]" },
-  { title: "Staff products", text: "[PLACEHOLDER: staff product allowance, if any]" },
-  { title: "Moving within Lexta", text: "[PLACEHOLDER: internal vacancy and transfer policy]" },
+  { title: "Growth", text: "Through continuous training, mentorship, and clear career pathways, your progress is our progress." },
+  { title: "Benefits", text: "[PLACEHOLDER: staff benefits Lexta offers, for example medical cover, pension, reward, staff products and internal moves]" },
 ];
 
 const steps = [
-  { n: "1", title: "Application", text: "Send your CV and a short note on why the role fits. You receive a confirmation with your reference." },
-  { n: "2", title: "Conversation", text: "A call with HR, then an interview with the hiring manager and the team you would work with." },
-  { n: "3", title: "Practical exercise", text: "For technical and commercial roles, a task drawn from the actual job. Nothing artificial." },
-  { n: "4", title: "Offer and onboarding", text: "References, a written offer with the terms spelled out, and a structured first few weeks." },
+  { n: "1", title: "Application", text: "To enquire about careers, use the Careers form." },
+  { n: "2", title: "Next steps", text: "[PLACEHOLDER: Lexta's hiring steps after an application, and typical timing]" },
 ];
 
 const interests = [
-  "Manufacturing and production",
-  "Quality assurance",
-  "Sales and distribution",
-  "Marketing and brand",
-  "Supply chain and logistics",
-  "Finance, HR and administration",
+  "Production",
+  "Sales",
+  "Logistics",
+  "Marketing",
+  "Administration",
 ];
 
 export default async function CareersPage() {
@@ -93,10 +86,10 @@ export default async function CareersPage() {
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Careers at Lexta</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6.2vw,54px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-              Build something people <span style={{ color: "#3fc0dd" }}>use every day</span>
+              Grow with a company that believes in <span style={{ color: "#3fc0dd" }}>people and possibilities</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration. To enquire about careers, use the Careers form. Here is where we are hiring right now.
+              Explore opportunities in production, sales, logistics, marketing and administration. To enquire about careers, use the Careers form.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="#openings" padding="12px 12px 12px 20px">Browse open roles</ArrowButton>
@@ -128,9 +121,8 @@ export default async function CareersPage() {
       <section data-reveal="1" data-screen-label="Benefits" className={p.pad80} style={{ background: "#0b2f3d" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 640 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>What you get</div>
-            <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>The terms behind the job title</h2>
-            <p style={{ ...body, color: "rgba(255,255,255,.82)" }}>Details vary by role and level and are set out in the written offer.</p>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Careers</div>
+            <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>Benefits</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 24, marginTop: 44 }}>
             {benefits.map((b) => (
@@ -146,9 +138,8 @@ export default async function CareersPage() {
       <section data-reveal="1" data-screen-label="Hiring process" className={p.pad76} style={{ background: "#f7fcfe", borderBottom: "1px solid rgba(18,163,196,.14)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 620 }}>
-            <div style={eyebrow}>How we hire</div>
-            <h2 style={h2}>Four steps, and we tell you where you stand</h2>
-            <p style={body}>[PLACEHOLDER: typical length of the hiring process]</p>
+            <div style={eyebrow}>Careers</div>
+            <h2 style={h2}>How we hire</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 20, marginTop: 42 }}>
             {steps.map((s) => (
@@ -171,7 +162,7 @@ export default async function CareersPage() {
             <div style={eyebrow}>Apply</div>
             <h2 style={{ ...h2, fontSize: 32, lineHeight: 1.18 }}>Nothing open that fits? Tell us anyway</h2>
             <p style={{ ...body, marginTop: 18 }}>
-              General applications go to our HR team and, with your consent, are kept on file for future roles. Send us the function you are interested in and where you are based.
+              To enquire about careers, use the Careers form. Job applications go to hr@lextagh.com.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: "#12313d" }}>hr@lextagh.com</div>

@@ -12,7 +12,7 @@ import { hoochSiteUrl, linzzySiteUrl, yazzSiteUrl } from "@/components/site-link
 
 const title = "Our Brands | Yazz, Linzzy and Hooch by Lexta Ghana";
 const description =
-  "Yazz, Linzzy and Hooch. Feminine care, oral care, tissue, detergents, baby care and breakfast cereals from Lexta Ghana Limited, proudly Ghanaian since 2002.";
+  "Discover the Lexta family of brands serving personal care, feminine care, oral care, home and tissue needs, baby care and food.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -116,10 +116,10 @@ export default async function OurBrandsPage() {
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Our Brands</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(30px,6vw,52px)", lineHeight: 1.08, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-              Three names. <span style={{ color: "rgb(63, 192, 221)" }}>One standard.</span>
+              The Lexta family <span style={{ color: "rgb(63, 192, 221)" }}>of brands</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              Behind Yazz, Linzzy and Hooch is a single company and a single refusal to trade quality for price. Different aisles. Different needs. Same promise.
+              Discover the Lexta family of brands serving personal care, feminine care, oral care, home and tissue needs, baby care and food.
             </p>
           </div>
         </div>
@@ -131,14 +131,13 @@ export default async function OurBrandsPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 54, alignItems: "start" }}>
           <div>
             <h2 style={{ margin: 0, fontSize: "clamp(24px,3.4vw,34px)", lineHeight: 1.25, fontWeight: 700, letterSpacing: "-.025em", color: "#12313d", textWrap: "pretty" }}>
-              Most Ghanaians know our brands better than they know us. That suits us.
+              At the heart of our portfolio are our flagship brands Yazz, Hooch and Linzzy
             </h2>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.9, color: "#5d7883" }}>
-              Yazz has been on shelves since the early days of the company. Linzzy speaks to a newer generation. Hooch sits on the breakfast table. Each was built for a specific job in a specific home, and each comes from Lexta Ghana Limited, to the same standard, at a price the household in front of us can actually pay.
+              Each carefully developed to provide dependable, high-quality solutions that enhance everyday life.
             </p>
-            <p style={{ margin: 0, fontSize: 15, lineHeight: 1.8, color: "#12313d", fontWeight: 600 }}>Here is what each of them does.</p>
           </div>
         </div>
       </section>
@@ -154,7 +153,7 @@ export default async function OurBrandsPage() {
               <div style={{ ...eyebrow, marginTop: 22 }}>The champion of the everyday</div>
               <h2 style={brandH2}>Yazz</h2>
               <p style={lead}>
-                Yazz is our flagship, and our widest range. Feminine care, oral care, tissue, home care and baby care, built for people who need things to simply work. In 2022 Yazz was named Ghana&apos;s most preferred sanitary and hygiene brand at the Home Builders Africa Awards.
+                Trusted quality made for everyday living. From feminine care and baby essentials to oral care, home care and tissues, Yazz brings practical care into the moments that matter. Yazz is the Preferred Sanitary and Hygiene Brand in 2022 (Home Builders Africa Awards).
               </p>
             </div>
             <div style={{ borderRadius: 14, overflow: "hidden", minHeight: 330, display: "flex", boxShadow: "0 20px 44px rgba(11,60,78,.18)", background: "#fff" }}>
@@ -173,8 +172,8 @@ export default async function OurBrandsPage() {
             <Points
               style={raisedPoint}
               items={[
-                { title: "What we make it for", text: "Confidence. The kind that comes from not having to think about the thing you are wearing, the shirt you just washed, or the smile you just gave someone." },
-                { title: "What we refuse to do", text: "Cut the materials. Yazz is priced for the household budget, not built down to it." },
+                { title: "Core Philosophy", text: "To deliver high-performance hygiene staples that give people the security to face their daily ambitions with unshakeable confidence." },
+                { title: "Value Proposition", text: "High-quality essentials built to fit household budgets without sacrificing materials, structural durability, or design safety." },
               ]}
             />
           </div>
@@ -244,8 +243,8 @@ export default async function OurBrandsPage() {
             <Points
               style={raisedPoint}
               items={[
-                { title: "Enriched with vitamins", text: "Vitamin E, B1, B2, B3, B5, B6, B12 and folic acid." },
-                { title: "Convenience", text: "Making busy mornings easier with 10 individually portioned cereal packs in every product." },
+                { title: "Enriched with vitamins", text: "Vit E, Thiamine B1, Riboflavin B2, Niacin B3, Pantothenic Acid B5, Vit B6, Vit B12, Folic Acid." },
+                { title: "Convenience", text: "Making busy mornings easier with individually portioned cereal packs." },
               ]}
             />
           </div>
@@ -264,25 +263,22 @@ export default async function OurBrandsPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(95deg,rgba(8,42,55,.95),rgba(8,42,55,.7))", pointerEvents: "none" }} />
         <div className={p.pad82} style={{ position: "relative", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 680 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>What holds them together</div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>At Lexta, we ask</div>
             <h2 style={{ margin: "14px 0 0", fontSize: "clamp(26px,4vw,36px)", lineHeight: 1.15, fontWeight: 700, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-              Three brands, one company, one standard
+              What is care if it's not of the utmost quality?
             </h2>
             <p style={{ margin: "20px 0 0", fontSize: 15, lineHeight: 1.9, color: "rgba(255,255,255,.92)" }}>
-              The names differ because the needs differ. What does not change is what sits behind them.
+              So we make the best products, using the most premium materials, for you.
             </p>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-              Every Yazz pad, every Linzzy wipe and every box of Hooch is held to the same standard. We measure quality, safety, freshness and value against how Ghanaian families actually live, and we hold the price because affordability is part of the product, not a discount applied afterwards.
+              What is care if the people we create it for cannot share in it? So we make our products affordable, without compromising quality.
             </p>
-            <div style={{ marginTop: 26, fontSize: 18, fontWeight: 700, color: "#3fc0dd", textWrap: "pretty" }}>
-              That is the whole idea. Care, at a standard, that people can actually reach.
-            </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16, marginTop: 44 }}>
             {[
-              { figure: "2002", label: "Made in Ghana since 2002" },
-              { figure: "2", label: "Distributed across Ghana and Liberia" },
-              { figure: "Batch", label: "Every batch meets defined safety criteria" },
+              { figure: "2002", label: "Established as a proudly Ghanaian-owned company" },
+              { figure: "2", label: "Ghana, and a wholly-owned subsidiary in Monrovia, Liberia" },
+              { figure: "Batch", label: "Every batch meets rigorous safety criteria" },
             ].map((st) => (
               <div key={st.label} style={{ border: "1px solid rgba(255,255,255,.35)", borderRadius: 12, padding: 22 }}>
                 <div style={{ fontSize: 24, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }}>{st.figure}</div>
@@ -300,7 +296,7 @@ export default async function OurBrandsPage() {
             <div style={eyebrow}>Where to find them</div>
             <h2 style={{ margin: "14px 0 0", fontSize: 32, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#12313d", textWrap: "pretty" }}>On shelves near you</h2>
             <p style={lead}>
-              Our brands are stocked in supermarkets, pharmacies, market stalls and neighbourhood shops across Ghana, and through our subsidiary in Monrovia, Liberia. Search by region to find your nearest stockist.
+              Search by region to find your nearest stockist.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 28 }}>
               <Link
@@ -342,10 +338,7 @@ export default async function OurBrandsPage() {
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "rgba(255,255,255,.85)" }}>For trade</div>
             <h2 style={{ margin: "12px 0 0", fontSize: 30, fontWeight: 700, letterSpacing: "-.025em", color: "#fff" }}>Sell our brands</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              We are always looking for distribution partners who can move our brands well. Distributors, wholesalers and modern trade partners can select their partnership type and share their region and contact details.
-            </p>
-            <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              Buying in volume for a school, hospital, hotel, NGO or agency? Tell us the products and quantities you need and request a quote.
+              For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -356,7 +349,7 @@ export default async function OurBrandsPage() {
               Contact us
               <span aria-hidden="true" style={whiteBtnArrow}>→</span>
             </Link>
-            <Link href="/contact-us" style={ghostBtn}>Request a bulk quote</Link>
+            <Link href="/partner-with-us" style={ghostBtn}>Partner with Us</Link>
           </div>
         </div>
       </section>

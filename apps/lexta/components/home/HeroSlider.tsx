@@ -34,39 +34,14 @@ const slides: Slide[] = [
     ctas: [{ label: "Explore Our Brands", href: "/our-brands" }, { label: "Partner with Us", href: "/partner-with-us", ghost: true }],
   },
   {
-    eyebrow: "Proudly Ghanaian since 2002", title: "Two decades on ", highlight: "Ghana's shelves", titleSize: 58, titleLeading: 1.05,
-    body: "Founded in Accra in 2002 and built here. What began as a home care supplier now brings Yazz, Linzzy and Hooch to households in Ghana and Liberia.", bodyMax: 470,
-    img: "/assets/hero-25-years.png", w: 1774, h: 887, alt: "Lexta products on shelves and in Ghanaian homes", focus: "75% center",
-    ctas: [{ label: "Our story", href: "/about-us" }],
+    eyebrow: "Manufacturing Excellence", title: "What is care without ", highlight: "quality?", titleSize: 56, titleLeading: 1.06,
+    body: "Our production ecosystems operate under stringent international hygiene and regulatory benchmarks, ensuring every batch meets rigorous safety criteria.", bodyMax: 470,
+    img: "/assets/hero-factory.png", w: 1774, h: 887, alt: "Production line packing Yazz and Corn Flakes", focus: "78% center",
+    ctas: [{ label: "About Us", href: "/about-us" }],
   },
   {
-    eyebrow: "Three brands, one standard", title: "Yazz. Hooch. ", highlight: "Linzzy.", titleSize: 54, titleLeading: 1.08,
-    body: "From sanitary care and detergents to breakfast cereals and tissue, our brands cover the essentials families reach for every day.", bodyMax: 470,
-    img: "/assets/hero-family-brands.png", w: 1536, h: 1024, alt: "Ghanaian family with Hooch Corn Flakes, Yazz and Linzzy products", focus: "78% center",
-    shade: "linear-gradient(100deg,rgba(6,32,42,.96) 0%,rgba(6,32,42,.88) 45%,rgba(6,32,42,.42) 80%)",
-    ctas: [{ label: "See the range", href: "/our-brands" }],
-  },
-  {
-    eyebrow: "Manufacturing excellence", title: "What is care without ", highlight: "quality?", titleSize: 56, titleLeading: 1.06,
-    body: "Our production operates under stringent international hygiene and regulatory benchmarks, and every batch meets defined safety criteria before it leaves our facility.", bodyMax: 470,
-    img: "/assets/hero-factory.png", w: 1774, h: 887, alt: "Lexta production line in Ghana packing Yazz and Corn Flakes", focus: "78% center",
-    ctas: [{ label: "Inside our operation", href: "/about-us" }],
-  },
-  {
-    eyebrow: "Quality within reach", title: "Care shouldn't cost ", highlight: "the earth", titleSize: 56, titleLeading: 1.06,
-    body: "We build our products to a standard, then price them for the households that need them. No trade-off.", bodyMax: 470,
-    img: "/assets/hero-quality-value.png", w: 1536, h: 1024, alt: "Family with Hooch Corn Flakes, Yazz and Linzzy products in a Ghanaian kitchen", focus: "80% center",
-    ctas: [{ label: "Find our products", href: "/our-brands" }],
-  },
-  {
-    eyebrow: "Ghana. Liberia. Next.", title: "Built to ", highlight: "reach further", titleSize: 56, titleLeading: 1.06,
-    body: "A distribution network across Ghana, a wholly owned subsidiary in Monrovia, Liberia, and an ambition to serve families throughout Africa.", bodyMax: 470,
-    img: "/assets/hero-west-africa.png", w: 1672, h: 941, alt: "Lexta distribution from Ghana across West Africa", focus: "80% center",
-    ctas: [{ label: "Contact us", href: "/contact-us" }, { label: "Bulk and institutional orders", href: "/contact-us", ghost: true }],
-  },
-  {
-    eyebrow: "Beyond the product", title: "Care that ", highlight: "leaves the shelf", titleSize: 56, titleLeading: 1.06,
-    body: "Free cervical cancer screening with the Medical Women Association of Ghana. Menstrual health education in schools nationwide. Ongoing work against period poverty.", bodyMax: 490,
+    eyebrow: "CSR / Community Impact", title: "Our care extends beyond ", highlight: "our products", titleSize: 56, titleLeading: 1.06,
+    body: "Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities.", bodyMax: 490,
     img: "/assets/hero-cervical-screening.png", w: 1536, h: 1024, alt: "Lexta and MWAG cervical cancer awareness and screening outreach", focus: "78% center",
     ctas: [{ label: "Our CSR work", href: "/corporate-social-responsibility" }],
   },
@@ -92,7 +67,7 @@ const arrowBtn: CSSProperties = {
 };
 const dotStyle: CSSProperties = { width: 26, height: 5, borderRadius: 3, border: 0, cursor: "pointer", padding: 0 };
 
-/** Home hero: seven auto-advancing slides, arrows and dots. Behaviour ported 1:1 from the prototype script. */
+/** Home hero: auto-advancing slides (only those whose copy comes from Lexta's sources), arrows and dots. Behaviour ported 1:1 from the prototype script. */
 export default function HeroSlider() {
   const root = useRef<HTMLElement>(null);
   const api = useRef<{ go: (n: number, dir?: number) => void; reset: () => void; index: () => number } | null>(null);

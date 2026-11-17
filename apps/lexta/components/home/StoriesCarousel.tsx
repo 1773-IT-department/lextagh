@@ -3,49 +3,22 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 
-/** Story photos come from the existing Yazz and Lexta sites, exactly as the prototype links them. */
+/**
+ * Story photos come from the existing Lexta site. Only stories published on lextagh.com are shown; the five cards
+ * summarised from press coverage (Tamale, Mamprobi, women doctors, Korle Bu, Kumasi) were removed with the held news stories.
+ */
 const stories = [
-  {
-    img: "/assets/original/web/yazz-whatsapp-image-2024-01-16-at-21-50-17-1021x1024.webp",
-    alt: "Cervical Cancer Awareness Launch 2024, Tamale",
-    title: "Awareness Launch 2024, Tamale",
-    text: "The national launch, hosted in the north for the first time.",
-  },
-  {
-    img: "/assets/original/web/yazz-we6a0601-1024x683.webp",
-    alt: "Tuesday Market Park, Mamprobi, 2025",
-    title: "Tuesday Market Park, Mamprobi",
-    text: "Screening and education taken into the market.",
-  },
-  {
-    img: "/assets/original/web/yazz-130202594139-vaqdtgfssn-health-cervical-cancer1.webp",
-    alt: "Ghanaian women doctors encourage screening",
-    title: "Doctors Urge Early Detection",
-    text: "MWAG's awareness month launch in Ablekuma South.",
-  },
-  {
-    img: "/assets/original/web/yazz-yazz-crvical-cancer-awareness-2026.webp",
-    alt: "SOFPOG, MWAG, Yazz and Korle Bu Polyclinic free screening",
-    title: "Free Screening at Korle Bu",
-    text: "With SOFPOG, MWAG and the Family Medicine Department.",
-  },
-  {
-    img: "/assets/original/web/yazz-whatsapp-image-2020-01-19-at-8-42-06-am-1080x675-1-1024x640.webp",
-    alt: "Free cervical cancer screening in Kumasi",
-    title: "Free Screening in Kumasi",
-    text: "Education and screening ahead of the Accra edition.",
-  },
   {
     img: "/assets/original/web/lexta-lexta-ghana-limited-visits-mawuko-girls-shs-ho.webp",
     alt: "Lexta Ghana visits Mawuko Girls SHS, Ho",
     title: "Mawuko Girls SHS, Ho",
-    text: "Health education and pad donations with MWAG.",
+    text: "To educate on cervical cancer and Femcare.",
   },
   {
     img: "/assets/original/web/lexta-lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kot.webp",
     alt: "Unity High JHS, Kotobabi on International Women's Day",
     title: "Unity High JHS, Kotobabi",
-    text: "International Women's Day with the Domite Foundation.",
+    text: "In commemoration of the International Women's Day.",
   },
 ];
 
@@ -70,21 +43,19 @@ export default function StoriesCarousel() {
   const [perView, setPerView] = useState(2);
   const indexRef = useRef(0);
   const timer = useRef<number | undefined>(undefined);
-  const maxIdx = Math.max(0, stories.length - 2);
-
   const go = (n: number) => {
+    const el = track.current;
+    const first = el?.firstElementChild;
+    // Two cards per view on desktop, one on phones (the track's parent is the visible window).
+    const cardW = first ? first.getBoundingClientRect().width : 0;
+    const windowW = el?.parentElement?.getBoundingClientRect().width ?? 0;
+    const pv = first && cardW * 2 + GAP > windowW + 1 ? 1 : 2;
+    const maxIdx = Math.max(0, stories.length - pv);
     const a = n > maxIdx ? 0 : n < 0 ? maxIdx : n;
     indexRef.current = a;
     setActive(a);
-    const el = track.current;
-    const first = el?.firstElementChild;
-    if (el && first) {
-      const cardW = first.getBoundingClientRect().width;
-      el.style.transform = `translateX(${-a * (cardW + GAP)}px)`;
-      // Two cards per view on desktop, one on phones (the track's parent is the visible window).
-      const windowW = el.parentElement?.getBoundingClientRect().width ?? 0;
-      setPerView(cardW * 2 + GAP <= windowW + 1 ? 2 : 1);
-    }
+    setPerView(pv);
+    if (el && first) el.style.transform = `translateX(${-a * (cardW + GAP)}px)`;
   };
   const restart = () => {
     window.clearInterval(timer.current);

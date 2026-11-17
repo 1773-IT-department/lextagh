@@ -10,7 +10,7 @@ import p from "@/components/proto.module.css";
 // The prototype page had no title or description; these reuse its own hero copy.
 const title = "People and Culture | Life at Lexta Ghana Limited";
 const description =
-  "We make everyday products that Ghanaian households depend on. That work is done by people, and how we treat them shows up in what reaches the shelf.";
+  "At Lexta, our greatest asset isn't our products or our infrastructure, it is our people. We believe that a company can only grow as fast as its team.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -60,11 +60,11 @@ const peoplePhotos: Photo[] = [
 ];
 
 const pillars = [
-  { n: "01", title: "Entrepreneurship", text: "We hire people who take ownership. If you see something that could work better, we would rather you fix it than file it. You are trusted to take initiative, think creatively and run your work like it is your own business." },
-  { n: "02", title: "Team cohesion", text: "We win as one company, not as competing departments. Production talks to sales. Sales talks to marketing. Nobody here gets to succeed while the person next to them fails." },
-  { n: "03", title: "Growth", text: "Your progress is our progress. Through training, mentorship and clear career pathways, we invest in where you are going, not just what you are doing now." },
-  { n: "04", title: "Drive", text: "We are a company that moves. We bring energy to the work, we push at the edges of what is possible, and we do not wait to be told twice." },
-  { n: "05", title: "Results", text: "We set high standards, we measure honestly, and we celebrate together when we hit them. Effort matters. Outcomes matter more." },
+  { n: "01", title: "Entrepreneurship", text: "We encourage ownership. You are empowered to take initiative, think creatively, and drive projects like it is your own business." },
+  { n: "02", title: "Team Cohesion", text: "We win as one. We cross departmental lines to collaborate, share ideas, and support each other through every challenge." },
+  { n: "03", title: "Growth", text: "We are committed to your evolution. Through continuous training, mentorship, and clear career pathways, your progress is our progress." },
+  { n: "04", title: "Drive", text: "We are fueled by passion. We bring energy and determination to work every day, constantly pushing the boundaries of what is possible." },
+  { n: "05", title: "Results", text: "We deliver on our promises. We set high standards, measure our impact, and celebrate our collective victories." },
 ];
 
 /*
@@ -74,35 +74,31 @@ const pillars = [
  */
 const roles: (Photo & { title: string; text: string })[] = [
   {
-    placeholder: "Production line photo", ...photos.campus, alt: "Lexta staff outside the Lexta facility", title: "Manufacturing and production",
-    text: "Machine operators, line supervisors, production planners and engineers. The heart of the business, running to international hygiene and regulatory standards.",
+    placeholder: "Production line photo", ...photos.campus, alt: "Lexta staff outside the Lexta facility", title: "Production",
+    text: "[PLACEHOLDER: short description of production roles at Lexta]",
   },
   {
-    placeholder: "Quality lab photo", ...photos.kitchen, alt: "Mother and daughter with Lexta products at a kitchen table", title: "Quality assurance",
-    text: "The people who decide whether a batch leaves the building. Rigorous, uncompromising, and the reason our brands hold their reputation.",
+    placeholder: "Field sales / van sales photo", ...photos.stall2, alt: "Yazz team speaking with a trader at a market stall", title: "Sales",
+    text: "[PLACEHOLDER: short description of sales roles at Lexta]",
   },
   {
-    placeholder: "Field sales / van sales photo", ...photos.stall2, alt: "Yazz team speaking with a trader at a market stall", title: "Sales and distribution",
-    text: "Field representatives, area managers and key account teams working across Ghana and into Liberia, moving our brands from our floor to the shelves people actually shop from.",
+    placeholder: "Brand / marketing team photo", ...photos.shelf, alt: "Shopper at a supermarket shelf of Yazz, Hooch and Linzzy products", title: "Marketing",
+    text: "[PLACEHOLDER: short description of marketing roles at Lexta]",
   },
   {
-    placeholder: "Brand / marketing team photo", ...photos.shelf, alt: "Shopper at a supermarket shelf of Yazz, Hooch and Linzzy products", title: "Marketing and brand",
-    text: "Brand managers and marketing executives building Yazz, Linzzy and Hooch, and running the CSR campaigns that put us in schools and clinics nationwide.",
+    placeholder: "Warehouse / fleet photo", ...photos.truck, alt: "Yazz branded truck with a team in red shirts", title: "Logistics",
+    text: "[PLACEHOLDER: short description of logistics roles at Lexta]",
   },
   {
-    placeholder: "Warehouse / fleet photo", ...photos.truck, alt: "Yazz branded truck with a team in red shirts", title: "Supply chain and logistics",
-    text: "Warehousing, fleet, procurement and planning. The discipline that keeps our products on shelves across Ghana.",
-  },
-  {
-    placeholder: "Office / admin team photo", ...photos.desk, alt: "Man in a blue suit seated at a desk", title: "Finance, HR and administration",
-    text: "The functions that let everything else run, staffed by people who understand a manufacturing business rather than a generic one.",
+    placeholder: "Office / admin team photo", ...photos.desk, alt: "Man in a blue suit seated at a desk", title: "Administration",
+    text: "[PLACEHOLDER: short description of administration roles at Lexta]",
   },
 ];
 
 const growthPoints = [
-  { title: "Structured onboarding", text: "A proper first few weeks, with someone accountable for showing you how things actually run here." },
-  { title: "Mentorship", text: "Experienced colleagues who are expected to develop the people around them, not just deliver their own numbers." },
-  { title: "Ongoing training", text: "Technical, safety and professional development, kept current rather than filed away." },
+  { title: "Continuous training", text: "[PLACEHOLDER: training Lexta offers its staff]" },
+  { title: "Mentorship", text: "[PLACEHOLDER: how mentorship works at Lexta]" },
+  { title: "Clear career pathways", text: "[PLACEHOLDER: how career progression works at Lexta]" },
 ];
 
 const csrPhotos: Photo[] = [
@@ -111,11 +107,8 @@ const csrPhotos: Photo[] = [
 ];
 
 const hireSteps = [
-  { n: "1", title: "Apply", text: "Submit your application online. You receive a confirmation with your reference." },
-  { n: "2", title: "Screening", text: "Our HR team reviews applications and contacts shortlisted candidates." },
-  { n: "3", title: "Interview", text: "A conversation with the hiring manager and the team you would work with. We will tell you what we are looking for." },
-  { n: "4", title: "Assessment", text: "For some roles, a practical exercise relevant to the actual job. Nothing artificial." },
-  { n: "5", title: "Offer and onboarding", text: "A clear offer, a proper start, and a structured first few weeks." },
+  { n: "1", title: "Apply", text: "To enquire about careers, use the Careers form." },
+  { n: "2", title: "Next steps", text: "[PLACEHOLDER: Lexta's hiring steps after an application, and typical timing]" },
 ];
 
 const arrangements = ["Full time", "Part time", "Contract", "Internship", "[PLACEHOLDER: confirm engagement types Lexta offers]"];
@@ -141,7 +134,7 @@ export default function PeopleAndCulturePage() {
               Life at <span style={{ color: "#3fc0dd" }}>Lexta</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              We make everyday products that Ghanaian households depend on. That work is done by people, and how we treat them shows up in what reaches the shelf.
+              {description}
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="/careers#openings" padding="12px 12px 12px 20px">View current openings</ArrowButton>
@@ -155,16 +148,16 @@ export default function PeopleAndCulturePage() {
         <div style={{ ...twoColTight, alignItems: "center" }}>
           <div>
             <div style={eyebrow}>Why our people come first</div>
-            <h2 style={h2}>A company grows at the speed of its team</h2>
+            <h2 style={h2}>A company can only grow as fast as its team</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 20 }}>
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.9, color: "#5d7883" }}>
-                Our greatest asset is not our machinery or our distribution network. It is the people who run them.
+                At Lexta, our greatest asset isn't our products or our infrastructure, it is our people.
               </p>
               <p style={{ ...body, margin: 0 }}>
-                We have never believed that a company can outgrow the people inside it. So we build for the long term: an environment where your wellbeing is taken seriously, your voice carries weight regardless of your title, and your development is treated as a shared investment rather than a personal problem.
+                That is why we treat employee value as paramount, creating an environment where your well-being, unique voice, and professional development are deeply supported.
               </p>
               <p style={{ ...body, margin: 0 }}>
-                We want the people who join Lexta to grow here, into bigger roles than the ones they started in. That is the outcome we work towards.
+                When you join Lexta, you aren't just taking a job; you are joining a family dedicated to excellence.
               </p>
             </div>
           </div>
@@ -184,7 +177,7 @@ export default function PeopleAndCulturePage() {
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>The Lexta DNA</div>
             <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>What makes a Lexta team member</h2>
             <p style={{ margin: "16px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-              Our culture rests on five pillars. They are not posters on a wall. They are how decisions actually get made here.
+              Our culture is built on five core pillars that define how we work, collaborate, and succeed together.
             </p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 22, marginTop: 44 }}>
@@ -217,9 +210,9 @@ export default function PeopleAndCulturePage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 660 }}>
             <div style={eyebrow}>Where you could work</div>
-            <h2 style={h2}>More roles than most people expect</h2>
+            <h2 style={h2}>Grow with a company that believes in people and possibilities</h2>
             <p style={{ ...body, margin: "16px 0 0" }}>
-              Lexta is a manufacturer, a marketer and a distributor at once. That means the range of work here is far wider than a consumer goods company usually looks from the outside.
+              Explore opportunities in production, sales, logistics, marketing and administration.
             </p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 22, marginTop: 42 }}>
@@ -257,12 +250,9 @@ export default function PeopleAndCulturePage() {
           </div>
           <div>
             <div style={eyebrow}>Growth</div>
-            <h2 style={h2Small}>We would rather promote you than replace you</h2>
+            <h2 style={h2Small}>We are committed to your evolution</h2>
             <p style={{ ...body, margin: "18px 0 0" }}>
-              Your progress is our progress. We invest in training, both technical and professional, and we pair newer team members with people who have done the job long enough to teach it properly.
-            </p>
-            <p style={{ ...body, margin: "14px 0 0" }}>
-              Career paths here are discussed openly, not guessed at. You should know what the next role looks like, what it takes to get there, and who is helping you.
+              Through continuous training, mentorship, and clear career pathways, your progress is our progress.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 16, marginTop: 32 }}>
               {growthPoints.map((g) => (
@@ -293,12 +283,12 @@ export default function PeopleAndCulturePage() {
         <div className={p.pad82} style={{ position: "relative", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 660 }}>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#3fc0dd" }}>Diversity and inclusion</div>
-            <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>Innovation needs different perspectives in the room</h2>
+            <h2 style={{ ...h2, letterSpacing: "-.03em", color: "#fff" }}>Innovation thrives when different perspectives meet</h2>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.9, color: "rgba(255,255,255,.92)" }}>
-              We build products for every kind of Ghanaian household, which means we need a workforce that actually reflects them.
+              At Lexta, we are deeply committed to building a diverse and inclusive workforce that reflects the communities we serve.
             </p>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-              We champion equal opportunity across gender, background and physical ability, and we hold ourselves to it in hiring, in promotion and in how meetings are run. We do not merely accept difference. We rely on it. It makes our products better, our decisions sharper and our company a place more people want to stay.
+              We champion equal opportunities for everyone, regardless of gender, background, or physical ability. We don't just accept difference, we celebrate it, we support it, and we thrive on it for the benefit of our employees, our products, and our community.
             </p>
           </div>
         </div>
@@ -315,14 +305,10 @@ export default function PeopleAndCulturePage() {
           </div>
           <div>
             <div style={eyebrow}>Beyond the job</div>
-            <h2 style={h2Small}>Work that reaches past the factory gate</h2>
+            <h2 style={h2Small}>Our care extends beyond our products</h2>
             <p style={{ ...body, margin: "18px 0 0" }}>
-              Our teams do not only make and sell products. They run the outreach that takes those products where they are needed most.
+              Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities.
             </p>
-            <p style={{ ...body, margin: "14px 0 0" }}>
-              Our people have delivered free cervical cancer screening nationwide alongside the Medical Women Association of Ghana, including in Tamale and at Accra Psychiatric Hospital. They have run menstrual health education in schools across the country and campaigned against period poverty. They have partnered with the Ghana Education Service and the Ghana Police Service on programmes for students.
-            </p>
-            <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "#12313d", fontWeight: 600 }}>If that kind of work matters to you, there is room for it here.</p>
             <Link
               href="/corporate-social-responsibility"
               style={{ marginTop: 24, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}
@@ -336,9 +322,8 @@ export default function PeopleAndCulturePage() {
       <section data-reveal="1" data-screen-label="How we hire" className={p.pad78} style={{ background: "#f7fcfe", borderTop: "1px solid rgba(18,163,196,.14)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 620 }}>
-            <div style={eyebrow}>How we hire</div>
-            <h2 style={h2}>What to expect from us</h2>
-            <p style={{ ...body, margin: "16px 0 0" }}>We try to keep our process clear and quick, and we tell you where you stand.</p>
+            <div style={eyebrow}>Careers</div>
+            <h2 style={h2}>How we hire</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 20, marginTop: 44 }}>
             {hireSteps.map((s) => (
@@ -365,9 +350,9 @@ export default function PeopleAndCulturePage() {
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 44, alignItems: "center" }}>
           <div>
             <div style={eyebrow}>Flexible paths</div>
-            <h2 style={h2Small}>Different stages, different arrangements</h2>
+            <h2 style={h2Small}>Explore our flexible career paths</h2>
             <p style={{ ...body, margin: "16px 0 0" }}>
-              We offer roles across a range of engagement types, because good people are at different points in their lives and careers.
+              We offer opportunities across various engagement types to fit different lifestyles and career stages.
             </p>
           </div>
           <div>
@@ -400,10 +385,10 @@ export default function PeopleAndCulturePage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 32, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Ready to make your mark?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              We are a Ghanaian company with room to grow, and we would rather grow with people who want to build something than people who want a desk.
+              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration.
             </p>
             <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              If there is nothing open that fits you today, send us a general application anyway. It goes to our HR team for future roles.
+              To enquire about careers, use the Careers form.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>

@@ -67,7 +67,7 @@ const story: Photo[] = [
 ];
 
 const storyStats = [
-  { figure: "2002", label: "Founded in Accra" },
+  { figure: "2002", label: "Established" },
   { figure: "3", label: "Brands in the portfolio" },
   { figure: "2", label: "Countries of operation" },
 ];
@@ -81,84 +81,84 @@ const strip: Photo[] = [
 
 const pillars: (Photo & { title: string; text: string })[] = [
   {
-    placeholder: "Production line photo", ...photos.aboutHero, alt: ALT.factory, title: "Manufacturing excellence",
-    text: "Our production operates under stringent international hygiene and regulatory benchmarks. Every batch meets defined safety criteria before it leaves our facility.",
+    placeholder: "Production line photo", ...photos.aboutHero, alt: ALT.factory, title: "Manufacturing Excellence",
+    text: "Our production ecosystems operate under stringent international hygiene and regulatory benchmarks, ensuring every batch meets rigorous safety criteria.",
   },
   {
-    placeholder: "Warehouse / logistics photo", ...photos.campus, alt: ALT.campus, title: "Sub-regional logistics",
-    text: "Headquartered in Accra, our supply chain is built for high-volume delivery across the domestic market and into West Africa, including our Liberian operation.",
+    placeholder: "Warehouse / logistics photo", ...photos.campus, alt: ALT.campus, title: "Sub-Regional Logistics",
+    text: "Headquartered in Accra, Ghana, our supply chain is optimized for high-volume delivery across domestic markets and expanding West African borders, including Liberia.",
   },
   {
-    placeholder: "Product testing photo", ...photos.kitchen, alt: ALT.kitchen, title: "Consumer-centred R&D",
-    text: "We refine our products against how Ghanaian families actually use them. Quality, safety, freshness and value are measured against real households, not laboratory assumptions.",
+    placeholder: "Product testing photo", ...photos.kitchen, alt: ALT.kitchen, title: "Consumer-Centric R&D",
+    text: "We continually innovate based on the lived experiences of our consumers, refining products, quality, safety, freshness, and value metrics to match the evolving needs of the modern African home.",
   },
 ];
 
 const values = [
   { n: "01", title: "Committed", text: "To building sustainable brands.", dark: false, offset: false },
   { n: "02", title: "Aspiring", text: "To become better versions of ourselves.", dark: true, offset: true },
-  { n: "03", title: "Respect", text: "For each other, our business partners, our consumers and our community.", dark: true, offset: false },
-  { n: "04", title: "Care", text: "It is what truly makes the world go round.", dark: false, offset: true },
+  { n: "03", title: "Respect", text: "For each other, business partners, consumers and the community.", dark: true, offset: false },
+  { n: "04", title: "Care", text: "It's what truly makes the world go round.", dark: false, offset: true },
 ];
 
 const asks = [
-  { n: "01", q: "What is care if it is not of the utmost quality?", a: "So we make the best products we can, using premium materials, for you." },
+  { n: "01", q: "What is care if it's not of the utmost quality?", a: "So we make the best products, using the most premium materials, for you." },
   { n: "02", q: "What is care if the people we create it for cannot share in it?", a: "So we make our products affordable, without compromising quality." },
-  { n: "03", q: "How do we make sure that affordable quality becomes the standard, enjoyed by far more people?" },
+  { n: "03", q: "How do we make sure the affordable quality becomes the standard, to be enjoyed by a lot more people?" },
 ];
 
 const directors = [
   {
     name: "Rev. Albert Ocran", role: "Board Chairman", src: "/pasted-1788862404857-0-mtsihlh8-zqob.png",
     bio: [
-      "Rev. Albert Ocran is an international motivational speaker, minister and executive coach. He is Lead Consultant of Legacy & Legacy, Executive Director of the Springboard Road Show Foundation, and Executive Pastor at ICGC Christ Temple.",
-      "As a corporate trainer and executive coach, his client list spans the mining, banking, telecommunications, insurance, petrochemical and not-for-profit sectors. He was voted by his peers as Ghana's 7th Most Respected CEO in 2009, received the Millennium Excellence Award in 2010, and has been named four consecutive years among the 100 most influential Ghanaians by viewers of ETV Ghana.",
-      "He is a fellow of the Africa Leadership Initiative and the Aspen Global Leaders Network. Together with his wife Comfort, he has published 21 bestselling books, including the leadership work “The Lord, Madiba and The Eagle.” The couple travel across Ghana annually with the Springboard Road Show.",
+      "Rev. Albert Ocran is an international Motivational Speaker, Minister and Executive Coach. He is the Lead Consultant of Legacy & Legacy, Executive Director of the Springboard Road Show Foundation and Executive Pastor at ICGC Christ Temple.",
+      "As a corporate trainer and executive coach, Albert's impressive list of clients span the mining, banking, telecommunications, insurance, petrochemical and not-for-profit sectors. He was voted by his peers as Ghana's 7th Most Respected CEO for 2009. He also received the Millennium Excellence Award in 2010 for his Inspirational and Motivational Work. He has been named four consecutive years in the list of 100 most influential Ghanaians by viewers of ETV Ghana.",
+      "Rev. Ocran is a fellow of the Africa Leadership Initiative and the prestigious Aspen Global Leaders Network based in Colorado, USA. His educational media outreaches include Springboard, the Virtual University, the Springboard Zone and Daily Digest. Together with his wife, Comfort, he has published 21 bestselling books including the leadership masterpiece, “The Lord, Madiba & The Eagle.” Albert & Comfort travel across Ghana every year with the Springboard Road Show, a series of personal development conferences that empowers emerging leaders.",
     ],
   },
   {
     name: "Mr. Martin Brobbey", role: "Founder and Managing Director", src: "/pasted-1788862416064-0-mtsihu4k-1tx9.png",
     bio: [
-      "Martin Brobbey established Lexta Ghana Limited in 2002 on his return to Ghana after more than ten years in the United Kingdom, driven by a desire to see a cleaner, more hygienic Africa. His leadership and interpersonal skills have taken Lexta from a single-category supplier to a leader in home and personal care both locally and beyond.",
-      "A product of Opoku Ware School, he holds a Bachelor of Business Administration in Business, Management and Marketing from the Ghana Institute of Management and Public Administration. His passion lies in marketing and new product development.",
+      "With a drive to push the African continent higher and a desire to ensure a clean and hygienic Africa, Mr. Martin Brobbey established Lexta Ghana Limited in 2002 on his return to Ghana after over 10 years stay in the United Kingdom. Martin is a level-headed entrepreneur whose leadership and interpersonal skills have seen Lexta grow from its inception to become a leader in the home and personal care industry locally and beyond.",
+      "Martin is a product of Opoku Ware School. He holds a Bachelor of Business Administration in Business, Management, Marketing and Related Support Services from the Ghana Institute of Management and Public Administration. His passion lies in marketing and the development of new products.",
     ],
   },
   {
     name: "Mrs. Mary Asare-Yeboah", role: "Board Member", src: "/pasted-1788862424012-0-mtsii09b-wwea.png",
     bio: [
-      "Mrs. Asare-Yeboah is an accomplished banker with more than 19 years of senior management experience at HFC Bank Ghana Limited, where she served in roles from Senior Finance Officer to Head of Banking Operations until her retirement in 2013.",
-      "Before banking, she worked with Texaco Ghana Limited and Shell Ghana Limited as Management Secretary and Administrative Manager respectively, and earlier in her career at GETZ Jewellers in the United States.",
-      "She holds an MBA in Finance and a BSc in Banking and Finance, and is an Associate member of the Chartered Institute of Bankers. She serves on the board of the Accra Symphony Orchestra and previously served on the board of Central Aid, Ghana.",
+      "Mrs. Asare-Yeboah is an accomplished banker with over 19 years senior management experience in the banking sector with HFC Bank Ghana Limited. Mary served with the bank in various capacities starting as a Senior Finance Officer to Head Banking Operations, a role she held until her retirement in 2013.",
+      "Prior to her banking profession, Mary worked with Texaco Ghana Limited and Shell Ghana Limited as Management Secretary and Administrative Manager respectively. She also worked at GETZ Jewellers, USA, as Secretary in the early stages of her career.",
+      "She holds an MBA in Finance, a BSc. in Banking and Finance and is an Associate member of the Chartered Institute of Bankers. She is also a Board Member of the Accra Symphony Orchestra and previously served as a Board Member of Central Aid, Ghana. Mary brings on board her rich experience in customer service and capacity building.",
     ],
   },
   {
     name: "Mr. Kojo Ohene-Kyei", role: "Board Member", src: "/pasted-1788862429966-0-mtsii4ur-kj1t.png",
     bio: [
-      "Mr. Ohene-Kyei is Chief Executive Officer of IFS Financial Services Limited, a leading non-bank financial institution founded in Ghana in 2006.",
-      "An astute finance professional, he brings over 30 years of experience spanning corporate banking, risk management, corporate governance and business transformation. His leadership roles include Deputy Risk Management Director, Business Banking Director and Country Credit Director, all at Barclays Bank Ghana.",
-      "He is a Fellow of the Chartered Institute of Bankers in Ghana and an Associate of the Chartered Institute of Bankers in the United Kingdom, and holds an MBA from Henley Management College. He is currently Chief Executive Officer of IFS Capital Management and a Non-Executive Director of the Council for Scientific and Industrial Research, Plant Genetic Resources Research Institute.",
+      "Mr. Kojo Ohene-Kyei is the Chief Executive Officer of IFS Financial Services Limited, a leading non-bank financial institution founded in 2006 in Ghana.",
+      "An astute finance professional, Kojo has rich and extensive experience in the finance industry spanning corporate banking, risk management, corporate governance and business transformation gained over 30 years in various finance capacities. He has handled top management and leadership roles including Deputy Risk Management Director, Business Banking Director and Country Credit Director, all at Barclays Bank, Ghana.",
+      "Kojo is a Fellow of the Chartered Institute of Bankers in Ghana and an Associate of the Chartered Institute of Bankers in UK. He also holds an MBA from Henley Management College, UK. He is currently the Chief Executive Officer of IFS Capital Management, a subsidiary of IFS Financial Services, and a Non-Executive Director of the Council for Scientific and Industrial Research (Plant Genetic Resources Research Institute).",
     ],
   },
   {
     name: "Mr. Ebo Hammond", role: "Board Member", src: "/pasted-1788862437111-0-mtsiiad5-0a2z.png",
     bio: [
-      "Mr. Hammond holds a BSc in Business Administration from the University of Ghana Business School and an MBA from the University of Edinburgh Business School. He also holds a Postgraduate Diploma in Marketing from the Chartered Institute of Marketing in the United Kingdom, and is a third-year PhD candidate at the University of Ghana Business School.",
-      "His professional qualifications include certificates in Vehicle Fleet Management (United Kingdom), Physical Distribution (Japan), World Bank Procurement of Goods (Ghana), Logistics and Supply Chain Management (South Africa) and Logistics and Distribution Management (Singapore).",
-      "He is a Chartered Fellow of the Chartered Institute of Logistics and Transport and a part-time university lecturer in logistics, supply chain and strategy. He currently serves as Executive Secretary of CILT Ghana and Deputy Director in charge of Transportation Management at the Ghana Health Service.",
+      "Mr. Ebo Hammond holds a BSc. degree in Business Administration from the University of Ghana Business School and an MBA from the University of Edinburgh Business School, UK. He also holds a Post Graduate Diploma in Marketing from the Chartered Institute of Marketing, UK and is currently a 3rd Year PhD candidate at the University of Ghana Business School.",
+      "Ebo has a host of professional qualifications to his credit including Certificate in Vehicle Fleet Management (UK), Postgraduate Certificate in Physical Distribution (Japan), Certificate in World Bank Procurement of Goods (Ghana), Certificate in Logistics and Supply Chain Management (South Africa), Executive Certificate in Logistics and Distribution Management (Singapore), among others.",
+      "He is a Chartered Fellow of the Chartered Institute of Logistics and Transport (CILT) and a part-time university lecturer in Logistics, Supply Chain and Strategy. He has been very instrumental in the phenomenal growth of professional education in logistics and transport in Ghana through the CILT professional courses in about ten accredited universities, institutes and polytechnics. Ebo is currently the Executive Secretary of CILT Ghana and a Deputy Director in charge of Transportation Management at the Ghana Health Service.",
     ],
   },
   {
     name: "Mrs. Yvonne Brobbey", role: "Board Member", src: "/pasted-1788862442898-0-mtsiietz-z88y.png",
     bio: [
-      "Mrs. Brobbey is an accomplished entrepreneur with deep experience in marketing and customer service, gained in part during her time with NatWest in the United Kingdom.",
-      "She was instrumental in building the Yazz brand, leading marketing campaigns across the country in Lexta's early years. She currently owns and manages Ivie Collections, a high-end fashion boutique stocking local and international labels, and was the founder of Fresherz Eatery in East Legon, Accra.",
+      "Mrs. Brobbey is an accomplished entrepreneur with a rich experience in marketing and customer service. She gained her customer service skills while working with Natwest in the UK.",
+      "Yvonne was very instrumental in the building of the YAZZ brand. She successfully led various marketing campaigns across the country at the inception of Lexta Ghana Limited. Currently, Yvonne owns and manages Ivie Collections, a high-end fashion boutique that stocks both local and foreign clothes. She was also the brain behind Fresherz Eatery, located in East Legon, Accra.",
     ],
   },
   {
     name: "Mr. Samuel Hagan", role: "Board Member", src: "/pasted-1788862450734-0-mtsiikvm-6oo6.png",
     bio: [
-      "Mr. Hagan brings over 26 years of experience in administration and logistics management, gained across the public service and with an international organisation.",
-      "He holds an MBA in Corporate Governance from the Australian Institute of Business, a Bachelor of Arts, and an Advanced Diploma in Logistics and Transport from CILT in the United Kingdom. He also serves as a Director on the board of Capital and More Savings and Loans Limited.",
+      "Samuel has over 26 years' experience in the fields of Administration and Logistics management. He has previously worked in various capacities within the public service and with an international organization.",
+      "Samuel holds an MBA in Corporate Governance from the Australian Institute of Business, a Bachelor of Arts, and an Advanced Diploma in Logistics and Transport (CILT, UK). He also serves as Director on the board of Capital & More Savings and Loans Limited.",
     ],
   },
 ];
@@ -166,22 +166,22 @@ const directors = [
 const reach: (Photo & { title: string; text: string })[] = [
   {
     placeholder: "Lexta Square, Accra photo", ...photos.campus, alt: ALT.campus, title: "Ghana",
-    text: "Headquartered at Lexta Square in Dzorwulu, Accra, with distribution reaching supermarkets, pharmacies, market traders and neighbourhood shops nationwide.",
+    text: "Headquartered in Accra, Ghana: Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.",
   },
   {
     placeholder: "Monrovia operation photo", ...photos.truck, alt: ALT.truck, title: "Liberia",
-    text: "A wholly owned subsidiary in Monrovia, serving as the base for our regional growth.",
+    text: "Today, our presence extends beyond Ghana into the wider West African sub-region, including a wholly-owned subsidiary in Monrovia, Liberia.",
   },
   {
-    placeholder: "Regional distribution photo", ...photos.stall, alt: ALT.stall, title: "West Africa and beyond",
-    text: "An ambition to serve families throughout Africa, built on the same standards that established us at home.",
+    placeholder: "Regional distribution photo", ...photos.stall, alt: ALT.stall, title: "Africa",
+    text: "Our vision is to be the preferred choice for family-care products across Africa.",
   },
 ];
 
 const csrStats = [
   { figure: "[PLACEHOLDER: lives touched figure]", label: "Lives touched by our products" },
   { figure: "[PLACEHOLDER: number of schools reached]", label: "Schools reached with health education" },
-  { figure: "Free", label: "Screening clinics with MWAG" },
+  { figure: "[PLACEHOLDER: number of free screening clinics held with MWAG]", label: "Screening clinics with MWAG" },
 ];
 
 export default function AboutUsPage() {
@@ -259,12 +259,12 @@ export default function AboutUsPage() {
           </div>
           <div>
             <div style={eyebrow}>Our Story</div>
-            <h2 style={{ ...h2, fontSize: 34, lineHeight: 1.15 }}>A return home, and a clear ambition</h2>
+            <h2 style={{ ...h2, fontSize: 34, lineHeight: 1.15 }}>Our History, Vision and Mission</h2>
             <p style={{ ...body, margin: "18px 0 0" }}>
-              Lexta Ghana Limited was established in 2002 by Martin Brobbey, following more than ten years in the United Kingdom and a return home with a clear ambition: to improve everyday living through quality consumer products that ordinary Ghanaian households could actually afford.
+              Driven by a vision to improve everyday living through quality and affordable consumer products, Lexta Ghana Limited was established in 2002 as a proudly Ghanaian-owned company.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
-              The company began as a supplier of home care products. It has since grown from a single category supplier into a leader in home and personal care, expanding into food and bringing Yazz, Linzzy and Hooch to supermarkets, pharmacies, market traders and neighbourhood shops across Ghana.
+              What began as a supplier of home care products has grown into one of the most trusted and respected consumer goods companies in the region. Over the years, Lexta has expanded its footprint across the Home Care, Personal Care, and Food categories, consistently delivering products that meet the evolving needs of consumers and families.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
               Our mission is to combine quality, innovation and affordability in products that meet family needs and deliver value to stakeholders. Our vision is to be the preferred choice for family-care products across Africa.
@@ -292,12 +292,11 @@ export default function AboutUsPage() {
           <div style={{ maxWidth: 660 }}>
             <h2 style={{ margin: 0, fontSize: 36, lineHeight: 1.15, fontWeight: 700, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>What is care without quality?</h2>
             <p style={{ margin: "20px 0 0", fontSize: 15, lineHeight: 1.9, color: "rgba(255,255,255,.92)" }}>
-              Our operational philosophy rests on a single conviction: real care requires uncompromising standards.
+              At Lexta, our operational philosophy is anchored on a single, unyielding conviction: true care requires uncompromising standards.
             </p>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-              We have grown from a local supplier by investing where it matters. Rigorous quality control. Production that keeps pace with the market. Distribution that carries our products from Accra to shelves across Ghana and into Liberia.
+              We achieve this by investing heavily in rigorous quality control, agile manufacturing infrastructure, and sub-regional distribution networks that keep our promises affordable, accessible, flawless and with care.
             </p>
-            <div style={{ marginTop: 26, fontSize: 18, fontWeight: 700, color: "#3fc0dd" }}>Affordable, accessible, and made with care.</div>
           </div>
         </div>
       </section>
@@ -315,8 +314,8 @@ export default function AboutUsPage() {
       <section data-reveal="1" className={p.pad76} style={{ background: "#fff" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 620 }}>
-            <div style={eyebrow}>Corporate Pillars</div>
-            <h2 style={{ ...h2, fontSize: 32 }}>Three things we invest in, without exception</h2>
+            <div style={eyebrow}>Quality</div>
+            <h2 style={{ ...h2, fontSize: 32 }}>Corporate Pillars</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 22, marginTop: 40 }}>
             {pillars.map((pl) => (
@@ -347,8 +346,8 @@ export default function AboutUsPage() {
             />
           </div>
           <div>
-            <div style={eyebrow}>Our Core Values</div>
-            <h2 style={{ ...h2, fontSize: 32 }}>Four words we hold each other to</h2>
+            <div style={eyebrow}>Values</div>
+            <h2 style={{ ...h2, fontSize: 32 }}>Our Core Values</h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 18, marginTop: 34 }}>
               {values.map((v) => (
                 <div
@@ -397,7 +396,7 @@ export default function AboutUsPage() {
               className={p.spanCol2}
               style={{ margin: 0, fontSize: "clamp(22px,2.9vw,30px)", lineHeight: 1.45, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}
             >
-              We pledge to be true to our purpose and to bring quality, affordable care to all of Africa, every day.
+              So we pledge to be true to our purpose and bring quality, affordable care to all of Africa, every day.
             </p>
           </div>
         </div>
@@ -409,10 +408,7 @@ export default function AboutUsPage() {
             <div style={eyebrow}>Leadership</div>
             <h2 style={{ ...h2, fontSize: 34, lineHeight: 1.15 }}>Guided by vision, driven by excellence</h2>
             <p style={{ ...body, margin: "18px 0 0" }}>
-              Our strategic direction and operational integrity are anchored by an experienced leadership team. We combine seasoned industry veterans with forward-thinking professionals who share a single commitment: delivering exceptional value to our consumers while driving sustainable growth for our stakeholders.
-            </p>
-            <p style={{ ...body, margin: "14px 0 0" }}>
-              Our governance structure ensures that we operate with transparency, uphold our core values, and maintain our position as a trusted Ghanaian consumer-goods company.
+              At Lexta Ghana Limited, our strategic direction and operational integrity are anchored by a distinguished leadership team. We combine seasoned industry veterans with dynamic, forward-thinking professionals who share a singular commitment: delivering exceptional value to our consumers while driving sustainable growth for our stakeholders.
             </p>
           </div>
 
@@ -438,7 +434,7 @@ export default function AboutUsPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 620 }}>
             <div style={eyebrow}>Our Reach</div>
-            <h2 style={{ ...h2, fontSize: 32 }}>Accra, Monrovia, and the sub-region next</h2>
+            <h2 style={{ ...h2, fontSize: 32 }}>Ghana and the wider West African sub-region</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 22, marginTop: 40 }}>
             {reach.map((r) => (
@@ -468,10 +464,10 @@ export default function AboutUsPage() {
           }}
         >
           <div>
-            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#3fc0dd" }}>Beyond the product</div>
-            <h2 style={{ margin: "12px 0 0", fontSize: 32, fontWeight: 700, letterSpacing: "-.025em", color: "#fff" }}>Care that leaves the shelf</h2>
+            <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#3fc0dd" }}>CSR</div>
+            <h2 style={{ margin: "12px 0 0", fontSize: 32, fontWeight: 700, letterSpacing: "-.025em", color: "#fff" }}>Our care extends beyond our products</h2>
             <p style={{ margin: "16px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.88)", maxWidth: 440 }}>
-              Free cervical cancer screening with the Medical Women Association of Ghana. Menstrual health education in schools nationwide. Ongoing work against period poverty.
+              Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities.
             </p>
             <ArrowButton href="/corporate-social-responsibility" padding="11px 11px 11px 20px" style={{ marginTop: 26 }}>Our CSR work</ArrowButton>
           </div>
@@ -497,7 +493,7 @@ export default function AboutUsPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 30, fontWeight: 700, letterSpacing: "-.025em", color: "#fff" }}>Work with us</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 440 }}>
-              Whether you want to distribute our brands, place a bulk order, join our team or simply learn more about what we make, we would like to hear from you.
+              To enquire about careers, use the Careers form. For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
@@ -508,7 +504,7 @@ export default function AboutUsPage() {
               Contact us
               <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "#12a3c4", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
             </Link>
-            <Link href="/contact-us" style={ghostBtn}>Request a bulk quote</Link>
+            <Link href="/partner-with-us" style={ghostBtn}>Partner with Us</Link>
             <Link href="/careers#openings" style={ghostBtn}>View current openings</Link>
             <Link href="/contact-us" style={ghostBtn}>Contact us</Link>
           </div>

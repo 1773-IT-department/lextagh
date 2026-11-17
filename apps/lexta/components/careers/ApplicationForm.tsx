@@ -142,7 +142,7 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
       style={{ position: "relative", background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}
     >
       <div style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>{role ? "Role application" : "General application"}</div>
-      <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>Takes about two minutes. Your application goes to the Lexta HR team.</p>
+      <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>Your application goes to the Lexta HR team, hr@lextagh.com.</p>
 
       <input type="hidden" name="opening" value={role?.reference ?? ""} />
       {role && (
@@ -297,7 +297,7 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
       </button>
       <FormMessage state={state} style={{ marginTop: 14 }} />
       <div style={{ marginTop: 12, fontSize: 11, lineHeight: 1.7, color: "#8fa8b2" }}>
-        Lexta Ghana is an equal opportunity employer. We consider every application on merit, regardless of gender, background or physical ability.
+        We champion equal opportunities for everyone, regardless of gender, background, or physical ability.
         {" "}We use your details only for recruitment. See our <Link href="/privacy-policy" style={{ color: "inherit", textDecoration: "underline" }}>Privacy Policy</Link>.
       </div>
     </form>

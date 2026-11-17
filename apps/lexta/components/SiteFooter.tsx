@@ -47,7 +47,7 @@ export default function SiteFooter() {
             <img src="/assets/lexta-logo-white.png" alt="Lexta" style={{ height: 40, width: "auto", display: "block" }} />
           </Link>
           <p style={{ margin: "16px 0 0", fontSize: 12, lineHeight: 1.8, color: "rgba(255,255,255,.65)", maxWidth: 210 }}>
-            Caring for you every day through quality products, innovation and community impact.
+            Caring for You Every Day. Quality, affordability and everyday care, proudly from Ghana.
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             {socials.map((s) => (

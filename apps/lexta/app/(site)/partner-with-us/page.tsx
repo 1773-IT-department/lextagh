@@ -6,9 +6,9 @@ import RoutePicker from "@/components/partner/RoutePicker";
 import { RouteProvider } from "@/components/partner/RouteContext";
 import { benefits, steps } from "@/components/partner/data";
 
-// Title and description from partner-with-us.html.
+// Title from partner-with-us.html; description from Lexta's Drive content.
 const title = "Partner With Us | Lexta Ghana";
-const description = "Partner with Lexta Ghana as a distributor, wholesaler, modern trade or institutional buyer across Ghana and Liberia.";
+const description = "For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -28,7 +28,7 @@ const stats = [
   { value: "[PLACEHOLDER: number of regions covered]", text: "Regions covered by our distribution network" },
   { value: "2", text: "Markets served: Ghana and Liberia" },
   { value: "[PLACEHOLDER: typical response time]", text: "Typical response to a complete application" },
-  { value: "3", text: "Consumer brands available to trade partners" },
+  { value: "3", text: "Brands: Yazz, Linzzy and Hooch" },
 ];
 
 const contacts = [
@@ -37,10 +37,7 @@ const contacts = [
 ];
 
 const checklist = [
-  { title: "Business registration", text: "certificate of incorporation and TIN." },
-  { title: "Trade references", text: "suppliers you currently buy from." },
-  { title: "Storage and fleet", text: "warehouse size and vehicles available." },
-  { title: "Coverage plan", text: "the towns, routes or outlets you serve." },
+  { title: "Documents", text: "[PLACEHOLDER: documents Lexta requires from distributors, wholesalers and modern trade partners]" },
 ];
 
 export default function PartnerPage() {
@@ -52,10 +49,10 @@ export default function PartnerPage() {
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Partner with us</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-              Grow with a house of <span style={{ color: "#3fc0dd" }}>everyday brands</span>
+              Partner <span style={{ color: "#3fc0dd" }}>with Us</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 520, textWrap: "pretty" }}>
-              Distributors, wholesalers, modern trade and institutional buyers grow with Lexta across Ghana and Liberia. Select your partnership type and share your region and contact details.
+              For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <a
@@ -95,8 +92,8 @@ export default function PartnerPage() {
 
       <section data-screen-label="Partner support" style={{ ...section, background: "#f4fafc" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <div style={eyebrow}>What you get</div>
-          <h2 style={h2}>Support that protects your margin</h2>
+          <div style={eyebrow}>Partner with Us</div>
+          <h2 style={h2}>What you get</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 18, marginTop: 32, maxWidth: 1100 }}>
             {benefits.map((b) => (
               <div key={b.title} style={{ background: "#fff", border: "1px solid rgba(18,163,196,.16)", borderRadius: 13, padding: "26px 24px", boxShadow: "0 12px 26px rgba(11,60,78,.06)" }}>
@@ -111,8 +108,8 @@ export default function PartnerPage() {
 
       <section data-screen-label="Process" style={{ ...section, background: "#0b2f3d" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <div style={{ ...eyebrow, color: "#3fc0dd" }}>How it works</div>
-          <h2 style={{ ...h2, color: "#fff" }}>From enquiry to first delivery</h2>
+          <div style={{ ...eyebrow, color: "#3fc0dd" }}>Partner with Us</div>
+          <h2 style={{ ...h2, color: "#fff" }}>How it works</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(215px,1fr))", gap: 18, marginTop: 34 }}>
             {steps.map((s) => (
               <div key={s.num} style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.14)", borderRadius: 13, padding: "26px 24px" }}>
@@ -131,7 +128,7 @@ export default function PartnerPage() {
           <div>
             <div style={eyebrow}>Apply</div>
             <h2 style={h2}>Tell us about your business</h2>
-            <p style={{ ...lead, maxWidth: 460 }}>Send the basics and our trade team comes back with terms, coverage and the documents we need next.</p>
+            <p style={{ ...lead, maxWidth: 460 }}>For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.</p>
             <div style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 14 }}>
               {contacts.map((c) => (
                 <div key={c.tag} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
@@ -164,9 +161,6 @@ export default function PartnerPage() {
                   </div>
                 ))}
               </div>
-              <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(18,163,196,.18)", fontSize: 12, lineHeight: 1.75, color: "#5d7883" }}>
-                Missing something? Apply anyway, and the trade desk will tell you what else is needed.
-              </div>
             </div>
           </div>
 
@@ -185,7 +179,7 @@ export default function PartnerPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Not sure which route fits?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              Talk it through with the trade team first, and share your region so your enquiry reaches the right people.
+              Contact Lexta Ghana for all inquiries.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
