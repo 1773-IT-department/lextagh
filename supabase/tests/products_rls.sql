@@ -32,7 +32,7 @@ insert into public.product_skus (product_id, sku_code, pack_size_label, is_activ
 
 insert into public.product_images (product_id, external_url, alt_text) values
   ('00000000-0000-0000-0000-000000000101', 'https://example.com/draft.png', 'Draft image'),
-  ((select id from public.products where slug = 'choco-flakes'), 'https://example.com/hooch-second.png', 'Hooch second image');
+  ((select id from public.products where slug = 'cornflakes'), 'https://example.com/hooch-second.png', 'Hooch second image');
 
 insert into storage.objects (bucket_id, name) values
   ('product-images', 'hooch/00000000-0000-0000-0000-000000000102/existing.png');
@@ -43,14 +43,14 @@ declare n int;
 begin
   select count(*) into n from public.products p join public.brands b on b.id = p.brand_id
    where b.slug in ('yazz', 'linzzy', 'hooch') and p.is_published;
-  if n <> 14 then raise exception 'FAIL: expected 14 seeded published products, got %', n; end if;
+  if n <> 24 then raise exception 'FAIL: expected 24 seeded published products, got %', n; end if;
   if exists (select 1 from public.product_images i where i.product_id in (select id from public.products where slug not like '%test%' and slug <> 'retired-published') and btrim(i.alt_text) = '') then
     raise exception 'FAIL: seeded image without alt text';
   end if;
   if not exists (select 1 from storage.buckets where id = 'product-images' and public) then
     raise exception 'FAIL: product-images bucket missing or not public';
   end if;
-  raise notice 'PASS: seed has 14 published products and a public product-images bucket';
+  raise notice 'PASS: seed has 24 published (the Drive catalogue: 16 Yazz, 6 Linzzy, 2 Hooch) products and a public product-images bucket';
 end $$;
 
 -- The seed is idempotent: applying it again adds nothing.
@@ -79,8 +79,8 @@ begin
   if exists (select 1 from public.products where slug = 'retired-published') then
     raise exception 'FAIL: anon sees products of an inactive brand';
   end if;
-  if (select count(*) from public.products) <> 14 then
-    raise exception 'FAIL: anon should see the 14 published products, sees %', (select count(*) from public.products);
+  if (select count(*) from public.products) <> 24 then
+    raise exception 'FAIL: anon should see the 24 published products, sees %', (select count(*) from public.products);
   end if;
   if exists (select 1 from public.product_skus where sku_code in ('TEST-DRAFT-1', 'TEST-INACTIVE-1')) then
     raise exception 'FAIL: anon sees SKUs of drafts or inactive SKUs';
@@ -265,8 +265,8 @@ set local request.jwt.claim.sub = '00000000-0000-0000-0000-00000000000d';
 do $$
 declare n int;
 begin
-  if (select count(*) from public.products) <> 14 or exists (select 1 from public.products where not is_published) then
-    raise exception 'FAIL: sales rep should see exactly the 14 published products';
+  if (select count(*) from public.products) <> 24 or exists (select 1 from public.products where not is_published) then
+    raise exception 'FAIL: sales rep should see exactly the 24 published products';
   end if;
   update public.products set name = 'Hacked';
   get diagnostics n = row_count;

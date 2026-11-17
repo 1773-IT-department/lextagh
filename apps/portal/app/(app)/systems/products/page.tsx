@@ -1,6 +1,6 @@
 import { Select } from "@lexta/ui";
 import Link from "next/link";
-import { sharedProductImageUrl, type ProductImage } from "@lexta/db";
+import { PRODUCT_AVAILABILITY_LABELS, sharedProductImageUrl, withPageFields, type ProductAvailability, type ProductImage } from "@lexta/db";
 import { getProductAccess } from "@/lib/products";
 import { createClient } from "@/lib/supabase/server";
 
@@ -12,6 +12,8 @@ type Row = {
   category: string | null;
   brand_id: string;
   is_published: boolean;
+  /** 0025; missing before the migration is applied, read as available. */
+  availability?: ProductAvailability;
   updated_at: string;
   product_skus: { count: number }[];
   product_images: Pick<ProductImage, "storage_path" | "external_url" | "alt_text" | "is_primary" | "sort_order">[];
@@ -45,7 +47,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     const supabase = await createClient();
     let query = supabase
       .from("products")
-      .select("id, name, category, brand_id, is_published, updated_at, product_skus(count), product_images(storage_path, external_url, alt_text, is_primary, sort_order)")
+      // "*" rather than a column list, so the list also loads on a database 0025 has not reached yet (availability then reads as available).
+      .select("*, product_skus(count), product_images(storage_path, external_url, alt_text, is_primary, sort_order)")
       .in("brand_id", brandFilter ? [brandFilter] : brandIds)
       .order("sort_order")
       .order("name");
@@ -127,6 +130,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                   </thead>
                   <tbody>
                     {rows.map((p) => {
+                      const { availability } = withPageFields(p);
                       const img = [...p.product_images].sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)[0];
                       return (
                         <tr key={p.id}>
@@ -142,7 +146,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                           </td>
                           <td data-label="Brand">{brandName.get(p.brand_id) ?? ""}</td>
                           <td data-label="SKUs">{p.product_skus[0]?.count ?? 0}</td>
-                          <td data-label="Status"><span className={`badge ${p.is_published ? "on" : "off"}`}>{p.is_published ? "On the websites" : "Draft"}</span></td>
+                          <td data-label="Status">
+                            <span className={`badge ${p.is_published ? "on" : "off"}`}>{p.is_published ? "On the websites" : "Draft"}</span>{" "}
+                            <span className={`badge avail a-${availability}`}>{PRODUCT_AVAILABILITY_LABELS[availability]}</span>
+                          </td>
                           <td data-label="Last change">{new Date(p.updated_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</td>
                         </tr>
                       );

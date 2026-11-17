@@ -81,6 +81,9 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
 .badge.on { background: #e7f7ee; color: #146c43; }
 .badge.off { background: #fff4e5; color: #8a4b00; }
+.badge.avail { background: #e8f4f8; color: var(--navy); }
+.badge.avail.a-coming_soon { background: #fdf3d8; color: #7a5600; }
+.badge.avail.a-discontinued { background: #f1f1f4; color: #5b5b66; border: 1px solid var(--line); }
 .tile.empty { margin-top: 10px; }
 .skeleton { height: 56px; border-radius: 10px; margin-top: 12px; background: linear-gradient(90deg, #edf5f8 25%, #f7fbfc 50%, #edf5f8 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite linear; }
 @keyframes shimmer { to { background-position: -200% 0; } }
@@ -204,6 +207,7 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .badge.stage.s-lost { background: #fff4e5; color: #8a4b00; }
 .badge.type { background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
 .overdue { color: var(--danger); font-weight: 600; }
+.badge.late { background: #fdecea; color: var(--danger); }
 .crm-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .section-title { font-size: 17px; margin: 0 0 12px; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -772,3 +776,4 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .pwa-share { grid-template-columns: minmax(0, 1fr); }
   .pwa-qr { justify-self: start; }
 }
+.reply-hours input { max-width: 180px; }

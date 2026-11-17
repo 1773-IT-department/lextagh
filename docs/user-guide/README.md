@@ -157,7 +157,7 @@ Along the top: **Overview**, **Activity**, then one tab for each system: **Order
 
 ### The Overview tab
 
-* **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
+* **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, website leads overdue for a reply, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
 * **Key figures** shows two numbers for each system, with how they changed on the period of the same length just before (for example "42 new leads, Up 41 on the previous 30 days"). Tap a number to open those records in its system, or **More** to open that system's tab.
 * **Over time** has four small charts: orders submitted, new leads, complaints received and shop visits. Each column is a day (a week for longer periods, a month for more than a year). Point at a column to see its number, or tap **Show the numbers** for a table.
 * **Latest activity** shows the eight newest things recorded. Tap **See all activity** for the rest.
@@ -435,6 +435,8 @@ Messages from the website forms land in the CRM by themselves:
 * The **newsletter** sign up adds a contact with marketing consent.
 * **Contact Us, Consumer care** goes to Complaints instead (see [chapter 6](#6-complaints)).
 
+Leads from **Contact Us** and **Partner With Us** get a **Reply by** time: the reply time admin sets (24 hours until Lexta confirms its own) after the lead arrives. While such a lead is still at stage **New** after that time, the leads list shows **Overdue** next to its stage, and the management overview lists it under **Needs attention**. Moving the lead on to **Contacted** (or a later stage) once you have replied clears it.
+
 ### Website lead managers (admin only)
 
 Admin chooses who gets new website leads.
@@ -443,6 +445,7 @@ Admin chooses who gets new website leads.
 2. Choose a **Default manager**: they get every new website lead unless the brand has its own manager.
 3. Under **Manager per brand**, choose a manager for a brand, or leave **Use default**.
 4. Tap **Save managers**. **Recent changes** shows who changed what.
+5. Under **Reply time**, set how many hours the team has to reply to a website lead (1 to 720) and tap **Save reply time**. It applies to leads that arrive after you save. The 24 hours set now is a placeholder until Lexta confirms its reply time.
 
 A sales rep or marketer can only manage a brand they work on. If nobody is chosen, website leads stay unassigned; the management overview shows how many.
 
@@ -538,8 +541,10 @@ You can also close straight away; closing needs **How it was resolved**.
 
 1. Open **Product management** and tap the product.
 2. Change the details: name, category, descriptions, display order, key features, how to use, ingredients.
-3. Under **SKUs and pack sizes**, change or **Add a SKU** (SKU code, variant, pack size, barcode). Untick **Active** to stop a pack size being ordered.
-4. Tap **Save changes**. The message "Saved. The websites will show the change shortly" confirms it.
+3. Set **Availability**: **Available**, **Coming soon** (the brand site shows a Coming soon badge and no Where to buy link) or **Discontinued** (the websites hide it). The product list shows it as a badge next to the status.
+4. Under **Product page**, fill in what the brand site's product page uses: **Headline**, **Recommended use**, **Precautions**, **Brand says** (the brand's sign off line, for example "Linzzy says") and **Related articles** (the web addresses of the brand site's articles, separated by commas, for example know-your-flow, period-hygiene-101). Leave a field empty if the brand does not use it.
+5. Under **SKUs and pack sizes**, change or **Add a SKU** (SKU code, variant, pack size, barcode). Untick **Active** to stop a pack size being ordered.
+6. Tap **Save changes**. The message "Saved. The websites will show the change shortly" confirms it.
 
 ![Editing a product](images/61-product-edit.png)
 
@@ -569,6 +574,7 @@ You can also close straight away; closing needs **How it was resolved**.
 * Published products also feed the distributor catalogue and the field sales stock check.
 * Some pack sizes still say "[PLACEHOLDER: pack size from Lexta]". Replace them with the real pack sizes.
 * Deleting a product removes it from the system and the websites for good. Unpublish it instead if you only want to hide it.
+* **Discontinued** only hides a product on the websites. Distributor ordering and the field sales stock check follow **Publish**: unpublish it too if it should no longer be ordered.
 
 ---
 

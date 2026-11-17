@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createWebsiteReadClient, websiteReadDeadline } from "./client";
-import type { Product, ProductImage, ProductSku } from "./types";
+import { PRODUCT_AVAILABILITY, type Product, type ProductAvailability, type ProductImage, type ProductSku } from "./types";
 
 /** Storage bucket for uploaded product photos. Paths are <brand_slug>/<product_id>/<file name>. */
 export const PRODUCT_IMAGES_BUCKET = "product-images";
@@ -71,10 +71,33 @@ export function sharedProductImageUrl(image: Pick<ProductImage, "storage_path" |
 }
 
 /**
+ * The 0025 fields with their defaults. A database the migration has not reached yet returns rows without them; those
+ * rows read as available with no page fields, exactly as before the migration.
+ */
+export function withPageFields<T extends Partial<Product>>(row: T): T & Pick<Product, "availability" | "headline" | "recommended_use" | "precautions" | "brand_says" | "related_articles"> {
+  const availability: ProductAvailability = PRODUCT_AVAILABILITY.includes(row.availability as ProductAvailability)
+    ? (row.availability as ProductAvailability)
+    : "available";
+  return {
+    ...row,
+    availability,
+    headline: row.headline ?? null,
+    recommended_use: row.recommended_use ?? null,
+    precautions: row.precautions ?? null,
+    brand_says: row.brand_says ?? null,
+    related_articles: Array.isArray(row.related_articles) ? row.related_articles : [],
+  };
+}
+
+/** True for a product the websites hide (availability discontinued). */
+export const isDiscontinued = (p: Pick<Product, "availability">) => p.availability === "discontinued";
+
+/**
  * Published products of one brand with their active SKUs and images, in display order.
  * For the websites: uses the publishable key, so Row Level Security only ever returns published data.
  * Requests are cached under the "products" tag, so a portal save refreshes the pages.
  * Gives up after WEBSITE_READ_TIMEOUT_MS (one attempt, no retries) so a site can fall back instead of waiting.
+ * Discontinued products are still returned (they are published rows); each website leaves them out (isDiscontinued).
  */
 export async function getPublishedProducts(brandSlug: string, client?: SupabaseClient): Promise<PublishedProduct[]> {
   const supabase = client ?? createWebsiteReadClient(PRODUCTS_CACHE_TAG);
@@ -90,7 +113,7 @@ export async function getPublishedProducts(brandSlug: string, client?: SupabaseC
 
   type Row = Product & { brand: unknown; skus: ProductSku[] | null; images: ProductImage[] | null };
   return ((data ?? []) as Row[]).map(({ brand: _brand, skus, images, ...product }) => ({
-    ...product,
+    ...withPageFields(product),
     skus: (skus ?? []).filter((s) => s.is_active).sort((a, b) => a.sort_order - b.sort_order),
     images: (images ?? [])
       .sort((a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order)

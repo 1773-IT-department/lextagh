@@ -1,13 +1,13 @@
 import { Select } from "@lexta/ui";
 import Link from "next/link";
-import { CRM_SOURCES, CRM_STAGES, crmContactName, crmSourceLabel, crmStageLabel, type CrmLeadSource, type CrmStage } from "@lexta/db";
+import { CRM_SOURCES, CRM_STAGES, crmContactName, crmSourceLabel, crmStageLabel, isLeadReplyOverdue, type CrmLeadSource, type CrmStage } from "@lexta/db";
 import CrmTabs from "@/components/crm/CrmTabs";
-import { cleanSearch, formatDate, getCrmAccess, NO_CRM_ACCESS, PAGE_SIZE, staffName, todayIso, UUID } from "@/lib/crm";
+import { cleanSearch, formatDate, formatDateTime, getCrmAccess, NO_CRM_ACCESS, PAGE_SIZE, staffName, todayIso, UUID } from "@/lib/crm";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Leads | Lexta Business System" };
 
-type Search = { q?: string; stage?: string; source?: string; brand?: string; owner?: string; sort?: string; page?: string; deleted?: string };
+type Search = { q?: string; stage?: string; source?: string; brand?: string; owner?: string; sort?: string; page?: string; deleted?: string; reply?: string };
 
 type Row = {
   id: string;
@@ -18,6 +18,8 @@ type Row = {
   owner_id: string | null;
   next_action: string | null;
   next_action_date: string | null;
+  /** 0026: when the reply to a website lead is due. Absent before the migration is applied. */
+  response_due_at?: string | null;
   created_at: string;
   contact: { full_name: string | null; email: string | null; phone: string | null } | null;
   organisation: { name: string } | null;
@@ -41,7 +43,10 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
     ? params.owner! : "";
   const sort = params.sort === "newest" ? "newest" : "next";
   const page = Math.max(1, Math.min(1000, Number.parseInt(params.page ?? "1", 10) || 1));
-  const filtered = !!(q || source || brand || owner || stage !== "open");
+  // Website leads still at New after their reply-by time (0026); the management overview links here.
+  const replyOverdue = params.reply === "overdue";
+  const filtered = !!(q || source || brand || owner || replyOverdue || stage !== "open");
+  const now = new Date();
 
   const supabase = await createClient();
   // Every filter except the stage, shared by the list and the pipeline counts.
@@ -56,12 +61,14 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
     else if (owner === "unassigned") out = out.is("owner_id", null);
     else if (owner) out = out.eq("owner_id", owner);
     if (q) out = out.or(`title.ilike.*${q}*,description.ilike.*${q}*,intake_reference.ilike.*${q}*`);
+    if (replyOverdue) out = out.eq("stage", "new").lt("response_due_at", now.toISOString());
     return out;
   };
 
   let list = applyFilters(
     supabase.from("crm_leads").select(
-      "id, title, stage, source, brand_id, owner_id, next_action, next_action_date, created_at, contact:crm_contacts!crm_leads_contact_id_fkey(full_name, email, phone), organisation:crm_organisations!crm_leads_organisation_id_fkey(name)",
+      // "*" rather than a column list, so the list also loads on a database 0026 has not reached (no response_due_at).
+      "*, contact:crm_contacts!crm_leads_contact_id_fkey(full_name, email, phone), organisation:crm_organisations!crm_leads_organisation_id_fkey(name)",
       { count: "exact" },
     ),
   );
@@ -88,7 +95,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
 
   const href = (over: Partial<Record<keyof Search, string>>) => {
     const sp = new URLSearchParams();
-    const merged = { q, stage, source, brand, owner, sort, page: String(page), ...over };
+    const merged = { q, stage, source, brand, owner, sort, page: String(page), reply: replyOverdue ? "overdue" : "", ...over };
     if (merged.q) sp.set("q", merged.q);
     if (merged.stage && merged.stage !== "open") sp.set("stage", merged.stage);
     if (merged.source) sp.set("source", merged.source);
@@ -96,6 +103,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
     if (merged.owner) sp.set("owner", merged.owner);
     if (merged.sort && merged.sort !== "next") sp.set("sort", merged.sort);
     if (merged.page && merged.page !== "1") sp.set("page", merged.page);
+    if (merged.reply) sp.set("reply", merged.reply);
     const s = sp.toString();
     return `/systems/crm/leads${s ? `?${s}` : ""}`;
   };
@@ -115,6 +123,11 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
       <CrmTabs active="leads" />
 
       {params.deleted && <div className="alert ok" role="status">The lead was deleted.</div>}
+      {replyOverdue && (
+        <div className="alert info" role="note">
+          Showing website leads still at New after their reply-by time. <Link href={href({ reply: "", page: "1" })}>Show every lead</Link>
+        </div>
+      )}
 
       <nav className="pipeline" aria-label="Pipeline">
         {counts.map((s) => (
@@ -171,6 +184,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
         </div>
         <div className="filter-actions">
           <button className="btn" type="submit">Apply</button>
+          {replyOverdue && <input type="hidden" name="reply" value="overdue" />}
           {filtered && <Link className="btn light" href="/systems/crm/leads">Clear</Link>}
         </div>
       </form>
@@ -198,19 +212,26 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                 {rows.map((l) => {
                   const who = [l.contact ? crmContactName(l.contact) : "", l.organisation?.name ?? ""].filter(Boolean).join(", ");
                   const overdue = !!l.next_action_date && l.next_action_date < today && l.stage !== "won" && l.stage !== "lost";
+                  const late = isLeadReplyOverdue(l, now);
                   return (
                     <tr key={l.id}>
                       <td>
                         <Link href={`/systems/crm/leads/${l.id}`} className="pname">{l.title}</Link>
                         {who && <span className="hint">{who}</span>}
                       </td>
-                      <td data-label="Stage"><span className={`badge stage s-${l.stage}`}>{crmStageLabel(l.stage)}</span></td>
+                      <td data-label="Stage">
+                        <span className={`badge stage s-${l.stage}`}>{crmStageLabel(l.stage)}</span>
+                        {late && <> <span className="badge late">Overdue</span></>}
+                      </td>
                       <td data-label="Brand">{l.brand_id ? brandName.get(l.brand_id) ?? "" : <span className="small">No brand</span>}</td>
                       <td data-label="Source">{crmSourceLabel(l.source)}</td>
                       <td data-label="Owner">{l.owner_id ? (l.owner_id === access.userId ? "Me" : staffName(access, l.owner_id)) : <span className="small">Unassigned</span>}</td>
                       <td data-label="Next action">
                         {l.next_action_date ? <span className={overdue ? "overdue" : ""}>{formatDate(l.next_action_date)}{overdue ? " (overdue)" : ""}</span> : <span className="small">Not set</span>}
                         {l.next_action && <span className="hint">{l.next_action}</span>}
+                        {l.stage === "new" && l.response_due_at && (
+                          <span className={`hint${late ? " overdue" : ""}`}>Reply {late ? "was due" : "by"} {formatDateTime(l.response_due_at)}</span>
+                        )}
                       </td>
                     </tr>
                   );

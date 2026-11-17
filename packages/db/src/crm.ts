@@ -137,7 +137,27 @@ export type CrmLead = Timestamps & Authors & {
   /** Organisation name a website visitor typed. The intake never links an existing organisation; staff do. */
   submitted_organisation_name: string | null;
   closed_at: string | null;
+  /**
+   * When a reply to a website lead is due (0026): set by the database at intake for Contact Us and Partner With Us
+   * leads. Absent on a database 0026 has not reached.
+   */
+  response_due_at?: string | null;
 };
+
+/** A website lead still at stage New after its reply-by time (0026). */
+export function isLeadReplyOverdue(lead: Pick<CrmLead, "stage"> & { response_due_at?: string | null }, now: Date = new Date()): boolean {
+  return lead.stage === "new" && !!lead.response_due_at && new Date(lead.response_due_at).getTime() < now.getTime();
+}
+
+/** The website lead settings row (0026): how many hours the team has to reply to a website lead. */
+export type CrmWebsiteLeadSettings = Timestamps & {
+  id: true;
+  reply_hours: number;
+  updated_by: string | null;
+};
+
+/** Reply time used until Lexta confirms its own (0026 default). */
+export const DEFAULT_WEBSITE_REPLY_HOURS = 24;
 
 export type CrmActivity = Timestamps & {
   id: string;
