@@ -150,13 +150,32 @@ export default function TipsView({ v: vals }: { v: any }) {
                 </p>
                 {"\n    "}
               </div>
+              {s.intro ? (
+                <p style={{"margin":"28px 0 0","maxWidth":"760px","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.55","color":"#3d2a55"} as CSSProperties}>
+                  {s.intro}
+                </p>
+              ) : null}
+              {(s.groups ?? []).length ? (
+                <div style={{"marginTop":"28px"} as CSSProperties}>
+                  <div role="group" aria-label="Baby care categories" style={{"display":"flex","flexWrap":"wrap","gap":"2px"} as CSSProperties}>
+                    {(s.groups ?? []).map((g: any) => (
+                      <button key={g.label} type="button" aria-pressed={g.on} onClick={g.onClick} style={css(`cursor:pointer;padding:12px 16px;font-weight:600;font-size:14px;border:1px solid #23103a;background:${g.bg};color:${g.fg}`)}>
+                        {g.label}
+                      </button>
+                    ))}
+                  </div>
+                  <p aria-live="polite" style={{"margin":"12px 0 0","minHeight":"1.5em","fontSize":"14px","color":"#7a6890"} as CSSProperties}>
+                    {s.groupHint}
+                  </p>
+                </div>
+              ) : null}
               {"\n    "}
               <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fill,minmax(min(100%,320px),1fr))","gap":"clamp(70px,8vw,110px) clamp(20px,3vw,40px)","marginTop":"clamp(50px,6vw,80px)"} as CSSProperties}>
                 {"\n      "}
                 {(s.items ?? []).map((t: any, i3: number) => (
                   <Fragment key={i3}>
                     {"\n        "}
-                    <div>
+                    <div hidden={t.hidden}>
                       {"\n          "}
                       <article data-speed={t.speed} onClick={t.open} style={{"display":"flex","flexDirection":"column","gap":"14px","willChange":"transform","cursor":"pointer"} as CSSProperties}>
                         {"\n            "}
