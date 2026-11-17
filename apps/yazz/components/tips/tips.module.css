@@ -88,7 +88,10 @@
 
 .body { max-width: 720px; font-size: 15.5px; line-height: 1.85; color: #3d5675; }
 .body > * + * { margin-top: 16px; }
-.body h2 { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--yz-line); font-size: 22px; line-height: 1.3; font-weight: 700; color: var(--yz-deep); }
+/* Links inside article text: Lexta's red "read more" text. */
+.inlineLink { color: var(--yz-red); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.inlineLink:hover { color: var(--yz-red-dark); }
+.body h2 { scroll-margin-top: 96px;  margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--yz-line); font-size: 22px; line-height: 1.3; font-weight: 700; color: var(--yz-deep); }
 .body > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .body ul, .body ol { margin-left: 0; padding-left: 22px; }
 .body li + li { margin-top: 6px; }

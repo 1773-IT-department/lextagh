@@ -8,7 +8,8 @@
  * "Just 4 You" and "Just 4 Parents" are article categories only: no selectors, calculators or other tools.
  *
  * Body format, one block per blank line:  "## Heading"  |  "- list item" lines  |  "1. numbered" lines  |
- * "> A Yazz tip" (the coloured tip box)  |  anything else is a paragraph.
+ * "> A Yazz tip" (the coloured tip box)  |  anything else is a paragraph. Inside any block, "[words](/path)" is a link
+ * to a page of this site (Lexta's red "read more" text); only internal addresses become links.
  */
 
 export const CATEGORIES = [
@@ -136,7 +137,7 @@ Your development is your own.
 
 A period is part of the menstrual cycle. During the menstrual cycle, the lining of the uterus builds up. If pregnancy does not occur, the body sheds this lining through the vagina. The blood and tissue leaving the body are what we call a menstrual period.
 
-Your first menstrual period is known as menarche.
+Your first menstrual period is known as [menarche](#when-will-my-first-period-start).
 
 ## When Will My First Period Start?
 
@@ -160,7 +161,7 @@ Once you have a pad, follow the instructions on the packaging and change it regu
 
 Keep a small pouch containing:
 
-- Sanitary pads
+- [Sanitary pads](/products/feminine-care#product-sanitary-pads)
 - Clean underwear
 - Tissues
 - A small disposal bag
@@ -293,7 +294,7 @@ Keep the external genital area clean using gentle hygiene practices. Avoid harsh
 
 ## Oral Hygiene
 
-Puberty doesn't change the importance of caring for your teeth. Brush regularly and follow good dental-care practices.
+Puberty doesn't change the importance of caring for your teeth. [Brush regularly](/products/oral-care#product-toothbrushes) and follow [good dental-care practices](/tips/tips-for-a-healthy-smile).
 
 ## Create Your Everyday Care Kit
 
@@ -380,7 +381,7 @@ That's understandable. You could write your question down first or choose a quie
 
 Keep a discreet pouch containing:
 
-- Yazz® sanitary pads
+- [Yazz® sanitary pads](/products/feminine-care#product-sanitary-pads)
 - Spare underwear
 - Tissues
 - A disposal bag or pouch
@@ -482,7 +483,7 @@ Never flush sanitary pads down the toilet. Always follow the usage and disposal 
     slug: "which-pad-is-right-4-me", title: "Choosing My Yazz®: Which Pad Is Right 4 Me?", kicker: "Your Flow, Your Day, Your Comfort",
     lede: "Your flow can change during your period. What feels suitable during the first few days may be different from what you prefer toward the end.",
     date: null, readMinutes: 2, image: null,
-    body: `When choosing a pad, think about:
+    body: `When choosing a [pad](/products/feminine-care#product-sanitary-pads), think about:
 
 - Your flow: is today lighter, moderate or heavier than usual?
 - Your day: are you going to school, work, travelling, relaxing at home or staying active?
@@ -607,7 +608,7 @@ Ask: "If your period started at school tomorrow, what would you do?" Work throug
 
 Consider including:
 
-- Sanitary pads: pack enough for expected needs, including a spare where practical. Make sure she knows how to use them before putting them in her kit.
+- [Sanitary pads](/products/feminine-care#product-sanitary-pads): pack enough for expected needs, including a spare where practical. Make sure she knows how to use them before putting them in her kit.
 - Spare underwear: an unexpected period or leak can happen. Clean underwear can make the situation much easier to manage.
 - Tissues: useful as an everyday personal-hygiene item.
 - Disposal bags: for securely wrapping used products where disposal facilities are not immediately available.
@@ -679,7 +680,7 @@ Explain the difference between the vulva, the external genital area, and the vag
 
 ## Oral and Skin Care
 
-Puberty is also a good time to reinforce regular dental care and simple, gentle skincare habits.
+Puberty is also a good time to reinforce [regular dental care](/tips/tips-for-a-healthy-smile) and simple, gentle skincare habits.
 
 > Good hygiene shouldn't be taught through embarrassment. Teach the habit. Explain why it matters. Give her the tools to manage it herself.`,
   }),
@@ -844,7 +845,7 @@ Hold the brush with the elbow raised up to shoulder level, and brush in a circul
 
 ## Yazz Brushes: Your Best Smiles
 
-Yazz toothbrushes' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue.
+[Yazz toothbrushes](/products/oral-care#product-toothbrushes)' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue.
 
 > Dentist recommendation: change your toothbrush at least once every three months.`,
   },
@@ -1016,7 +1017,7 @@ Because the more you understand your body, the more confidently you can care for
         title: "My First Period Checklist",
         body: `Be ready before your period arrives. Create a small Yazz® Period Kit for your school bag, handbag or backpack. Consider including:
 
-- Yazz® Sanitary Pads
+- [Yazz® Sanitary Pads](/products/feminine-care#product-sanitary-pads)
 - A clean pair of underwear
 - Tissues
 - A small pouch
@@ -1047,16 +1048,16 @@ Create opportunities for simple, age-appropriate discussions about growing up, b
 
 Explore practical Yazz® guides on:
 
-- How to explain menstruation
-- Preparing for her first period
-- Creating her first period kit
-- Understanding puberty
-- Discussing personal hygiene
-- Understanding period discomfort
-- Helping her manage periods at school
-- Supporting confidence during puberty
-- Separating period facts from myths
-- Knowing when to seek professional medical advice`,
+- [How to explain menstruation](/tips/how-to-explain-menstruation)
+- [Preparing for her first period](/tips/preparing-her-for-her-first-period)
+- [Creating her first period kit](/tips/creating-her-first-period-kit)
+- [Understanding puberty](/tips/understanding-puberty)
+- [Discussing personal hygiene](/tips/discussing-personal-hygiene)
+- [Understanding period discomfort](/tips/understanding-period-discomfort)
+- [Helping her manage periods at school](/tips/helping-her-manage-periods-at-school)
+- [Supporting confidence during puberty](/tips/supporting-confidence-during-puberty)
+- [Separating period facts from myths](/tips/separating-period-facts-from-myths)
+- [Knowing when to seek professional medical advice](/tips/when-to-seek-medical-advice)`,
     },
     closings: [
       {
