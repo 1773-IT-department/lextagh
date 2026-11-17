@@ -6,7 +6,9 @@
 //   - the old range pages (/products/feminine-care, /products/baby-care) redirect to their band on /products
 //   - the scroll animations of the design run (reveals, pinned sections), and stand still for reduced motion
 //   - Linzzy data only: the products are the published Linzzy products, the stockists the active Linzzy stockists
-//   - the menu by keyboard (the 6 pages, Escape), the FAQs, a product window (open, Escape, focus back)
+//   - the menu by keyboard (the 6 pages, Products as Feminine Care and Baby Care, Escape), the FAQs, a product window
+//     (open, Escape, focus back, its features, usage row, Read more and Linzzy says), article to product links,
+//     the home Caring Beyond band and About Safe Bottoms link (out to the Lexta CSR page), the baby Tips categories
 //   - the consumer form (question and product problem), the trade enquiry and the newsletter, with JavaScript and
 //     without it, each landing a Linzzy lead, complaint or contact
 //   - the live chat widget (its previous look) opens and starts a conversation tagged linzzy
@@ -287,7 +289,9 @@ try {
     await pagesNav.waitFor({ timeout: 5000 });
     const navItems = await pagesNav.getByRole("link").allInnerTexts();
     check(await page.getByRole("button", { name: "Close", exact: true }).getAttribute("aria-expanded") === "true", "menu: Enter on Menu opens it (aria-expanded)");
-    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy"]), "menu: the 6 pages", navItems);
+    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy"]), "menu: the 6 pages, Products as Feminine Care and Baby Care", navItems);
+    const navHrefs = await pagesNav.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check(navHrefs[1] === "/products#fem" && navHrefs[2] === "/products#baby", "menu: Feminine Care and Baby Care open their band on /products", navHrefs);
     check(await pagesNav.locator('[aria-current="page"]').innerText().then((t) => t.trim()) === "Tips & Advice", "menu: the current page is marked");
     await page.keyboard.press("Escape");
     await sleep(200);
@@ -360,6 +364,54 @@ try {
     await page.goto(`${SITE}/products?p=baby-wipes`);
     await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
     check(true, "product window: opens from an address (?p=baby-wipes)");
+    // Lexta's product page fields (Z1, Z2): headline, key features, one expandable usage row, Read more, Linzzy says.
+    {
+      const d = page.getByRole("dialog", { name: "Linzzy Baby Wipes" });
+      const summary = d.locator("details.lz-acc > summary");
+      check(await d.getByText("A Fresh Touch for Everyday Baby Care").isVisible() && await d.locator("li").filter({ hasText: "80 wipes per pack" }).count() === 1, "product window: headline and key features");
+      check(await summary.innerText().then((t) => t.includes("Usage, Ingredients & Skin Sensitivity")) && !(await d.getByText(/Never flush wipes down the toilet/).isVisible()), "product window: the usage row starts closed");
+      await summary.focus();
+      await page.keyboard.press("Enter");
+      await sleep(200);
+      check(await d.locator("details.lz-acc").evaluate((e) => e.open) && await d.getByText(/Never flush wipes down the toilet/).isVisible() && await d.getByText(/\[PLACEHOLDER: complete ingredient list/).isVisible(), "product window: Enter opens the usage row (how to use, precautions, ingredients placeholder)");
+      const readHrefs = await d.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")).filter((h) => h?.startsWith("/tips/")));
+      check(JSON.stringify(readHrefs) === JSON.stringify(["/tips/baby-wipes-101", "/tips/the-perfect-diaper-bag"]), "product window: Read more links to the product's two articles", readHrefs);
+      check(await d.getByText("A gentle touch for life's little messes.").isVisible(), "product window: the Linzzy says line");
+    }
+    // Articles link to their product when exactly one product lists them (Z2).
+    await page.goto(`${SITE}/tips/baby-wipes-101`);
+    check(await page.locator('a[href="/products?p=baby-wipes"]').count() === 1, "article: Baby Wipes 101 links to Linzzy Baby Wipes (?p=baby-wipes)");
+    await page.locator('a[href="/products?p=baby-wipes"]').click();
+    await page.getByRole("dialog", { name: "Linzzy Baby Wipes" }).waitFor({ state: "visible" });
+    check(true, "article: its product link opens the product window");
+    await page.goto(`${SITE}/tips/know-your-flow`);
+    check(await page.locator('a[href^="/products?p="]').count() === 0, "article: Know Your Flow (three towels) gets no product link");
+    // The menu's Baby Care entry on /products closes the menu and goes to the band.
+    await page.goto(`${SITE}/products`);
+    await page.getByRole("button", { name: "Menu", exact: true }).click();
+    await page.getByRole("navigation", { name: "Pages" }).getByRole("link", { name: "Baby Care", exact: true }).click();
+    await sleep(1200);
+    const babyTop = await page.locator("#baby").evaluate((e) => e.getBoundingClientRect().top);
+    check(await page.getByRole("navigation", { name: "Pages" }).count() === 0 && Math.abs(babyTop) < 200, "menu on /products: Baby Care closes the menu and scrolls to the band", babyTop);
+    // Caring Beyond Our Products (home) and Safe Bottoms (About) go out to the Lexta CSR page (Z3).
+    const CSR = "https://lextagh.vercel.app/corporate-social-responsibility";
+    await page.goto(`${SITE}/`);
+    const band = page.locator('section[aria-labelledby="caring-beyond"]');
+    check(await band.getByRole("heading", { name: /Caring Beyond Our Products/ }).count() === 1 && await band.getByRole("link", { name: /Explore our community initiatives/i }).getAttribute("href") === CSR,
+      "home: Caring Beyond Our Products band links to the Lexta CSR page");
+    check(await page.evaluate(() => { const b = document.querySelector('section[aria-labelledby="caring-beyond"]'); return b.previousElementSibling?.id === "ch-corner" && b.nextElementSibling?.id === "ch-connect"; }), "home: the band sits between Parent Corner and Connect");
+    await page.goto(`${SITE}/about`);
+    check(await page.getByRole("link", { name: /Learn about the Safe Bottoms Initiative/i }).getAttribute("href") === CSR, "about: Safe Bottoms link to the Lexta CSR page");
+    // Tips: Lexta's four baby care categories filter the baby articles; all show by default (Z5).
+    await page.goto(`${SITE}/tips`);
+    const babyCards = () => page.locator("#baby h3").evaluateAll((hs) => hs.filter((h) => h.offsetParent !== null).length);
+    check(await babyCards() === 6 && await page.getByText(/An educational and supportive space for parents, caregivers and growing families/).isVisible(), "tips: the baby intro and all six baby articles by default");
+    await page.locator("#baby").getByRole("button", { name: "Baby Wipes & Hygiene" }).click();
+    await sleep(200);
+    check(await babyCards() === 1 && await page.locator("#baby").getByRole("button", { name: "Baby Wipes & Hygiene" }).getAttribute("aria-pressed") === "true", "tips: a category chip shows only its articles");
+    await page.locator("#baby").getByRole("button", { name: "All", exact: true }).click();
+    await sleep(200);
+    check(await babyCards() === 6, "tips: All shows the six again");
     await ctx.close();
   }
 
@@ -371,6 +423,8 @@ try {
     check(await page.getByText(/Used baby wipes should be placed in an appropriate waste bin/).isVisible(), "faqs without JavaScript: every answer shows");
     const shown = await page.evaluate(() => getComputedStyle(document.querySelector("[data-reveal]")).opacity);
     check(shown === "1", "without JavaScript: the content is shown, not left waiting for the scroll animations", shown);
+    await page.goto(`${SITE}/tips`);
+    check(await page.locator("#baby h3").evaluateAll((hs) => hs.filter((h) => h.offsetParent !== null).length) === 6, "tips without JavaScript: all six baby articles show");
     await ctx.close();
   }
 
@@ -399,6 +453,9 @@ try {
     await page.goto(`${SITE}/contact?topic=question&product=baby-wipes#message`);
     const form = page.locator("#message form");
     check(await form.locator("input[name=topic]").inputValue() === "question" && await form.locator("select[name=product]").inputValue() === "baby-wipes", "consumer form: Ask about this product arrives with the topic and product chosen");
+    const subj = form.locator("[name=subject]");
+    check(await subj.isVisible() && await page.evaluate(() => { const f = document.querySelector("#message form"); const s = f.querySelector("[name=subject]"); const n = f.querySelector("[name=name]"); return !!(s.compareDocumentPosition(n) & Node.DOCUMENT_POSITION_FOLLOWING) && !!(f.querySelector(".lz-topics").compareDocumentPosition(s) & Node.DOCUMENT_POSITION_FOLLOWING); }), "consumer form: Subject sits between the topic chips and Full name");
+    await subj.fill("Newborn wipes");
     await form.locator("[name=name]").fill("Ama JS");
     await form.locator("[name=email]").fill(`ama.js.${stamp}@example.com`);
     await form.locator("[name=message]").fill("Are the wipes safe for newborns?");
@@ -409,6 +466,8 @@ try {
     const ref = /ENQ-[0-9A-F]{10}/.exec(await ok.innerText())?.[0];
     const row = ref ? await q(`select l.source || '|' || b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${ref}'`) : "";
     check(row === "website_contact_form|linzzy", "consumer form (JS): a Linzzy lead from the website contact form", { ref, row });
+    const sdesc = ref ? await q(`select l.description from public.crm_leads l where l.intake_reference = '${ref}'`) : "";
+    check(sdesc.includes("Subject: Newborn wipes"), "consumer form (JS): the subject reaches the lead", sdesc);
 
     await page.reload();
     await form.getByRole("button", { name: "Report a problem with a product" }).click();

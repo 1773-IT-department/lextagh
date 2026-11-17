@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
-import { lextaSiteUrl as LEXTA } from "@/lib/site";
+import { lexta, lextaSiteUrl as LEXTA } from "@/lib/site";
 
 export default function AboutView({ v: vals }: { v: any }) {
   return (
@@ -76,7 +76,7 @@ export default function AboutView({ v: vals }: { v: any }) {
                 {"\n      "}
                 {(vals.pages ?? []).map((n: any, i1: number) => (
                   <Fragment key={i1}>
-                    <a className="lza2" href={n.href} aria-current={n.current} style={css(`display:block;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.14);color:${n.c};font-family:'DM Serif Display',serif;font-size:clamp(28px,3.4vw,44px);line-height:1.05`)}>
+                    <a className="lza2" href={n.href} onClick={n.go} aria-current={n.current} style={css(`display:block;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.14);color:${n.c};font-family:'DM Serif Display',serif;font-size:clamp(28px,3.4vw,44px);line-height:1.05`)}>
                       {n.label}
                     </a>
                   </Fragment>
@@ -367,6 +367,10 @@ export default function AboutView({ v: vals }: { v: any }) {
             {"\n    "}
             <a className="lza6" href={`${LEXTA}/`} target="_blank" style={{"alignSelf":"flex-start","marginTop":"10px","padding":"18px 26px","background":"#0E7A5B","color":"#fff","fontWeight":"700","fontSize":"14px","letterSpacing":"0.04em","textTransform":"uppercase"} as CSSProperties}>
               {"Visit Lexta Ghana Limited ↗"}
+            </a>
+            {/* Lexta's About copy: "[LEARN ABOUT THE SAFE BOTTOMS INITIATIVE] link to Lexta CSR Page" (no CSR page on brand sites). */}
+            <a className="lza2" href={lexta.csr} target="_blank" rel="noopener" style={{"alignSelf":"flex-start","padding":"8px 0","borderBottom":"1.5px solid #9EE6C8","color":"#fff","fontWeight":"700","fontSize":"14px","letterSpacing":"0.04em","textTransform":"uppercase"} as CSSProperties}>
+              {"Learn about the Safe Bottoms Initiative ↗"}
             </a>
             {"\n  "}
           </div>

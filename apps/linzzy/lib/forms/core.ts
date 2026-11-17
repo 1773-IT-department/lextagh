@@ -54,9 +54,13 @@ const regionName = (slug: string) => slug.split("-").map((w) => w.charAt(0).toUp
 
 // Consumer form ------------------------------------------------------------------------------------------------
 
-const CONSUMER_FIELDS = ["topic", "name", "email", "phone", "region", "product", "batch", "purchase_place", "purchase_date", "message", "privacy"];
+const CONSUMER_FIELDS = ["topic", "subject", "name", "email", "phone", "region", "product", "batch", "purchase_place", "purchase_date", "message", "privacy"];
+
+/** The optional Subject line (Lexta's suggested contact form fields). There is no subject column, so it goes at the top of the message. */
+export const SUBJECT_MAX = 150;
 
 const CONSUMER_MESSAGES: Fields = {
+  subject: "Please check the subject.",
   name: "Please enter your name.",
   email: "Please enter a valid email address.",
   phone: "Please enter a valid phone number, for example +233 24 123 4567.",
@@ -83,6 +87,8 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
   const topic: Topic = isTopic(v.topic) ? v.topic : "question";
   v.topic = topic;
 
+  v.subject = (v.subject ?? "").replace(/\s+/g, " ").trim();
+  checkMax(v, "subject", SUBJECT_MAX, "The subject", errors);
   checkName(v, "name", errors);
   checkEmailPhone(v, errors);
   if (v.region && (!SLUG.test(v.region) || v.region.length > 60)) errors.region = CONSUMER_MESSAGES.region;
@@ -103,7 +109,7 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
     }
     // submit_complaint has no region field: the region goes at the top of the complaint text with the product, so
     // the care team sees everything typed. Category "other" until the team triages it, as on the Lexta site.
-    const lines = [productName && `Product: ${productName}`, v.region && `Region: ${regionName(v.region)}`].filter(Boolean);
+    const lines = [v.subject && `Subject: ${v.subject}`, productName && `Product: ${productName}`, v.region && `Region: ${regionName(v.region)}`].filter(Boolean);
     const message = lines.length ? `${lines.join("\n")}\n\n${v.message}` : v.message;
     if (!errors.message && message.length > LIMITS.message) errors.message = MSG_TOO_LONG;
     if (Object.keys(errors).length) return { values: v, errors };
@@ -128,11 +134,13 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 
   const detail = [`Topic: ${topicLabel(topic)}`, productName && `Product: ${productName}`].filter(Boolean).join("; ");
   if (detail.length > LIMITS.detail) errors.product = CONSUMER_MESSAGES.product;
+  const message = v.subject ? `Subject: ${v.subject}\n\n${v.message}` : v.message;
+  if (!errors.message && message.length > LIMITS.message) errors.message = MSG_TOO_LONG;
   if (Object.keys(errors).length) return { values: v, errors };
   return {
     values: v,
     errors,
-    route: { kind: "enquiry", payload: { ...common, reason: "general", message: v.message, region: v.region || undefined, detail } },
+    route: { kind: "enquiry", payload: { ...common, reason: "general", message, region: v.region || undefined, detail } },
   };
 }
 
@@ -157,7 +165,7 @@ export async function handleConsumer(fd: FormData, productNames: Record<string, 
     // unreachable) must not lose the complaint: send it again with the product named in the text instead.
     if (!result.ok && result.reason === "invalid" && result.field === "product" && route.payload.product) {
       const { product: _product, ...rest } = route.payload;
-      const message = route.productName && !rest.message.startsWith("Product:") ? `Product: ${route.productName}\n${rest.message}` : rest.message;
+      const message = route.productName && !rest.message.includes(`Product: ${route.productName}\n`) ? `Product: ${route.productName}\n${rest.message}` : rest.message;
       result = await safely(() => submitComplaint({ ...rest, message: message.slice(0, LIMITS.message) }));
     }
     return fromResult(result, values,

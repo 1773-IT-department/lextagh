@@ -13,6 +13,17 @@ const BANDS = [
   { id: "fem" as const, num: "01", label: "02 Feminine Care", eyebrow: "Linzzy Feminine Care", title: "Comfort Through Every Cycle", lead: "Your period is personal, and your choice of sanitary protection should reflect your individual needs. Discover the Linzzy Feminine Care Collection, featuring sanitary towels and panty liners developed for different menstrual flows, coverage preferences and everyday routines.", bg: "#3a1150", accent: "#F48FB1", body: "#eee5f7", cat: "Feminine Care" },
   { id: "baby" as const, num: "02", label: "03 Baby Care", eyebrow: "Linzzy Baby Care", title: "Little Beginnings Deserve Loving Care", lead: "From your baby's earliest days to the exciting stages of growth, Linzzy Baby Care supports the everyday hygiene routines of parents and caregivers. Explore our baby diapers and wipes, created for families who value comfort, cleanliness and convenient care.", bg: "#0B3D2E", accent: "#9EE6C8", body: "#e6fbf2", cat: "Baby Care" },
 ];
+/** The rows of the panel's "Usage, Ingredients & Skin Sensitivity" section, in Lexta's order; missing fields are left out. */
+function careRows(p: ProtoProduct) {
+  const rows: { label: string; text: string | null }[] = [
+    { label: "Recommended Use", text: p.recommended },
+    { label: "How to Use", text: p.usage },
+    { label: "Skin Sensitivity & Allergy Precautions", text: p.sensitivity },
+    { label: "Ingredients", text: p.ingredients },
+  ];
+  const care = rows.filter((r): r is { label: string; text: string } => Boolean(r.text));
+  return { care, hasCare: care.length > 0 };
+}
 const two = (n: number) => String(n).padStart(2, "0");
 
 export default function ProductsClient({ products }: { products: ProtoProduct[] }) {
@@ -63,8 +74,8 @@ export default function ProductsClient({ products }: { products: ProtoProduct[] 
     bands,
     hasDetail: !!d,
     // The panel's description slot shows Lexta's full product description (Drive, "3. Products Page"); the cards keep
-    // the short summary. No other product page field has a slot in the approved panel design (see PLACEHOLDERS.md).
-    detail: d ? { ...d, desc: d.long } : {},
+    // the short summary; Z1 adds the other product page fields (headline, features, usage and care, Linzzy says, reads).
+    detail: d ? { ...d, desc: d.long, ...careRows(d) } : {},
     closeDetail: () => setDetail(null),
     stop: (e: { stopPropagation: () => void }) => e.stopPropagation(),
   };
