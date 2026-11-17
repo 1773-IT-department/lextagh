@@ -166,8 +166,12 @@ try {
     await page.goto(`${SITE}/products?3d=off`);
     const names = await page.locator("main a[href^='/products/'] [class*='productName']").allInnerTexts();
     check(JSON.stringify(names) === JSON.stringify(["Hooch® Cornflakes", "Hooch® Frosted Flakes"]), "products page: the two Drive cereals, nothing else", names);
-    const navItems = await page.getByRole("navigation", { name: "Main" }).locator("a").allInnerTexts();
+    const mainNav = page.getByRole("navigation", { name: "Main" });
+    const navItems = (await mainNav.locator("a").allInnerTexts()).map((x) => x.trim()).filter(Boolean);
     check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact"]), "header: Lexta's six tabs", navItems);
+    await mainNav.getByRole("link", { name: "Our Products" }).hover();
+    const cereals = await mainNav.locator("a[href^='/products/']").evaluateAll((as) => as.filter((a) => a.offsetParent).map((a) => [a.textContent, a.getAttribute("href")]));
+    check(JSON.stringify(cereals) === JSON.stringify([["Hooch® Cornflakes", "/products/cornflakes"], ["Hooch® Frosted Flakes", "/products/frosted-flakes"]]), "header: Our Products opens a small menu of the two cereal pages", cereals);
     const films = await page.locator(".hc-video video").evaluateAll((vs) => vs.map((v) => ({ poster: v.getAttribute("poster"), muted: v.muted, loop: v.loop, inline: v.playsInline,
       types: [...v.querySelectorAll("source")].map((s) => s.type) })));
     check(films.length === 2 && films.every((f) => f.muted && f.loop && f.inline && f.poster?.startsWith("/videos/") && f.types.includes("video/webm") && f.types.includes("video/mp4")),

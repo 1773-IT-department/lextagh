@@ -9,7 +9,7 @@ import { NAV } from "@/lib/nav";
 import s from "./header.module.css";
 
 /**
- * Header: the Hooch mark, Lexta's six tabs and a red "Where to Buy" pill (no shop or cart, by contract). Phones get a
+ * Header: the Hooch mark, Lexta's six tabs (Our Products opens a small menu of the two cereals) and a red "Where to Buy" pill (no shop or cart, by contract). Phones get a
  * menu button and a panel built on <details>, which also opens without JavaScript. The bar sits on a sunny strip with
  * a wavy bottom edge; the logo does a little hop on hover.
  */
@@ -29,7 +29,14 @@ export default function SiteHeader() {
       </Link>
 
       <nav className={s.nav} aria-label="Main">
-        {NAV.map((l) => (
+        {NAV.map((l) => l.children ? (
+          <div key={l.href} className={s.drop}>
+            <Link href={l.href} className={s.link} aria-current={is(l.href) ? "page" : undefined}>{l.label} <Icon name="chevron-down" size={14} className={s.dropCaret} /></Link>
+            <div className={s.dropMenu}>
+              {l.children.map((c) => <Link key={c.href} href={c.href} className={s.dropLink} aria-current={path === c.href ? "page" : undefined}>{c.label}</Link>)}
+            </div>
+          </div>
+        ) : (
           <Link key={l.href} href={l.href} className={s.link} aria-current={is(l.href) ? "page" : undefined}>{l.label}</Link>
         ))}
       </nav>
@@ -49,7 +56,9 @@ export default function SiteHeader() {
               <Link key={l.href} href={l.href} className={s.sheetLink} aria-current={is(l.href) ? "page" : undefined} style={{ animationDelay: `${i * 40}ms` }}>
                 <span className={s.sheetIcon}>{l.icon && <Icon name={l.icon} size={20} />}</span> {l.label}
               </Link>
-            ))}
+            )).flatMap((link, i) => [link, ...(NAV[i].children ?? []).map((c) => (
+              <Link key={c.href} href={c.href} className={s.sheetSub} aria-current={path === c.href ? "page" : undefined} style={{ animationDelay: `${i * 40 + 20}ms` }}>{c.label}</Link>
+            ))])}
             <Link href="/contact#where-to-buy" className="hc-btn hc-btn--red" style={{ marginTop: 16 }}>
               <Icon name="pin" size={17} /> Find a stockist
             </Link>
