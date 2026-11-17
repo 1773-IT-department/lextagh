@@ -116,8 +116,8 @@ const impact = [
 ];
 
 const partners = [
-  { img: "/assets/partner-mwag.png", w: 447, h: 447, alt: "Medical Women Association of Ghana" },
-  { img: "/assets/partner-police.png", w: 500, h: 500, alt: "Ghana Police Service" },
+  { img: "/assets/partner-mwag.png", w: 447, h: 447, alt: "Medical Women Association of Ghana", name: "Medical Women Association of Ghana" },
+  { img: "/assets/partner-police.png", w: 500, h: 500, alt: "Ghana Police Service", name: "Ghana Police Service" },
 ];
 
 const business = [
@@ -154,6 +154,7 @@ const perks = [
   },
   {
     label: ["Diversity &", "Inclusion"],
+    text: "We champion equal opportunities for everyone, regardless of gender, background, or physical ability.",
     svg: <><circle cx="18" cy="11" r="5" /><path d="M9 30c0-5 4-8.5 9-8.5S27 25 27 30z" /><circle cx="6" cy="14" r="3.6" /><path d="M0 28c0-3.6 2.7-6 6-6 1 0 2 .2 2.8.6C6.6 24.4 5.2 26 5 28z" /><circle cx="30" cy="14" r="3.6" /><path d="M36 28c0-3.6-2.7-6-6-6-1 0-2 .2-2.8.6 2.2 1.8 3.6 3.4 3.8 5.4z" /></>,
   },
   {
@@ -375,10 +376,13 @@ export default async function HomePage() {
           </div>
           <div style={{ border: "1px solid #e6f1f5", borderRadius: 12, padding: 26 }}>
             <div style={smallLabel}>Partners</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 18, alignItems: "center", marginTop: 20 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 18, alignItems: "start", marginTop: 20 }}>
               {partners.map((p) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img key={p.img} src={p.img} alt={p.alt} width={p.w} height={p.h} style={{ width: "100%", height: 52, objectFit: "contain", display: "block" }} />
+                <div key={p.img} style={{ textAlign: "center" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.img} alt={p.alt} width={p.w} height={p.h} style={{ width: "100%", height: 64, objectFit: "contain", display: "block" }} />
+                  <div style={{ marginTop: 10, fontSize: 12, fontWeight: 600, lineHeight: 1.45, color: "#4d6a75" }}>{p.name}</div>
+                </div>
               ))}
             </div>
           </div>
@@ -498,7 +502,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14, textAlign: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 14, textAlign: "center" }}>
             {perks.map((p) => (
               <div key={p.label[0]} style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.14)", borderRadius: 10, padding: "20px 16px" }}>
                 <svg width="36" height="36" viewBox="0 0 36 36" fill="#fff" aria-hidden="true">{p.svg}</svg>

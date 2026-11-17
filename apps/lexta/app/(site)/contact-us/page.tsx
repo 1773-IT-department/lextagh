@@ -117,6 +117,7 @@ export default function ContactPage() {
               <div style={linkStack}>
                 <a href="mailto:marketing@lextagh.com" style={cardLink}>marketing@lextagh.com</a>
                 <a href="mailto:hr@lextagh.com" style={cardLink}>hr@lextagh.com</a>
+                <a href="mailto:support@lextagh.com" style={cardLink}>support@lextagh.com</a>
               </div>
               <div style={cardNote}>Messages go to a designated monitored inbox</div>
             </div>

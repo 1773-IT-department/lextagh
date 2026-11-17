@@ -506,7 +506,6 @@ export default function AboutUsPage() {
             </Link>
             <Link href="/partner-with-us" style={ghostBtn}>Partner with Us</Link>
             <Link href="/careers#openings" style={ghostBtn}>View current openings</Link>
-            <Link href="/contact-us" style={ghostBtn}>Contact us</Link>
           </div>
         </div>
       </section>

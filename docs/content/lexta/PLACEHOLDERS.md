@@ -27,10 +27,9 @@
 | People & Culture | Areas of work, 5 cards (Production, Sales, Logistics, Marketing, Administration) | short description of each area's roles | HR |
 | People & Culture | Growth, 3 cards (Continuous training, Mentorship, Clear career pathways) | training offered; how mentorship works; how career progression works | HR |
 | People & Culture | How we hire, step 2 "Next steps" | Lexta's hiring steps after an application, and typical timing | HR |
-| People & Culture | Flexible paths, 5th chip | confirm engagement types Lexta offers | HR |
 | People & Culture | Area photos (code) | one photo per area of work | Marketing / HR |
 | CSR | Approach figures 3 and 4 | Empowered Periods reach figure; number of partner organisations | Marketing (Yazz) |
-| CSR | Cervical cancer band, in place of the screening carousel | Lexta's own cervical cancer screening stories (place, date, partners, one line each) | Marketing (Yazz) |
+| CSR | Cervical cancer band, 3rd card "Screening stories" (cards 1 and 2 are sourced, see section 5) | Lexta's own cervical cancer screening stories (place, date, partners, one line each) | Marketing (Yazz) |
 | CSR | Partners grid, 2 slots | oral health partner, to be confirmed; other CSR partners Lexta wants listed, with logos | Marketing / CSR |
 | CSR | SDG 4 card | which initiative, if any, Lexta links to SDG 4 | Marketing / CSR |
 | CSR | Get involved, "Request an outreach visit" card | how schools and institutions can request an outreach session | Marketing / CSR |
@@ -46,11 +45,11 @@
 | Partner With Us | Routes (data.ts) | distributor terms; wholesale and modern trade terms; what Lexta looks for in each partner type (3) | Sales |
 | Partner With Us | "What you get", 2nd card | support Lexta offers trade partners (supply, terms, field support, training, reporting) | Sales |
 | Partner With Us | How it works, step 2 and its timing | Lexta's steps from application to first delivery; timing | Sales |
-| Partner With Us | "Have these ready" | documents Lexta requires from partners | Sales |
+| Partner With Us | "Have these ready", 4th item "Supporting documents" (items 1 to 3 are sourced, see section 5) | which supporting documents Lexta requires from partners | Sales |
 | FAQs | "Are your products made in Ghana?" | where each product line is made, and whether any lines are imported | Operations |
 | FAQs | "How do I become a distributor?" | documents Lexta requires from distributors | Sales |
-| Privacy Policy | Hero intro; Last updated | Lexta privacy policy text, for Lexta legal to supply; approval date | Lexta legal adviser |
-| Terms & Conditions | Hero intro; Last updated | Lexta terms and conditions text, for Lexta legal to supply; approval date | Lexta legal adviser |
+| Privacy Policy | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
+| Terms & Conditions | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
 | Site wide | Footer social badges | Lexta Facebook, Instagram, LinkedIn, TikTok addresses | Marketing |
 | Site wide | Live chat | Lexta chat office hours (`lib/chat/hours.ts`) | Customer care |
 
@@ -66,7 +65,7 @@
 - **Contact Us**: reasons "Bulk orders" and "Media" (the server keeps both mappings in `lib/forms/core.ts`; the forms test passes); FAQs "Do you supply institutions, hotels and hospitals directly?" and "Can I visit Lexta?"; "Visitors are welcome by appointment" ("Book an appointment" button is now "Email us"); "If you already know who you need..." line; enquiry intro claims.
 - **Partner With Us**: benefit cards Supply, Terms, Field, Training, Data (one placeholder card instead); steps 03 and 04 (one placeholder step); "Day 1"; the four "Have these ready" items; "Missing something? Apply anyway..." line.
 - **FAQs**: questions on samples, minimum order, credit terms, delivery, own brand manufacturing, application time, interns and national service, recruitment fees; with them the whole "Trade and bulk orders" group.
-- **Privacy Policy and Terms**: all section text written by 1773 (10 privacy sections, 10 terms sections). Privacy keeps one sourced point (below). Note for Lexta legal: lextagh.com has its own short template Privacy Policy and Terms of Use (in `original-site/lextagh-com.md`); not used, per the brief.
+- **Privacy Policy and Terms**: all section text written by 1773 (10 privacy sections, 10 terms sections). Privacy kept one sourced point. Note for Lexta legal: lextagh.com has its own short template Privacy Policy and Terms of Use (in `original-site/lextagh-com.md`); not used, per the brief. (Superseded by the gap fill, section 5: both are now on the pages.)
 
 ## 3. Kept, with source
 
@@ -106,11 +105,43 @@
 | Contact reasons and direct lines | Drive email routing and forms table; lextagh.com Contact Us (Complaints & product reviews, Partnerships/sponsorships) |
 | Phone numbers, WhatsApp, Consumer Reports, address | Drive contact block; lextagh.com footer and Contact Us |
 | Careers form equal opportunities line | lextagh.com People, Diversity & Inclusion |
-| Privacy Policy, one point | Drive, Developer navigation and content rules (Privacy) |
+| Privacy Policy and Terms & Conditions text (since the gap fill, section 5) | lextagh.com Privacy Policy and Terms & Conditions |
 
 ## 4. For the lead
 
 - FAQ questions (Contact Us and FAQs) are 1773 wording: neither source has a Lexta FAQ. They are kept only where the answer is sourced, as labels; Desmond may prefer Lexta to supply its own questions.
 - `components/brands/data.ts` fallback product copy (prototype text) only shows when Supabase is unreachable; the live cards come from the database.
 - `packages/chat` widget text is interface text only; its default office hours (Mon to Fri 8 to 17) are used for availability, not shown.
-- The home page partner logo strip now has 2 logos (MWAG, Ghana Police Service).
+- The home page partner logo strip has 2 logos (MWAG, Ghana Police Service); since the gap fill each shows its name under it and the two share the box.
+
+## 5. Gap fill: spots that looked empty after the sweep (17 November 2026, branch `content/lexta-fill-gaps`)
+
+Screenshots of every page at 1440 and 390 wide, before and after, were checked for areas that looked empty or broken.
+Each spot was filled from the sources above, tightened in layout (no redesign, same colours, fonts and imagery) or left as a placeholder.
+
+| Page / section | Problem | What changed | Source |
+| --- | --- | --- | --- |
+| Home, Current Opportunities perks | Diversity & Inclusion card had no text (Growth and Team Cohesion had); on phones the 3 cards wrapped 2 + 1 | Line added; cards always 3 across on desktop, stacked on phones | lextagh.com People, Diversity & Inclusion ("We champion equal opportunities for everyone, regardless of gender, background, or physical ability.") |
+| Home, Partners box | 2 small logos in a 3-column grid, a third of the box empty | Logos share the box and show their names | Partner names: lextagh.com post (MWAG); yazz/ORIGINAL-SITE.md (Ghana Police Service) |
+| About Us, "Work with us" band | Two identical "Contact us" buttons, the second wrapping onto its own line | Duplicate removed | Layout only |
+| Our Brands, "At Lexta, we ask" band | Only 2 of Lexta's 3 questions, no answer; band looked cut short | Third question and the pledge added | lextagh.com About Us, "At Lexta, We Ask" and "Our Pledge" |
+| People & Culture, Where you could work | 5 area cards wrapped 4 + 1 (Administration alone) | Grid fits all 5 on one row at desktop | Layout only |
+| People & Culture, Flexible paths | 5th chip was a placeholder | "Remote" chip | lextagh.com Careers, "Filter by type": Contract, Full-Time, Internship, Part-Time, Remote |
+| CSR, Initiatives by brand | 5 cards wrapped 4 + 1 (Clean Hands alone) | 5 across at desktop, as the pillars above | Layout only |
+| CSR, Cervical cancer band | Heading, one paragraph and a placeholder line in a large dark band | Three cards: Mawuko Girls SHS (February 2019), Lexta Teen Care Campaign (since February 2017), and a placeholder card for screening stories | lextagh.com posts "Lexta Ghana Limited Visits Mawuko girls SHS, Ho" and "Lexta Teen Care Campaign" (cervical cancer paragraph, lightly adapted) |
+| News, All stories | 6 cards wrapped 4 + 2 | 3 per row (two full rows) | Layout only |
+| Contact Us, Email us card | Only 2 addresses beside 3 phone lines | support@lextagh.com added | lextagh.com Contact Us ("Complaints & product reviews: Support@lextagh.com") |
+| Partner With Us, partnership type cards and What you get | Cards stopped short of the panel below (narrower 1100px row) | Rows span the full content width | Layout only |
+| Partner With Us, Have these ready | One placeholder line | Company details (company name, business type, business address); Registration (Trade License / Registration No.); Tax (Tax ID (TIN/VAT)); Supporting documents stays a placeholder | lextagh.com Contact Us, "Wholesaler / Modern Trade Onboarding" form fields |
+| Privacy Policy | Placeholder intro and one developer rule ("Minimise personal information...") | lextagh.com Privacy Policy, word for word (list run into its sentence; "accessible at https://www.lextagh.com" reads "accessible on this website"); the Drive developer rule is no longer shown | lextagh.com Privacy Policy (`original-site/lextagh-com.md`) |
+| Terms & Conditions | Placeholder intro and no sections | lextagh.com Terms of Use, word for word ("the https://www.lextagh.com website" reads "the Lexta Ghana Ltd. website"; doubled and stray full stops fixed) | lextagh.com Terms & Conditions (`original-site/lextagh-com.md`) |
+
+Note for the lead: section 2 recorded that lextagh.com's own Privacy Policy and Terms of Use were "not used, per the brief".
+They are now on the pages because the two pages were otherwise empty and this is the text Lexta publishes today; the
+"Last updated" placeholder asks Lexta legal to review and date it. The change is in its own commit, so it can be dropped.
+
+Looked at and left as they are: Home "Lexta Videos" (lextagh.com has only the heading and "More Videos"); short news
+article bodies (Bright Smiles, Safe Bottoms, Forest, Clean Hands: their sourced text is one or two sentences); About
+"Our History" timeline (milestones appear as the visitor scrolls, so full-page captures show a gap); Careers hero "0
+roles open" figures (live from the database); Our Brands Yazz range wrapping 3 + 3 + 1 (product data from Supabase);
+Contact Us Lexta Square photo slot (no photo of the building exists in either source).
