@@ -76,6 +76,8 @@
 @keyframes hcSheetItem { from { transform: translateX(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
 
 @media (max-width: 1240px) { .nav { gap: 0; font-size: 15.5px; } .link { padding: 6px 10px; } .extLink { font-size: 13px; padding: 6px 6px; } }
+/* Room for Community Impact just above the phone menu breakpoint. */
+@media (max-width: 1180px) { .header { gap: 12px; } .nav { font-size: 15px; } .link { padding: 6px 7px; } .extLink { padding: 6px 2px; } }
 @media (max-width: 1060px) { .nav { display: none; } .mobile { display: block; } }
 @media (max-width: 420px) { .cta { display: none; } .logo { height: 44px; } }
 @media (prefers-reduced-motion: reduce) { .sheet, .sheetLink, .sheetSub, .drop .dropMenu { animation: none; } }
