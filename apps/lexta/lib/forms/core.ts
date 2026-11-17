@@ -221,6 +221,7 @@ const PARTNER_MESSAGES: Fields = {
   phone: "Please enter a valid phone number, for example +233 24 123 4567.",
   trading_location: "Please check your trading location.",
   years_trading: "Please check the years trading.",
+  years_trading_missing: "Please enter how many years you have been trading.",
   message: "Please check your message.",
   privacy: MSG_PRIVACY,
   csr_brand: "Please choose the brand your proposal is for.",
@@ -235,7 +236,9 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
   else checkMax(v, "business_name", LIMITS.organisation, "Business name", errors);
   checkEmailPhone(v, errors);
   checkMax(v, "trading_location", LIMITS.location, "Trading location", errors);
-  checkMax(v, "years_trading", LIMITS.years, "Years trading", errors);
+  // Years trading is required on every route, CSR included (Desmond, 17 November 2026).
+  if (!v.years_trading) errors.years_trading = PARTNER_MESSAGES.years_trading_missing;
+  else checkMax(v, "years_trading", LIMITS.years, "Years trading", errors);
   checkMax(v, "message", LIMITS.message, "Your message", errors);
   checkPrivacy(v, errors);
   // CSR proposals: brand and initiative are required (Lexta's Drive), from the lists the form offers only. They go to
@@ -264,7 +267,7 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
       phone: v.phone || undefined,
       partner_type: PARTNER_TYPES[v.route] ?? "distributor",
       location: v.trading_location || undefined,
-      years_trading: v.years_trading || undefined,
+      years_trading: v.years_trading,
       message: message || undefined,
     },
   };

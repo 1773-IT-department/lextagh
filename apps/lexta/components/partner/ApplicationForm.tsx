@@ -23,7 +23,7 @@ const textFields = [
   { label: "Email", name: "email", type: "email", placeholder: "you@example.com", autoComplete: "email", maxLength: 254 },
   { label: "Phone", name: "phone", type: "tel", placeholder: "+233", autoComplete: "tel", maxLength: 24 },
   { label: "Trading location", name: "trading_location", type: "text", placeholder: "City, region or country", autoComplete: "off", maxLength: 120 },
-  { label: "Years trading", name: "years_trading", type: "text", placeholder: "e.g. 6", autoComplete: "off", maxLength: 20 },
+  { label: "Years trading", name: "years_trading", type: "text", placeholder: "e.g. 6", autoComplete: "off", required: true, maxLength: 20 },
 ];
 
 const errorId = (name: string) => `partner-${name}-error`;
