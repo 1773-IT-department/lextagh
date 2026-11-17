@@ -8,7 +8,8 @@
  * "Just 4 You" and "Just 4 Parents" are article categories only: no selectors, calculators or other tools.
  *
  * Body format, one block per blank line:  "## Heading"  |  "- list item" lines  |  "1. numbered" lines  |
- * "> A Yazz tip" (the coloured tip box)  |  anything else is a paragraph.
+ * "> A Yazz tip" (the coloured tip box)  |  anything else is a paragraph. Inside any block, "[words](/path)" is a link
+ * to a page of this site (Lexta's red "read more" text); only internal addresses become links.
  */
 
 export const CATEGORIES = [
@@ -33,10 +34,24 @@ export const CATEGORIES = [
     blurb: "Helpful ideas for everyday living, created around the real questions families ask.",
   },
   { slug: "news", label: "News", title: "Yazz® News", blurb: "[PLACEHOLDER: one line introducing Yazz news, from Lexta marketing]" },
+  // Lexta's Parenting editorial guides (website-copy.md:24, :52, :155): Pregnancy, 0 to 12 months and 12 to 24 months.
+  // Ready for the articles Lexta still has to send; hidden (no chip, no category view) while no article has it.
+  {
+    slug: "parenting-baby-care",
+    label: "Parenting & Baby Care",
+    title: "Parenting & Baby-Care Guides",
+    blurb: "From pregnancy planning to toddler routines, find accessible guidance for changing, preparing and learning.",
+    hideWhenEmpty: true,
+  },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
-export const isCategory = (v: string | undefined): v is CategorySlug => CATEGORIES.some((c) => c.slug === v);
+type Category = (typeof CATEGORIES)[number];
+/** A category is shown (chip, view, address) unless it waits for its first article. */
+const isShown = (c: Category) => !("hideWhenEmpty" in c && c.hideWhenEmpty) || ARTICLES.some((a) => a.category === c.slug);
+/** The categories with a chip and a view on the Tips page. */
+export const shownCategories = () => CATEGORIES.filter(isShown);
+export const isCategory = (v: string | undefined): v is CategorySlug => CATEGORIES.some((c) => c.slug === v && isShown(c));
 export const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slug)!;
 
 export type Article = {
@@ -53,6 +68,13 @@ export type Article = {
   readMinutes: number;
   /** A prototype photo, or null for a branded placeholder block. */
   image: { src: string; alt: string } | null;
+  /**
+   * Who reviewed the article and when ("2026-01", month only), for Lexta's "author/reviewer, date" (website-copy.md:134).
+   * Shown after the author on the article page only when set; unset on every article until Lexta sends reviewer names
+   * and review dates (CONTENT-NEEDED.md).
+   */
+  reviewer?: string;
+  reviewDate?: string;
   /** A range page the article links to ("Related products"). */
   range?: "feminine-care" | "oral-care" | "baby-care" | "home-care" | "home-tissue";
   body: string;
@@ -69,6 +91,7 @@ export const TIP_LABEL: Record<CategorySlug, string> = {
   "just-4-parents": "Yazz® Parent Tip",
   "care-tips": "Yazz® Tip",
   news: "Yazz®",
+  "parenting-baby-care": "Yazz® Parent Tip",
 };
 
 /** Shown under every Just 4 You article and on the Tips pages: Lexta's "A Note From Yazz®", word for word. */
@@ -136,7 +159,7 @@ Your development is your own.
 
 A period is part of the menstrual cycle. During the menstrual cycle, the lining of the uterus builds up. If pregnancy does not occur, the body sheds this lining through the vagina. The blood and tissue leaving the body are what we call a menstrual period.
 
-Your first menstrual period is known as menarche.
+Your first menstrual period is known as [menarche](#when-will-my-first-period-start).
 
 ## When Will My First Period Start?
 
@@ -160,7 +183,7 @@ Once you have a pad, follow the instructions on the packaging and change it regu
 
 Keep a small pouch containing:
 
-- Sanitary pads
+- [Sanitary pads](/products/feminine-care#product-sanitary-pads)
 - Clean underwear
 - Tissues
 - A small disposal bag
@@ -293,7 +316,7 @@ Keep the external genital area clean using gentle hygiene practices. Avoid harsh
 
 ## Oral Hygiene
 
-Puberty doesn't change the importance of caring for your teeth. Brush regularly and follow good dental-care practices.
+Puberty doesn't change the importance of caring for your teeth. [Brush regularly](/products/oral-care#product-toothbrushes) and follow [good dental-care practices](/tips/tips-for-a-healthy-smile).
 
 ## Create Your Everyday Care Kit
 
@@ -380,7 +403,7 @@ That's understandable. You could write your question down first or choose a quie
 
 Keep a discreet pouch containing:
 
-- Yazz® sanitary pads
+- [Yazz® sanitary pads](/products/feminine-care#product-sanitary-pads)
 - Spare underwear
 - Tissues
 - A disposal bag or pouch
@@ -482,7 +505,7 @@ Never flush sanitary pads down the toilet. Always follow the usage and disposal 
     slug: "which-pad-is-right-4-me", title: "Choosing My Yazz®: Which Pad Is Right 4 Me?", kicker: "Your Flow, Your Day, Your Comfort",
     lede: "Your flow can change during your period. What feels suitable during the first few days may be different from what you prefer toward the end.",
     date: null, readMinutes: 2, image: null,
-    body: `When choosing a pad, think about:
+    body: `When choosing a [pad](/products/feminine-care#product-sanitary-pads), think about:
 
 - Your flow: is today lighter, moderate or heavier than usual?
 - Your day: are you going to school, work, travelling, relaxing at home or staying active?
@@ -607,7 +630,7 @@ Ask: "If your period started at school tomorrow, what would you do?" Work throug
 
 Consider including:
 
-- Sanitary pads: pack enough for expected needs, including a spare where practical. Make sure she knows how to use them before putting them in her kit.
+- [Sanitary pads](/products/feminine-care#product-sanitary-pads): pack enough for expected needs, including a spare where practical. Make sure she knows how to use them before putting them in her kit.
 - Spare underwear: an unexpected period or leak can happen. Clean underwear can make the situation much easier to manage.
 - Tissues: useful as an everyday personal-hygiene item.
 - Disposal bags: for securely wrapping used products where disposal facilities are not immediately available.
@@ -679,7 +702,7 @@ Explain the difference between the vulva, the external genital area, and the vag
 
 ## Oral and Skin Care
 
-Puberty is also a good time to reinforce regular dental care and simple, gentle skincare habits.
+Puberty is also a good time to reinforce [regular dental care](/tips/tips-for-a-healthy-smile) and simple, gentle skincare habits.
 
 > Good hygiene shouldn't be taught through embarrassment. Teach the habit. Explain why it matters. Give her the tools to manage it herself.`,
   }),
@@ -844,7 +867,7 @@ Hold the brush with the elbow raised up to shoulder level, and brush in a circul
 
 ## Yazz Brushes: Your Best Smiles
 
-Yazz toothbrushes' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue.
+[Yazz toothbrushes](/products/oral-care#product-toothbrushes)' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue.
 
 > Dentist recommendation: change your toothbrush at least once every three months.`,
   },
@@ -937,12 +960,170 @@ export function sortedArticles(list: Article[] = ARTICLES): Article[] {
     .map(({ a }) => a);
 }
 
-/** The Tips Just 4 You landing tiles (Lexta's "What would you like to know today?"), each opening its article. */
-export const TOPIC_TILES: { title: string; body: string; slug: string }[] = [
-  { title: "My First Period", body: "Everything you need to feel more prepared.", slug: "understanding-your-first-period" },
-  { title: "Choose My Yazz®", body: "Learn how to select protection for your needs.", slug: "which-pad-is-right-4-me" },
-  { title: "Feeling Fresh", body: "Simple menstrual and everyday hygiene tips.", slug: "feeling-fresh-every-day" },
-  { title: "Puberty & Me", body: "Understand some of the changes that come with growing up.", slug: "what-happens-during-puberty" },
-  { title: "Periods at School", body: "Preparation and confidence for school days.", slug: "periods-at-school" },
-  { title: "Myths & Facts", body: "Separate menstrual facts from common misconceptions.", slug: "period-myths-vs-facts" },
+/**
+ * The Tips Just 4 You landing tiles: Lexta's ten "What Would You Like to Know Today?" cards, in Lexta's order
+ * (docs/content/yazz/tips-just-4-you/00-landing-page.md). Each opens its article, or the place on this site that answers
+ * it: My Period & Me and What's Inside My Yazz® are sections of the Just 4 You view, Just 4 Parents its category and
+ * Ask Yazz® the FAQs.
+ */
+export const TOPIC_TILES: { title: string; body: string; href: string }[] = [
+  { title: "My First Period", body: "Everything you need to feel more prepared.", href: "/tips/understanding-your-first-period" },
+  { title: "My Period & Me", body: "Understand your menstrual cycle and flow.", href: "/tips?category=just-4-you#my-period-and-me" },
+  { title: "Choose My Yazz®", body: "Learn how to select protection for your needs.", href: "/tips/which-pad-is-right-4-me" },
+  { title: "Feeling Fresh", body: "Simple menstrual and everyday hygiene tips.", href: "/tips/feeling-fresh-every-day" },
+  { title: "Puberty & Me", body: "Understand some of the changes that come with growing up.", href: "/tips/what-happens-during-puberty" },
+  { title: "Just 4 Parents", body: "Helpful resources for parents and caregivers.", href: "/tips?category=just-4-parents" },
+  { title: "Periods at School", body: "Preparation and confidence for school days.", href: "/tips/periods-at-school" },
+  { title: "Myths & Facts", body: "Separate menstrual facts from common misconceptions.", href: "/tips/period-myths-vs-facts" },
+  { title: "What's Inside My Yazz®?", body: "Understand Yazz® products, materials and verified safety information.", href: "/tips?category=just-4-you#whats-inside" },
+  { title: "Ask Yazz®", body: "Frequently asked period and product questions.", href: "/faqs#faq-ask-yazz" },
 ];
+
+/**
+ * My Period & Me (tips-just-4-you/01-my-period-and-me.md): Lexta's page is a list of topics to hyperlink, with no body
+ * text of its own, so it is a link list on the Just 4 You view. Each topic opens the existing article that covers it;
+ * "Common changes you may notice during your cycle" has no fitting article yet and is left out.
+ */
+export const MY_PERIOD_AND_ME = {
+  title: "My Period & Me",
+  heading: "Understanding Your Period Starts Here",
+  intro: "Periods are a natural part of life, but that doesn't mean you automatically know everything about them.",
+  outro: "Learn it. Track it. Understand it.",
+  links: [
+    { label: "What is a period?", slug: "understanding-your-first-period" },
+    { label: "Understanding your menstrual cycle", slug: "understanding-your-first-period" },
+    { label: "Getting to know your flow", slug: "which-pad-is-right-4-me" },
+    { label: "Light, moderate and heavier-flow days", slug: "which-pad-is-right-4-me" },
+    { label: "Period tracking basics", slug: "periods-at-school" },
+    { label: "Common period questions", slug: "common-puberty-questions" },
+    { label: "When to speak with a trusted adult or healthcare professional", slug: "talking-to-a-trusted-adult" },
+  ],
+};
+
+/**
+ * Intros and closings of the Tips & Advice category views, from Lexta's Tips Just 4 You pages, quoted and shortened
+ * where Lexta's text is long (never rewritten). Bodies use the article body format above.
+ *   Welcome to Tips Just 4 You       tips-just-4-you/00-intro.md
+ *   My First Period Checklist        tips-just-4-you/02-my-first-period.md
+ *   You're Growing. We're Listening. tips-just-4-you/06b-puberty-hub-closing.md (with its "Explore more" row)
+ *   Start With a Conversation        tips-just-4-you/07-just-4-parents-and-caregivers.md
+ *   The Conversation Starts at Home  tips-just-4-you/07b-parents-closing-message.md (and the close of 07)
+ */
+export type TipsPanel = {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  body: string;
+  /** A closing line in the script face. */
+  script?: string;
+  /** Lexta's "Explore more" row: titles of TOPIC_TILES. */
+  explore?: string[];
+  /** A link under the panel (interface label). */
+  more?: { label: string; href: string };
+};
+
+export const CATEGORY_PANELS: Partial<Record<CategorySlug, { intro?: TipsPanel; closings: TipsPanel[] }>> = {
+  "just-4-you": {
+    intro: {
+      id: "welcome",
+      eyebrow: "Tips Just 4 You",
+      title: "Welcome to Tips Just 4 You",
+      body: `Whether you're waiting for your first period, already learning about your cycle, looking for everyday hygiene tips, or you're a parent helping a young person through puberty, we've created something Just 4 You.
+
+Because the more you understand your body, the more confidently you can care for yourself.`,
+    },
+    closings: [
+      {
+        id: "first-period-checklist",
+        eyebrow: "My First Period",
+        title: "My First Period Checklist",
+        body: `Be ready before your period arrives. Create a small Yazz® Period Kit for your school bag, handbag or backpack. Consider including:
+
+- [Yazz® Sanitary Pads](/products/feminine-care#product-sanitary-pads)
+- A clean pair of underwear
+- Tissues
+- A small pouch
+- A disposal bag
+- Your period tracker or calendar`,
+        script: "Periods shouldn't stop learning.",
+        more: { label: "Read Understanding Your First Period", href: "/tips/understanding-your-first-period" },
+      },
+      {
+        id: "growing",
+        title: "You're Growing. We're Listening.",
+        body: `Puberty doesn't come with a personal instruction manual.
+
+That's why Yazz® Tips Just 4 You exists to make periods, puberty, hygiene and growing up easier to understand.`,
+        explore: ["My First Period", "My Period & Me", "Periods at School", "Feeling Fresh", "Choose My Yazz®", "Just 4 Parents", "Ask Yazz®"],
+        script: "Know Your Body. Understand Your Period. Grow With Confidence.",
+      },
+    ],
+  },
+  "just-4-parents": {
+    intro: {
+      id: "start-with-a-conversation",
+      eyebrow: "Just 4 Parents & Caregivers",
+      title: "Start With a Conversation",
+      body: `You don't need to turn menstruation into one big, uncomfortable conversation.
+
+Create opportunities for simple, age-appropriate discussions about growing up, body changes, hygiene and periods. Let her know she can ask questions. Most importantly, help her understand that menstruation is normal.
+
+Explore practical Yazz® guides on:
+
+- [How to explain menstruation](/tips/how-to-explain-menstruation)
+- [Preparing for her first period](/tips/preparing-her-for-her-first-period)
+- [Creating her first period kit](/tips/creating-her-first-period-kit)
+- [Understanding puberty](/tips/understanding-puberty)
+- [Discussing personal hygiene](/tips/discussing-personal-hygiene)
+- [Understanding period discomfort](/tips/understanding-period-discomfort)
+- [Helping her manage periods at school](/tips/helping-her-manage-periods-at-school)
+- [Supporting confidence during puberty](/tips/supporting-confidence-during-puberty)
+- [Separating period facts from myths](/tips/separating-period-facts-from-myths)
+- [Knowing when to seek professional medical advice](/tips/when-to-seek-medical-advice)`,
+    },
+    closings: [
+      {
+        id: "conversation-starts-at-home",
+        eyebrow: "Yazz® Just 4 Parents & Caregivers",
+        title: "The Conversation Starts at Home",
+        body: `One of the most powerful things a parent or caregiver can give a young person approaching puberty isn't a sanitary pad. It's an environment where she knows:
+
+- I can ask questions.
+- I don't have to be ashamed of my period.
+- My changing body deserves care and respect.
+- If something worries me, someone will listen.
+
+Because preparing her for her period isn't one conversation. It's helping her understand her body, protect her health and grow with confidence.
+
+You don't need to know every answer. Sometimes the most important thing you can tell her is:`,
+        script: "\"You can always talk to me.\"",
+      },
+    ],
+  },
+};
+
+/**
+ * What's Inside My Yazz®? (tips-just-4-you/10-whats-inside-my-yazz.md), a section of the Just 4 You view. Lexta's page
+ * is mostly instructions for content still to be verified, so the headings are Lexta's and every fact is a placeholder
+ * until Lexta sends verified product information (CONTENT-NEEDED.md). "What does each layer do?" is a list of layers
+ * that opens on tap, in place of Lexta's interactive diagram (no images); the layer names are placeholders too.
+ */
+export const WHATS_INSIDE = {
+  title: "What's Inside My Yazz®?",
+  heading: "Because What You Use Matters",
+  intro: "At Yazz®, we understand that consumers want to know more about the products they use. That's why product information should be clear and easy to understand.",
+  materials: { title: "What is a Yazz® sanitary pad made from?", body: "[PLACEHOLDER: a clear breakdown of the materials used in each Yazz® pad, verified by Lexta]" },
+  layers: {
+    title: "What does each layer do?",
+    items: [1, 2, 3, 4].map((n) => ({
+      name: `[PLACEHOLDER: layer ${n} name]`,
+      body: `[PLACEHOLDER: what layer ${n} does, from the actual construction of the Yazz® pad confirmed by Lexta]`,
+    })),
+  },
+  blocks: [
+    { title: "How is Yazz® quality checked?", body: "[PLACEHOLDER: Lexta Ghana Limited's actual quality-control and manufacturing processes]" },
+    { title: "Product Safety", body: "[PLACEHOLDER: verified information about product testing, applicable standards, manufacturing and consumer safety]" },
+    { title: "Packaging Information", body: "[PLACEHOLDER: what the product information and directions on Yazz® packaging mean]" },
+  ],
+  question: { title: "Have a Product Question?", body: "Contact Yazz® Consumer Care for product enquiries, feedback or concerns on" },
+};

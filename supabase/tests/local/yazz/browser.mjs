@@ -8,6 +8,9 @@
 //   - the consumer form (question and product problem), the trade enquiry and the newsletter, with JavaScript and
 //     without it, each landing a Yazz lead, complaint or contact
 //   - the live chat widget opens and starts a conversation tagged yazz
+//   - the Drive requests of 17 November 2026 (Y1 to Y10): range tips buttons and CSR strips, the ten Tips Just 4 You
+//     cards, My Period & Me, the category intros and closings, links inside articles, the Products sub-menu (desktop and
+//     phone), What's Inside My Yazz® (layers open on tap, also without JavaScript), no reviewer yet, no empty Parenting
 // Build the site for the harness first (see run.sh). Screenshots go to YAZZ_SCREENSHOTS (default: a yazz-screens folder
 // in the temp directory). Every server it starts is stopped at the end.
 import { spawn } from "node:child_process";
@@ -87,7 +90,8 @@ function watch(page) {
 const PAGES = [
   ["home", "/"], ["products", "/products"], ["range-feminine-care", "/products/feminine-care"], ["range-oral-care", "/products/oral-care"],
   ["range-home-tissue", "/products/home-tissue"], ["range-baby-care", "/products/baby-care"], ["range-home-care", "/products/home-care"],
-  ["about", "/about"], ["faqs", "/faqs"], ["tips", "/tips"], ["tips-just-4-parents", "/tips?category=just-4-parents"], ["article", "/tips/understanding-your-first-period"],
+  ["about", "/about"], ["faqs", "/faqs"], ["tips", "/tips"], ["tips-just-4-you", "/tips?category=just-4-you"], ["tips-just-4-parents", "/tips?category=just-4-parents"],
+  ["article", "/tips/understanding-your-first-period"], ["article-links", "/tips/personal-hygiene-during-puberty"],
   ["contact", "/contact"],
 ];
 
@@ -269,6 +273,133 @@ try {
     check(await page.evaluate(() => document.activeElement?.textContent?.trim()) === "View details" && await page.evaluate(() => document.activeElement?.getAttribute("href")) === "#product-toothbrushes",
       "product window opened from an address: Escape returns focus to that product's View details");
     await ctx.close();
+  }
+
+  // Drive requests (Y1 to Y10) ------------------------------------------------------------------------------------
+  {
+    const ctx = await context("desktop");
+    const page = await ctx.newPage();
+    // Y5 and Y6: each range page has its tips button and its one line CSR link out to the Lexta CSR page.
+    const TIPS = { "feminine-care": ["Tips Just 4 You", "/tips?category=just-4-you"], "oral-care": ["Oral Hygiene Tips", "/tips/tips-for-a-healthy-smile"],
+      "home-tissue": ["Read Home Tips", "/tips?category=care-tips"], "baby-care": ["Parenting Guides", "/tips/diaper-changing-routines"],
+      "home-care": ["Home-Care Advice", "/tips/laundry-care-with-yazz-activ"] };
+    const SDG = { "feminine-care": "SDG 5", "oral-care": "SDG 3", "home-tissue": "SDG 15", "baby-care": "SDG 6", "home-care": "SDG 12" };
+    for (const [range, [label, href]] of Object.entries(TIPS)) {
+      await page.goto(`${SITE}/products/${range}`);
+      const hero = page.locator("section[aria-labelledby=range-title]");
+      const btn = hero.getByRole("link", { name: label, exact: true });
+      const csr = page.locator("p").filter({ hasText: SDG[range] }).first();
+      const csrHref = await csr.getByRole("link", { name: /Community Impact \(CSR\)/ }).getAttribute("href").catch(() => null);
+      check(await btn.getAttribute("href") === href && (await fetch(`${SITE}${href}`)).status === 200 && /\/corporate-social-responsibility$/.test(csrHref ?? "")
+        && !/lextagh\.com/.test(csrHref ?? ""), `range ${range}: tips button "${label}" to existing tips, ${SDG[range]} strip links out to the Lexta CSR preview page`, { csrHref });
+    }
+
+    // Y1, Y3, Y8, Y9: the Just 4 You view.
+    await page.goto(`${SITE}/tips?category=just-4-you`);
+    const tiles = await page.locator("section[aria-labelledby=tiles-title] a").evaluateAll((as) => as.map((a) => [a.querySelector("strong")?.textContent, a.getAttribute("href")]));
+    check(tiles.length === 10 && JSON.stringify(tiles.map((x) => x[0])) === JSON.stringify(["My First Period", "My Period & Me", "Choose My Yazz®", "Feeling Fresh", "Puberty & Me", "Just 4 Parents", "Periods at School", "Myths & Facts", "What's Inside My Yazz®?", "Ask Yazz®"]),
+      "Tips Just 4 You: Lexta's ten cards in Lexta's order", tiles);
+    const hashes = [];
+    for (const [, href] of tiles) {
+      const [url, hash] = href.split("#");
+      const r = await fetch(`${SITE}${url}`);
+      const html = await r.text();
+      if (r.status !== 200 || (hash && !html.includes(`id="${hash}"`))) hashes.push(href);
+    }
+    check(hashes.length === 0, "Tips Just 4 You: every card opens a page (and its section) that exists", hashes);
+    const period = page.locator("#my-period-and-me");
+    const periodLinks = await period.locator("li a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check(periodLinks.length === 7 && periodLinks.every((h) => /^\/tips\/[a-z0-9-]+$/.test(h)) && await period.getByText("Learn it. Track it. Understand it.").count() === 1,
+      "My Period & Me: Lexta's topics link to existing articles", periodLinks);
+    for (const id of ["welcome", "first-period-checklist", "growing"]) check(await page.locator(`section#${id}`).count() === 1, `Just 4 You: the "${id}" panel shows`);
+    const explore = await page.locator("#growing nav a").count();
+    check(explore === 7, `Just 4 You: "You're Growing. We're Listening." has its seven Explore more links (${explore})`);
+    const inside = page.locator("#whats-inside");
+    const layers = inside.locator("details");
+    check(await layers.count() === 4 && await inside.getByText(/\[PLACEHOLDER: /).count() >= 4
+      && await inside.getByRole("link", { name: "support@yazzproducts.com" }).getAttribute("href") === "mailto:support@yazzproducts.com",
+      "What's Inside My Yazz®: four layers, placeholder facts, the Consumer Care email");
+    await layers.first().locator("summary").click();
+    check(await layers.first().evaluate((d) => d.open) && await layers.first().getByText(/what layer 1 does/).isVisible(), "What's Inside My Yazz®: a layer opens on tap");
+    const order = await page.evaluate(() => ["#welcome", "#tiles-title", "#my-period-and-me", "#list-title", "#whats-inside", "#growing"].map((s) => { const e = document.querySelector(s); return e ? e.getBoundingClientRect().top + scrollY : -1; }));
+    const news = await page.locator("form").filter({ has: page.getByLabel("Your email address") }).evaluate((f) => f.getBoundingClientRect().top + scrollY);
+    check(order.every((y, i) => y >= 0 && (i === 0 || y > order[i - 1])) && order.every((y) => y < news), "Just 4 You: intro, cards, My Period & Me, articles, What's Inside, closing, all above the newsletter", { order, news });
+
+    // Y3 and Y2: the Just 4 Parents view's intro links each of the ten topics to its article; the closing shows.
+    await page.goto(`${SITE}/tips?category=just-4-parents`);
+    const topics = await page.locator("#start-with-a-conversation li a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    const cards = await page.locator("section[aria-labelledby=list-title] h3 a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+    check(topics.length === 10 && topics.every((h) => cards.includes(h)) && await page.locator("#conversation-starts-at-home").count() === 1,
+      "Just 4 Parents: Start With a Conversation links the ten topics to the ten articles; The Conversation Starts at Home closes it", { topics, cards });
+
+    // Y2: links inside articles, internal only, no raw link tokens.
+    await page.goto(`${SITE}/tips/understanding-your-first-period`);
+    const menarche = page.getByRole("link", { name: "menarche", exact: true });
+    check(await menarche.getAttribute("href") === "#when-will-my-first-period-start" && await page.locator("h2#when-will-my-first-period-start").count() === 1
+      && await page.getByRole("link", { name: "Sanitary pads", exact: true }).getAttribute("href") === "/products/feminine-care#product-sanitary-pads",
+      "article: menarche links to its own first period section (not Google), the period kit pads to the pads window");
+    await page.goto(`${SITE}/tips/personal-hygiene-during-puberty`);
+    check(await page.getByRole("link", { name: "Brush regularly" }).getAttribute("href") === "/products/oral-care#product-toothbrushes"
+      && await page.getByRole("link", { name: "good dental-care practices" }).getAttribute("href") === "/tips/tips-for-a-healthy-smile",
+      "article: brushing mentions link to the toothbrushes window and Tips for a Healthy Smile");
+    const bad = [];
+    for (const url of ["/tips?category=just-4-you", "/tips?category=just-4-parents", ...topics, "/tips/understanding-your-first-period", "/tips/periods-at-school", "/tips/which-pad-is-right-4-me", "/tips/tips-for-a-healthy-smile"]) {
+      await page.goto(`${SITE}${url}`);
+      const text = await page.locator("main").innerText();
+      const links = await page.locator("main a[href]").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+      if (/\]\(\/|\]\(#/.test(text)) bad.push(`${url}: raw link token`);
+      if (await page.getByText("Reviewed by").count()) bad.push(`${url}: reviewer shown`);
+      for (const h of links.filter((h) => /^https?:/.test(h) && !/lextagh\.vercel\.app|wa\.me|whatsapp\.com|facebook|instagram|tiktok/.test(h))) bad.push(`${url}: outside link ${h}`);
+    }
+    check(bad.length === 0, "Tips pages and articles: no raw link tokens, no outside links in the text, no reviewer shown yet (Y7)", bad);
+
+    // Y10: no empty Parenting category.
+    await page.goto(`${SITE}/tips`);
+    const chips = await page.getByRole("navigation", { name: "Article categories" }).locator("a").allInnerTexts();
+    await page.goto(`${SITE}/tips?category=parenting-baby-care`);
+    check(!chips.some((c) => /Parenting/.test(c)) && await page.locator("#list-title").innerText() === "All articles", "Tips: the Parenting & Baby Care category stays hidden while it has no article", chips);
+
+    // Y4: the Products sub-menu, and a product window opening from it.
+    await page.goto(`${SITE}/`);
+    const caret = page.getByRole("button", { name: "Products menu" });
+    const panel = page.locator(`#${await caret.getAttribute("aria-controls")}`);
+    const subs = await panel.locator("ul a").evaluateAll((as) => as.map((a) => [a.textContent.trim(), a.getAttribute("href")]));
+    check(subs.length === 14 && subs.some(([l, h]) => l === "Sanitary Pads" && h === "/products/feminine-care#product-sanitary-pads") && subs.some(([l, h]) => l === "Baby Care Tips" && h === "/tips/diaper-changing-routines"),
+      "Products menu: second level links under each range (products and tips)", subs);
+    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await sleep(250);
+    await page.screenshot({ path: path.join(OUT, "products-menu-1440.png") });
+    await panel.getByRole("link", { name: "Sanitary Pads" }).click();
+    await page.waitForURL(/feminine-care#product-sanitary-pads/);
+    await page.locator("#product-sanitary-pads").waitFor({ state: "visible", timeout: 10000 }).then(() => check(true, "Products menu: Sanitary Pads opens the pads window on the range page"), (e) => check(false, "Products menu: Sanitary Pads opens the pads window", e.message));
+    await page.keyboard.press("Escape");
+    await sleep(300);
+    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await sleep(250);
+    await panel.getByRole("link", { name: "Panty Liners" }).click();
+    await page.locator("#product-panty-liners").waitFor({ state: "visible", timeout: 10000 }).then(() => check(true, "Products menu: on the same range page, Panty Liners opens its window"), (e) => check(false, "Products menu: same page window", e.message));
+    await ctx.close();
+
+    const phone = await context("phone");
+    const p2 = await phone.newPage();
+    await p2.goto(`${SITE}/`);
+    await p2.getByLabel("Menu", { exact: true }).click();
+    const sheet = p2.getByRole("navigation", { name: "Mobile" });
+    const minis = await sheet.getByRole("link", { name: "Toothbrushes" }).getAttribute("href");
+    await p2.screenshot({ path: path.join(OUT, "products-menu-390.png") });
+    await sheet.getByRole("link", { name: "Wipes", exact: true }).click();
+    await p2.locator("#product-baby-wipes").waitFor({ state: "visible", timeout: 10000 }).then(() => check(minis === "/products/oral-care#product-toothbrushes", "phone menu: product sub links, Wipes opens the wipes window", minis), (e) => check(false, "phone menu: Wipes opens the wipes window", e.message));
+    await p2.goto(`${SITE}/tips?category=just-4-you`);
+    await p2.locator("#whats-inside").screenshot({ path: path.join(OUT, "whats-inside-390.png") });
+    await phone.close();
+
+    const nojs = await context("phone", { javaScriptEnabled: false, reducedMotion: "reduce" });
+    const p3 = await nojs.newPage();
+    await p3.goto(`${SITE}/tips?category=just-4-you`);
+    const layer = p3.locator("#whats-inside details").nth(1);
+    await layer.locator("summary").click();
+    check(await layer.getAttribute("open") !== null && await layer.getByText(/what layer 2 does/).isVisible(), "What's Inside My Yazz® without JavaScript: a layer opens on tap");
+    await nojs.close();
   }
 
   // FAQs without JavaScript: the answers still open.

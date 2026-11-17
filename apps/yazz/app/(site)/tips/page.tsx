@@ -3,8 +3,10 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import ArticleCard from "@/components/tips/ArticleCard";
 import SubscribeForm from "@/components/tips/SubscribeForm";
+import TipsPanel from "@/components/tips/TipsPanel";
+import WhatsInside from "@/components/tips/WhatsInside";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, CATEGORIES, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, shownCategories, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -28,6 +30,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
   const cat = category ? CATEGORIES.find((c) => c.slug === category)! : null;
   const list = sortedArticles(category ? ARTICLES.filter((a) => a.category === category) : ARTICLES);
   const showTiles = !category || category === "just-4-you";
+  const panels = category ? CATEGORY_PANELS[category] : undefined;
   const health = !category || category === "just-4-you" || category === "just-4-parents";
 
   return (
@@ -42,11 +45,13 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
         </p>
         <nav className={s.filters} aria-label="Article categories">
           <Link href="/tips" className="yz-chip" aria-current={!category ? "true" : undefined}>All</Link>
-          {CATEGORIES.map((c) => (
+          {shownCategories().map((c) => (
             <Link key={c.slug} href={`/tips?category=${c.slug}`} className="yz-chip" aria-current={category === c.slug ? "true" : undefined}>{c.label}</Link>
           ))}
         </nav>
       </section>
+
+      {panels?.intro && <TipsPanel panel={panels.intro} />}
 
       {showTiles && (
         <section className={s.section} aria-labelledby="tiles-title">
@@ -55,12 +60,28 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           </div>
           <div className={s.tiles}>
             {TOPIC_TILES.map((t) => (
-              <Link key={t.slug} href={`/tips/${t.slug}`} className={s.tile}>
+              <Link key={t.href} href={t.href} className={s.tile}>
                 <strong>{t.title}</strong>
                 <span>{t.body}</span>
                 <Icon name="arrow" size={18} />
               </Link>
             ))}
+          </div>
+        </section>
+      )}
+
+      {category === "just-4-you" && (
+        <section id="my-period-and-me" className={`${s.section} ${s.anchored}`} aria-labelledby="period-me-title">
+          <div className={s.panelBox}>
+            <p className="yz-eyebrow">{MY_PERIOD_AND_ME.title}</p>
+            <h2 id="period-me-title" className={s.sectionTitle} style={{ marginTop: 8 }}>{MY_PERIOD_AND_ME.heading}</h2>
+            <p className={s.panelText}>{MY_PERIOD_AND_ME.intro}</p>
+            <ul className={s.linkList}>
+              {MY_PERIOD_AND_ME.links.map((l) => (
+                <li key={l.label}><Link href={`/tips/${l.slug}`}>{l.label} <Icon name="arrow" size={15} /></Link></li>
+              ))}
+            </ul>
+            <p className={`yz-script ${s.panelScript}`}>{MY_PERIOD_AND_ME.outro}</p>
           </div>
         </section>
       )}
@@ -79,6 +100,10 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           </p>
         )}
       </section>
+
+      {category === "just-4-you" && <WhatsInside />}
+
+      {panels?.closings.map((p) => <TipsPanel key={p.id} panel={p} />)}
 
       {health && <p className={s.note}>{category === "just-4-parents" ? HEALTH_NOTE_PARENTS : HEALTH_NOTE}</p>}
 

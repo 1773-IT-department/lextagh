@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useId, useRef, useState, type ComponentProps, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 import Icon from "@/components/Icon";
 import { productLinks, tipsLinks, type NavLink } from "@/lib/nav";
@@ -18,6 +18,14 @@ import s from "./header.module.css";
  * while the pointer or focus is still there. Arrow keys move through an open list, Escape returns focus to the button.
  * Phones get a menu button and a panel built on <details>, which also opens without JavaScript.
  */
+/**
+ * A second level link. Product windows open from the address (#product-...), which DialogEnhancer follows through the
+ * browser's hashchange, so those are plain links; the rest use client navigation.
+ */
+function SubLink({ href, ...rest }: ComponentProps<"a"> & { href: string }) {
+  return href.includes("#") ? <a href={href} {...rest} /> : <Link href={href} {...rest} />;
+}
+
 function Dropdown({ label, href, links, active }: { label: string; href: string; links: NavLink[]; active: boolean }) {
   const [open, setOpen] = useState(false);
   const id = useId();
@@ -79,6 +87,15 @@ function Dropdown({ label, href, links, active }: { label: string; href: string;
               <Link href={l.href} data-menu-item="" className={s.item} onClick={() => setOpen(false)}>
                 {l.icon && <Icon name={l.icon} size={16} />} {l.label}
               </Link>
+              {l.children && (
+                <ul className={s.subList} aria-label={l.label}>
+                  {l.children.map((c) => (
+                    <li key={c.href}>
+                      <SubLink href={c.href} data-menu-item="" className={s.subItem} onClick={() => setOpen(false)}>{c.label}</SubLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
@@ -131,9 +148,16 @@ export default function SiteHeader() {
             <div className={s.sheetGroup}>
               <Link href="/products" className={s.sheetLink} aria-current={path === "/products" ? "page" : undefined}>Products</Link>
               {productLinks.slice(1).map((l) => (
-                <Link key={l.href} href={l.href} className={s.sheetSub} aria-current={is(l.href) ? "page" : undefined}>
-                  {l.icon && <Icon name={l.icon} size={16} />} {l.label}
-                </Link>
+                <div key={l.href}>
+                  <Link href={l.href} className={s.sheetSub} aria-current={is(l.href) ? "page" : undefined}>
+                    {l.icon && <Icon name={l.icon} size={16} />} {l.label}
+                  </Link>
+                  {l.children && (
+                    <div className={s.sheetMinis}>
+                      {l.children.map((c) => <SubLink key={c.href} href={c.href} className={s.sheetMini}>{c.label}</SubLink>)}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
             <Link href="/about" className={s.sheetLink} aria-current={is("/about") ? "page" : undefined}>About Us</Link>

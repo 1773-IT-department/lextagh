@@ -29,6 +29,11 @@ placeholder label, the phone number list).
 | Contact, live chat | Consumer care hours | `[PLACEHOLDER: Yazz consumer care hours]` | Consumer care team |
 | About, articles, product cards | Photos (factory personnel in Yazz outfits, production line, family with Yazz products, article thumbnails, missing pack shots) | `[PLACEHOLDER: <photo needed>]` | Marketing |
 | Tips & Advice, News (empty state, hidden while the 2022 story exists) | More news | `[PLACEHOLDER: Yazz news stories and press releases from Lexta]` | Marketing |
+| Tips & Advice, Just 4 You, "What's Inside My Yazz®?" (Y8) | "What is a Yazz® sanitary pad made from?" | `[PLACEHOLDER: a clear breakdown of the materials used in each Yazz® pad, verified by Lexta]` | Quality / QA manager, product team |
+| Same, "What does each layer do?" (Y9, opens on tap) | Layer names and what each does, four rows | `[PLACEHOLDER: layer 1 name]` to `[PLACEHOLDER: layer 4 name]`; `[PLACEHOLDER: what layer N does, from the actual construction of the Yazz® pad confirmed by Lexta]` (the number of layers is to confirm too) | Quality / QA manager, product team |
+| Same, "How is Yazz® quality checked?" | Body | `[PLACEHOLDER: Lexta Ghana Limited's actual quality-control and manufacturing processes]` | Quality / QA manager |
+| Same, "Product Safety" | Body | `[PLACEHOLDER: verified information about product testing, applicable standards, manufacturing and consumer safety]` | Quality / QA manager |
+| Same, "Packaging Information" | Body | `[PLACEHOLDER: what the product information and directions on Yazz® packaging mean]` | Marketing, product team |
 | All product windows | SKU codes `TBC-YAZZ-101` to `143` (internal, not shown as copy) | (marked TBC) | Sales / ERP team |
 
 ## 2. Removed (1773 or prototype copy, layout unchanged without it)
@@ -93,7 +98,24 @@ placeholder label, the phone number list).
 | Contact details, socials | website-copy.md Contact block; ORIGINAL-SITE.md (Facebook, Instagram, TikTok) |
 | Interface text kept without a source | Nav and footer labels, buttons, "Explore Our Product Categories", "Our Complete Range", "Our ... Range", "The range", "Good to know", "How Can We Help?", "Help centre", "Questions & Answers", "Trade & Stockists", "Find Yazz Near You", map and form instructions, form fields and answer options (trade volume bands still for Lexta to confirm), validation and thank-you messages, empty and error states, image alt text |
 
-## 5. For the lead (not changed here)
+## 5. Drive requests built 17 November 2026 (Desmond approved; branch `feature/yazz-drive-requests`)
+
+Every new sentence is Lexta's Drive text, quoted or shortened; new labels are interface text. The only new placeholders
+are the What's Inside My Yazz® facts (section 1).
+
+| Item | What | Source |
+| --- | --- | --- |
+| Y5 | Range pages: third, outlined hero button to the range's tips (`tipsCta` in `lib/ranges.ts`): Tips Just 4 You, Oral Hygiene Tips, Read Home Tips, Parenting Guides (to Baby Care Tips), Home-Care Advice | website-copy.md:57-65 |
+| Y6 | Range pages: one line "SDG n: ..., initiative." strip linking out to the Lexta CSR page (`csr` in `lib/ranges.ts`) | products.md:55, 133, 185, 239, 266 |
+| Y1 | Tips Just 4 You: Lexta's ten cards (adds My Period & Me, Just 4 Parents, What's Inside My Yazz®?, Ask Yazz®); My Period & Me link list on the Just 4 You view (7 of Lexta's 8 topics; "Common changes you may notice during your cycle" has no fitting article) | tips 00-landing-page, 01-my-period-and-me |
+| Y3 | Category view intros and closings: Welcome to Tips Just 4 You, My First Period Checklist, You're Growing. We're Listening. (with Explore more), Start With a Conversation (with the parents topic list), The Conversation Starts at Home | tips 00-intro, 02, 06b, 07, 07b |
+| Y2 | Inline links in article text (`[words](/path)`, internal only): parents topics to their articles, pad mentions to the sanitary pads window, brush and dental care mentions to the toothbrushes window or Tips for a Healthy Smile, "menarche" to "When Will My First Period Start?" (Yazz's own article, not Google) | lexta/website-copy.md:33; tips 07:25, 04:28; articles puberty-06:46, puberty-02:30 |
+| Y4 | Products menu (desktop dropdown and phone menu): two or three second level links per range (product windows and tips) | website-copy.md:20, :47-53 |
+| Y7 | Optional article `reviewer` and `reviewDate`, shown only when set; none set (waits on Lexta) | website-copy.md:134 |
+| Y8, Y9 | What's Inside My Yazz®? section on the Just 4 You view, layers as a tap-to-open list | tips 10-whats-inside-my-yazz |
+| Y10 | "Parenting & Baby Care" category, hidden until an article has it | website-copy.md:24, :52, :155 |
+
+## 6. For the lead (not changed here)
 
 - **Database copy**: the live product cards come from the Supabase products table (migration 0021), which holds the earlier
   wording of `content/catalogue.ts`. The fallback catalogue now quotes products.md word for word, so the two have drifted;

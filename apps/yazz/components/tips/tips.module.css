@@ -36,6 +36,33 @@
 .tile strong { font-size: 15px; font-weight: 700; }
 .tile span { font-size: 13px; line-height: 1.55; color: var(--yz-body); }
 .tile svg { position: absolute; top: 20px; right: 20px; color: var(--yz-red); }
+/* Sections of a category view (My Period & Me, intros, closings, What's Inside): the soft panel of the hub. */
+.anchored { scroll-margin-top: 90px; }
+.panelBox { padding: 30px 32px; border-radius: 22px; background: var(--yz-sky); }
+.panelText { margin: 10px 0 0; max-width: 720px; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); }
+.panelScript { margin: 18px 0 0; font-size: 26px; line-height: 1.2; color: var(--yz-red); }
+.panelBody { margin-top: 10px; max-width: 760px; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); }
+.panelBody p, .panelBody ul { margin: 0; }
+.panelBody > * + p, .panelBody > * + ul { margin-top: 10px; }
+.panelBody ul { padding-left: 22px; columns: 2; column-gap: 32px; }
+.panelBody li { break-inside: avoid; }
+.panelBody li + li { margin-top: 4px; }
+.panelBody li::marker { color: var(--yz-red); }
+.explore { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; font-size: 13.5px; font-weight: 600; color: var(--yz-muted); }
+.linkList { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 22px; }
+.linkList a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-radius: 10px; background: #fff;
+  font-size: 14px; font-weight: 600; color: var(--yz-deep); border: 1px solid transparent; transition: border-color .18s;
+}
+.linkList a:hover { border-color: var(--yz-red); color: var(--yz-deep); }
+.linkList svg { flex: none; color: var(--yz-red); }
+/* What's Inside My Yazz®? */
+.insideGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+.insideCard { padding: 20px 22px; border-radius: 16px; background: #fff; min-width: 0; }
+.insideCard h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--yz-deep); }
+.insideCard p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--yz-body); overflow-wrap: anywhere; }
+.insideLayers details summary { padding: 12px 2px; font-size: 14px; }
+.insideLayers p { margin: 0; }
 .empty { padding: 30px; border-radius: 18px; background: var(--yz-sky); color: var(--yz-body); font-size: 14px; line-height: 1.7; }
 .note { margin: 28px var(--yz-gutter) 0; padding: 16px 20px; border-radius: 14px; border: 1px dashed var(--yz-line-strong); font-size: 12.5px; line-height: 1.7; color: var(--yz-muted); }
 
@@ -68,7 +95,10 @@
 
 .body { max-width: 720px; font-size: 15.5px; line-height: 1.85; color: #3d5675; }
 .body > * + * { margin-top: 16px; }
-.body h2 { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--yz-line); font-size: 22px; line-height: 1.3; font-weight: 700; color: var(--yz-deep); }
+/* Links inside article text: Lexta's red "read more" text. */
+.inlineLink { color: var(--yz-red); font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.inlineLink:hover { color: var(--yz-red-dark); }
+.body h2 { scroll-margin-top: 96px;  margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--yz-line); font-size: 22px; line-height: 1.3; font-weight: 700; color: var(--yz-deep); }
 .body > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .body ul, .body ol { margin-left: 0; padding-left: 22px; }
 .body li + li { margin-top: 6px; }
@@ -94,6 +124,9 @@
 .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.55; color: #ffe5e8; }
 .consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--yz-deep); flex: none; }
 
+/* Lexta's ten Tips Just 4 You cards: two rows of five on wide screens. */
+@media (min-width: 1280px) { .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tile { padding-right: 44px; } }
+@media (max-width: 1100px) { .insideGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 1100px) { .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .artHero { grid-template-columns: 1fr; padding: 28px 22px; gap: 22px; }
@@ -105,7 +138,9 @@
 @media (max-width: 720px) {
   .hero { padding: 30px 22px 26px; border-radius: 22px; }
   .heroTitle { font-size: 30px; }
-  .tiles, .grid4 { grid-template-columns: 1fr; }
+  .tiles, .grid4, .linkList, .insideGrid { grid-template-columns: 1fr; }
+  .panelBox { padding: 24px 20px; }
+  .panelBody ul { columns: 1; }
   .artTitle { font-size: 30px; }
   .artKicker { font-size: 24px; }
   .body { font-size: 15px; }

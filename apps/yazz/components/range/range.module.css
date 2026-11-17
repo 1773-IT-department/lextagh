@@ -64,6 +64,14 @@
 .habit h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--yz-deep); }
 .habit p { margin: 10px 0 0; font-size: 13px; line-height: 1.65; color: var(--yz-body); }
 
+/* One line CSR link (products.md): the range's SDG and Lexta initiative, linking out to the Lexta CSR page. */
+.csrWrap { margin-top: 48px; }
+.csr {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 0; padding: 14px 20px;
+  background: var(--soft); border-radius: 16px; font-size: 13.5px; line-height: 1.6; color: var(--yz-body);
+}
+.csr strong { color: var(--yz-deep); }
+.csrIcon { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 9px; background: #fff; color: var(--tone); flex: none; }
 .reads { margin-top: 56px; }
 .readsTitle { margin: 0; font-size: 22px; font-weight: 700; color: var(--yz-deep); }
 
@@ -96,7 +104,7 @@
   .heroPic { height: 260px; border-radius: 18px; }
   .note { display: none; }
   .features { grid-template-columns: 1fr; margin-top: 22px; }
-  .range, .guideWrap, .habits, .reads, .ctaWrap { margin-top: 40px; }
+  .range, .guideWrap, .habits, .reads, .ctaWrap, .csrWrap { margin-top: 40px; }
   .guideMain { padding: 26px 20px; }
   .guideTitle { font-size: 23px; }
   .steps { grid-template-columns: 1fr; }
