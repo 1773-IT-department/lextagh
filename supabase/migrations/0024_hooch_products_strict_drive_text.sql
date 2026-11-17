@@ -8,7 +8,7 @@
 -- already carry Lexta's words). Generated from the catalogue by a script, so the two cannot drift.
 --
 -- Only the two Hooch Drive rows, only these five columns. Rows staff have saved in Product Management are never
--- overwritten ("updated_by is null"). Idempotent. RLS unchanged. Not applied: Desmond applies it.
+-- overwritten ("updated_by is null"). Idempotent. RLS unchanged. APPLIED to Lexta Gh on 17 November 2026 with the strict sweep.
 update public.products p
 set short_description = v.short_description,
     long_description = v.long_description,
