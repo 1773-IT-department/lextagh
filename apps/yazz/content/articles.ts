@@ -937,12 +937,42 @@ export function sortedArticles(list: Article[] = ARTICLES): Article[] {
     .map(({ a }) => a);
 }
 
-/** The Tips Just 4 You landing tiles (Lexta's "What would you like to know today?"), each opening its article. */
-export const TOPIC_TILES: { title: string; body: string; slug: string }[] = [
-  { title: "My First Period", body: "Everything you need to feel more prepared.", slug: "understanding-your-first-period" },
-  { title: "Choose My Yazz®", body: "Learn how to select protection for your needs.", slug: "which-pad-is-right-4-me" },
-  { title: "Feeling Fresh", body: "Simple menstrual and everyday hygiene tips.", slug: "feeling-fresh-every-day" },
-  { title: "Puberty & Me", body: "Understand some of the changes that come with growing up.", slug: "what-happens-during-puberty" },
-  { title: "Periods at School", body: "Preparation and confidence for school days.", slug: "periods-at-school" },
-  { title: "Myths & Facts", body: "Separate menstrual facts from common misconceptions.", slug: "period-myths-vs-facts" },
+/**
+ * The Tips Just 4 You landing tiles: Lexta's ten "What Would You Like to Know Today?" cards, in Lexta's order
+ * (docs/content/yazz/tips-just-4-you/00-landing-page.md). Each opens its article, or the place on this site that answers
+ * it: My Period & Me and What's Inside My Yazz® are sections of the Just 4 You view, Just 4 Parents its category and
+ * Ask Yazz® the FAQs.
+ */
+export const TOPIC_TILES: { title: string; body: string; href: string }[] = [
+  { title: "My First Period", body: "Everything you need to feel more prepared.", href: "/tips/understanding-your-first-period" },
+  { title: "My Period & Me", body: "Understand your menstrual cycle and flow.", href: "/tips?category=just-4-you#my-period-and-me" },
+  { title: "Choose My Yazz®", body: "Learn how to select protection for your needs.", href: "/tips/which-pad-is-right-4-me" },
+  { title: "Feeling Fresh", body: "Simple menstrual and everyday hygiene tips.", href: "/tips/feeling-fresh-every-day" },
+  { title: "Puberty & Me", body: "Understand some of the changes that come with growing up.", href: "/tips/what-happens-during-puberty" },
+  { title: "Just 4 Parents", body: "Helpful resources for parents and caregivers.", href: "/tips?category=just-4-parents" },
+  { title: "Periods at School", body: "Preparation and confidence for school days.", href: "/tips/periods-at-school" },
+  { title: "Myths & Facts", body: "Separate menstrual facts from common misconceptions.", href: "/tips/period-myths-vs-facts" },
+  { title: "What's Inside My Yazz®?", body: "Understand Yazz® products, materials and verified safety information.", href: "/tips?category=just-4-you#whats-inside" },
+  { title: "Ask Yazz®", body: "Frequently asked period and product questions.", href: "/faqs#faq-ask-yazz" },
 ];
+
+/**
+ * My Period & Me (tips-just-4-you/01-my-period-and-me.md): Lexta's page is a list of topics to hyperlink, with no body
+ * text of its own, so it is a link list on the Just 4 You view. Each topic opens the existing article that covers it;
+ * "Common changes you may notice during your cycle" has no fitting article yet and is left out.
+ */
+export const MY_PERIOD_AND_ME = {
+  title: "My Period & Me",
+  heading: "Understanding Your Period Starts Here",
+  intro: "Periods are a natural part of life, but that doesn't mean you automatically know everything about them.",
+  outro: "Learn it. Track it. Understand it.",
+  links: [
+    { label: "What is a period?", slug: "understanding-your-first-period" },
+    { label: "Understanding your menstrual cycle", slug: "understanding-your-first-period" },
+    { label: "Getting to know your flow", slug: "which-pad-is-right-4-me" },
+    { label: "Light, moderate and heavier-flow days", slug: "which-pad-is-right-4-me" },
+    { label: "Period tracking basics", slug: "periods-at-school" },
+    { label: "Common period questions", slug: "common-puberty-questions" },
+    { label: "When to speak with a trusted adult or healthcare professional", slug: "talking-to-a-trusted-adult" },
+  ],
+};

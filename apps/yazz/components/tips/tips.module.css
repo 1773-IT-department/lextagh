@@ -36,6 +36,18 @@
 .tile strong { font-size: 15px; font-weight: 700; }
 .tile span { font-size: 13px; line-height: 1.55; color: var(--yz-body); }
 .tile svg { position: absolute; top: 20px; right: 20px; color: var(--yz-red); }
+/* Sections of a category view (My Period & Me, intros, closings, What's Inside): the soft panel of the hub. */
+.anchored { scroll-margin-top: 90px; }
+.panelBox { padding: 30px 32px; border-radius: 22px; background: var(--yz-sky); }
+.panelText { margin: 10px 0 0; max-width: 720px; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); }
+.panelScript { margin: 18px 0 0; font-size: 26px; line-height: 1.2; color: var(--yz-red); }
+.linkList { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 22px; }
+.linkList a {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-radius: 10px; background: #fff;
+  font-size: 14px; font-weight: 600; color: var(--yz-deep); border: 1px solid transparent; transition: border-color .18s;
+}
+.linkList a:hover { border-color: var(--yz-red); color: var(--yz-deep); }
+.linkList svg { flex: none; color: var(--yz-red); }
 .empty { padding: 30px; border-radius: 18px; background: var(--yz-sky); color: var(--yz-body); font-size: 14px; line-height: 1.7; }
 .note { margin: 28px var(--yz-gutter) 0; padding: 16px 20px; border-radius: 14px; border: 1px dashed var(--yz-line-strong); font-size: 12.5px; line-height: 1.7; color: var(--yz-muted); }
 
@@ -94,6 +106,8 @@
 .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.55; color: #ffe5e8; }
 .consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--yz-deep); flex: none; }
 
+/* Lexta's ten Tips Just 4 You cards: two rows of five on wide screens. */
+@media (min-width: 1280px) { .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tile { padding-right: 44px; } }
 @media (max-width: 1100px) { .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .artHero { grid-template-columns: 1fr; padding: 28px 22px; gap: 22px; }
@@ -105,7 +119,8 @@
 @media (max-width: 720px) {
   .hero { padding: 30px 22px 26px; border-radius: 22px; }
   .heroTitle { font-size: 30px; }
-  .tiles, .grid4 { grid-template-columns: 1fr; }
+  .tiles, .grid4, .linkList { grid-template-columns: 1fr; }
+  .panelBox { padding: 24px 20px; }
   .artTitle { font-size: 30px; }
   .artKicker { font-size: 24px; }
   .body { font-size: 15px; }

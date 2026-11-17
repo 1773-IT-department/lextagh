@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import ArticleCard from "@/components/tips/ArticleCard";
 import SubscribeForm from "@/components/tips/SubscribeForm";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, CATEGORIES, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import { ARTICLES, CATEGORIES, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -55,12 +55,28 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           </div>
           <div className={s.tiles}>
             {TOPIC_TILES.map((t) => (
-              <Link key={t.slug} href={`/tips/${t.slug}`} className={s.tile}>
+              <Link key={t.href} href={t.href} className={s.tile}>
                 <strong>{t.title}</strong>
                 <span>{t.body}</span>
                 <Icon name="arrow" size={18} />
               </Link>
             ))}
+          </div>
+        </section>
+      )}
+
+      {category === "just-4-you" && (
+        <section id="my-period-and-me" className={`${s.section} ${s.anchored}`} aria-labelledby="period-me-title">
+          <div className={s.panelBox}>
+            <p className="yz-eyebrow">{MY_PERIOD_AND_ME.title}</p>
+            <h2 id="period-me-title" className={s.sectionTitle} style={{ marginTop: 8 }}>{MY_PERIOD_AND_ME.heading}</h2>
+            <p className={s.panelText}>{MY_PERIOD_AND_ME.intro}</p>
+            <ul className={s.linkList}>
+              {MY_PERIOD_AND_ME.links.map((l) => (
+                <li key={l.label}><Link href={`/tips/${l.slug}`}>{l.label} <Icon name="arrow" size={15} /></Link></li>
+              ))}
+            </ul>
+            <p className={`yz-script ${s.panelScript}`}>{MY_PERIOD_AND_ME.outro}</p>
           </div>
         </section>
       )}
