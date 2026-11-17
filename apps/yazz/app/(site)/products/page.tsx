@@ -8,6 +8,7 @@ import pc from "@/components/products/products.module.css";
 import s from "@/components/range/overview.module.css";
 import { getYazzProducts, inRange } from "@/lib/products";
 import { RANGE_SLUGS, RANGES } from "@/lib/ranges";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /** Rebuilt at most hourly; the portal's product saves refresh it at once through /api/revalidate. */
 export const revalidate = 3600;
@@ -31,6 +32,7 @@ export default async function ProductsPage() {
   const { products } = await getYazzProducts();
   return (
     <>
+      <Breadcrumbs items={[{ label: "Products" }]} />
       <section className={s.hero} aria-labelledby="products-title">
         <div>
           <p className="yz-eyebrow" style={{ color: "#4A7BB5" }}>Our products</p>

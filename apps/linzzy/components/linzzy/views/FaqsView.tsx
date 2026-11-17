@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
+import Breadcrumbs from "../Breadcrumbs";
 import { hoochSiteUrl as HOOCH, lextaSiteUrl as LEXTA, yazzSiteUrl as YAZZ } from "@/lib/site";
 
 export default function FaqsView({ v: vals }: { v: any }) {
@@ -94,6 +95,7 @@ export default function FaqsView({ v: vals }: { v: any }) {
         {/* HERO */}
         <section id="top" data-chapter="Got a Question?" data-num="00" data-screen-label="01 FAQs Hero" style={{"background":"#FBF8FF","padding":"clamp(130px,16vw,200px) clamp(20px,5vw,80px) clamp(50px,6vw,80px)"} as CSSProperties}>
           {"\n  "}
+          <Breadcrumbs items={[{ label: "FAQs" }]} />
           <p style={{"margin":"0","fontSize":"13px","fontWeight":"700","letterSpacing":"0.2em","textTransform":"uppercase","color":"#C2185B"} as CSSProperties}>
             {"FAQs"}
           </p>

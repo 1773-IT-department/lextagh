@@ -8,6 +8,7 @@ import csr from "@/components/csr/csr.module.css";
 import { dignityInitiative, programmes, proposeHref } from "@/components/csr/programmes";
 import p from "@/components/proto.module.css";
 import { isLiveStoryHref } from "@/content/news/held";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title as the prototype's <helmet> sets it; description from Lexta's Drive CSR text.
 const title = "Corporate Social Responsibility | Lexta Ghana";
@@ -135,6 +136,7 @@ export default function CorporateSocialResponsibilityPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(100deg,rgba(6,32,42,.93) 0%,rgba(6,32,42,.7) 48%,rgba(6,32,42,.22) 82%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", width: "100%", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 680 }}>
+            <Breadcrumbs items={[{ label: "CSR" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Corporate Social Responsibility</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6.4vw,56px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

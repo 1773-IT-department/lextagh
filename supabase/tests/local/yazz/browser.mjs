@@ -207,6 +207,14 @@ try {
       check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
         "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
     }
+    {
+      // Breadcrumbs (X2): Home, then the current page.
+      await page.goto(`${SITE}/about`);
+      const crumbs = page.getByRole("navigation", { name: "Breadcrumb" });
+      const home = await crumbs.getByRole("link", { name: "Home" }).getAttribute("href").catch(() => null);
+      const current = await crumbs.locator("[aria-current=page]").innerText().catch(() => "");
+      check(home === "/" && current.trim() === "About Us", "breadcrumbs: /about shows Home > About Us", { home, current });
+    }
 
     // FAQs accordion by keyboard.
     await page.goto(`${SITE}/faqs`);

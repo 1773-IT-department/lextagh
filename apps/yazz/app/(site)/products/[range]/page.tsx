@@ -14,6 +14,7 @@ import { getYazzProducts, inRange } from "@/lib/products";
 import { isRangeSlug, RANGE_SLUGS, RANGES } from "@/lib/ranges";
 import { lexta } from "@/lib/site";
 import s from "@/components/range/range.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 /** Rebuilt at most hourly; the portal's product saves refresh it at once through /api/revalidate. */
 export const revalidate = 3600;
@@ -50,6 +51,7 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
 
   return (
     <div style={tone}>
+      <Breadcrumbs items={[{ label: "Products", href: "/products" }, { label: r.name }]} />
       <section className={s.hero} aria-labelledby="range-title">
         <div className={s.heroText}>
           <p className="yz-eyebrow" style={{ color: r.tone.deep }}>{r.name}</p>

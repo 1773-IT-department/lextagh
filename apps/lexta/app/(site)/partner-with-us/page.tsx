@@ -5,6 +5,7 @@ import ApplicationForm from "@/components/partner/ApplicationForm";
 import RoutePicker from "@/components/partner/RoutePicker";
 import { RouteProvider } from "@/components/partner/RouteContext";
 import { benefits, steps } from "@/components/partner/data";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title from partner-with-us.html; description from Lexta's Drive content.
 const title = "Partner With Us | Lexta Ghana";
@@ -55,6 +56,7 @@ export default async function PartnerPage({ searchParams }: { searchParams: Sear
       <section data-screen-label="Partner hero" style={{ background: "#0c303e", padding: "74px 28px 66px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 46, alignItems: "center" }}>
           <div>
+            <Breadcrumbs items={[{ label: "Partner With Us" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Partner with us</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

@@ -5,6 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
+import Breadcrumbs from "../Breadcrumbs";
 import { lexta, hoochSiteUrl as HOOCH, lextaSiteUrl as LEXTA, yazzSiteUrl as YAZZ } from "@/lib/site";
 
 export default function AboutView({ v: vals }: { v: any }) {
@@ -94,6 +95,7 @@ export default function AboutView({ v: vals }: { v: any }) {
         {/* HERO */}
         <section id="top" data-chapter="Rooted in Care" data-num="00" data-screen-label="01 About Hero" style={{"background":"#FBF8FF","padding":"clamp(130px,16vw,200px) clamp(20px,5vw,80px) clamp(70px,9vw,130px)"} as CSSProperties}>
           {"\n  "}
+          <Breadcrumbs items={[{ label: "About Us" }]} />
           <p style={{"margin":"0","fontSize":"13px","fontWeight":"700","letterSpacing":"0.2em","textTransform":"uppercase","color":"#0E7A5B"} as CSSProperties}>
             {"About Linzzy"}
           </p>

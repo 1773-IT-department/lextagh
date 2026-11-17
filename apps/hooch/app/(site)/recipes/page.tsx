@@ -6,6 +6,7 @@ import s from "@/components/pages/pages.module.css";
 import RecipeFilter from "@/components/recipes/RecipeFilter";
 import RealPhoto from "@/components/fun/RealPhoto";
 import { BEYOND, RECIPES, RECIPES_INTRO, SHARE_RECIPE } from "@/content/recipes";
+import Breadcrumbs from "@/components/pages/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Breakfast Ideas & Recipes",
@@ -21,6 +22,7 @@ export default function RecipesPage() {
         <Floaters count={10} seed={17} />
         <div className={`hc-wrap ${s.heroInner} ${s.split}`}>
           <div>
+            <Breadcrumbs page="Recipes" />
             <p className="hc-sticker" style={{ background: "#fff" }}>{RECIPES_INTRO.eyebrow}</p>
             <h1 id="recipes-title" className={s.heroTitle}>{RECIPES_INTRO.title}</h1>
             <p className={s.heroLead}>{RECIPES_INTRO.body}</p>

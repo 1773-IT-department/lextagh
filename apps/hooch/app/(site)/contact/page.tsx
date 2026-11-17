@@ -11,6 +11,7 @@ import { isTopic } from "@/lib/forms/options";
 import { getHoochProducts } from "@/lib/products";
 import { contact, socials, tel, whatsapp } from "@/lib/site";
 import { ALL_REGIONS, getHoochStockists, getWhereToBuyRegions, type StockistItem } from "@/lib/where-to-buy";
+import Breadcrumbs from "@/components/pages/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
@@ -55,6 +56,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
       <section className={s.hero} aria-labelledby="contact-title">
         <Floaters count={10} seed={31} />
         <div className={`hc-wrap ${s.heroInner}`}>
+          <Breadcrumbs page="Contact" />
           <p className="hc-sticker" style={{ background: "#fff" }}>{BRAND.contact.eyebrow}</p>
           <h1 id="contact-title" className={s.heroTitle}>{BRAND.contact.title}</h1>
           {BRAND.contact.body.map((p) => <p key={p} className={s.heroBody}>{p}</p>)}

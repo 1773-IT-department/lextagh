@@ -8,6 +8,7 @@ import BioToggle from "@/components/about/BioToggle";
 import Journey from "@/components/about/Journey";
 import a from "@/components/about/about.module.css";
 import p from "@/components/proto.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // The prototype page had no title or description; these reuse its own hero copy.
 const title = "About Us | Lexta Ghana Limited";
@@ -199,6 +200,7 @@ export default function AboutUsPage() {
         <div style={{ ...fill, background: "linear-gradient(100deg,rgba(6,32,42,.92) 0%,rgba(6,32,42,.66) 48%,rgba(6,32,42,.2) 80%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", width: "100%", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 660 }}>
+            <Breadcrumbs items={[{ label: "About Us" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>About Lexta Ghana</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(30px,6vw,52px)", lineHeight: 1.08, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

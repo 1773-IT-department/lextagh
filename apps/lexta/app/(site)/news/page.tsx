@@ -4,6 +4,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import NewsRoom from "@/components/news/NewsRoom";
 import SubscribeBox from "@/components/news/SubscribeBox";
 import { articleHref, featuredArticle, gridArticles, mediaContact, mediaEmail, mediaPhone, toCard } from "@/content/news";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title and description exactly as the prototype's <helmet> sets them.
 const title = "News & Media | Lexta Ghana";
@@ -26,6 +27,7 @@ export default function NewsPage() {
 
       <section data-screen-label="News hero" style={{ background: "#0c303e", padding: "70px 28px 0" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <Breadcrumbs items={[{ label: "News" }]} />
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>News &amp; media</div>
           <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
           <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6vw,52px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty", maxWidth: 760 }}>

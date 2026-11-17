@@ -8,6 +8,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import Enquiry from "@/components/contact/Enquiry";
 import Faq from "@/components/contact/Faq";
 import p from "@/components/proto.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title and description from contact-us.html.
 const title = "Contact Us | Lexta Ghana";
@@ -73,6 +74,7 @@ export default function ContactPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" }}>
             <div>
+              <Breadcrumbs items={[{ label: "Contact Us" }]} />
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Contact us</div>
               <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
               <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

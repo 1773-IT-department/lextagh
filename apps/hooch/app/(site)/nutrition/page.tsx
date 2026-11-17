@@ -10,6 +10,7 @@ import { BRAND } from "@/content/brand";
 import { ALLERGEN_NOTE, VITAMINS } from "@/content/catalogue";
 import { FAQ_GROUPS } from "@/content/faqs";
 import { getHoochProducts } from "@/lib/products";
+import Breadcrumbs from "@/components/pages/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Nutrition & Family Tips",
@@ -26,6 +27,7 @@ export default async function NutritionPage() {
       <section className={s.hero} data-tone="sky" aria-labelledby="n-title">
         <Floaters count={10} seed={27} />
         <div className={`hc-wrap ${s.heroInner}`}>
+          <Breadcrumbs page="Nutrition & Tips" />
           <p className="hc-sticker" style={{ background: "#fff" }}>{n.eyebrow}</p>
           <h1 id="n-title" className={s.heroTitle}>{n.title}</h1>
           {n.body.map((p) => <p key={p} className={s.heroLead}>{p}</p>)}

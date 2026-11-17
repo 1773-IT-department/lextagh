@@ -180,6 +180,15 @@ try {
       check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
         "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
     }
+    {
+      // Breadcrumbs (X2): Home, then the current page.
+      await page.goto(`${SITE}/recipes`);
+      const crumbs = page.getByRole("navigation", { name: "Breadcrumb" });
+      const home = await crumbs.getByRole("link", { name: "Home" }).getAttribute("href").catch(() => null);
+      const current = await crumbs.locator("[aria-current=page]").innerText().catch(() => "");
+      check(home === "/" && current.trim() === "Recipes", "breadcrumbs: /recipes shows Home > Recipes", { home, current });
+      await page.goto(`${SITE}/products?3d=off`);
+    }
     const films = await page.locator(".hc-video video").evaluateAll((vs) => vs.map((v) => ({ poster: v.getAttribute("poster"), muted: v.muted, loop: v.loop, inline: v.playsInline,
       types: [...v.querySelectorAll("source")].map((s) => s.type) })));
     check(films.length === 2 && films.every((f) => f.muted && f.loop && f.inline && f.poster?.startsWith("/videos/") && f.types.includes("video/webm") && f.types.includes("video/mp4")),

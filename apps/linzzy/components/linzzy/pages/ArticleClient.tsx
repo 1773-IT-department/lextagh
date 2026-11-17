@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { parseBody } from "../article";
 import ShellView from "../views/ShellView";
 import { useChrome } from "../chrome";
+import Breadcrumbs from "../Breadcrumbs";
 
 // One Tips & Advice article (/tips/<slug>) in the prototype's design: the Tips page header, menu and footer around
 // Lexta's article text, its "Linzzy Says" line, the Community Corner question, the category's notice and more reads.
@@ -32,6 +33,7 @@ export default function ArticleClient({ a, reads }: { a: ArticleData; reads: Rea
   return (
     <ShellView v={v}>
       <section id="top" data-chapter={a.catLabel} data-num="00" style={{ background: "#FBF8FF", padding: `clamp(130px,16vw,200px) ${pad} clamp(40px,6vw,80px)` }}>
+        <Breadcrumbs items={[{ label: "Tips & Advice", href: "/tips" }, { label: a.title }]} />
         <p style={eyebrow(tone)}><a href="/tips" style={{ color: "inherit" }}>Tips &amp; Advice</a> · {a.catLabel} · {a.topic}{a.minutes ? ` · ${a.minutes} min read` : ""}</p>
         <h1 data-reveal="1" style={{ margin: "22px 0 0", maxWidth: 1100, fontFamily: serif, fontWeight: 400, fontSize: "clamp(42px,6.4vw,104px)", lineHeight: 0.95, letterSpacing: "-0.03em", color: "#23103a", opacity: "var(--r,1)" as unknown as number, transform: "translateY(calc((1 - var(--r,1)) * 40px))" }}>{a.title}</h1>
         <p style={{ margin: "28px 0 0", maxWidth: 760, fontSize: "clamp(19px,1.6vw,24px)", lineHeight: 1.5, color: "#3d2a55" }}>{a.lede}</p>
