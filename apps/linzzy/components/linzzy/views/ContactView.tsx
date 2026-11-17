@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
-import { lextaSiteUrl as LEXTA } from "@/lib/site";
+import { hoochSiteUrl as HOOCH, lextaSiteUrl as LEXTA, yazzSiteUrl as YAZZ } from "@/lib/site";
 import { Err, FormError, Honeypot, fieldAria } from "../FormBits";
 import { Select } from "@lexta/ui";
 
@@ -887,6 +887,14 @@ export default function ContactView({ v: vals }: { v: any }) {
               {"\n      "}
               <a href={`${LEXTA}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
                 {"Lexta Ghana Limited ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${YAZZ}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Yazz® ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${HOOCH}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Hooch® ↗"}
               </a>
               {"\n      "}
               <a href={`${LEXTA}/privacy-policy`} target="_blank" style={{"color":"#fff"} as CSSProperties}>

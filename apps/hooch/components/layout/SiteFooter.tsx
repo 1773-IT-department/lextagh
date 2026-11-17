@@ -4,7 +4,7 @@ import Icon from "@/components/Icon";
 import { BRAND } from "@/content/brand";
 import { NAV } from "@/lib/nav";
 import { getHoochProducts } from "@/lib/products";
-import { contact, lexta, socials, tel } from "@/lib/site";
+import { contact, linzzySiteUrl, lexta, socials, tel, yazzSiteUrl } from "@/lib/site";
 import s from "./footer.module.css";
 
 /**
@@ -52,6 +52,8 @@ export default async function SiteFooter() {
             <li><a href={`${lexta.csr}#programmes`} {...ext}>Community programmes <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.careers} {...ext}>Careers <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.home} {...ext}>Lexta Ghana Limited <Icon name="arrow" size={13} /></a></li>
+            <li><a href={`${yazzSiteUrl}/`} {...ext}>Yazz® <Icon name="arrow" size={13} /></a></li>
+            <li><a href={`${linzzySiteUrl}/`} {...ext}>Linzzy® <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.privacy} {...ext}>Privacy Policy <Icon name="arrow" size={13} /></a></li>
             <li><a href={lexta.terms} {...ext}>Terms &amp; Conditions <Icon name="arrow" size={13} /></a></li>
           </ul>

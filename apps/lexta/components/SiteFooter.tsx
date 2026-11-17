@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
-import { footerQuickLinks, footerSupportLinks, portalUrl } from "./site-links";
+import { footerFamilyLinks, footerQuickLinks, footerSupportLinks, portalUrl } from "./site-links";
 
 const colTitle: CSSProperties = { fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 16 };
 const colLinks: CSSProperties = { display: "flex", flexDirection: "column", gap: 11 };
@@ -70,6 +70,13 @@ export default function SiteFooter() {
           <div style={colTitle}>Quick Links</div>
           <div style={colLinks}>
             {footerQuickLinks.map((l) => <Link key={l.href} href={l.href} style={footLink}>{l.label}</Link>)}
+          </div>
+        </div>
+
+        <div>
+          <div style={colTitle}>Lexta family</div>
+          <div style={colLinks}>
+            {footerFamilyLinks.map((l) => <a key={l.label} href={l.href} target="_blank" rel="noopener" style={footLink}>{l.label}</a>)}
           </div>
         </div>
 

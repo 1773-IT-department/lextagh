@@ -172,6 +172,12 @@ try {
     await mainNav.getByRole("link", { name: "Our Products" }).hover();
     const cereals = await mainNav.locator("a[href^='/products/']").evaluateAll((as) => as.filter((a) => a.offsetParent).map((a) => [a.textContent, a.getAttribute("href")]));
     check(JSON.stringify(cereals) === JSON.stringify([["Hooch® Cornflakes", "/products/cornflakes"], ["Hooch® Frosted Flakes", "/products/frosted-flakes"]]), "header: Our Products opens a small menu of the two cereal pages", cereals);
+    {
+      const fam = await page.getByRole("contentinfo").locator("a").evaluateAll((as) => as.map((a) => [a.textContent.replace(/[↗\s]+$/, "").trim(), a.getAttribute("href")]));
+      const want = [["Yazz®", "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app/"], ["Linzzy®", "https://lexta-linzzy.vercel.app/"]];
+      check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
+        "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
+    }
     const films = await page.locator(".hc-video video").evaluateAll((vs) => vs.map((v) => ({ poster: v.getAttribute("poster"), muted: v.muted, loop: v.loop, inline: v.playsInline,
       types: [...v.querySelectorAll("source")].map((s) => s.type) })));
     check(films.length === 2 && films.every((f) => f.muted && f.loop && f.inline && f.poster?.startsWith("/videos/") && f.types.includes("video/webm") && f.types.includes("video/mp4")),

@@ -58,9 +58,17 @@ export function isCurrent(href: string, pathname: string | null): boolean {
 }
 
 /**
- * The three brand websites. Until go-live they are the Vercel addresses (set per environment); the defaults are the
- * real domains, which Desmond points at the new sites at go-live.
+ * The three brand websites (Our Brands "Visit" buttons, the footer's Lexta family links). NEXT_PUBLIC_YAZZ_SITE_URL,
+ * NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, else each brand's Vercel preview. Desmond sets the real
+ * domains at go-live; never a real Lexta domain here.
  */
-export const yazzSiteUrl = process.env.NEXT_PUBLIC_YAZZ_SITE_URL || "https://yazzproducts.com";
-export const linzzySiteUrl = process.env.NEXT_PUBLIC_LINZZY_SITE_URL || "https://linzzyproducts.com";
-export const hoochSiteUrl = process.env.NEXT_PUBLIC_HOOCH_SITE_URL || "https://hoochfoods.com";
+export const yazzSiteUrl = (process.env.NEXT_PUBLIC_YAZZ_SITE_URL || "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app").replace(/\/+$/, "");
+export const linzzySiteUrl = (process.env.NEXT_PUBLIC_LINZZY_SITE_URL || "https://lexta-linzzy.vercel.app").replace(/\/+$/, "");
+export const hoochSiteUrl = (process.env.NEXT_PUBLIC_HOOCH_SITE_URL || "https://lexta-hooch.vercel.app").replace(/\/+$/, "");
+
+/** The footer's Lexta family column: the three brand sites. */
+export const footerFamilyLinks: NavLink[] = [
+  { label: "Yazz", href: `${yazzSiteUrl}/` },
+  { label: "Linzzy", href: `${linzzySiteUrl}/` },
+  { label: "Hooch", href: `${hoochSiteUrl}/` },
+];

@@ -297,6 +297,12 @@ try {
     await sleep(200);
     check(!(await pagesNav.isVisible()) && await menuBtn.getAttribute("aria-expanded") === "false", "menu: Escape closes it");
     check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() >= 1, "footer: links to the FAQs page");
+    {
+      const fam = await page.getByRole("contentinfo").locator("a").evaluateAll((as) => as.map((a) => [a.textContent.replace(/[↗\s]+$/, "").trim(), a.getAttribute("href")]));
+      const want = [["Yazz®", "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app/"], ["Hooch®", "https://lexta-hooch.vercel.app/"]];
+      check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
+        "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
+    }
 
     // The scroll animations (home page): a reveal comes in as it scrolls into view, and the pinned "Care That Grows" track moves.
     await page.goto(`${SITE}/`);

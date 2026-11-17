@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
-import { lexta, lextaSiteUrl as LEXTA } from "@/lib/site";
+import { lexta, hoochSiteUrl as HOOCH, lextaSiteUrl as LEXTA, yazzSiteUrl as YAZZ } from "@/lib/site";
 
 export default function AboutView({ v: vals }: { v: any }) {
   return (
@@ -518,6 +518,14 @@ export default function AboutView({ v: vals }: { v: any }) {
               {"\n      "}
               <a href={`${LEXTA}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
                 {"Lexta Ghana Limited ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${YAZZ}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Yazz® ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${HOOCH}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Hooch® ↗"}
               </a>
               {"\n      "}
               <a href={`${LEXTA}/privacy-policy`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
