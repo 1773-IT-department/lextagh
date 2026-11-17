@@ -12,7 +12,7 @@
  * If the database cannot be reached, or the site has no Supabase settings, Lexta's own catalogue (content/catalogue.ts)
  * is shown and a warning is logged, so pages never break.
  */
-import { getPublishedProducts, type PublishedProduct } from "@lexta/db";
+import { getPublishedProducts, isDiscontinued, type PublishedProduct } from "@lexta/db";
 import { CATALOGUE } from "../content/catalogue";
 import { rangeOf, type RangeSlug } from "./ranges";
 
@@ -30,7 +30,7 @@ export type LinzzyProduct = {
   ingredients: string | null;
   skus: { code: string; variant: string | null; pack: string }[];
   images: { src: string; alt: string }[];
-  /** Lexta's product page extras (content/catalogue.ts); a database row with the same slug borrows them. */
+  /** Lexta's product page extras: the database columns (0025) when set, else content/catalogue.ts for the same slug. */
   headline?: string;
   recommended?: string;
   sensitivity?: string;
@@ -89,8 +89,9 @@ export function isPrototypeDatabase(rows: PublishedProduct[]): boolean {
  * One database row as a site product.
  * prototype = false (after 0016): the database wins for everything it holds (name, texts, features, how to use,
  * ingredients, category and so range, SKUs, photos), so a Product Management edit shows here as on every other site.
- * A row with a catalogue slug only borrows Lexta's product page extras the database has no column for (headline,
- * recommended use, skin sensitivity, sign-off, related articles), and the catalogue pack shot when it has no usable photo.
+ * The product page extras (headline, recommended use, skin sensitivity, sign-off, related articles) come from the
+ * database columns 0025 added when set; a row with a catalogue slug borrows any that are empty from the catalogue, and
+ * the catalogue pack shot when it has no usable photo.
  * prototype = true (before 0016): the database rows still carry the prototype's invented claims, so a row with a
  * catalogue slug shows the Drive wording instead and only its SKUs, photos, published state and order come from the
  * database.
@@ -109,6 +110,12 @@ export function toLinzzyProduct(p: PublishedProduct, prototype = false): LinzzyP
     ingredients: p.ingredients,
     skus: p.skus.map((s) => ({ code: s.sku_code, variant: s.variant_name, pack: s.pack_size_label })),
     images,
+    // The product page fields Product Management holds since 0025; a row without them borrows the catalogue's below.
+    ...(p.headline ? { headline: p.headline } : {}),
+    ...(p.recommended_use ? { recommended: p.recommended_use } : {}),
+    ...(p.precautions ? { sensitivity: p.precautions } : {}),
+    ...(p.brand_says ? { says: p.brand_says } : {}),
+    ...(p.related_articles?.length ? { reads: p.related_articles } : {}),
   };
   const c = CATALOGUE.find((x) => x.slug === p.slug);
   if (!c) return base;
@@ -116,11 +123,11 @@ export function toLinzzyProduct(p: PublishedProduct, prototype = false): LinzzyP
     return {
       ...base,
       images: images.length ? images : c.images,
-      headline: c.headline,
-      recommended: c.recommended,
-      sensitivity: c.sensitivity,
-      says: c.says,
-      reads: c.reads,
+      headline: base.headline ?? c.headline,
+      recommended: base.recommended ?? c.recommended,
+      sensitivity: base.sensitivity ?? c.sensitivity,
+      says: base.says ?? c.says,
+      reads: base.reads ?? c.reads,
     };
   }
   return {
@@ -142,14 +149,18 @@ export function toLinzzyProduct(p: PublishedProduct, prototype = false): LinzzyP
  * catalogue product the database lacks is added from content/catalogue.ts, in the catalogue's order, followed by the
  * products staff added.
  */
-export function mergeLinzzyProducts(rows: PublishedProduct[]): LinzzyProduct[] {
+export function mergeLinzzyProducts(allRows: PublishedProduct[]): LinzzyProduct[] {
+  // Discontinued products (Product Management availability, 0025) are hidden; a catalogue product the database
+  // marks discontinued is not added back from the catalogue either.
+  const discontinued = new Set(allRows.filter(isDiscontinued).map((r) => r.slug));
+  const rows = allRows.filter((r) => !isDiscontinued(r));
   const prototype = isPrototypeDatabase(rows);
   const covered = (range: RangeSlug) => CATALOGUE.some((c) => c.range === range && !c.comingSoon);
   const live = rows
     .filter((r) => !(r.slug in PROTOTYPE_SEED_SLUGS && covered(PROTOTYPE_SEED_SLUGS[r.slug])))
     .map((r) => toLinzzyProduct(r, prototype));
   if (!prototype) return live;
-  const fromCatalogue = CATALOGUE.map((c) => live.find((p) => p.slug === c.slug) ?? c);
+  const fromCatalogue = CATALOGUE.filter((c) => !discontinued.has(c.slug)).map((c) => live.find((p) => p.slug === c.slug) ?? c);
   return [...fromCatalogue, ...live.filter((p) => !CATALOGUE.some((c) => c.slug === p.slug))];
 }
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { PRODUCT_IMAGES_BUCKET, type ProductSku } from "@lexta/db";
+import { PRODUCT_AVAILABILITY, PRODUCT_IMAGES_BUCKET, type ProductAvailability, type ProductSku } from "@lexta/db";
 import { getProductAccess, slugify } from "@/lib/products";
 import { notifySites } from "@/lib/revalidate-sites";
 import { createClient } from "@/lib/supabase/server";
@@ -89,6 +89,15 @@ function parseSkus(raw: string): { skus: SkuInput[]; error?: string } {
   return { skus };
 }
 
+/** Related article slugs, separated by commas or new lines: up to 12, each like a web address (know-your-flow). */
+function parseArticleSlugs(raw: string): { slugs: string[]; error?: string } {
+  const slugs = [...new Set(raw.split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean))];
+  const bad = slugs.find((s) => !SLUG.test(s) || s.length > 120);
+  if (bad) return { slugs, error: `"${bad.slice(0, 40)}" is not an article address. Use lowercase words joined by dashes, for example know-your-flow.` };
+  if (slugs.length > 12) return { slugs, error: "List at most 12 articles." };
+  return { slugs };
+}
+
 /** Create or update a product with its approved information and SKUs. */
 export async function saveProduct(_prev: ProductFormState, form: FormData): Promise<ProductFormState> {
   const { access, error: roleError } = await requireEditor();
@@ -110,6 +119,21 @@ export async function saveProduct(_prev: ProductFormState, form: FormData): Prom
   if (!SLUG.test(slug) || slug.length > 120) fieldErrors.slug = "Use lowercase letters, numbers and single dashes, for example baby-wipes.";
   if (isNew && !access.brands.some((b) => b.id === brandId)) fieldErrors.brand_id = "Choose one of your brands.";
   if (!Number.isInteger(sortOrder)) fieldErrors.sort_order = "Use a whole number.";
+
+  // Product page fields (0025).
+  const availability = text(form, "availability") || "available";
+  if (!PRODUCT_AVAILABILITY.includes(availability as ProductAvailability)) fieldErrors.availability = "Choose available, coming soon or discontinued.";
+  const headline = text(form, "headline");
+  if (headline.length > 200) fieldErrors.headline = "Keep the headline under 200 characters.";
+  const recommendedUse = text(form, "recommended_use");
+  if (recommendedUse.length > 1000) fieldErrors.recommended_use = "Keep this under 1,000 characters.";
+  const precautions = text(form, "precautions");
+  if (precautions.length > 3000) fieldErrors.precautions = "Keep this under 3,000 characters.";
+  const brandSays = text(form, "brand_says");
+  if (brandSays.length > 300) fieldErrors.brand_says = "Keep this under 300 characters.";
+  const { slugs: relatedArticles, error: articlesError } = parseArticleSlugs(text(form, "related_articles"));
+  if (articlesError) fieldErrors.related_articles = articlesError;
+
   if (Object.keys(fieldErrors).length) return { error: "Please check the highlighted fields.", fieldErrors };
 
   const { skus, error: skuError } = parseSkus(String(form.get("skus") ?? "[]"));
@@ -129,6 +153,12 @@ export async function saveProduct(_prev: ProductFormState, form: FormData): Prom
     key_features: keyFeatures,
     usage_instructions: optional(text(form, "usage_instructions")),
     ingredients: optional(text(form, "ingredients")),
+    availability: availability as ProductAvailability,
+    headline: optional(headline),
+    recommended_use: optional(recommendedUse),
+    precautions: optional(precautions),
+    brand_says: optional(brandSays),
+    related_articles: relatedArticles,
     is_published: form.get("is_published") === "on",
     sort_order: sortOrder,
   };

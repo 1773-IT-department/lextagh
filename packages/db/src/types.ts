@@ -55,9 +55,28 @@ export type Product = Timestamps & {
   key_features: string[];
   usage_instructions: string | null;
   ingredients: string | null;
+  /** 0025. Rows read before the migration is applied lack the new fields; getPublishedProducts fills the defaults. */
+  availability: ProductAvailability;
+  headline: string | null;
+  recommended_use: string | null;
+  precautions: string | null;
+  brand_says: string | null;
+  /** Slugs of brand site articles that go with the product. */
+  related_articles: string[];
   is_published: boolean;
   sort_order: number;
   updated_by: string | null;
+};
+
+/** available: on sale. coming_soon: shown with a Coming soon badge, no Where to buy. discontinued: hidden on the websites. */
+export type ProductAvailability = "available" | "coming_soon" | "discontinued";
+
+export const PRODUCT_AVAILABILITY: readonly ProductAvailability[] = ["available", "coming_soon", "discontinued"] as const;
+
+export const PRODUCT_AVAILABILITY_LABELS: Readonly<Record<ProductAvailability, string>> = {
+  available: "Available",
+  coming_soon: "Coming soon",
+  discontinued: "Discontinued",
 };
 
 export type ProductSku = Timestamps & {

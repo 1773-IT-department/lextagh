@@ -7,7 +7,7 @@
  * If the database cannot be reached, or the site has no Supabase settings, a brand falls back to the static
  * cards in ./data.ts (the same Drive wording) and a warning is logged, so the page never breaks.
  */
-import { getPublishedProducts, isBrandSiteImage, type PublishedProduct } from "@lexta/db";
+import { getPublishedProducts, isBrandSiteImage, isDiscontinued, type PublishedProduct } from "@lexta/db";
 import { hoochProducts, linzzyProducts, yazzProducts, type ProductCard, type ProductImage, type ProductMedia } from "./data";
 
 export const BRAND_SLUGS = ["yazz", "linzzy", "hooch"] as const;
@@ -70,7 +70,7 @@ export function toProductCard(product: PublishedProduct, hint?: ProductCard): Pr
 }
 
 /**
- * The cards of every brand, in Product Management's display order.
+ * The cards of every brand, in Product Management's display order. Discontinued products are left out.
  * Each brand falls back to its static cards on its own if its products cannot be loaded.
  */
 export async function getBrandRanges(): Promise<Record<BrandSlug, ProductCard[]>> {
@@ -80,7 +80,7 @@ export async function getBrandRanges(): Promise<Record<BrandSlug, ProductCard[]>
     const r = results[k];
     if (r.status === "fulfilled") {
       const hints = new Map(staticRanges[slug].map((c) => [c.slug, c]));
-      ranges[slug] = r.value.map((p) => toProductCard(p, hints.get(p.slug)));
+      ranges[slug] = r.value.filter((p) => !isDiscontinued(p)).map((p) => toProductCard(p, hints.get(p.slug)));
     } else {
       console.warn(`[our-brands] showing the static ${slug} cards: ${r.reason instanceof Error ? r.reason.message : String(r.reason)}`);
       ranges[slug] = staticRanges[slug];

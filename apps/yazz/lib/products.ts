@@ -9,7 +9,7 @@
  * If the database cannot be reached, or the site has no Supabase settings, Lexta's own catalogue (content/catalogue.ts)
  * is shown without photos and a warning is logged, so pages never break.
  */
-import { getPublishedProducts, type PublishedProduct } from "@lexta/db";
+import { getPublishedProducts, isDiscontinued, type PublishedProduct } from "@lexta/db";
 import { CATALOGUE } from "../content/catalogue";
 import { rangeOf, type RangeSlug } from "./ranges";
 
@@ -44,6 +44,8 @@ export function toYazzProduct(p: PublishedProduct): YazzProduct {
     ingredients: p.ingredients,
     skus: p.skus.map((s) => ({ code: s.sku_code, variant: s.variant_name, pack: s.pack_size_label })),
     images: p.images.map((i) => ({ src: i.url, alt: i.alt_text })),
+    // Product Management's availability (0025): coming soon gets the Coming soon badge and no Where to buy link.
+    ...(p.availability === "coming_soon" ? { comingSoon: true } : {}),
   };
 }
 
@@ -51,7 +53,9 @@ export function toYazzProduct(p: PublishedProduct): YazzProduct {
 export async function getYazzProducts(): Promise<{ products: YazzProduct[]; live: boolean }> {
   try {
     const rows = await getPublishedProducts(BRAND_SLUG);
-    const products = rows.map(toYazzProduct);
+    // Discontinued products are hidden; one with a catalogue coming soon item's slug hides that item too.
+    const all = rows.map((r) => ({ row: r, product: toYazzProduct(r) }));
+    const products = all.filter((x) => !isDiscontinued(x.row)).map((x) => x.product);
     // Coming soon items from Lexta's catalogue (Pocket Tissue, Dental Floss) show even when the database has no row.
     // A coming soon item is left out when a live product already covers it (same slug, or a live product in the same
     // range whose name or pack variants name it, e.g. a "Tissue" row that sells pocket tissues).
@@ -59,7 +63,7 @@ export async function getYazzProducts(): Promise<{ products: YazzProduct[]; live
     const covers = (p: YazzProduct, c: YazzProduct) =>
       p.slug === c.slug ||
       (p.range === c.range && [p.name, ...p.skus.map((s) => s.variant ?? "")].some((t) => key(t).includes(key(c.name))));
-    const soon = CATALOGUE.filter((c) => c.comingSoon && !products.some((p) => covers(p, c)));
+    const soon = CATALOGUE.filter((c) => c.comingSoon && !all.some((x) => (isDiscontinued(x.row) ? x.product.slug === c.slug : covers(x.product, c))));
     return { products: [...products, ...soon], live: true };
   } catch (error) {
     console.warn(`[products] showing the catalogue from content/catalogue.ts: ${error instanceof Error ? error.message : String(error)}`);

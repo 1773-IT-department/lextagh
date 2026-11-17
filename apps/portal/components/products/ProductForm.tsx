@@ -2,7 +2,7 @@
 
 import { Select } from "@lexta/ui";
 import { startTransition, useActionState, useEffect, useState } from "react";
-import type { Product, ProductSku } from "@lexta/db";
+import { PRODUCT_AVAILABILITY, PRODUCT_AVAILABILITY_LABELS, type Product, type ProductSku } from "@lexta/db";
 import { saveProduct, type ProductFormState } from "@/app/(app)/systems/products/actions";
 
 type BrandOption = { id: string; name: string };
@@ -147,6 +147,15 @@ export default function ProductForm({
               <span className="hint">Unticked products stay as drafts that only staff can see.</span>
             </div>
           </div>
+          <div className="row2">
+            <div className="field">
+              <label htmlFor="availability">Availability</label>
+              <Select id="availability" name="availability" defaultValue={product?.availability ?? "available"} aria-invalid={!!fe.availability}>
+                {PRODUCT_AVAILABILITY.map((a) => <option key={a} value={a}>{PRODUCT_AVAILABILITY_LABELS[a]}</option>)}
+              </Select>
+              {fe.availability ? <span className="ferr">{fe.availability}</span> : <span className="hint">Coming soon shows a badge and no Where to buy link. Discontinued hides it on the websites.</span>}
+            </div>
+          </div>
         </section>
 
         <section className="panel">
@@ -164,6 +173,36 @@ export default function ProductForm({
           <div className="field">
             <label htmlFor="ingredients">Ingredients or materials</label>
             <textarea id="ingredients" name="ingredients" rows={3} maxLength={3000} defaultValue={product?.ingredients ?? ""} />
+          </div>
+        </section>
+
+        <section className="panel">
+          <h2>Product page</h2>
+          <p className="small">Extra lines for the brand website's product page. Leave a field empty if the brand does not use it.</p>
+          <div className="field">
+            <label htmlFor="headline">Headline</label>
+            <input id="headline" name="headline" defaultValue={product?.headline ?? ""} maxLength={200} aria-invalid={!!fe.headline} placeholder="For example Extra Care for Your Heavier Days" />
+            {fe.headline && <span className="ferr">{fe.headline}</span>}
+          </div>
+          <div className="field">
+            <label htmlFor="recommended_use">Recommended use</label>
+            <textarea id="recommended_use" name="recommended_use" rows={2} maxLength={1000} defaultValue={product?.recommended_use ?? ""} aria-invalid={!!fe.recommended_use} />
+            {fe.recommended_use && <span className="ferr">{fe.recommended_use}</span>}
+          </div>
+          <div className="field">
+            <label htmlFor="precautions">Precautions</label>
+            <textarea id="precautions" name="precautions" rows={3} maxLength={3000} defaultValue={product?.precautions ?? ""} aria-invalid={!!fe.precautions} />
+            {fe.precautions ? <span className="ferr">{fe.precautions}</span> : <span className="hint">Skin sensitivity and safety notes, as Lexta approved them.</span>}
+          </div>
+          <div className="field">
+            <label htmlFor="brand_says">Brand says</label>
+            <textarea id="brand_says" name="brand_says" rows={2} maxLength={300} defaultValue={product?.brand_says ?? ""} aria-invalid={!!fe.brand_says} />
+            {fe.brand_says ? <span className="ferr">{fe.brand_says}</span> : <span className="hint">The brand&apos;s sign off line, for example the &quot;Linzzy says&quot; line.</span>}
+          </div>
+          <div className="field">
+            <label htmlFor="related_articles">Related articles</label>
+            <textarea id="related_articles" name="related_articles" rows={2} defaultValue={(product?.related_articles ?? []).join(", ")} aria-invalid={!!fe.related_articles} placeholder="know-your-flow, period-hygiene-101" />
+            {fe.related_articles ? <span className="ferr">{fe.related_articles}</span> : <span className="hint">Web addresses of the brand site&apos;s articles, separated by commas.</span>}
           </div>
         </section>
 

@@ -538,8 +538,10 @@ You can also close straight away; closing needs **How it was resolved**.
 
 1. Open **Product management** and tap the product.
 2. Change the details: name, category, descriptions, display order, key features, how to use, ingredients.
-3. Under **SKUs and pack sizes**, change or **Add a SKU** (SKU code, variant, pack size, barcode). Untick **Active** to stop a pack size being ordered.
-4. Tap **Save changes**. The message "Saved. The websites will show the change shortly" confirms it.
+3. Set **Availability**: **Available**, **Coming soon** (the brand site shows a Coming soon badge and no Where to buy link) or **Discontinued** (the websites hide it). The product list shows it as a badge next to the status.
+4. Under **Product page**, fill in what the brand site's product page uses: **Headline**, **Recommended use**, **Precautions**, **Brand says** (the brand's sign off line, for example "Linzzy says") and **Related articles** (the web addresses of the brand site's articles, separated by commas, for example know-your-flow, period-hygiene-101). Leave a field empty if the brand does not use it.
+5. Under **SKUs and pack sizes**, change or **Add a SKU** (SKU code, variant, pack size, barcode). Untick **Active** to stop a pack size being ordered.
+6. Tap **Save changes**. The message "Saved. The websites will show the change shortly" confirms it.
 
 ![Editing a product](images/61-product-edit.png)
 
@@ -569,6 +571,7 @@ You can also close straight away; closing needs **How it was resolved**.
 * Published products also feed the distributor catalogue and the field sales stock check.
 * Some pack sizes still say "[PLACEHOLDER: pack size from Lexta]". Replace them with the real pack sizes.
 * Deleting a product removes it from the system and the websites for good. Unpublish it instead if you only want to hide it.
+* **Discontinued** only hides a product on the websites. Distributor ordering and the field sales stock check follow **Publish**: unpublish it too if it should no longer be ordered.
 
 ---
 

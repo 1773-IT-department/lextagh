@@ -12,7 +12,7 @@
  * Management alone decides what shows and how it reads (an unpublished cereal disappears, a staff edit shows).
  * If the database cannot be reached, the catalogue is shown and a warning is logged, so pages never break.
  */
-import { getPublishedProducts, type PublishedProduct } from "@lexta/db";
+import { getPublishedProducts, isDiscontinued, type PublishedProduct } from "@lexta/db";
 import { CATALOGUE } from "../content/catalogue";
 
 export const BRAND_SLUG = "hooch";
@@ -114,11 +114,15 @@ export function toHoochProduct(p: PublishedProduct, prototype = false): HoochPro
  * staff republish shows too: Product Management decides). Before 0017: prototype rows skipped, rows merged with the catalogue, every
  * catalogue cereal the database lacks added, in the catalogue's order, then any product staff added.
  */
-export function mergeHoochProducts(rows: PublishedProduct[]): HoochProduct[] {
+export function mergeHoochProducts(allRows: PublishedProduct[]): HoochProduct[] {
+  // Discontinued products (Product Management availability, 0025) are hidden, and not added back from the catalogue.
+  // The site has no Coming soon treatment, so a coming soon cereal shows as usual.
+  const discontinued = new Set(allRows.filter(isDiscontinued).map((r) => r.slug));
+  const rows = allRows.filter((r) => !isDiscontinued(r));
   const prototype = isPrototypeDatabase(rows);
   if (!prototype) return rows.map((r) => toHoochProduct(r, false));
   const live = rows.filter((r) => !PROTOTYPE_SEED_SLUGS.includes(r.slug)).map((r) => toHoochProduct(r, true));
-  const fromCatalogue = CATALOGUE.map((c) => live.find((p) => p.slug === c.slug) ?? c);
+  const fromCatalogue = CATALOGUE.filter((c) => !discontinued.has(c.slug)).map((c) => live.find((p) => p.slug === c.slug) ?? c);
   return [...fromCatalogue, ...live.filter((p) => !CATALOGUE.some((c) => c.slug === p.slug))];
 }
 

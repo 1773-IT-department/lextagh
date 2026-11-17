@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { productImageUrl, type Product, type ProductImage, type ProductSku } from "@lexta/db";
+import { PRODUCT_AVAILABILITY_LABELS, productImageUrl, withPageFields, type Product, type ProductImage, type ProductSku } from "@lexta/db";
 import ConfirmButton from "@/components/products/ConfirmButton";
 import ImageManager from "@/components/products/ImageManager";
 import PublishButton from "@/components/products/PublishButton";
@@ -34,8 +34,9 @@ export default async function EditProductPage({
   }
 
   const supabase = await createClient();
-  const { data: product, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle<Product>();
+  const { data: row, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle<Product>();
   if (error) throw new Error("Could not load the product");
+  const product = row && withPageFields(row);
   const brand = product && access.brands.find((b) => b.id === product.brand_id);
   if (!product || !brand) notFound();
 
@@ -55,6 +56,7 @@ export default async function EditProductPage({
           <h1>{product.name}</h1>
           <p className="small">
             <span className={`badge ${product.is_published ? "on" : "off"}`}>{product.is_published ? "On the websites" : "Draft"}</span>{" "}
+            <span className={`badge avail a-${product.availability}`}>{PRODUCT_AVAILABILITY_LABELS[product.availability]}</span>{" "}
             {brand.name}{product.category ? `, ${product.category}` : ""}
           </p>
         </div>
