@@ -80,13 +80,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           )}
           <div className={s.box}>
             <h2>Have a question?</h2>
-            <p>Send us your question. It goes to our consumer care team.</p>
+            <p>We are here to listen, serve and support.</p>
             <Link href="/contact?topic=question#message" className={s.boxLink}>Contact us <Icon name="arrow" size={15} /></Link>
           </div>
           {range && (
             <div className={s.box}>
               <h2>Yazz {range.name}</h2>
-              <p>{range.tagline}. See the range and find a stockist near you.</p>
+              <p>{range.tagline}.</p>
               <Link href={`/products/${range.slug}`} className={s.boxLink}>View products <Icon name="arrow" size={15} /></Link>
             </div>
           )}

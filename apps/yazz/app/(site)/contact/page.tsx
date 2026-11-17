@@ -14,7 +14,7 @@ import { ALL_REGIONS, getWhereToBuyRegions, getYazzStockists, type StockistItem 
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
-  description: "Find a shop that stocks Yazz® near you, contact Yazz consumer care, or send a trade and distributor enquiry to the Yazz team at Lexta Ghana Limited.",
+  description: "Contact Yazz Products for all inquiries. We are here to listen, serve and support.",
   alternates: { canonical: "/contact" },
 };
 
@@ -44,17 +44,18 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
     .filter((g) => g.options.length);
 
   const channels = [
-    { icon: "phone", tone: "#ED1B2E", title: "Consumer Care", body: "Product questions, complaints, feedback and product reviews.", action: contact.whatsappCare, href: whatsapp(contact.whatsappCare), label: "WhatsApp" },
-    { icon: "truck", tone: "#0B4FA5", title: "Trade & Stockists", body: "Distributors, wholesalers, shops and institutions: send us a trade enquiry.", action: "Trade enquiry", href: "#trade" },
-    { icon: "pin", tone: "#15803D", title: "Find a Stockist", body: "Shops and distributors that stock Yazz, on the map.", action: "Open the locator", href: "#where-to-buy" },
-    { icon: "mail", tone: "#EC1B7B", title: "Partnerships", body: "Partnerships and sponsorships with the Yazz team.", action: contact.partnershipsEmail, href: `mailto:${contact.partnershipsEmail}` },
+    // Card text: Lexta's Contact copy (Drive website-copy.md, lexta/website-copy.md) and yazzproducts.com's Contact page.
+    { icon: "phone", tone: "#ED1B2E", title: "Consumer Care", body: "We are here to listen, serve and support.", action: contact.whatsappCare, href: whatsapp(contact.whatsappCare), label: "WhatsApp" },
+    { icon: "truck", tone: "#0B4FA5", title: "Trade & Stockists", body: "Wholesaler / Modern Trade Onboarding.", action: "Trade enquiry", href: "#trade" },
+    { icon: "pin", tone: "#15803D", title: "Find a Stockist", body: "Distributors, Wholesale and Modern Trade.", action: "Open the locator", href: "#where-to-buy" },
+    { icon: "mail", tone: "#EC1B7B", title: "Partnerships", body: "Partnerships / sponsorships, marketing partnerships and CSR proposals.", action: contact.partnershipsEmail, href: `mailto:${contact.partnershipsEmail}` },
   ];
 
   return (
     <>
       <section className={s.hero} aria-labelledby="contact-title">
         <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Get in touch</p>
-        <h1 id="contact-title" className={s.heroTitle}>Talk to Yazz, or Find Us on a Shelf Near You</h1>
+        <h1 id="contact-title" className={s.heroTitle}>Contact Yazz Products for All Inquiries</h1>
         <p className={s.heroBody}>{BRAND.consumerSupport}</p>
         <div className={s.heroActions}>
           <a href="#where-to-buy" className="yz-btn yz-btn--red">Find a Stockist <Icon name="pin" size={17} /></a>
@@ -92,8 +93,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
         <aside className={s.sideCol} aria-label="Contact details">
           <div className={s.partnerCard}>
             <Icon name="truck" size={26} />
-            <h2>Become a Yazz Partner</h2>
-            <p>Distributor, wholesaler, shop or institution? Tell us your region and volumes. Your enquiry goes to Lexta Ghana Limited.</p>
+            <h2>Stockist Enquiry</h2>
             <a href="#trade" className="yz-btn yz-btn--red">Trade enquiry <Icon name="arrow" size={16} /></a>
           </div>
           <div className={s.office}>
@@ -130,9 +130,9 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
         <div className={s.trade}>
           <div className={s.tradeIntro}>
             <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Trade &amp; distribution</p>
-            <h2 id="trade-title">Stock Yazz in Your Shop or Region</h2>
-            <p>Distributors, wholesalers, shops, supermarkets, pharmacies and institutions: tell us about your business and what you would like to stock. Your enquiry goes to Lexta Ghana Limited.</p>
-            <p className={`yz-script ${s.tradeScript}`} aria-hidden="true">More Products.<br />More Smiles. <span>♥</span></p>
+            <h2 id="trade-title">Wholesaler / Modern Trade Onboarding</h2>
+            <p>Distributors, Wholesale and Modern Trade. Contact Yazz Products for all inquiries.</p>
+            <p className={`yz-script ${s.tradeScript}`} aria-hidden="true">Caring brand<br />for caring families. <span>♥</span></p>
           </div>
           <TradeForm regions={regions} />
         </div>
@@ -141,8 +141,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
       <section className={`yz-pad ${s.quick}`} aria-labelledby="quick-title">
         <div>
           <p className="yz-eyebrow">Quick answers</p>
-          <h2 id="quick-title" className="yz-h2" style={{ marginTop: 10 }}>Before You Write</h2>
-          <p className="yz-lead" style={{ marginTop: 12 }}>Many questions about periods, our products and where to buy Yazz are answered in our FAQs.</p>
+          <h2 id="quick-title" className="yz-h2" style={{ marginTop: 10 }}>Ask Yazz®</h2>
+          <p className="yz-lead" style={{ marginTop: 12 }}>Frequently asked period and product questions.</p>
         </div>
         <div className={s.quickLinks}>
           <Link href="/faqs" className={s.quickLink}><Icon name="chat" size={20} /> Questions &amp; answers <Icon name="arrow" size={16} /></Link>

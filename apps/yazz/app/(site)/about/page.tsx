@@ -9,7 +9,7 @@ import { contact, lexta, tel } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Yazz® is a trademark brand of Lexta Ghana Limited: dependable, quality-driven products for the everyday needs of Ghanaian families. Our promise, vision and mission.",
+  description: "Yazz® is a trademark brand of Lexta Ghana Limited, created to provide dependable, quality-driven products that support the everyday needs of individuals, families and households.",
   alternates: { canonical: "/about" },
 };
 
@@ -33,15 +33,15 @@ export default function AboutPage() {
         <div className={s.whoPic}><Photo image={null} needed="Yazz production line or quality team photo" icon="sparkle" /></div>
         <div className={s.whoText}>
           <p className="yz-eyebrow">Who we are</p>
-          <h2 id="who-title" className={s.blueTitle}>A Ghanaian Brand With a Big Purpose</h2>
+          <h2 id="who-title" className={s.blueTitle}>A Growing Ghanaian Brand</h2>
           <p>{BRAND.about[1]}</p>
           <p>{BRAND.trademarkLine} Our promise is grounded in quality, reliability, value, innovation, consumer care and accessibility. We listen, learn and improve to support families across generations.</p>
         </div>
       </section>
 
       <section className={`yz-pad ${s.promise}`} aria-labelledby="promise-title">
-        <p className="yz-eyebrow" style={{ textAlign: "center" }}>The Yazz® Promise</p>
-        <h2 id="promise-title" className="yz-h2" style={{ textAlign: "center", marginTop: 10 }}>Quality You Can Count On</h2>
+        <p className="yz-eyebrow" style={{ textAlign: "center" }}>Our promise</p>
+        <h2 id="promise-title" className="yz-h2" style={{ textAlign: "center", marginTop: 10 }}>The Yazz® Promise</h2>
         {BRAND.promiseIntro.map((p) => <p key={p} className={s.center}>{p}</p>)}
         <div className={s.promiseGrid}>
           {BRAND.promise.map((p) => (
@@ -104,7 +104,7 @@ export default function AboutPage() {
 
       <section className={`yz-pad ${s.generations}`} aria-labelledby="gen-title">
         <div>
-          <p className="yz-eyebrow">Made for every generation</p>
+          <p className="yz-eyebrow">Generations of trust</p>
           <h2 id="gen-title" className={s.blueTitle}>{BRAND.generations.title}</h2>
           {BRAND.generations.lines.map((l) => <p key={l} className={s.line}>{l}</p>)}
           {BRAND.generations.body.map((p) => <p key={p} className={s.para}>{p}</p>)}
@@ -136,9 +136,10 @@ export default function AboutPage() {
       <section className={`yz-pad ${s.impact}`} aria-labelledby="impact-title">
         <div className={s.impactBox}>
           <div>
-            <p className="yz-eyebrow">Community impact</p>
-            <h2 id="impact-title" className={s.blueTitle}>Rooted in Our Communities.</h2>
-            <p className={s.para}>Lexta Ghana Limited has set out Yazz community programmes on menstrual education, baby hygiene, oral care and the environment; several of them are still proposed. Read about them, or propose a partnership, on the Lexta website.</p>
+            <p className="yz-eyebrow">Lexta CSR</p>
+            <h2 id="impact-title" className={s.blueTitle}>Community Impact</h2>
+            {/* The six Yazz initiatives, named as in Lexta's CSR content (docs/content/yazz/csr.md). */}
+            <p className={s.para}>Empowered Periods, Dignity Project. Cervical Cancer Awareness. Forest Project, Powered by Lexta. Clean Hands, Green Land. The &ldquo;Safe Bottoms&rdquo; Initiative. The &ldquo;Bright Smiles&rdquo; School Tour.</p>
           </div>
           <a href={lexta.csr} target="_blank" rel="noopener" className="yz-btn yz-btn--red">Our Impact at Lexta <Icon name="arrow" size={17} /></a>
         </div>
@@ -149,15 +150,15 @@ export default function AboutPage() {
           <div>
             <p className="yz-eyebrow">Help centre</p>
             <h2 id="faq-card-title">Questions &amp; Answers</h2>
-            <p>Answers on periods and puberty, our products, where to buy Yazz® and trade.</p>
+            <p>Frequently asked period and product questions.</p>
           </div>
           <Link href="/faqs" className="yz-btn yz-btn--red">Read the FAQs <Icon name="arrow" size={17} /></Link>
         </div>
       </section>
 
       <section className={s.red} aria-labelledby="red-title">
-        <h2 id="red-title">Everyday Quality.<br /><em>Made for You.</em></h2>
-        <p>{BRAND.tagline} {BRAND.caring.replace(/^C/, "A c")}</p>
+        <h2 id="red-title">Caring Brand<br /><em>for Caring Families.</em></h2>
+        <p>Yazz® Trusted Quality for Everyday Living.</p>
         <div className={s.redActions}>
           <Link href="/products" className="yz-btn yz-btn--white">Explore Products <Icon name="arrow" size={17} /></Link>
           <Link href="/contact#where-to-buy" className="yz-btn yz-btn--ghost-light"><Icon name="pin" size={17} /> Where to Buy</Link>

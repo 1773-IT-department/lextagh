@@ -8,7 +8,7 @@ import { FieldError, FormMessage, idleState } from "@/components/forms/FormParts
 import s from "./tips.module.css";
 
 /**
- * "Never Miss a Yazz Headline": the prototype's red newsletter band. Signs up through the same intake as the Lexta
+ * The prototype's red newsletter band, headed with Lexta's tab name "Tips & News". Signs up through the same intake as the Lexta
  * newsletter (public.submit_website_enquiry, form "newsletter"), brand Yazz: a CRM contact with marketing consent.
  * Posts without JavaScript too.
  */
@@ -20,8 +20,7 @@ export default function SubscribeForm() {
   return (
     <section className={s.subscribe} aria-labelledby={`${id}-title`}>
       <div className={s.subscribeText}>
-        <h2 id={`${id}-title`} className={s.subscribeTitle}>Never Miss a<br /><em>Yazz Headline.</em></h2>
-        <p>Leave your email address to hear about new Yazz® tips, products and announcements.</p>
+        <h2 id={`${id}-title`} className={s.subscribeTitle}>Yazz® Tips<br /><em>&amp; News.</em></h2>
       </div>
       <form ref={ref} action={action} onSubmit={onSubmit} className={s.subscribeForm} noValidate>
         <Honeypot />

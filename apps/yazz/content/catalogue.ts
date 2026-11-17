@@ -15,30 +15,32 @@
  */
 import type { YazzProduct } from "../lib/products";
 
-const QUALITY = ["[PLACEHOLDER: confirm current ISO certification and year]", "Passed strict quality inspection"];
+const QUALITY = ["[PLACEHOLDER: confirm current ISO certification and year]", "The product has passed strict quality inspection"];
+// Every sentence below quotes docs/content/yazz/products.md (Lexta's Drive), with only casing and list joins adapted.
 const IRRITATION =
-  "In the highly unlikely event of irritation, please discontinue use and report it on +233 50 996 7400 (WhatsApp) or support@yazzproducts.com.";
-const SUFFOCATION = "Warning: to avoid danger of suffocation, keep the product away from infants and children.";
-const PAD_SIZES = "Pad lengths: normal flow 270mm, heavy flow 290mm and heavy flow 330mm.";
+  "In the highly unlikely event of irritation, please discontinue use and share a report to +233 50 996 7400 or via email support@yazzproducts.com.";
+const LINER_IRRITATION =
+  "In the highly unlikely event of irritation, please discontinue use and share a report to WhatsApp +233 50 996 7400 or via email support@yazzproducts.com.";
+const SUFFOCATION = "Warning: To avoid danger of suffocation, keep product away from infants and children.";
+const PAD_SIZES = "Normal flow: 270mm. Heavy flow: 290mm. Heavy flow: 330mm.";
 const PAD_FEATURES = [
   "Soft flexible wings provide maximum side protection",
-  "Wide adhesive on the back holds the pad firmly in place",
+  "Wide adhesive on the back, holds the pad firmly in place",
   "Ultra-thin",
-  "Soft dry web cover for a natural feeling",
-  "Round edges give you comfort",
+  "Convenient & resealable pack, soft dry web cover for natural feeling",
+  "Round edge gives you comfort",
   "Wider pad for maximum coverage against leakage",
-  "Specially designed wings protect your panties",
-  "Convenient resealable pack",
+  "Specially designed wings ensure protection of your panties",
   ...QUALITY,
 ];
 const WIPES_WARNING =
-  "Keep out of reach of children. Avoid contact with the eyes; if this occurs, rinse well with plenty of water. Do not flush down the toilet. Dispose of with normal household waste.";
+  "Keep out of reach of children. Avoid contact with the eye; if this occurs, rinse well with plenty of water. Do not flush down toilet. Dispose of with normal household waste.";
 const DIAPER_USE =
-  "How to use: place baby on the diaper with the two back tapes at the back. Attach the two back tapes on the refastenable area to fit your baby. Pull the elastic leg bands towards the side to prevent leakage. Pull up the tape to check whether the diaper is wet. Do not flush.";
+  "How to use Yazz baby diaper: 1. Place baby on diaper with the two back tapes at the backside. 2. Attach the two back tapes on the refastenable area to fit your baby. 3. Pull the elastic leg bands towards the side to prevent leakage. 4. Pull up the tape and you can check whether the diaper is wet.";
 const DIAPER_CAUTION =
-  "Caution: wash your hands before changing your baby's diaper. Make sure your baby is clean and dry before putting on a fresh diaper. Change used diapers to keep the baby comfortable and throw them away immediately. Plastic bags are dangerous for children and must be kept out of reach.";
+  "Caution: Wash your hands before changing your baby's diapers. Make sure your baby is clean and dry before putting on a fresh diaper. Change used diapers to keep the baby comfortable. Always throw away used diapers immediately to avoid bacteria. Plastic bags are dangerous for children and must be kept out of reach or at a safe distance.";
 const PASTE_USE =
-  "Brush your teeth twice daily. As with other toothpastes, if irritation occurs discontinue use and report it on WhatsApp +233 50 996 7400 or support@yazzproducts.com.";
+  "As with other toothpastes, if irritation occurs discontinue use and share a report to WhatsApp +233 50 996 7400 or via email support@yazzproducts.com.";
 const PACK = "[PLACEHOLDER: pack size from Lexta]";
 
 let n = 100;
@@ -48,11 +50,11 @@ export const CATALOGUE: YazzProduct[] = [
   // Feminine care ---------------------------------------------------------------------------------------------
   {
     slug: "sanitary-pads", name: "Yazz sanitary pads", range: "feminine-care", category: "Feminine care",
-    short: "Ultra-thin pads with soft flexible wings and a wide adhesive back, in normal and heavy flow lengths.",
-    long: "Yazz sanitary pads are ultra-thin, with soft flexible wings for maximum side protection and a wide adhesive on the back that holds the pad firmly in place. A soft dry web cover gives a natural feeling, round edges give you comfort and a wider pad gives maximum coverage against leakage.",
+    short: "Soft flexible wings provide maximum side protection. Ultra-thin.",
+    long: "Soft flexible wings provide maximum side protection. Wide adhesive on the back, holds the pad firmly in place. Wider pad for maximum coverage against leakage.",
     features: PAD_FEATURES,
     usage: `${PAD_SIZES} ${IRRITATION} ${SUFFOCATION}`,
-    ingredients: "Developed with a pearl cotton sheet for your comfort.",
+    ingredients: "Developed with Pearl cotton sheet for your comfort.",
     skus: [
       sku("Extra Long Minty", "9 extra long pads + 2 normal flow pads"),
       sku("Extra Long, free panty liner and disposable bag", "9 extra long pads + 2 normal flow pads"),
@@ -70,10 +72,10 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "panty-liners", name: "Yazz panty liners", range: "feminine-care", category: "Feminine care",
-    short: "New and improved thick panty liners with 24 hours protection.",
-    long: "New and improved thick Yazz panty liners give 24 hours protection, in the regular liner (yellow pack), the pink panty liner and the extra long and thick minty liner.",
-    features: ["24 hours protection", "New and improved thick panty liner", "Lengths of 150mm and 180mm", ...QUALITY],
-    usage: `${IRRITATION} ${SUFFOCATION}`,
+    short: "New & Improved thick panty liner. 24 hrs protection.",
+    long: "New & Improved thick panty liner. 24 hrs protection.",
+    features: ["24 hrs protection", "New & Improved thick panty liner", "180mm; 150mm", ...QUALITY],
+    usage: `${LINER_IRRITATION} ${SUFFOCATION}`,
     ingredients: null,
     skus: [sku("Regular (yellow pack)", PACK), sku("Pink", "24 minty liners"), sku("Extra long and thick, minty (pink)", "24 minty liners")],
     images: [
@@ -83,10 +85,10 @@ export const CATALOGUE: YazzProduct[] = [
   // Baby care ------------------------------------------------------------------------------------------------
   {
     slug: "baby-diapers", name: "Yazz baby diapers", range: "baby-care", category: "Baby care",
-    short: "Cottony soft, super absorbent taped diapers with an elastic waist and up to 12 hours leakage protection.",
-    long: "Yazz baby diapers are cottony soft and super absorbent, with an elastic waist and up to 12 hours leakage protection.",
+    short: "Elastic waist. Up to 12 hours leakage protection. Cottony soft. Super absorbent.",
+    long: "Elastic waist. Up to 12 hours leakage protection. Cottony soft. Super absorbent.",
     features: ["Elastic waist", "Up to 12 hours leakage protection", "Cottony soft", "Super absorbent"],
-    usage: `${DIAPER_USE} ${DIAPER_CAUTION}`,
+    usage: `${DIAPER_USE} Warning: Do not flush. ${DIAPER_CAUTION}`,
     ingredients: null,
     skus: [sku("Small, 3 to 6kg", "15 pieces"), sku("Medium, 6 to 9kg", "12 pieces"), sku("Large, [PLACEHOLDER: weight range]", "11 pieces"), sku("Extra large, 13kg and above", "8 pieces")],
     images: [
@@ -96,10 +98,10 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "baby-pull-up-pants", name: "Yazz pull up pants", range: "baby-care", category: "Baby care",
-    short: "Pull up diapers with a 360 elastic waist and up to 12 hours leakage protection.",
-    long: "Yazz pull up pants have a 360 elastic waist, a soft and dry skin climate and up to 12 hours leakage protection.",
-    features: ["360 elastic waist", "Up to 12 hours leakage protection", "Soft and dry skin climate", "Super absorbent"],
-    usage: `${DIAPER_CAUTION} Do not flush in the WC.`,
+    short: "360 elastic waist. Up to 12 hours leakage protection.",
+    long: "360 elastic waist. Up to 12 hours leakage protection. Soft and drying skin climate. Super absorbent.",
+    features: ["360 elastic waist", "Up to 12 hours leakage protection", "Soft and drying skin climate", "Super absorbent"],
+    usage: `${DIAPER_CAUTION} ${DIAPER_USE} Warning: Do not flush in the WC.`,
     ingredients: null,
     skus: [
       sku("Small, 4 to 8kg", "54 pieces"), sku("Medium, 6 to 11kg", "52 pieces"), sku("Large, 9 to 14kg", "50 pieces"),
@@ -109,8 +111,8 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "baby-wipes", name: "Yazz baby wipes", range: "baby-care", category: "Baby care",
-    short: "Alcohol free, multi-purpose baby wipes in Lavender, Castor Oil and Aloe Vera.",
-    long: "Gentle, alcohol free wipes for delicate skin. Aloe Vera: super soft for sensitive skin, gently cleanses while helping soothe and hydrate. Castor Oil: deep moisture, soft skin and a gentle clean that helps protect skin from dryness. Lavender: [PLACEHOLDER: Lavender wipes description; Lexta's text repeats the Aloe Vera copy].",
+    short: "Multi-Purpose cleaning. Alcohol Free.",
+    long: "Aloe Vera: Soothe. Hydrate and protect. Super soft for sensitive skin. Care for delicate skin with Aloe Vera-enriched wipes that gently cleanse while helping soothe and hydrate. Castor Oil: Deep Moisture, Soft skin and gentle clean. Gently cleanse while helping lock in moisture with castor oil-enriched wipes, designed to leave skin feeling soft, smooth and comfortably hydrated for everyday use. Lavender: [PLACEHOLDER: Lavender wipes description; Lexta's text repeats the Aloe Vera copy].",
     features: ["Multi-purpose cleaning", "Alcohol free", "Leaves skin soft and nourished", "Gentle, effective cleansing", "Suitable for everyday use"],
     usage: WIPES_WARNING,
     ingredients:
@@ -121,9 +123,13 @@ export const CATALOGUE: YazzProduct[] = [
   // Oral care ------------------------------------------------------------------------------------------------
   {
     slug: "toothpaste-herbal", name: "Yazz Herbal toothpaste", range: "oral-care", category: "Oral care",
-    short: "For natural fresh breath, clean and healthy teeth, with a unique blend of herbs.",
-    long: "For natural fresh breath, clean and healthy teeth, with protection against unpleasant sensations from hot and cold foods and drinks. The unique blend of herbs helps promote proper hygiene in the mouth, makes the gums strong and helps prevent cavities.",
-    features: ["Helps reduce tooth pain", "Makes the gums strong and helps prevent cavities", "Helps reduce bad breath", "Gently breaks up stains to get teeth whiter", "Helps maintain strong teeth and healthy gums"],
+    short: "For natural fresh breath, clean and healthy teeth.",
+    long: "For natural fresh breath, clean and healthy teeth. Protection against unpleasant sensations from hot and cold foods and drinks.",
+    features: [
+      "Helps in reducing the pain of the teeth", "Helps promote proper hygiene in the mouth, makes the gums strong and prevents cavity formation",
+      "Helps to reduce all the bad and foul smell from the mouth", "Gently breaks up stains to get teeth whiter",
+      "Helps prevent the build up of deposits which can attract stains", "Helps maintain strong teeth, healthy gums and clean fresh breath",
+    ],
     usage: PASTE_USE,
     ingredients: "Sorbitol, silica, water, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, titanium dioxide, sodium saccharin, honeysuckle, sodium fluoride, CI 74260.",
     skus: [sku(null, "150g")],
@@ -133,9 +139,9 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "toothpaste-whitening", name: "Yazz Whitening toothpaste", range: "oral-care", category: "Oral care",
-    short: "For a whiter, brighter and healthier smile, with a special polishing agent.",
-    long: "Yazz Whitening toothpaste has a special polishing agent that removes stains lodged on the teeth from food, with a cool, refreshing mint fragrance that keeps your mouth smelling good.",
-    features: ["Special polishing agent for extra stain removal", "Cool, refreshing mint", "Helps prevent deposits that attract stains", "Helps maintain strong teeth and healthy gums"],
+    short: "For a whiter, brighter and healthier smile.",
+    long: "For a whiter, brighter and healthier smile. Has a special polishing agent that provides additional stain removal effectively. Polishes off stains that have lodged onto the teeth from foodstuffs. Cool and refreshing mint fragrance makes your mouth smell good at all times.",
+    features: ["Gently breaks up stains to get teeth whiter", "Helps prevent the build up of deposits which can attract stains", "Helps maintain strong teeth, healthy gums and clean fresh breath"],
     usage: PASTE_USE,
     ingredients: "Calcium carbonate, aqua, sorbitol, glycerin, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, hydroxyethylcellulose, flavour, sodium saccharin, calcium phosphate, sodium pyrophosphate, sodium phytate, methylparaben.",
     skus: [sku(null, "150g")],
@@ -146,9 +152,9 @@ export const CATALOGUE: YazzProduct[] = [
   {
     slug: "toothpaste-fluoride", name: "Yazz Fluoride toothpaste", range: "oral-care", category: "Oral care",
     short: "Long lasting protection, for brilliant white teeth.",
-    long: "Long lasting protection, for brilliant white teeth. Brush twice daily with Yazz Fluoride toothpaste.",
+    long: "Long lasting protection, for brilliant white teeth.",
     features: ["Long lasting protection", "For brilliant white teeth"],
-    usage: PASTE_USE,
+    usage: `It is recommended you brush your teeth twice daily with Yazz fluoride toothpaste. ${PASTE_USE}`,
     ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, cellulose gum, aroma, sodium fluoride, sodium benzoate, CI 77891, CI 16255.",
     skus: [sku(null, "150g")],
     images: [
@@ -157,11 +163,11 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "toothpaste-charcoal", name: "Yazz Charcoal toothpaste", range: "oral-care", category: "Oral care",
-    short: "Deep clean: removes stains and whitens teeth with activated charcoal.",
-    long: "Activated charcoal particles help cleanse your mouth and remove deep stains and discolouration. The highly absorbent particles draw out stubborn stains, trap colour particles, fight bad breath and whiten tooth enamel.",
-    features: ["Deep clean", "Removes stains", "Whitens teeth", "Fights bad breath"],
+    short: "Deep clean, removes stain and whitens teeth.",
+    long: "With activated charcoal particles, helps to cleanse your mouth and removes deep stains and discolouration. The highly absorbent activated charcoal particles penetrate and draw out stubborn stains, trap colour particles, fight bad breath and whiten teeth enamel.",
+    features: ["Deep clean", "Removes stain", "Whitens teeth", "Fights bad breath"],
     usage: PASTE_USE,
-    ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, sodium saccharin, charcoal powder, mica, CI 77266, lanthanide gum, methylparaben, sodium fluoride.",
+    ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, sodium saccharin, charcoal powder, mica, CI 77266, xanthan gum, methylparaben, sodium fluoride.",
     skus: [sku(null, "150g"), sku(null, "50g")],
     images: [
       { src: "/images/original/toothpaste-charcoal.webp", alt: "Yazz Charcoal toothpaste tube, 150g" },
@@ -170,8 +176,11 @@ export const CATALOGUE: YazzProduct[] = [
   {
     slug: "toothpaste-total-care", name: "Yazz Total Care toothpaste", range: "oral-care", category: "Oral care",
     short: "Everyday protection and care for your teeth.",
-    long: "Cares for your teeth and refreshes your breath, protecting against cavities, foul smell, yellow teeth, plaque and bleeding or swollen gums. Cleans tartar and stains, stimulates the gums and leaves a pleasantly refreshing taste.",
-    features: ["Protects against cavities and plaque", "Refreshes your breath", "Cleans tartar and stains", "Stimulates the gums"],
+    long: "Everyday protection and care for your teeth.",
+    features: [
+      "Cares for your teeth and refreshes your breath; protects against cavities, foul smell, yellow teeth, plaque, bleeding and swollen gums",
+      "Helps loosen up gums and teeth, cleans tartar and stains", "Stimulates gums and provides a pleasantly refreshing taste",
+    ],
     usage: PASTE_USE,
     ingredients: "Sorbitol, aqua, hydrated silica, sodium lauryl sulfate, sodium carboxymethyl cellulose, flavour, sodium saccharin, mica, pigment, triclosan, methylparaben, sodium fluoride.",
     skus: [sku(null, PACK)],
@@ -181,10 +190,10 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "toothbrushes", name: "Yazz toothbrushes", range: "oral-care", category: "Oral care",
-    short: "Your best smiles: a unique bristle that helps remove plaque, with a tongue cleaner and a flexible rubber grip.",
-    long: "Yazz toothbrushes have a unique bristle that is more effective in helping remove plaque and stains, an innovative tongue cleaner designed to gently clean the tongue and a flexible rubber handle for an easy grip. Dentist recommendation: change your toothbrush at least once every three months.",
-    features: ["Easy cleaning and massage", "Removes plaque, protects enamel", "Gentle on gums, cleans between the teeth", "Flexible rubber handle for an easy grip"],
-    usage: "Brush twice a day. Hold the brush with your elbow raised to shoulder level and brush in a circular, up and down motion. Change the brush every 3 months and visit the dentist regularly.",
+    short: "Yazz brushes: Your best smiles.",
+    long: "Yazz toothbrushes' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue. Made with a flexible rubber handle specially designed for easy grip and convenient brushing. Dentist recommendation: change your toothbrush at least once every three months.",
+    features: ["Easy cleaning and massage", "Removes plaque, protects enamel", "Gentle on gums, effectively cleans between the teeth"],
+    usage: "Tips for a healthy smile: Visit the dentist regularly for check-ups. Brush twice a day. Rinse your mouth after every meal. Do not eat sweet sticky food between meals. Change the brush every 3 months. Follow the correct brushing technique: hold the brush with the elbow raised up to shoulder level, and brush in a circular, up and down motion.",
     ingredients: null,
     skus: [
       sku("Princess, medium bristle", PACK), sku("Monarch, medium bristle with tongue cleaner", PACK), sku("Duchess, medium bristle with tongue cleaner", PACK),
@@ -199,18 +208,18 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "dental-floss", name: "Yazz dental floss", comingSoon: true, range: "oral-care", category: "Oral care",
-    short: "Coming soon: Yazz dental floss.",
-    long: "Yazz dental floss is coming soon to the Yazz oral care range.",
+    short: "Yazz Dental Floss: coming soon.",
+    long: "Yazz Dental Floss: coming soon.",
     features: [], usage: null, ingredients: null, skus: [], images: [],
   },
   // Home care ------------------------------------------------------------------------------------------------
   {
     slug: "washing-powder", name: "Yazz Activ washing powder", range: "home-care", category: "Home care",
-    short: "Yazz Activ detergent with enzymes removes stubborn stains, for brighter and fresher clothes.",
-    long: "The newly improved Yazz Activ detergent with enzymes has been specially formulated to give you brighter and fresher clothes all the time, free from every stain. Stay bright, fresher and stain free.",
-    features: ["Detergent with enzymes", "Removes stubborn stains", "Brighter and fresher clothes", "Suitable for cotton, linen, polyester and mixtures"],
+    short: "Yazz Activ detergent with enzymes: removes stubborn stains.",
+    long: "The newly improved Yazz Activ detergent with Enzymes has been specially formulated to give you brighter and fresher clothes all the time, free from every stain. Stay bright, fresher and stain-free with Yazz Activ detergent with Enzymes.",
+    features: ["Detergent with enzymes", "Removes stubborn stains", "Brighter and fresher clothes", "Suitable for cotton, linen, polyester and mixtures of those fabrics"],
     usage:
-      "Dissolve Yazz Activ detergent in water and soak clothes for 15 to 20 minutes before washing. For heavy dirt or more clothes, soak longer and use more detergent. Separate coloured clothes from white. Do not use for silk or wool. Keep in a dry place, out of reach of children. In case of eye contact, flush with plenty of water. If swallowed, drink plenty of clean water or milk and seek medical assistance. Check the pack for directions at all times.",
+      "Dissolve Yazz Activ detergent with Enzymes in water and soak clothes for 15 to 20 minutes before washing. For heavy dirt or more clothes, soak for a longer period and use more Yazz Activ detergent accordingly. Wash by quantity of clothes against weight, or against the quantity of Yazz Activ. Check pack for direction at all times. Don't use for silk or wool clothes. Separate coloured clothes from white and wash them in different basins. Keep the product in a dry place and out of reach of children. In case of eye contact, flush with plenty of water. If swallowed, drink plenty of clean water or milk and seek medical assistance. In case of irritation on skin, discontinue use and seek medical assistance.",
     ingredients: "LAS, phosphate, enzymes, optical brightener, sodium sulphate, SCMC, perfume, sodium carbonate.",
     skus: [sku(null, "200g"), sku(null, "500g"), sku(null, "2kg"), sku(null, "5kg")],
     images: [
@@ -220,9 +229,9 @@ export const CATALOGUE: YazzProduct[] = [
   // Home & tissue --------------------------------------------------------------------------------------------
   {
     slug: "mama-yazz-jumbo-tissue", name: "Mama Yazz jumbo tissue", range: "home-tissue", category: "Tissue",
-    short: "Big on care. Made for family needs: a jumbo size tissue for busy households.",
-    long: "Meet Mama Yazz®, the jumbo size tissue created with busy households in mind. Its larger format offers a practical choice for families and spaces where tissue is used frequently.",
-    features: ["Jumbo size format", "Family focused convenience", "Practical for frequent household use"],
+    short: "Big on Care. Made for Family Needs.",
+    long: "Meet Mama Yazz®, the jumbo-size tissue option created with busy households in mind. Its larger format offers a practical choice for families and spaces where tissue is used frequently, helping make everyday care more convenient.",
+    features: ["Jumbo-size format", "Family-focused convenience", "Practical for frequent household use"],
     usage: null, ingredients: null, skus: [sku("Jumbo size", PACK)], images: [
       { src: "/images/original/mama-yazz-1.webp", alt: "Two rolls of Mama Yazz" },
       { src: "/images/original/mama-yazz-2.webp", alt: "Two rolls of Mama Yazz, red pack" },
@@ -230,8 +239,8 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "toilet-tissue-individual-wrap", name: "Yazz individual wrap luxury toilet tissue", range: "home-tissue", category: "Tissue",
-    short: "A little luxury in everyday care, individually wrapped.",
-    long: "Experience everyday comfort with Yazz® Individual Wrap Luxury Toilet Tissue. Packaged as a single roll, it is a practical and hygienic solution for personal use, family bathrooms and guest facilities.",
+    short: "A Little Luxury in Everyday Care.",
+    long: "Experience everyday comfort with Yazz® Individual Wrap Luxury Toilet Tissue. Conveniently packaged as a single roll, it offers a practical and hygienic solution for personal use, family bathrooms and guest facilities.",
     features: ["Individually wrapped", "Convenient storage", "Everyday bathroom essential"],
     usage: null, ingredients: null, skus: [sku("Single roll", PACK)], images: [
       { src: "/images/original/luxury-toilet-tissue.webp", alt: "Yazz Luxury Toilet Tissue rolls, individually wrapped" },
@@ -239,9 +248,9 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "tissue-napkin", name: "Yazz tissue napkin", range: "home-tissue", category: "Tissue",
-    short: "Every sheet, a touch of care: 150 sheets per roll.",
+    short: "Every Sheet, a Touch of Care.",
     long: "From family meals to everyday clean-ups, Yazz® Tissue Napkin offers convenience when you need it. With 150 sheets in a roll, it is a handy addition to dining areas, kitchens and everyday household routines.",
-    features: ["150 sheets per roll", "Convenient single roll format", "Suitable for everyday household use"],
+    features: ["150 sheets per roll", "Convenient single-roll format", "Suitable for everyday household use"],
     usage: null, ingredients: null, skus: [sku(null, "1 roll, 150 sheets")], images: [
       { src: "/images/original/tissue-napkin-blue.webp", alt: "Yazz Tissue Napkins pack in blue" },
       { src: "/images/original/tissue-napkin-green.webp", alt: "Yazz Tissue Napkins pack in green" },
@@ -250,15 +259,15 @@ export const CATALOGUE: YazzProduct[] = [
   },
   {
     slug: "individual-tissue", name: "Yazz individual tissue", range: "home-tissue", category: "Tissue",
-    short: "Simple care. Everyday convenience.",
-    long: "Yazz® Individual Tissue brings practical personal hygiene into your daily routine. Its single roll format makes it an easy choice for home bathrooms, workplaces and other everyday spaces.",
-    features: ["Single roll convenience", "Easy to store", "Suitable for everyday personal hygiene"],
+    short: "Simple Care. Everyday Convenience.",
+    long: "Yazz® Individual Tissue brings practical personal hygiene into your daily routine. Its single-roll format makes it an easy choice for home bathrooms, workplaces and other everyday spaces.",
+    features: ["Single-roll convenience", "Easy to store", "Suitable for everyday personal hygiene"],
     usage: null, ingredients: null, skus: [sku("Single roll", PACK)], images: [],
   },
   {
     slug: "pocket-tissue", name: "Yazz pocket tissue", comingSoon: true, range: "home-tissue", category: "Tissue",
-    short: "Coming soon: extra soft, 3-ply pocket tissue. Softness that goes wherever you go.",
-    long: "Stay prepared for life's little moments with Yazz® Pocket Tissue. White, embossed handkerchief tissues with an extra soft feel in a portable format, made with 100% virgin-plus material and a 3-ply structure: a handy companion for school, work and travel.",
+    short: "Softness That Goes Wherever You Go.",
+    long: "Stay prepared for life's little moments with Yazz® Pocket Tissue. Designed for convenient personal care, these white, embossed handkerchief tissues offer an extra-soft feel in a portable format. Made with 100% virgin-plus material and featuring a 3-ply structure, Yazz® Pocket Tissue is a handy everyday companion for school, work, travel and life on the move.",
     features: ["Extra soft", "White embossed tissue", "3-ply", "100% virgin-plus material", "Portable convenience"],
     usage: null, ingredients: null, skus: [], images: [],
   },

@@ -30,9 +30,9 @@ export const CATEGORIES = [
     slug: "care-tips",
     label: "Care Tips",
     title: "Helpful ideas for everyday living.",
-    blurb: "Practical advice for oral care, baby care and home care, created around the real questions families ask.",
+    blurb: "Helpful ideas for everyday living, created around the real questions families ask.",
   },
-  { slug: "news", label: "News", title: "The latest from Yazz.", blurb: "News and announcements from Yazz® and Lexta Ghana Limited." },
+  { slug: "news", label: "News", title: "Yazz® News", blurb: "[PLACEHOLDER: one line introducing Yazz news, from Lexta marketing]" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
@@ -340,7 +340,7 @@ Pay attention to how you describe yourself. Instead of focusing only on what you
   }),
   you({
     slug: "talking-to-a-trusted-adult", title: "Talking to a Trusted Adult", kicker: "Some Questions Are Easier When You Don't Face Them Alone",
-    lede: "Periods, puberty and body changes can sometimes feel awkward to discuss. But you deserve reliable information, and a trusted adult can help.",
+    lede: "Periods, puberty and body changes can sometimes feel awkward to discuss. But you deserve reliable information. A trusted adult can help.",
     date: "2026-01", readMinutes: 2, image: null,
     body: `## Who Can Be a Trusted Adult?
 
@@ -405,7 +405,7 @@ Recording the first day of each period can help you understand your cycle and es
   }),
   you({
     slug: "common-puberty-questions", title: "Common Puberty Questions", kicker: "You Asked. Yazz® Answers.",
-    lede: "You asked. Yazz® answers: thirteen questions about puberty and periods, answered simply.",
+    lede: "When will I start puberty? When will I get my first period? What if my friends already have periods and I don't?",
     date: "2026-01", readMinutes: 4, image: null,
     body: `## When will I start puberty?
 
@@ -487,9 +487,7 @@ Never flush sanitary pads down the toilet. Always follow the usage and disposal 
 - Your flow: is today lighter, moderate or heavier than usual?
 - Your day: are you going to school, work, travelling, relaxing at home or staying active?
 - Your comfort: choose protection that feels comfortable and secure for you.
-- Day or night: you may prefer different coverage depending on whether you're going about your day or sleeping.
-
-Compare the Yazz® options using the details on their approved packaging: pad lengths, pack contents and flow. You can see the Yazz® pads and panty liners on our Feminine Care page.`,
+- Day or night: you may prefer different coverage depending on whether you're going about your day or sleeping.`,
   }),
   you({
     slug: "feeling-fresh-every-day", title: "Feeling Fresh Every Day", kicker: "Freshness Begins with Good Personal Hygiene",
@@ -610,10 +608,10 @@ Ask: "If your period started at school tomorrow, what would you do?" Work throug
 Consider including:
 
 - Sanitary pads: pack enough for expected needs, including a spare where practical. Make sure she knows how to use them before putting them in her kit.
-- Spare underwear: an unexpected period or leak can happen, and clean underwear makes it much easier to manage.
+- Spare underwear: an unexpected period or leak can happen. Clean underwear can make the situation much easier to manage.
 - Tissues: useful as an everyday personal-hygiene item.
 - Disposal bags: for securely wrapping used products where disposal facilities are not immediately available.
-- A small calendar or period tracker: recording the first day of each period helps her understand her pattern.
+- A small calendar or period tracker: once menstruation begins, recording the first day of each period can help her gradually understand her menstrual pattern.
 
 ## Personalise It
 
@@ -724,7 +722,7 @@ Avoid automatically saying "Periods hurt. You'll get used to it." Pain that is s
 1. Pack her period kit: include pads, spare underwear, tissues and appropriate disposal supplies.
 2. Identify trusted adults: a teacher, school nurse, counsellor or another staff member she can approach if she needs assistance.
 3. Discuss changing pads: she should know she can use an appropriate washroom to change her pad regularly.
-4. Prepare for leaks: leaks can happen and aren't a personal failure. Teach her to change her pad and underwear where possible and ask a trusted adult for help.
+4. Prepare for leaks: explain that leaks can happen. They aren't a personal failure. Teach her practical next steps: change her pad and underwear where possible and ask a trusted adult for help if she needs clothing or other assistance.
 5. Teach responsible disposal: wrap used pads and place them in the appropriate waste bin. Never flush sanitary pads.
 
 ## Talk to the School When Necessary
@@ -739,7 +737,16 @@ If menstruation is creating difficulties because of inadequate facilities, bully
     readMinutes: 3, image: null,
     body: `## Be Careful with Body Comments
 
-Avoid teasing or repeatedly commenting on her weight, breast development, height, skin, body shape or how quickly or slowly she is developing. Even comments intended as jokes can affect confidence.
+Avoid teasing or repeatedly commenting on:
+
+- Weight
+- Breast development
+- Height
+- Skin
+- Body shape
+- How quickly or slowly she is developing
+
+Even comments intended as jokes can affect confidence.
 
 ## Praise More Than Appearance
 
@@ -804,8 +811,8 @@ Fact: normal vaginal discharge can occur during puberty and throughout the menst
     readMinutes: 3, image: null,
     body: `## Seek Medical Advice When You're Concerned About:
 
-- Very heavy menstrual bleeding: bleeding that is unusually heavy, needs very frequent product changes, lasts unusually long, or comes with significant weakness or dizziness.
-- Severe period pain: pain that is severe, worsening, doesn't respond to ordinary measures, or repeatedly keeps her from school or normal activities.
+- Very heavy menstrual bleeding: if menstrual bleeding appears unusually heavy, requires very frequent product changes, lasts unusually long, or is accompanied by symptoms such as significant weakness or dizziness, seek professional advice.
+- Severe period pain: if pain is severe, worsening, doesn't respond to ordinary measures, or repeatedly prevents her from participating in school or normal activities, speak with a healthcare professional.
 - Significant changes in her menstrual pattern: cycles can be irregular at first, but persistent or concerning changes should be discussed with a qualified professional.
 - Puberty development: if puberty seems to begin unusually early, hasn't started when expected, or her periods haven't begun within the expected stage of development.
 - Unusual vaginal symptoms: discharge with persistent itching, burning, pain, irritation, a strong unusual odour or a significant unexpected change.
@@ -819,77 +826,81 @@ If she repeatedly says "Something doesn't feel right", listen. Taking her concer
 > You don't need to have the diagnosis. You need to know when it's time to ask someone qualified. Listen. Observe. Ask. Seek help when needed.`,
   }),
 
-  // Care tips -------------------------------------------------------------------------------------------------
+  // Care tips. Titles are Lexta's Tips & Advice topics (website-copy.md); every sentence is quoted from products.md.
   {
     slug: "tips-for-a-healthy-smile", title: "Tips for a Healthy Smile", kicker: "Your Best Smiles", category: "care-tips",
     topic: { label: "Oral Care", tone: BLUE }, date: null, readMinutes: 2, range: "oral-care",
     image: { src: "/images/oral-care.webp", alt: "A smiling man brushing his teeth with Yazz toothpaste on the counter" },
-    lede: "Make good oral hygiene part of every day, with simple brushing habits for the whole family.",
+    lede: "Make good oral hygiene part of every day.",
     body: `- Visit the dentist regularly for check-ups.
-- Brush twice a day, for two minutes, with fluoride toothpaste where age-appropriate.
+- Brush twice a day.
 - Rinse your mouth after every meal.
 - Do not eat sweet sticky food between meals.
-- Change the brush after every 3 months.
+- Change the brush every 3 months.
 
 ## Follow the Correct Brushing Technique
 
-Hold the brush with your elbow raised up to shoulder level, and brush in a circular, up and down motion.
+Hold the brush with the elbow raised up to shoulder level, and brush in a circular, up and down motion.
 
-## Look After Your Toothbrush
+## Yazz Brushes: Your Best Smiles
 
-Yazz toothbrushes have a unique bristle that helps remove plaque and stains, and many come with a tongue cleaner designed to gently clean the tongue.
+Yazz toothbrushes' unique bristles are more effective in helping remove plaque and teeth stains. Innovative tongue cleaner designed to gently clean the tongue.
 
 > Dentist recommendation: change your toothbrush at least once every three months.`,
   },
   {
-    slug: "laundry-care-with-yazz-activ", title: "Laundry Care with Yazz® Activ", kicker: "Stay Bright, Fresher and Stain Free", category: "care-tips",
+    slug: "laundry-care-with-yazz-activ", title: "Home Care Tips", kicker: "Stay Bright, Fresher and Stain Free", category: "care-tips",
     topic: { label: "Home Care", tone: PURPLE }, date: null, readMinutes: 2, range: "home-care", image: null,
-    lede: "Make everyday laundry care simpler with clear instructions for use, storage and responsible disposal.",
-    body: `## Sort Your Laundry
+    lede: "Detergent label instructions, safe storage and laundry sorting.",
+    body: `## Laundry Sorting
 
-Separate coloured clothes from white and wash them in different basins. Yazz Activ is suitable for cotton, linen, polyester and mixtures of those fabrics. Don't use it for silk or wool clothes.
+Separate coloured clothes from white and wash them in different basins. Suitable for cotton, linen, polyester and mixtures of those fabrics. Don't use for silk or wool clothes.
 
-## Dissolve and Soak
+## Caution Note
 
-Dissolve Yazz Activ detergent with enzymes in water and soak clothes for 15 to 20 minutes before washing. For heavy dirt or more clothes, soak for longer and use more detergent accordingly.
+Dissolve Yazz Activ detergent with Enzymes in water and soak clothes for 15 to 20 minutes before washing. For heavy dirt or more clothes, soak for a longer period and use more Yazz Activ detergent accordingly.
 
-## Use the Right Amount
+## Check Pack for Direction
 
-Wash by quantity of clothes against weight. Check the pack for directions at all times.
+Wash by quantity of clothes against weight, or against the quantity of Yazz Activ. Check pack for direction at all times.
 
-## Store It Safely
+## Precautions
 
 - Keep the product in a dry place and out of reach of children.
 - In case of eye contact, flush with plenty of water.
 - If swallowed, drink plenty of clean water or milk and seek medical assistance.
-- In case of irritation on the skin, discontinue use and seek medical assistance.
+- In case of irritation on skin, discontinue use and seek medical assistance.
 
-> Stay bright, fresher and stain free with Yazz Activ detergent with enzymes.`,
+> Stay bright, fresher and stain-free with Yazz Activ detergent with Enzymes.`,
   },
   {
-    slug: "diaper-changing-routines", title: "Diaper Changing Routines", kicker: "Clean, Dry and Comfortable", category: "care-tips",
+    slug: "diaper-changing-routines", title: "Baby Care Tips", kicker: "Everyday Care for Growing Families", category: "care-tips",
     topic: { label: "Baby Care", tone: GREEN }, date: null, readMinutes: 2, range: "baby-care", image: null,
-    lede: "Everyday care for growing families: practical guidance on changing routines, fit and safe product handling.",
-    body: `## Before You Change
+    lede: "Practical guidance on changing routines, fit and safe product handling.",
+    body: `## Caution
 
-- Wash your hands before changing your baby's diaper.
+- Wash your hands before changing your baby's diapers.
 - Make sure your baby is clean and dry before putting on a fresh diaper.
+- Change used diapers to keep the baby comfortable.
+- Always throw away used diapers immediately to avoid bacteria.
 
-## Putting on a Yazz® Diaper
+## How to Use Yazz Baby Diaper
 
-1. Place baby on the diaper with the two back tapes at the back.
+1. Place baby on diaper with the two back tapes at the backside.
 2. Attach the two back tapes on the refastenable area to fit your baby.
 3. Pull the elastic leg bands towards the side to prevent leakage.
-4. Pull up the tape to check whether the diaper is wet.
+4. Pull up the tape and you can check whether the diaper is wet.
 
-## After the Change
+Warning: Do not flush.
 
-Change used diapers to keep your baby comfortable, and throw them away immediately to avoid bacteria. Do not flush diapers or baby wipes: dispose of them with normal household waste.
+## Baby Wipes
 
-> Plastic bags are dangerous for children and must be kept out of reach.`,
+Do not flush down toilet. Dispose of with normal household waste.
+
+> Plastic bags are dangerous for children and must be kept out of reach or at a safe distance.`,
   },
-  // News. Word for word from Yazz's original website (yazzproducts.com, post of 2 December 2022; see
-  // docs/content/yazz/ORIGINAL-SITE.md) while Lexta has sent no news stories. Kept exactly as published there.
+  // News. Word for word from Yazz's original website (yazzproducts.com, post of 2 December 2022; captured in
+  // docs/content/yazz/original-site/yazzproducts-com.md) while Lexta has sent no news stories. Kept exactly as published.
   {
     slug: "yazz-preferred-sanitary-and-hygiene-brand-2022", title: "Yazz is the preferred Sanitary and Hygiene brand in 2022",
     kicker: "Home Builders Africa Awards", category: "news",

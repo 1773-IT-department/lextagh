@@ -14,7 +14,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Search 
   const title = c ? `${c.label}: Tips & Advice` : "Tips & Advice";
   const description = c
     ? c.blurb
-    : "Yazz® Tips & Advice: Tips Just 4 You on periods and puberty, guides Just 4 Parents, and everyday care tips for oral care, baby care and home care.";
+    : "Helpful ideas for everyday living, created around the real questions families ask.";
   return { title, description, alternates: { canonical: c ? `/tips?category=${c.slug}` : "/tips" }, openGraph: { title: `${title} | Yazz®`, description, url: "/tips" } };
 }
 
@@ -38,7 +38,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
         <p className={s.heroText}>
           {cat
             ? cat.blurb
-            : "Created around the real questions families ask. Browse Tips Just 4 You on periods, puberty and confidence, guides Just 4 Parents & Caregivers, and care tips for the home."}
+            : "Created around the real questions families ask."}
         </p>
         <nav className={s.filters} aria-label="Article categories">
           <Link href="/tips" className="yz-chip" aria-current={!category ? "true" : undefined}>All</Link>

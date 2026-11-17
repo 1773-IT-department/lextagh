@@ -146,7 +146,7 @@ export default function WhereToBuy({
         </div>
         <StockistMap stockists={list} selected={selected} onSelect={setSelected} viewKey={`${result.state}:${result.region}:${type}`} />
       </div>
-      <p className={s.mapNote}>Shops are listed by Lexta Ghana Limited. Your shop stocks Yazz and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
+      <p className={s.mapNote}>Your shop stocks Yazz and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
     </div>
   );
 }

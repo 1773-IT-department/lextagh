@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   metadataBase,
   title: { default: "Yazz® | Trusted Quality. Made for Everyday Living.", template: "%s | Yazz®" },
   description:
-    "Yazz®, a trademark brand of Lexta Ghana Limited: feminine care, baby care, oral care, home care and tissue products made for everyday living. Find a stockist near you.",
+    "Yazz® is a trademark brand of Lexta Ghana Limited. From feminine care and baby essentials to oral care, home care and tissues, Yazz brings practical care into the moments that matter.",
   applicationName: "Yazz",
   openGraph: { siteName: "Yazz", type: "website", locale: "en_GH", images: [{ url: "/images/full-range.webp", width: 900, height: 900, alt: "The Yazz product range" }] },
   twitter: { card: "summary_large_image" },
