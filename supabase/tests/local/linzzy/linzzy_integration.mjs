@@ -203,6 +203,12 @@ try {
     const p = await core.handleConsumer(fd({ topic: "partnership", name: "Media Co", email: mail("media"), message: "A school campaign", privacy: "yes" }));
     const prow = p.reference ? await q(`select b.slug || '|' || replace(l.description, E'\\n', '~') from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${p.reference}'`) : "";
     check(p.status === "success" && prow.startsWith("linzzy|") && prow.includes("Topic: Partnership, media or collaboration"), "lead: a partnership or media message is a Linzzy lead with its topic", { p, prow });
+    // Subject (Z4): optional, sent at the top of the lead's message, and its length is checked on the server.
+    const sub = await core.handleConsumer(fd({ topic: "question", subject: "  Wipes   fragrance ", name: "Abena", email: mail("subj"), message: "Which pack is unscented?", privacy: "yes" }));
+    const srow = sub.reference ? await q(`select replace(l.description, E'\\n', '~') from public.crm_leads l where l.intake_reference = '${sub.reference}'`) : "";
+    check(sub.status === "success" && srow.includes("Subject: Wipes fragrance~~Which pack is unscented?"), "lead: the subject reaches the CRM above the message", { sub, srow });
+    const longSub = await core.handleConsumer(fd({ topic: "question", subject: "x".repeat(151), name: "A", email: mail("ls"), message: "Hi", privacy: "yes" }));
+    check(longSub.status === "error" && longSub.fieldErrors?.subject, "consumer form: a subject over 150 characters is refused", longSub);
     const noPrivacy = await core.handleConsumer(fd({ topic: "question", name: "A", email: mail("np"), message: "Hi" }));
     check(noPrivacy.status === "error" && noPrivacy.fieldErrors?.privacy, "consumer form: the privacy notice must be agreed to", noPrivacy);
   }
@@ -220,6 +226,10 @@ try {
     check(brand === "linzzy" && channel === "website", "complaint: brand linzzy, channel website", row);
     check(product === "heavy-flow-sanitary-towels" && batch === "LZ-2291" && place === "Kejetia market" && date === "2026-10-02", "complaint: product linked, batch, place and date saved", row);
     check(desc.startsWith("Product: Linzzy Heavy Flow Sanitary Towels~Region: Ashanti"), "complaint: product and region at the top of the text", desc);
+
+    const sc = await core.handleConsumer(fd({ topic: "problem", subject: "Adhesive", name: "Yaa", email: mail("yaa"), product: "heavy-flow-sanitary-towels", message: "Did not hold.", privacy: "yes" }), { "heavy-flow-sanitary-towels": "Linzzy Heavy Flow Sanitary Towels" });
+    const scrow = sc.reference ? await q(`select replace(c.description, E'\\n', '~') from public.complaints c where c.case_number = '${sc.reference}'`) : "";
+    check(sc.status === "success" && scrow.startsWith("Subject: Adhesive~Product: Linzzy Heavy Flow Sanitary Towels"), "complaint: the subject is at the top of the text", { sc, scrow });
 
     // A product the database does not know as published (an unpublished prototype row, or one shown from the catalogue
     // while 0016 is not applied) still lands, named in the text.

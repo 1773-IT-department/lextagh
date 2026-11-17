@@ -337,6 +337,12 @@ export default function ContactView({ v: vals }: { v: any }) {
                       </p>
                       {"\n          "}
                     </div>
+                    {/* Subject: one of Lexta's suggested contact form fields (Drive, Contact page); optional, sent at the top of the message. */}
+                    <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"} as CSSProperties}>
+                      {"Subject (optional)"}
+                      <input name="subject" autoComplete="off" maxLength={150} defaultValue={vals.msg.v.subject ?? ""} {...fieldAria(vals.msg.state, "subject", "c-subject-error")} style={{"height":"50px","padding":"0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"18px","background":"transparent","color":"#23103a","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties} />
+                      <Err id="c-subject-error" msg={vals.msg.state.fieldErrors?.subject} />
+                    </label>
                     {"\n          "}
                     <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(min(100%,200px),1fr))","gap":"20px 28px"} as CSSProperties}>
                       {"\n            "}
