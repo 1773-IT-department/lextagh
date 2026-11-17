@@ -22,7 +22,7 @@ export default function RoutePicker() {
       <div
         role="radiogroup"
         aria-label="Ways to partner"
-        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18, marginTop: 34, maxWidth: 1100 }}
+        style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 18, marginTop: 34 }}
       >
         {routes.map((r) => {
           const on = r.key === active.key;

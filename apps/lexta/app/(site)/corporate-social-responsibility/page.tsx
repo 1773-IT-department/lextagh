@@ -100,6 +100,28 @@ const unityGallery = [
   "/pasted-1788866207000-0-mtskr38c-9u9b.png",
 ];
 
+
+/**
+ * Cervical cancer awareness band: Lexta's own stories, from lextagh.com posts (Mawuko Girls SHS, 4 February 2019;
+ * Lexta Teen Care Campaign, 30 May 2017). The third card stays a placeholder until Lexta supplies its screening stories.
+ */
+const cervicalStories: { when: string; title: string; text: string; href?: string }[] = [
+  {
+    when: "February 2019", title: "Mawuko Girls SHS, Ho",
+    text: "With MWAG, as part of the national tour to schools and other institutions to educate Ghanaians, especially women and girls, on the deadly cervical cancer disease.",
+    href: "/news/lexta-ghana-visits-mawuko-girls-shs-ho",
+  },
+  {
+    when: "Since February 2017", title: "Lexta Teen Care Campaign",
+    text: "Educating Ghanaian teenagers, both boys and girls, on the dangers of cervical cancer serves as a preventive measure aimed at reducing the infection rate of the disease in the country.",
+    href: "/news/the-lexta-teen-care-campaign-launches",
+  },
+  {
+    when: "Screening", title: "Screening stories",
+    text: "[PLACEHOLDER: Lexta's own cervical cancer screening stories (place, date, partners, one line each)]",
+  },
+];
+
 const partners: { logo?: { src: string; maxH: number; maxW: number }; name: string; label: string }[] = [
   { logo: { src: "/assets/partner-mwag.png", maxH: 78, maxW: 150 }, name: "Medical Women Association of Ghana", label: "Medical Women Association of Ghana" },
   { name: "Domite", label: "Domite Foundation" },
@@ -252,9 +274,9 @@ export default function CorporateSocialResponsibilityPage() {
       <section data-reveal="1" data-screen-label="Programme grid" style={{ background: "#fff", padding: "70px 28px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <h2 style={{ ...h2Mid, maxWidth: 600 }}>Initiatives by brand</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 22, marginTop: 38 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,minmax(0,1fr))", gap: 16, marginTop: 38 }}>
             {programmes.map((pr) => (
-              <div key={pr.title} style={{ background: "#fff", borderRadius: 14, padding: "28px 26px 30px", boxShadow: "0 16px 34px rgba(11,60,78,.1)", display: "flex", flexDirection: "column" }}>
+              <div key={pr.title} style={{ background: "#fff", borderRadius: 14, padding: "26px 20px 28px", boxShadow: "0 16px 34px rgba(11,60,78,.1)", display: "flex", flexDirection: "column" }}>
                 <div style={eyebrow}>{pr.tag}</div>
                 <h3 style={{ margin: "12px 0 0", fontSize: 18, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em" }}>{pr.title}</h3>
                 <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883" }}>{pr.text}</p>
@@ -304,7 +326,20 @@ export default function CorporateSocialResponsibilityPage() {
             </div>
           </div>
           {/* The screening carousel (components/csr/ScreeningCarousel.tsx) held five press summaries with no Lexta source; it returns when Lexta supplies its own stories. */}
-          <p style={{ margin: "40px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>[PLACEHOLDER: Lexta&apos;s own cervical cancer screening stories (place, date, partners, one line each) for this carousel]</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))", gap: 16, marginTop: 40 }}>
+            {cervicalStories.map((st) => (
+              <div key={st.title} style={{ borderRadius: 14, padding: "22px 22px 24px", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.14)", display: "flex", flexDirection: "column" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "rgba(63,192,221,.85)" }}>{st.when}</div>
+                <div style={{ marginTop: 10, fontSize: 17, fontWeight: 700, color: "#fff", letterSpacing: "-.01em", lineHeight: 1.3 }}>{st.title}</div>
+                <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "rgba(255,255,255,.82)" }}>{st.text}</p>
+                {st.href ? (
+                  <a href={st.href} style={{ marginTop: "auto", paddingTop: 16, fontSize: 13, fontWeight: 600, color: "#3fc0dd" }}>
+                    Read the full story <span aria-hidden="true">→</span>
+                  </a>
+                ) : null}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

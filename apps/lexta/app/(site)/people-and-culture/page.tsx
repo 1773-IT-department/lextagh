@@ -111,7 +111,8 @@ const hireSteps = [
   { n: "2", title: "Next steps", text: "[PLACEHOLDER: Lexta's hiring steps after an application, and typical timing]" },
 ];
 
-const arrangements = ["Full time", "Part time", "Contract", "Internship", "[PLACEHOLDER: confirm engagement types Lexta offers]"];
+/** Engagement types: lextagh.com Careers ("Filter by type": Contract, Full-Time, Internship, Part-Time, Remote). */
+const arrangements = ["Full time", "Part time", "Contract", "Internship", "Remote"];
 
 export default function PeopleAndCulturePage() {
   return (
@@ -215,7 +216,7 @@ export default function PeopleAndCulturePage() {
               Explore opportunities in production, sales, logistics, marketing and administration.
             </p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 22, marginTop: 42 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 20, marginTop: 42 }}>
             {roles.map((r) => (
               <div key={r.title} style={{ background: "#fff", borderRadius: 14, overflow: "hidden", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}>
                 <div style={{ height: 190 }}>

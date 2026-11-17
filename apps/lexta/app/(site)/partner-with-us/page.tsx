@@ -36,8 +36,12 @@ const contacts = [
   { tag: "TL", title: "Call the team", label: "+233 (0) 501 619 588", href: "tel:+233501619588" },
 ];
 
+/** The fields of lextagh.com's own "Wholesaler / Modern Trade Onboarding" form (Contact Us page). */
 const checklist = [
-  { title: "Documents", text: "[PLACEHOLDER: documents Lexta requires from distributors, wholesalers and modern trade partners]" },
+  { title: "Company details", text: "company name, business type and business address" },
+  { title: "Registration", text: "Trade License / Registration No." },
+  { title: "Tax", text: "Tax ID (TIN/VAT)" },
+  { title: "Supporting documents", text: "[PLACEHOLDER: which supporting documents Lexta requires from distributors, wholesalers and modern trade partners]" },
 ];
 
 export default function PartnerPage() {
@@ -94,7 +98,7 @@ export default function PartnerPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={eyebrow}>Partner with Us</div>
           <h2 style={h2}>What you get</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 18, marginTop: 32, maxWidth: 1100 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(290px,1fr))", gap: 18, marginTop: 32 }}>
             {benefits.map((b) => (
               <div key={b.title} style={{ background: "#fff", border: "1px solid rgba(18,163,196,.16)", borderRadius: 13, padding: "26px 24px", boxShadow: "0 12px 26px rgba(11,60,78,.06)" }}>
                 <div style={{ ...eyebrow, letterSpacing: ".14em" }}>{b.kicker}</div>

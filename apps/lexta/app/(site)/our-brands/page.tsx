@@ -273,6 +273,12 @@ export default async function OurBrandsPage() {
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
               What is care if the people we create it for cannot share in it? So we make our products affordable, without compromising quality.
             </p>
+            <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
+              How do we make sure the affordable quality becomes the standard, to be enjoyed by a lot more people?
+            </p>
+            <div style={{ marginTop: 26, fontSize: 18, fontWeight: 700, lineHeight: 1.5, color: "#3fc0dd", textWrap: "pretty" }}>
+              So we pledge to be true to our purpose and bring quality, affordable care to all of Africa, every day.
+            </div>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16, marginTop: 44 }}>
             {[

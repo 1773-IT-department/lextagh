@@ -57,7 +57,7 @@ export default function NewsRoom({ articles }: { articles: CardArticle[] }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(290px,1fr))", gap: 26, marginTop: 34 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(min(330px,100%),1fr))", gap: 26, marginTop: 34 }}>
         {filtered.slice(0, limit).map((a) => <NewsCard key={a.slug} article={a} />)}
       </div>
 
