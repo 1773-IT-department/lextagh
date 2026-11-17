@@ -148,7 +148,8 @@ const news = [
 
 const perks = [
   {
-    label: ["Growth", "Opportunities"],
+    label: ["Growth", ""],
+    text: "We are committed to your evolution. Through continuous training, mentorship, and clear career pathways, your progress is our progress.",
     svg: <><path d="M8 3h13l7 7v23H8z" opacity=".95" /><path d="M21 3l7 7h-7z" fill="#0b2f3d" opacity=".35" /><rect x="12" y="15" width="12" height="2.2" fill="#0b2f3d" /><rect x="12" y="20" width="12" height="2.2" fill="#0b2f3d" /><rect x="12" y="25" width="7" height="2.2" fill="#0b2f3d" /></>,
   },
   {
@@ -157,11 +158,12 @@ const perks = [
   },
   {
     label: ["Team", "Cohesion"],
+    text: "We win as one. We cross departmental lines to collaborate, share ideas, and support each other through every challenge.",
     svg: <><circle cx="18" cy="9" r="5" /><path d="M9 26c0-5 4-9 9-9s9 4 9 9z" /><rect x="4" y="29" width="28" height="3.4" rx="1.7" /></>,
   },
 ];
 
-const twoLines = (l: string[]) => <>{l[0]}<br />{l[1]}</>;
+const twoLines = (l: string[]) => (l[1] ? <>{l[0]}<br />{l[1]}</> : <>{l[0]}</>);
 
 export default async function HomePage() {
   const regions = await getWhereToBuyRegions();
@@ -496,11 +498,12 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(120px,1fr))", gap: 18, textAlign: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 14, textAlign: "center" }}>
             {perks.map((p) => (
-              <div key={p.label[0]}>
+              <div key={p.label[0]} style={{ background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.14)", borderRadius: 10, padding: "20px 16px" }}>
                 <svg width="36" height="36" viewBox="0 0 36 36" fill="#fff" aria-hidden="true">{p.svg}</svg>
                 <div style={{ marginTop: 10, fontSize: 13, fontWeight: 600, lineHeight: 1.4, color: "#fff" }}>{twoLines(p.label)}</div>
+                <p style={{ margin: "8px 0 0", fontSize: 12, lineHeight: 1.65, color: "rgba(255,255,255,.78)" }}>{p.text}</p>
               </div>
             ))}
           </div>
