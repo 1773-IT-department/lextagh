@@ -167,7 +167,8 @@ try {
     const names = await page.locator("main a[href^='/products/'] [class*='productName']").allInnerTexts();
     check(JSON.stringify(names) === JSON.stringify(["Hooch® Cornflakes", "Hooch® Frosted Flakes"]), "products page: the two Drive cereals, nothing else", names);
     const mainNav = page.getByRole("navigation", { name: "Main" });
-    const navItems = (await mainNav.locator("a").allInnerTexts()).map((x) => x.trim()).filter(Boolean);
+    // Top level only: the Our Products menu's links sit one level down.
+    const navItems = (await mainNav.locator(":scope > a, :scope > div > a:first-child").allInnerTexts()).map((x) => x.trim());
     check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact", "Community Impact"]), "header: Lexta's six tabs, then Community Impact", navItems);
     const ciHref = await mainNav.getByRole("link", { name: /Community Impact/ }).getAttribute("href");
     check(ciHref === "https://lextagh.vercel.app/corporate-social-responsibility#programmes", "header: Community Impact links out to the Lexta CSR programmes", ciHref);

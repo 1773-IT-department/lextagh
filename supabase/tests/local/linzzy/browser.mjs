@@ -349,7 +349,7 @@ try {
     check(await page.getByRole("button", { name: /Getting to know Linzzy's sanitary towel range/ }).count() === 0 && await page.getByRole("button", { name: /Interested in distributing or stocking Linzzy products\?/ }).count() === 1, "faqs: a topic chip shows only that group");
     check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
     await page.goto(`${SITE}/about`);
-    const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lexta/i.test(h)));
+    const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lextagh/i.test(h)));
     check(lextaLinks.length > 0 && lextaLinks.every((h) => /^https:\/\/lextagh\.vercel\.app\//.test(h)), "about: the Lexta links go to the Lexta preview site, never a real domain", lextaLinks);
 
     // The map: a stockist named with HTML shows as text.

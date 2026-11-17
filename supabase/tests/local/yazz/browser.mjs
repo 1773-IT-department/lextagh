@@ -244,7 +244,7 @@ try {
     await sleep(250);
     check(await caret.getAttribute("aria-expanded") === "false" && await page.evaluate(() => document.activeElement?.getAttribute("aria-label")) === "Products menu"
       && !(await panel.isVisible()), "dropdown: Escape closes it (the list is hidden although focus is still inside) and focus returns to the button");
-    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Products", exact: true }).hover();
     await sleep(250);
     const hoverOpen = await panel.isVisible();
     await caret.focus();
@@ -382,7 +382,7 @@ try {
     const subs = await panel.locator("ul a").evaluateAll((as) => as.map((a) => [a.textContent.trim(), a.getAttribute("href")]));
     check(subs.length === 14 && subs.some(([l, h]) => l === "Sanitary Pads" && h === "/products/feminine-care#product-sanitary-pads") && subs.some(([l, h]) => l === "Baby Care Tips" && h === "/tips/diaper-changing-routines"),
       "Products menu: second level links under each range (products and tips)", subs);
-    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Products", exact: true }).hover();
     await sleep(250);
     await page.screenshot({ path: path.join(OUT, "products-menu-1440.png") });
     await panel.getByRole("link", { name: "Sanitary Pads" }).click();
@@ -390,7 +390,7 @@ try {
     await page.locator("#product-sanitary-pads").waitFor({ state: "visible", timeout: 10000 }).then(() => check(true, "Products menu: Sanitary Pads opens the pads window on the range page"), (e) => check(false, "Products menu: Sanitary Pads opens the pads window", e.message));
     await page.keyboard.press("Escape");
     await sleep(300);
-    await page.getByRole("link", { name: "Products", exact: true }).hover();
+    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Products", exact: true }).hover();
     await sleep(250);
     await panel.getByRole("link", { name: "Panty Liners" }).click();
     await page.locator("#product-panty-liners").waitFor({ state: "visible", timeout: 10000 }).then(() => check(true, "Products menu: on the same range page, Panty Liners opens its window"), (e) => check(false, "Products menu: same page window", e.message));
@@ -462,7 +462,7 @@ try {
     await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: /Send Message/ }).click();
     const ok = form.locator("[data-form-message]");
-    await ok.waitFor({ timeout: 15000 });
+    await ok.filter({ hasText: /ENQ-/ }).waitFor({ timeout: 15000 }).catch(() => {});
     const ref = /ENQ-[0-9A-F]{10}/.exec(await ok.innerText())?.[0];
     const row = ref ? await q(`select l.source || '|' || b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${ref}'`) : "";
     check(row === "website_contact_form|yazz", "consumer form (JS): a Yazz lead from the website contact form", { ref, row });
