@@ -10,7 +10,7 @@ import { useActiveRoute } from "./RouteContext";
 const panelLabel: CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#12a3c4" };
 
 /**
- * "Six routes into the business": the six route cards (one is selected) and the selected-route panel below them.
+ * "Select your partnership type": the three route cards (Lexta's Drive partnership types) (one is selected) and the selected-route panel below them.
  * Each card is a label around a real radio of the application form (form attribute), so the route is sent even
  * without JavaScript. The cards keep the look of the prototype's buttons.
  */

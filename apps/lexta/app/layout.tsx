@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Lexta Ghana Limited",
-  description: "Lexta Ghana Limited, makers of Yazz, Linzzy and Hooch.",
+  description: "Lexta Ghana Limited. Quality, affordability and everyday care, proudly from Ghana.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

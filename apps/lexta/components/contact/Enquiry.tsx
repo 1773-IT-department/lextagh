@@ -52,7 +52,7 @@ export default function Enquiry() {
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#12a3c4" }}>Send a message</div>
         <h2 style={{ margin: "12px 0 0", fontSize: 32, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#12313d", textWrap: "pretty" }}>What is this about?</h2>
         <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "#5d7883", maxWidth: 460 }}>
-          Choose the reason for your enquiry and we route it straight to the responsible team, with the detail they need to respond properly the first time.
+          Choose the reason for your enquiry.
         </p>
 
         {/* Each card is a label around a real radio of the form below (form attribute), so the reason is sent even

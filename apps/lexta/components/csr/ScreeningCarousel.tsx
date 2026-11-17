@@ -3,7 +3,10 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { isLiveStoryHref } from "@/content/news/held";
 
-/** Cervical cancer stories, linked to the Yazz site exactly as the prototype links them. */
+/**
+ * Cervical cancer stories summarised from press coverage, linked to the held news stories. Not rendered: the strict
+ * source sweep removed it from the CSR page (no Lexta source for these summaries). Kept for when Lexta approves them.
+ */
 const stories = [
   {
     href: "/news/cervical-cancer-awareness-launch-2024-tamale",

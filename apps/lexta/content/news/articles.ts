@@ -58,45 +58,21 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "A proposed school tour bringing age-appropriate oral hygiene education to pupils, with qualified dental professionals and schools.",
-    standfirst: "Healthy smiles begin with everyday habits. The Bright Smiles School Tour is a proposed Yazz programme of age-appropriate oral hygiene education, built on partnerships with qualified dental professionals and schools.",
-    readingMinutes: 2,
+    excerpt: "The Bright Smiles School Tour proposes age-appropriate oral-hygiene education and partnerships with qualified dental professionals and schools.",
+    standfirst: "Healthy smiles begin with everyday habits. The Bright Smiles School Tour proposes age-appropriate oral-hygiene education and partnerships with qualified dental professionals and schools.",
+    readingMinutes: 1,
     image: "/assets/original/web/lexta-kakel-1897-scaled.webp",
     imageAlt: "Image from the original story",
     featured: false,
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "The programme"
+        type: "p",
+        text: "Bright Smiles School Tour: Oral Hygiene Education, Empowerment and Academic support, with Oral Care (Yazz Toothpaste / Toothbrushes)."
       },
       {
         type: "p",
-        text: "The Bright Smiles School Tour is the oral care initiative in Lexta's CSR programme, linked to Yazz Toothpaste and Toothbrushes. It proposes age-appropriate oral hygiene education for pupils, delivered through partnerships with qualified dental professionals and schools."
-      },
-      {
-        type: "p",
-        text: "The tour brings together three strands: oral hygiene education, empowerment and academic support. The idea is simple. Healthy smiles begin with everyday habits, and the school years are when those habits are formed."
-      },
-      {
-        type: "h2",
-        text: "Working with the right people"
-      },
-      {
-        type: "p",
-        text: "Our approach to community work is to act where our products can make a practical difference, and to work alongside the people who know the subject best. For Bright Smiles, that means qualified dental professionals, together with the schools that know their pupils."
-      },
-      {
-        type: "h2",
-        text: "Status"
-      },
-      {
-        type: "p",
-        text: "The Bright Smiles School Tour is a proposed programme. It is part of the oral health pillar of our CSR work and contributes to Sustainable Development Goal 3, good health and wellbeing."
-      },
-      {
-        type: "p",
-        text: "Schools that would like to invite the tour, and dental professionals who would like to take part, can contact our team through the Partner With Us page."
+        text: "Oral Care (Paste & Brush), SDG 3: Good Health."
       }
     ],
     sources: [
@@ -113,45 +89,25 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund mechanised boreholes in communities facing water scarcity.",
-    standfirst: "Good baby hygiene begins with information and access. For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants.",
-    readingMinutes: 2,
+    excerpt: "For every jumbo pack sold, Yazz Diapers/Wipes funds the construction/maintenance of mechanised boreholes in communities facing water scarcity to ensure safe hygiene for infants.",
+    standfirst: "Good baby hygiene begins with information and access. Safe Bottoms is designed to support caregiver education, responsible diaper and wipe disposal and community hygiene partnerships.",
+    readingMinutes: 1,
     image: "/assets/original/web/lexta-kakel-1875-683x1024.webp",
     imageAlt: "Image from the original story",
     featured: false,
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "How the initiative works"
+        type: "p",
+        text: "For every jumbo pack sold, Yazz Diapers/Wipes funds the construction/maintenance of mechanised boreholes in communities facing water scarcity to ensure safe hygiene for infants."
       },
       {
         type: "p",
-        text: "The Safe Bottoms Initiative links an everyday purchase to a community need. For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants."
+        text: "Safe Bottoms Initiative: safe drinking water initiative for communities and today's child; Baby Care products (Yazz / Linzzy)."
       },
       {
         type: "p",
-        text: "It is a safe drinking water initiative for communities and for today's child. Good infant hygiene depends on clean water: for bathing a baby, for washing hands before and after a change, and for keeping the home clean."
-      },
-      {
-        type: "h2",
-        text: "More than water"
-      },
-      {
-        type: "p",
-        text: "Safe Bottoms is designed to support caregiver education, responsible diaper and wipe disposal and community hygiene partnerships, so that access to water goes together with the information families need."
-      },
-      {
-        type: "h2",
-        text: "Part of our water and sanitation pillar"
-      },
-      {
-        type: "p",
-        text: "Safe Bottoms is the baby care initiative in Lexta's CSR programme and contributes to Sustainable Development Goal 6, clean water and sanitation."
-      },
-      {
-        type: "p",
-        text: "Communities, local authorities and organisations working on water access that would like to discuss the initiative can contact our team through the Partner With Us page."
+        text: "Baby Care (Diapers & Wipes), SDG 6: Clean Water & Sanitation."
       }
     ],
     sources: [
@@ -168,45 +124,25 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "A proposed commitment to plant 10 indigenous trees for every 1,000 rolls of 100% virgin pulp tissue sold, restoring degraded forest reserves.",
-    standfirst: "Care for our homes should go hand in hand with care for the environment. The Lexta Forest Project is a proposed tree planting and environmental education platform linking everyday paper use with responsible stewardship.",
-    readingMinutes: 2,
+    excerpt: "Commitment to plant 10 indigenous trees for every 1,000 rolls of 100% Virgin Pulp tissue sold, restoring degraded forest reserves.",
+    standfirst: "Care for our homes should go hand in hand with care for the environment. The Lexta Forest Project is a proposed tree-planting and environmental-education platform linking everyday paper use with responsible stewardship.",
+    readingMinutes: 1,
     image: "/assets/original/web/lexta-lexta-teen-care-campaign.webp",
     imageAlt: "Image from the original story",
     featured: false,
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "The commitment"
+        type: "p",
+        text: "Commitment to plant 10 indigenous trees for every 1,000 rolls of 100% Virgin Pulp tissue sold, restoring degraded forest reserves in the Ashanti and Eastern regions."
       },
       {
         type: "p",
-        text: "The Lexta Forest Project, also known as the Yazz Forest Project, is the tissue initiative in Lexta's CSR programme. It sets out a commitment to plant 10 indigenous trees for every 1,000 rolls of 100% virgin pulp Yazz tissue sold, restoring degraded forest reserves."
+        text: "Yazz Forest Project: Plant a tree today; Yazz tissues."
       },
       {
         type: "p",
-        text: "Its message is a simple one: plant a tree today."
-      },
-      {
-        type: "h2",
-        text: "Why it matters"
-      },
-      {
-        type: "p",
-        text: "Tissue is an everyday product, and the project links that everyday use with responsible stewardship of the land. Alongside planting, it is planned as a platform for environmental education, so that communities and young people are part of the work."
-      },
-      {
-        type: "h2",
-        text: "Status"
-      },
-      {
-        type: "p",
-        text: "The Lexta Forest Project is a proposed programme. It is part of the environment pillar of our CSR work and contributes to Sustainable Development Goal 15, life on land."
-      },
-      {
-        type: "p",
-        text: "Organisations involved in tree planting and forest restoration that would like to support a green activity can contact our team through the Partner With Us page."
+        text: "Paper & Hygiene (Tissue/Napkins), SDG 15: Life on Land."
       }
     ],
     sources: [
@@ -223,45 +159,21 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "Clean homes and a cleaner environment belong together: a proposed programme of hygiene education, responsible packaging disposal and community clean-ups.",
-    standfirst: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, Clean Hands, Green Land is a proposed programme focused on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
-    readingMinutes: 2,
+    excerpt: "This proposed programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
+    standfirst: "Clean homes and a cleaner environment belong together. This proposed programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
+    readingMinutes: 1,
     image: "/assets/original/web/lexta-kakel-1845-1024x683.webp",
     imageAlt: "Image from the original story",
     featured: false,
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "The programme"
+        type: "p",
+        text: "Clean Hands, Green Land: clean home, safe environment initiative for communities and today's leaders; Yazz Detergents."
       },
       {
         type: "p",
-        text: "Clean Hands, Green Land is the home care initiative in Lexta's CSR programme, linked to Yazz Detergents. It is a clean home, safe environment initiative for communities and for today's leaders."
-      },
-      {
-        type: "p",
-        text: "The proposed programme has three parts: practical hygiene education, responsible disposal of packaging, and community clean-up partnerships."
-      },
-      {
-        type: "h2",
-        text: "Why it matters"
-      },
-      {
-        type: "p",
-        text: "A clean home is only part of the picture. What happens to packaging after use, and how clean our streets and shared spaces are, matters to the health of every household. Clean Hands, Green Land brings those two together."
-      },
-      {
-        type: "h2",
-        text: "Status"
-      },
-      {
-        type: "p",
-        text: "Clean Hands, Green Land is a proposed programme. It contributes to Sustainable Development Goal 12, responsible consumption and production."
-      },
-      {
-        type: "p",
-        text: "Communities, schools and organisations that would like to join an activation can contact our team through the Partner With Us page."
+        text: "Home Care (Washing Powder/Detergents), SDG 12: Responsible Consumption."
       }
     ],
     sources: [
@@ -1004,8 +916,8 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "8 March 2019",
     isoDate: "2019-03-08",
-    excerpt: "With the Domite Foundation, our team took students through basic hygiene routines and distributed Yazz towels and learning materials.",
-    standfirst: "To mark International Women's Day 2019, Lexta Ghana Limited and the Domite Foundation spent the day with the girls of Unity High JHS in Kotobabi, Accra, talking about hygiene and the value of their education.",
+    excerpt: "Yazz in collaboration with Domite Foundation stormed the school with Yazz sanitary towels and free learning materials.",
+    standfirst: "The team spent time with the girls of Unity High JHS in Kotobabi in commemoration of the International Women's Day.",
     readingMinutes: 2,
     image: "/assets/original/web/lexta-lexta-ghana-limited-spent-time-with-the-girls-of-unity-high-jhs-in-kot.webp",
     imageAlt: "Image from the original story",
@@ -1013,36 +925,16 @@ export const allArticles: Article[] = [
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "A day with the girls"
+        type: "p",
+        text: "The team spent time with the girls of Unity High JHS in Kotobabi in commemoration of the International Women's Day. The pupils were taken through basic female hygiene routines, the need to focus on their studies and charged to persevere in all they do. Yazz in collaboration with Domite Foundation stormed the school with Yazz sanitary towels and free learning materials to enhance the learning and the well being of the girl child. We salute all women on this special day."
       },
       {
         type: "p",
-        text: "On 8 March 2019, a team from Lexta Ghana Limited spent time with the girls of Unity High JHS in Kotobabi, Accra, in commemoration of International Women's Day."
+        text: "Speaking to the media, the head of Sales and Marketing for Lexta Ghana Limited, Mr. Seth Ntiamoah-Asare Jnr mentioned the need to help position women at higher levels of the society. He stressed on the fact that women who have had the opportunity to steer affairs in key organisations have done so to perfection. Considering the impact, the world would be a greater place if our mothers, wives, sisters and daughters have the space most men had and abused it. He however challenged the up and coming ones to push their way into strategic positions through higher learning and decency."
       },
       {
         type: "p",
-        text: "The pupils were taken through basic female hygiene routines, reminded of the need to focus on their studies and charged to persevere in all they do. Yazz, in collaboration with the Domite Foundation, visited the school with Yazz sanitary towels and free learning materials to support the learning and wellbeing of the girl child. We salute all women on this special day."
-      },
-      {
-        type: "h2",
-        text: "Women in leadership"
-      },
-      {
-        type: "p",
-        text: "Speaking to the media, the Head of Sales and Marketing for Lexta Ghana Limited, Mr Seth Ntiamoah-Asare Jnr, spoke of the need to help position women at higher levels of society. He stressed that women who have had the opportunity to steer affairs in key organisations have done so to perfection. Considering that impact, he said, the world would be a greater place if our mothers, wives, sisters and daughters had the space that most men have had and abused."
-      },
-      {
-        type: "p",
-        text: "He challenged the young women coming up behind them to push their way into strategic positions through higher learning and decency."
-      },
-      {
-        type: "h2",
-        text: "Who was there"
-      },
-      {
-        type: "p",
-        text: "Present at the event were the teaching and non-teaching staff of Unity JHS, the Executive Director of the Domite Foundation, Priscilla, the second director of the Domite Foundation, and Mr Osei Kwame Daniel, Key Account Manager for Modern Trade and Hooch Foods."
+        text: "Present at the event were the teachers and non teaching staff of Unity JHS, the executive director of Domite Foundation, the Key Account Manager for Modern Trade and Hooch Foods, Mr Osei Kwame Daniel, and Priscilla, the second director for Domite Foundation."
       }
     ],
     sources: [
@@ -1059,41 +951,21 @@ export const allArticles: Article[] = [
     category: "CSR",
     date: "4 February 2019",
     isoDate: "2019-02-04",
-    excerpt: "With MWAG, led by Dr. Naa Sodzi Tettey, educating students on cervical cancer and femcare as part of a national school tour.",
-    standfirst: "Alongside the Medical Women Association of Ghana, a Lexta Ghana team visited Mawuko Girls Senior High School in Ho to educate students on cervical cancer and femcare as part of a national school tour.",
-    readingMinutes: 2,
+    excerpt: "To educate on cervical cancer and Femcare as part of the national tour to schools and other institutions.",
+    standfirst: "Lexta Ghana Limited, in collaboration with the Medical Women Association of Ghana (MWAG), paid a visit to Mawuko Girls SHS, Ho to educate on cervical cancer and Femcare.",
+    readingMinutes: 1,
     image: "/assets/original/web/lexta-lexta-ghana-limited-visits-mawuko-girls-shs-ho.webp",
     imageAlt: "Image from the original story",
     featured: false,
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "The visit"
+        type: "p",
+        text: "Lexta Ghana Limited, producers and distributors of Yazz range of products and Hooch cereals, in collaboration with the Medical Women Association of Ghana (MWAG), led by the immediate past President of MWAG Dr. Naa Sodzi Tettey and the head of Sales & Marketing of Lexta, Mr. Seth Ntiamoah-Asare Jnr, paid a visit to Mawuko Girls SHS, Ho to educate on cervical cancer and Femcare as part of the national tour to schools and other institutions to educate Ghanaians, especially women and girls, on the deadly cervical cancer disease."
       },
       {
         type: "p",
-        text: "Lexta Ghana Limited, producers and distributors of the Yazz range of products and Hooch cereals, in collaboration with the Medical Women Association of Ghana (MWAG), paid a visit to Mawuko Girls SHS in Ho to educate students on cervical cancer and femcare."
-      },
-      {
-        type: "p",
-        text: "The visit was led by the immediate past President of MWAG, Dr Naa Sodzi Tettey, and the Head of Sales and Marketing of Lexta, Mr Seth Ntiamoah-Asare Jnr. It was part of a national tour of schools and other institutions to educate Ghanaians, especially women and girls, on the deadly cervical cancer disease."
-      },
-      {
-        type: "h2",
-        text: "Prevention and screening"
-      },
-      {
-        type: "p",
-        text: "The interaction stressed prevention and the need to screen periodically to eradicate this killer disease."
-      },
-      {
-        type: "h2",
-        text: "Supporting students"
-      },
-      {
-        type: "p",
-        text: "Products and learning materials were also given out to the students as part of the company's corporate social responsibility."
+        text: "The interaction stressed on prevention and the need to screen periodically to eradicate this killer disease. Some products and learning materials were also given out as part of the company's CSR."
       }
     ],
     sources: [
@@ -1114,8 +986,8 @@ export const allArticles: Article[] = [
     category: "Company",
     date: "30 May 2017",
     isoDate: "2017-05-30",
-    excerpt: "Our original CSR programme, teaching senior high school students to build good personal care habits during adolescence.",
-    standfirst: "The Lexta Teen Care Campaign, our first corporate social responsibility programme, teaches senior high school students to build good personal care and hygiene habits during adolescence.",
+    excerpt: "The Lexta Teen Care Campaign aims at teaching students in Senior High Schools (SHS) how to properly cultivate good personal care and general hygiene habits.",
+    standfirst: "The Campaign which was launched in February 2017 is set to educate SHS students across the country on cervical cancer, menstrual hygiene and oral care.",
     readingMinutes: 3,
     image: "/assets/original/web/lexta-lexta-teen-care-campaign.webp",
     imageAlt: "Image from the original story",
@@ -1123,70 +995,58 @@ export const allArticles: Article[] = [
     draft: true,
     body: [
       {
-        type: "h2",
-        text: "Our flagship CSR project"
+        type: "p",
+        text: "As our flagship CSR project, the Lexta Teen Care Campaign aims at teaching students in Senior High Schools (SHS) how to properly cultivate good personal care and general hygiene habits in their adolescent years, a crucial phase in their development."
       },
       {
         type: "p",
-        text: "As our flagship CSR project, the Lexta Teen Care Campaign aims to teach students in Senior High Schools (SHS) how to cultivate good personal care and general hygiene habits in their adolescent years, a crucial phase in their development."
+        text: "Keeping clean is an important part of staying healthy and safe from diseases and infections. In the adolescent stage, cleanliness cannot be overemphasized owing to the numerous changes that occur as one begins adulthood."
       },
       {
         type: "p",
-        text: "Keeping clean is an important part of staying healthy and safe from diseases and infections. In adolescence, cleanliness cannot be overemphasised, owing to the many changes that occur as one begins adulthood."
+        text: "As a Company that cares, Lexta believes there is the need for more education on the importance of personal hygiene for adolescence and this led to the birth of the Lexta Teen Care Campaign."
       },
       {
         type: "p",
-        text: "As a company that cares, Lexta believes there is a need for more education on the importance of personal hygiene for adolescents, and this led to the birth of the Lexta Teen Care Campaign."
-      },
-      {
-        type: "p",
-        text: "The campaign, launched in February 2017, is set to educate SHS students across the country on cervical cancer, menstrual hygiene and oral care. A number of clean up competitions will also be run to keep our school environments neat and tidy."
+        text: "The Campaign which was launched in February 2017 is set to educate SHS students across the country on cervical cancer, menstrual hygiene and oral care. A number of clean-up competitions will be executed to keep our school environments neat and tidy."
       },
       {
         type: "h2",
-        text: "Cervical cancer"
+        text: "Cervical Cancer"
       },
       {
         type: "p",
-        text: "Available statistics indicate that cervical cancer is the leading cause of cancer death for women in 40 of the 48 countries of sub Saharan Africa. It affects younger age groups as a result of early sexual activity, multiple sexual partners and exposure to other sexually transmitted infections such as HIV. Educating Ghanaian teenagers, both boys and girls, on the dangers of cervical cancer is a preventive measure aimed at reducing the rate of the disease in the country."
+        text: "Available statistics indicate that it is the leading cause of cancer death for women in 40 of the 48 countries of sub-Saharan Africa. It affects younger age groups as a result of early sexual activity, multiple sexual partners, and exposure to other sexually transmitted infections such as HIV. Thus, educating Ghanaian teenagers, both boys and girls, on the dangers of cervical cancer would serve as a preventive measure aimed at reducing the infection rate of the disease in the country."
       },
       {
         type: "h2",
-        text: "Menstrual hygiene"
+        text: "Menstrual Hygiene"
       },
       {
         type: "p",
-        text: "According to WASH United (2014), the majority of women of reproductive age in Africa do not have access to clean and safe sanitary products, or to a clean and private space to change their menstrual cloths or pads. Poor protection and inadequate washing facilities may increase the risk of infection of the reproductive tract, and the odour of menstrual blood puts girls at risk of being stigmatised. Our education on menstrual hygiene is our contribution to raising awareness of the importance of good menstrual hygiene."
+        text: "According to WASH United (2014), the majority of the female population who are of reproductive age in Africa do not have access to clean and safe sanitary products or a clean and private space to change their menstrual cloths or pads. Poor protection and inadequate washing facilities may increase susceptibility to infection of their reproductive tract, with the odour of menstrual blood putting girls at risk of being stigmatized. The education on menstrual hygiene is our contribution to raising awareness about the importance of practicing good menstrual hygiene."
       },
       {
         type: "h2",
-        text: "Oral care"
+        text: "Oral Care"
       },
       {
         type: "p",
-        text: "The World Health Organization (WHO) describes oral health as a key indicator of overall health, because of its systemic and reciprocal links with general health. The mouth, made up of the teeth, masticatory muscles, tongue, mucosal soft tissues and salivary glands, is the body's main portal for nutrition. It is regarded as the starting point of the body's defence system and immunity, so when oral health is compromised by disease or injury, general health suffers. A 2012 FDI report indicated that across the world, 60 to 90 percent of school children and nearly 100 percent of adults have dental cavities. As a producer of oral care products, we recognise the health and social benefits of good oral hygiene, which is why oral care is part of the Lexta Teen Care Campaign."
+        text: "The World Health Organization (WHO) describes oral health as a key indicator of overall health due to its systemic and reciprocal links with general health. The mouth which is made up of the teeth, masticatory muscles, tongue, mucosal soft tissues, and salivary glands, is the body's main portal for nutrition. It is regarded as the starting point of the body's defense system and immunity thus, when oral health is compromised by disease or injury, general health suffers. A 2012 FDI Report indicated that across the world, 60 to 90% of school children and nearly 100% of adults have dental cavities. Being a producer of oral care products, we recognize the health and social benefits of practicing good oral hygiene which is what necessitated this component under the Lexta Teen Care Campaign."
       },
       {
         type: "h2",
-        text: "Clean up competitions"
+        text: "Clean-up competitions"
       },
       {
         type: "p",
-        text: "Poor sanitation affects public health. As a nation battling with sanitation issues, we found it important to work with schools by taking part in their weekly or monthly inspections, as a way of driving home the importance of keeping their surroundings clean. This goes a long way to reduce sanitation related diseases such as cholera, diarrhoea, dysentery, hepatitis A and typhoid."
-      },
-      {
-        type: "h2",
-        text: "In the classroom"
-      },
-      {
-        type: "p",
-        text: "At St. Mary's Senior High School, one of the schools visited under the campaign, Lexta's Head of HR and Administration addressed staff and students, and students took part in a presentation on cervical cancer and menstrual hygiene."
+        text: "Poor sanitation affects public health and as a nation battling with issues of sanitation, we found it imperative to collaborate with schools by participating in their weekly and/or monthly inspections as a means of drumming home the importance of keeping their surroundings clean which goes a long way to reduce the incidence of sanitation-related diseases such as cholera, diarrhoea, dysentery, hepatitis A and typhoid."
       }
     ],
     sources: [
       {
-        name: "Lexta Ghana: Lexta Teen Care Campaign, St. Mary's SHS",
-        url: "https://www.lextagh.com/lexta-teen-care-campaign-st-marys-shs/"
+        name: "Lexta Ghana: Lexta Teen Care Campaign",
+        url: "https://lextagh.com/2017/05/30/lexta-teen-care-campaign/"
       },
       {
         name: "Lexta Ghana: Corporate Social Responsibility",

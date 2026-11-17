@@ -6,7 +6,7 @@ import LinkedText from "@/components/LinkedText";
 
 // Title and description from faqs.html.
 const title = "FAQs | Lexta Ghana";
-const description = "Answers to common questions about Lexta Ghana products, distribution, bulk orders, careers and community work.";
+const description = "Frequently asked questions about Lexta Ghana Limited. Contact Lexta Ghana for all inquiries.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -25,7 +25,7 @@ export default function FaqsPage() {
             Frequently asked questions
           </h1>
           <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 600, textWrap: "pretty" }}>
-            Answers on our products, buying from us, partnering with us and working here. If yours is not below, send it to the team through the Contact page.
+            If yours is not below, send it to the team through the Contact page.
           </p>
         </div>
       </section>
@@ -59,7 +59,7 @@ export default function FaqsPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, letterSpacing: "-.02em", color: "#fff", textWrap: "pretty" }}>Still need an answer?</h2>
             <p style={{ margin: "10px 0 0", fontSize: 13.5, lineHeight: 1.8, color: "rgba(255,255,255,.82)", maxWidth: 440 }}>
-              Send the question to the team. Trade, consumer care and recruitment enquiries each go to the team that handles them.
+              Contact Lexta Ghana for all inquiries.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>

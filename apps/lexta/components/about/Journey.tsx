@@ -17,30 +17,30 @@ type Milestone = {
 
 const milestones: Milestone[] = [
   {
-    year: "1990s", dot: "Before Lexta", eyebrow: "Before Lexta: the UK years",
-    title: "More than ten years abroad, and a reason to come back",
-    text: "Martin Brobbey spent over a decade in the United Kingdom before returning to Ghana. He came home with one ambition: a cleaner, more hygienic Africa, served by quality consumer products that ordinary households could actually afford. That conviction is the reason Lexta exists.",
+    year: "UK", dot: "Before Lexta", eyebrow: "Before Lexta: the UK years",
+    title: "A clean and hygienic Africa",
+    text: "With a drive to push the African continent higher and a desire to ensure a clean and hygienic Africa, Mr. Martin Brobbey established Lexta Ghana Limited in 2002 on his return to Ghana after over 10 years stay in the United Kingdom.",
     photo: { placeholder: "Founder / early days photo", src: "/pasted-1788863343139-0-mtsj1pgq-1xnf.png", alt: "Speaker addressing an audience from a podium", w: 365, h: 547 },
     imageFirst: false,
   },
   {
     year: "2002", dot: "2002", eyebrow: "2002: The beginning",
-    title: "Founded in Accra as a home care supplier",
-    text: "Lexta Ghana Limited was established in Accra in 2002, starting out as a supplier of home care products. The early years were spent learning the market shop by shop, what families buy, at what price, and how often. That groundwork still shapes how we build products today.",
+    title: "A proudly Ghanaian-owned company",
+    text: "Lexta Ghana Limited was established in 2002 as a proudly Ghanaian-owned company. What began as a supplier of home care products has grown into one of the most trusted and respected consumer goods companies in the region.",
     photo: { placeholder: "First home care products photo", src: "/pasted-1788863387410-0-mtsj2nmh-7baf.png", alt: "Yazz team in branded shirts with a shop owner", w: 500, h: 562 },
     imageFirst: true,
   },
   {
-    year: "Liberia", dot: "Liberia", eyebrow: "Across the border",
-    title: "Our first border crossing, into Monrovia",
-    text: "Our wholly owned subsidiary in Monrovia, Liberia, opened in [PLACEHOLDER: year the Monrovia subsidiary opened]. It proved the model travels: the same products, the same standard, served through people who know their own market. It remains the foundation of our ambition to serve families throughout Africa.",
+    year: "Liberia", dot: "Liberia", eyebrow: "Liberia",
+    title: "A wholly-owned subsidiary in Monrovia, Liberia",
+    text: "Today, our presence extends beyond Ghana into the wider West African sub-region, including a wholly-owned subsidiary in Monrovia, Liberia, with ongoing plans to strengthen our regional presence through strategic expansion into additional markets. [PLACEHOLDER: year the Monrovia subsidiary opened]",
     photo: { placeholder: "Monrovia / Liberia operation photo", src: "/pasted-1788863416272-0-mtsj39w5-y1jr.png", alt: "Yazz branded truck with a team in red shirts", w: 640, h: 480 },
     imageFirst: false,
   },
   {
     year: "Today", dot: "Today", eyebrow: "Today: Three brands",
-    title: "Yazz, Hooch and Linzzy, made to one standard",
-    text: "Our portfolio now carries three brands across home care, personal care and food, each developed for a specific need in the Ghanaian home. Quality, safety, freshness and value are measured against real households, because care is only care if it is of the utmost quality.",
+    title: "Our trusted brands Yazz, Hooch and Linzzy",
+    text: "Over the years, Lexta has expanded its footprint across the Home Care, Personal Care, and Food categories, consistently delivering products that meet the evolving needs of consumers and families. At the heart of our portfolio are our flagship brands, each carefully developed to provide dependable, high-quality solutions that enhance everyday life.",
     photo: { placeholder: "Three brands lineup photo", src: "/pasted-1788863699695-0-mtsj9cl9-7qaa.png", alt: "Woman holding Hooch Corn Flakes, Linzzy and Yazz packs", w: 1536, h: 1024 },
     imageFirst: true,
     link: { label: "Explore the brands", href: "/our-brands" },
@@ -141,10 +141,7 @@ export default function Journey() {
     >
       <div style={{ maxWidth: 760, margin: "0 auto", padding: "74px 28px 0", textAlign: "center" }}>
         <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: "#12a3c4" }}>Our Journey</div>
-        <h2 style={{ margin: "14px 0 0", fontSize: 34, fontWeight: 700, letterSpacing: "-.025em", color: "#12313d", textWrap: "pretty" }}>Two decades, step by step</h2>
-        <p style={{ margin: "16px auto 0", maxWidth: 520, fontSize: 14, lineHeight: 1.8, color: "#5d7883" }}>
-          Scroll through the milestones that took Lexta from a single home care category to three brands made under one roof.
-        </p>
+        <h2 style={{ margin: "14px 0 0", fontSize: 34, fontWeight: 700, letterSpacing: "-.025em", color: "#12313d", textWrap: "pretty" }}>Our History</h2>
       </div>
 
       <div

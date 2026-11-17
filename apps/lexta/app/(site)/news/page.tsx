@@ -8,7 +8,7 @@ import { articleHref, featuredArticle, gridArticles, mediaContact, mediaEmail, m
 // Title and description exactly as the prototype's <helmet> sets them.
 const title = "News & Media | Lexta Ghana";
 const description =
-  "Campaign launches, outreach reports, partnerships and product news from Lexta Ghana and our brands Yazz, Linzzy and Hooch.";
+  "Latest Activities & Campaigns from Lexta Ghana Limited.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -29,16 +29,13 @@ export default function NewsPage() {
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>News &amp; media</div>
           <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
           <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6vw,52px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty", maxWidth: 760 }}>
-            What we have been <span style={{ color: "#3fc0dd" }}>up to</span>
+            Latest Activities <span style={{ color: "#3fc0dd" }}>&amp; Campaigns</span>
           </h1>
-          <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 620, textWrap: "pretty" }}>
-            Campaign launches, outreach reports, partnerships and brand news from Lexta Ghana, Yazz, Linzzy and Hooch.
-          </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 0, marginTop: 54, borderRadius: "14px 14px 0 0", overflow: "hidden", background: "#fff", boxShadow: "0 -14px 40px rgba(4,26,34,.28)" }}>
             <div style={{ minHeight: 340, overflow: "hidden" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={f.image} alt="The Empowered Periods Campaign" style={{ display: "block", width: "100%", height: "100%", minHeight: 340, objectFit: "cover" }} />
+              <img src={f.image} alt={f.title} style={{ display: "block", width: "100%", height: "100%", minHeight: 340, objectFit: "cover" }} />
             </div>
             <div style={{ padding: "44px 42px 46px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>

@@ -11,7 +11,7 @@ import p from "@/components/proto.module.css";
 
 // Title and description from contact-us.html.
 const title = "Contact Us | Lexta Ghana";
-const description = "Reach Lexta Ghana: general enquiries, distributor and bulk orders, consumer care, media and careers. Head office at Lexta Square, Dzorwulu, Accra.";
+const description = "Contact Lexta Ghana for all inquiries. Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -33,23 +33,23 @@ type Dept = { title: string; text: string; email: string; accent?: boolean; seco
 
 const departments: Dept[] = [
   {
-    title: "Sales and distribution", accent: true, email: "marketing@lextagh.com",
-    text: "Distributor, wholesaler and modern trade enquiries, stock availability and coverage in your region.",
+    title: "Distributor / wholesale / modern trade", accent: true, email: "marketing@lextagh.com",
+    text: "For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.",
     second: { label: "+233 (0) 501 619 588", href: "tel:+233501619588" },
   },
   {
-    title: "Consumer care", email: "support@lextagh.com",
-    text: "Product questions, complaints, quality concerns and batch enquiries for Yazz, Linzzy and Hooch. Consumer Reports line:",
+    title: "Complaints & product reviews", email: "support@lextagh.com",
+    text: "Consumer Reports:",
     second: { label: "+233 (0) 509 967 400", href: "tel:+233509967400" },
   },
   {
-    title: "Media and communications", email: "marketing@lextagh.com",
-    text: "Interviews, campaign detail, brand assets and comment on our programmes.",
+    title: "Partnerships / Corporate Affairs", email: "marketing@lextagh.com",
+    text: "Partnerships/sponsorships.",
     second: { label: "Visit the newsroom →", href: "/news" },
   },
   {
-    title: "Recruitment", email: "hr@lextagh.com",
-    text: "Applications, interview scheduling and questions about an open role.",
+    title: "Job applications (recruitment)", email: "hr@lextagh.com",
+    text: "To enquire about careers, use the Careers form.",
     second: { label: "See open roles →", href: "/careers#openings" },
   },
 ];
@@ -76,17 +76,17 @@ export default function ContactPage() {
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Contact us</div>
               <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
               <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-                Talk to the right <span style={{ color: "#3fc0dd" }}>team directly</span>
+                Contact <span style={{ color: "#3fc0dd" }}>Lexta Ghana</span>
               </h1>
               <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 560, textWrap: "pretty" }}>
-                Distribution, bulk orders, consumer care, media or careers. Pick the route that fits and your message goes to the team that handles it.
+                Contact Lexta Ghana for all inquiries. Please use our FAQs below to find answers to some of the questions you may have.
               </p>
             </div>
             <div style={{ borderRadius: 14, overflow: "hidden", boxShadow: "0 24px 50px rgba(4,26,34,.34)" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/assets/contact-hero.png"
-                alt="Lexta customer care agent at her desk"
+                alt="Customer care agent at her desk"
                 style={{ display: "block", width: "100%", height: "100%", minHeight: 320, maxHeight: 420, objectFit: "cover" }}
               />
             </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
                 <a href="mailto:marketing@lextagh.com" style={cardLink}>marketing@lextagh.com</a>
                 <a href="mailto:hr@lextagh.com" style={cardLink}>hr@lextagh.com</a>
               </div>
-              <div style={cardNote}>Messages go to monitored Lexta inboxes</div>
+              <div style={cardNote}>Messages go to a designated monitored inbox</div>
             </div>
           </div>
         </div>
@@ -131,9 +131,8 @@ export default function ContactPage() {
       <section data-reveal="1" data-screen-label="Departments" className={p.pad78} style={{ background: "#0b2f3d" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 620 }}>
-            <div style={{ ...eyebrow, letterSpacing: ".18em", color: "#3fc0dd" }}>Direct lines</div>
-            <h2 style={{ ...h2, fontSize: 34, lineHeight: 1.15, letterSpacing: "-.03em", color: "#fff" }}>Skip the switchboard</h2>
-            <p style={{ margin: "16px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>If you already know who you need, reach them here.</p>
+            <div style={{ ...eyebrow, letterSpacing: ".18em", color: "#3fc0dd" }}>Contact us</div>
+            <h2 style={{ ...h2, fontSize: 34, lineHeight: 1.15, letterSpacing: "-.03em", color: "#fff" }}>Direct lines</h2>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 24, marginTop: 44 }}>
             {departments.map((d) => (
@@ -166,7 +165,7 @@ export default function ContactPage() {
             <div style={eyebrow}>Visit us</div>
             <h2 style={h2}>Lexta Square, Dzorwulu</h2>
             <p style={{ margin: "18px 0 0", fontSize: 14, lineHeight: 1.9, color: "#5d7883" }}>
-              Our head office is at Lexta Square on the Olusegun Obasanjo Highway in Dzorwulu, Accra. Visitors are welcome by appointment.
+              Office address: Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra, Ghana.
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(170px,1fr))", gap: 22, marginTop: 28 }}>
               {visitFacts.map((f) => (
@@ -182,7 +181,7 @@ export default function ContactPage() {
                 href="mailto:marketing@lextagh.com"
                 style={{ display: "inline-flex", alignItems: "center", border: "1px solid rgba(18,163,196,.45)", background: "#f7fcfe", color: "#0b6d88", fontSize: 13, fontWeight: 600, padding: "12px 20px", borderRadius: 7 }}
               >
-                Book an appointment
+                Email us
               </a>
             </div>
           </div>
@@ -192,7 +191,7 @@ export default function ContactPage() {
       <section data-reveal="1" data-screen-label="FAQ" className={p.pad76} style={{ background: "#f7fcfe", borderTop: "1px solid rgba(18,163,196,.14)" }}>
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
           <div style={eyebrow}>Before you write</div>
-          <h2 style={h2}>Questions we get most</h2>
+          <h2 style={h2}>FAQs</h2>
           <Faq />
         </div>
       </section>
@@ -208,7 +207,7 @@ export default function ContactPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Want to carry our brands?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              Distributors, wholesalers and modern trade partners across Ghana and Liberia: select your partnership type and share your region and contact details.
+              For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>
