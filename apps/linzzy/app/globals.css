@@ -126,3 +126,10 @@ button, input, select, textarea { font-family: inherit; }
 .lz-sel-dark:hover > select, .lz-sel-dark > select:focus { border-bottom-color: #f48fb1 !important; }
 [data-lx-select-panel] { font-family: "Hanken Grotesk", system-ui, sans-serif; border-radius: 14px; padding: 6px; }
 [data-lx-select-panel] [role="option"] { border-radius: 10px; letter-spacing: 0; text-transform: none; }
+
+/* The product panel's expandable "Usage, Ingredients & Skin Sensitivity" row (details/summary, works by keyboard). */
+.lz-acc > summary { list-style: none; }
+.lz-acc > summary::-webkit-details-marker { display: none; }
+.lz-acc > summary:focus-visible { outline: 2px solid #C2185B; outline-offset: 2px; }
+.lz-acc .lz-acc-i::before { content: "+"; }
+.lz-acc[open] .lz-acc-i::before { content: "\2212"; }

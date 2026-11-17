@@ -461,6 +461,11 @@ export default function ProductsView({ v: vals }: { v: any }) {
                     {"\n        "}
                   </div>
                   {"\n        "}
+                  {vals.detail.headline ? (
+                    <p style={css(`margin:0 0 -8px;font-size:13px;font-weight:700;letter-spacing:0.06em;color:${vals.detail.tone}`)}>
+                      {vals.detail.headline}
+                    </p>
+                  ) : null}
                   <h2 style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(32px,3.4vw,46px)","lineHeight":"1","letterSpacing":"-0.02em","color":"#23103a"} as CSSProperties}>
                     {vals.detail.name}
                   </h2>
@@ -475,6 +480,47 @@ export default function ProductsView({ v: vals }: { v: any }) {
                     </span>
                     {vals.detail.pack}
                   </p>
+                  {/* Lexta's product page fields (Drive, "3. Products Page"): key features, one expandable
+                      "Usage, Ingredients & Skin Sensitivity" row and the "Linzzy Says" line. */}
+                  {(vals.detail.features ?? []).length ? (
+                    <div>
+                      <p style={{"margin":"0 0 8px","fontSize":"12px","fontWeight":"600","letterSpacing":"0.14em","textTransform":"uppercase","color":"#7a6890"} as CSSProperties}>
+                        {"Key product features"}
+                      </p>
+                      <ul style={{"margin":"0","padding":"0","listStyle":"none","display":"flex","flexDirection":"column","gap":"6px","fontSize":"15px","lineHeight":"1.45","color":"#23103a"} as CSSProperties}>
+                        {(vals.detail.features ?? []).map((f: string) => (
+                          <li key={f} style={{"display":"flex","gap":"10px","alignItems":"baseline"} as CSSProperties}>
+                            <span aria-hidden="true" style={css(`flex:none;font-weight:700;color:${vals.detail.tone}`)}>{"✓"}</span>
+                            <span>{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                  {vals.detail.hasCare ? (
+                    <details className="lz-acc" style={{"borderTop":"1px solid rgba(35,16,58,0.2)","borderBottom":"1px solid rgba(35,16,58,0.2)"} as CSSProperties}>
+                      <summary style={{"display":"flex","justifyContent":"space-between","alignItems":"center","gap":"12px","padding":"14px 0","cursor":"pointer","fontSize":"14px","fontWeight":"700","lineHeight":"1.35","color":"#23103a"} as CSSProperties}>
+                        <span>{"Usage, Ingredients & Skin Sensitivity"}</span>
+                        <span className="lz-acc-i" aria-hidden="true" style={{"flex":"none","width":"32px","height":"32px","display":"flex","alignItems":"center","justifyContent":"center","background":"#23103a","color":"#fff","fontSize":"18px","lineHeight":"1"} as CSSProperties} />
+                      </summary>
+                      <dl style={{"margin":"0","padding":"0 0 16px","display":"flex","flexDirection":"column","gap":"12px","fontSize":"15px","lineHeight":"1.55","color":"#3d2a55"} as CSSProperties}>
+                        {(vals.detail.care ?? []).map((r: { label: string; text: string }) => (
+                          <div key={r.label}>
+                            <dt style={{"fontSize":"12px","fontWeight":"700","letterSpacing":"0.14em","textTransform":"uppercase","color":"#7a6890","marginBottom":"2px"} as CSSProperties}>{r.label}</dt>
+                            <dd style={{"margin":"0"} as CSSProperties}>{r.text}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </details>
+                  ) : null}
+                  {vals.detail.says ? (
+                    <p style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontStyle":"italic","fontSize":"clamp(20px,1.8vw,24px)","lineHeight":"1.2","color":"#23103a"} as CSSProperties}>
+                      <span style={css(`display:block;font-family:'Hanken Grotesk',sans-serif;font-style:normal;font-size:12px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${vals.detail.tone};margin-bottom:4px`)}>
+                        {"Linzzy says"}
+                      </span>
+                      {vals.detail.says}
+                    </p>
+                  ) : null}
                   {"\n        "}
                   <div style={{"display":"flex","flexWrap":"wrap","gap":"2px","marginTop":"6px"} as CSSProperties}>
                     {"\n          "}

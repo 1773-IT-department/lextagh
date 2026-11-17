@@ -1,6 +1,6 @@
 // Data for the prototype pages, built on the server from the Business System (products) and the Tips & Advice
 // articles, in the shapes the prototype's renderVals used. Server safe: no React.
-import { ARTICLES, NOTICES } from "@/content/articles";
+import { ARTICLES, NOTICES, type Article } from "@/content/articles";
 import type { LinzzyProduct } from "@/lib/products";
 
 export type ProtoProduct = {
@@ -13,6 +13,16 @@ export type ProtoProduct = {
   /** Lexta's full product description, shown in the product details panel (the cards keep the one line summary). */
   long: string;
   pack: string;
+  /** Lexta's product page extras for the details panel (Drive, "3. Products Page"); empty or null when missing. */
+  headline: string | null;
+  features: string[];
+  recommended: string | null;
+  usage: string | null;
+  sensitivity: string | null;
+  ingredients: string | null;
+  says: string | null;
+  /** Up to two Tips & Advice articles that go with the product (catalogue `reads`), for the panel's Read more line. */
+  reads: { slug: string; title: string }[];
 };
 
 export type ProtoTip = {
@@ -52,6 +62,18 @@ export function toProtoProduct(p: LinzzyProduct): ProtoProduct {
     desc: p.short,
     long: p.long || p.short,
     pack: packText(p),
+    headline: p.headline ?? null,
+    features: p.features ?? [],
+    recommended: p.recommended ?? null,
+    usage: p.usage ?? null,
+    sensitivity: p.sensitivity ?? null,
+    ingredients: p.ingredients ?? null,
+    says: p.says ?? null,
+    reads: (p.reads ?? [])
+      .map((slug) => ARTICLES.find((a) => a.slug === slug))
+      .filter((a): a is Article => Boolean(a))
+      .slice(0, 2)
+      .map((a) => ({ slug: a.slug, title: a.title })),
   };
 }
 
