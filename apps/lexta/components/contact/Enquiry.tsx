@@ -3,7 +3,7 @@
 import { Select } from "@lexta/ui";
 import { useActionState, useState, type CSSProperties, type ReactNode } from "react";
 import { submitContactForm } from "@/app/actions/forms";
-import { FieldError, FormMessage, Honeypot, idleState, invalidProps, choiceCardReset, useServerForm, visuallyHidden } from "@/components/forms/FormParts";
+import { FieldError, FormMessage, Honeypot, idleState, invalidProps, choiceCardReset, PrivacyConsent, useServerForm, visuallyHidden } from "@/components/forms/FormParts";
 import fx from "@/components/forms/forms.module.css";
 import type { FormState } from "@/lib/forms/core";
 import { reasons, regions } from "./data";
@@ -140,6 +140,7 @@ export default function Enquiry() {
             style={{ ...field, lineHeight: 1.7, resize: "vertical", minWidth: undefined }}
           />
         </Field>
+        <PrivacyConsent state={state} id="contact-privacy" style={{ marginTop: 14 }} />
         <button
           type="submit"
           aria-disabled={pending}

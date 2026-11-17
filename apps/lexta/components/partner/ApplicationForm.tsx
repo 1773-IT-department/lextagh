@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { FieldError, FormMessage, Honeypot, invalidProps, useServerForm } from "@/components/forms/FormParts";
+import { FieldError, FormMessage, Honeypot, invalidProps, PrivacyConsent, useServerForm } from "@/components/forms/FormParts";
 import { useActiveRoute } from "./RouteContext";
 
 /* Values copied from partner-with-us.html. */
@@ -83,6 +83,7 @@ export default function ApplicationForm() {
         </label>
         <FieldError id={errorId("message")} message={state.fieldErrors?.message} />
       </div>
+      <PrivacyConsent state={state} id="partner-privacy" style={{ marginTop: 14 }} />
       <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
         <button
           type="submit"

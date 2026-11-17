@@ -18,9 +18,12 @@ async function q(sql, vars) {
   if (r.code !== 0) throw new Error(`query failed: ${r.err}`);
   return r.out;
 }
+// The consumer form needs the privacy notice tick (X4): every call sends it ticked unless the test names "privacy"
+// itself (an empty string leaves it unticked).
 function fd(fields) {
   const f = new FormData();
-  for (const [k, v] of Object.entries(fields)) for (const x of [].concat(v)) f.append(k, x);
+  if (!("privacy" in fields)) f.append("privacy", "yes");
+  for (const [k, v] of Object.entries(fields)) for (const x of [].concat(v)) if (!(k === "privacy" && x === "")) f.append(k, x);
   return f;
 }
 const stamp = Date.now().toString(36);
@@ -126,6 +129,9 @@ try {
     const row2 = await q(`select coalesce(c.product_id::text, 'none') || '|' || replace(c.description, E'\\n', '~') from public.complaints c where c.case_number = '${s2.reference}'`);
     check(s2.status === "success" && row2.startsWith("none|Product: Yazz pocket tissue"), "complaint: an unknown product is named in the text instead of being refused", { s2, row2 });
 
+    const noTick = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi3"), message: "Torn pack.", privacy: "" }));
+    check(noTick.status === "error" && noTick.fieldErrors?.privacy === "Please tick the box to agree to the privacy notice." && Object.keys(noTick.fieldErrors).length === 1,
+      "consumer form: without the privacy tick it is refused on the server", noTick);
     const future = await core.handleConsumer(fd({ topic: "problem", name: "Esi", email: mail("esi2"), purchase_date: "2999-01-01", message: "x" }));
     check(future.status === "error" && future.fieldErrors?.purchase_date, "complaint: a purchase date in the future is refused", future);
   }

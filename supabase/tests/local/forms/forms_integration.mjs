@@ -22,9 +22,12 @@ async function q(sql) {
   return r.out;
 }
 
+// Contact Us and Partner With Us need the privacy notice tick (X4): every call sends it ticked unless the test names
+// "privacy" itself (an empty string leaves it unticked).
 function fd(fields) {
   const f = new FormData();
-  for (const [k, v] of Object.entries(fields)) f.append(k, v);
+  if (!("privacy" in fields)) f.append("privacy", "yes");
+  for (const [k, v] of Object.entries(fields)) if (!(k === "privacy" && v === "")) f.append(k, v);
   return f;
 }
 
@@ -159,6 +162,13 @@ try {
     check(bad.fieldErrors?.email && bad.fieldErrors?.phone && bad.fieldErrors?.region && bad.fieldErrors?.message, "bad email, phone, region and empty message each get a field message");
     const p = await core.handlePartner(fd({ route: "Retail", contact_name: "", business_name: "", email: "a@b.co", website: "" }));
     check(p.fieldErrors?.contact_name && p.fieldErrors?.business_name, "partner form needs a contact name and business name");
+    const noConsent = await core.handleContact(fd({ reason: "General enquiry", name: "No Tick", email: mail("notick"), region: "Volta", message: "Hi", privacy: "", website: "" }));
+    check(noConsent.status === "error" && noConsent.fieldErrors?.privacy === "Please tick the box to agree to the privacy notice." && Object.keys(noConsent.fieldErrors).length === 1,
+      "contact form without the privacy tick is refused on the server with an inline message", noConsent.fieldErrors);
+    const noConsentCare = await core.handleContact(fd({ reason: "Consumer care", name: "No Tick", email: mail("notick2"), region: "Volta", message: "Torn pack", privacy: "no", website: "" }));
+    check(noConsentCare.fieldErrors?.privacy, "consumer care without the privacy tick is refused too (any value but yes)");
+    const noConsentP = await core.handlePartner(fd({ route: "Retail", contact_name: "No Tick", business_name: "No Tick Ltd", email: mail("notick3"), privacy: "", website: "" }));
+    check(noConsentP.status === "error" && noConsentP.fieldErrors?.privacy && Object.keys(noConsentP.fieldErrors).length === 1, "partner form without the privacy tick is refused on the server");
     check((await counts()) === before, "invalid submissions save nothing");
   }
 

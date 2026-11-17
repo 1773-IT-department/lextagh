@@ -8,6 +8,7 @@ import Icon from "@/components/Icon";
 import { FieldError, FormMessage, idleState } from "@/components/forms/FormParts";
 import f from "@/components/forms/forms.module.css";
 import { TOPICS, type Topic } from "@/lib/forms/options";
+import { lexta } from "@/lib/site";
 import type { RegionOption } from "@/lib/where-to-buy";
 import s from "./contact.module.css";
 
@@ -109,6 +110,11 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
         {err("message")}
       </div>
       <p className={f.hint}>Please do not share sensitive health details in this form.</p>
+      <label className={f.consent}>
+        <input type="checkbox" name="privacy" value="yes" required defaultChecked={v.privacy === "yes"} {...inv("privacy")} />
+        <span>I agree to the <a href={lexta.privacy} target="_blank" rel="noopener">privacy notice</a>.</span>
+      </label>
+      {err("privacy")}
 
       <FormMessage state={state} />
       <div className={f.submitRow}>

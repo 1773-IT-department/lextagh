@@ -438,6 +438,12 @@ try {
     await page.fill("#c-name", "Ama JS");
     await page.fill("#c-email", `ama.js.${stamp}@example.com`);
     await page.fill("#c-message", "Is the toothpaste safe for children?");
+    // Without the privacy tick the server refuses it (X4), with an inline message under the box.
+    await form.getByRole("button", { name: /Send Message/ }).click();
+    await form.locator("#c-privacy-error").waitFor({ timeout: 15000 }).catch(() => {});
+    check(/agree to the privacy notice/.test(await form.locator("#c-privacy-error").innerText().catch(() => "")) && await form.locator("a[href$='/privacy-policy']").count() === 1,
+      "consumer form (JS): without the privacy tick it is refused, with a link to the privacy notice");
+    await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: /Send Message/ }).click();
     const ok = form.locator("[data-form-message]");
     await ok.waitFor({ timeout: 15000 });
@@ -454,6 +460,7 @@ try {
     await page.fill("#c-batch", "BW-77");
     await page.fill("#c-date", "2026-10-20");
     await page.fill("#c-message", "The pack was dry when opened.");
+    await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: /Send Message/ }).click();
     await ok.waitFor({ timeout: 15000 });
     const caseNo = /LX-\d{4}-\d{4,}/.exec(await ok.innerText())?.[0];
@@ -491,6 +498,7 @@ try {
     await page.fill("#c-name", "Esi NoJS");
     await page.fill("#c-email", `esi.nojs.${stamp}@example.com`);
     await page.fill("#c-message", "Where can I buy Mama Yazz in Ho?");
+    await page.locator("#message form input[name=privacy]").check();
     await Promise.all([page.waitForLoadState("load"), page.locator("#message form").getByRole("button", { name: /Send Message/ }).click()]);
     await sleep(500);
     const text = await page.locator("body").innerText();

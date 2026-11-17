@@ -264,6 +264,7 @@ try {
     await form.locator("input[name=email]").fill(`qa.contact.${ts}@example.com`);
     await form.locator("input[name=phone]").fill("0240000999");
     await form.locator("textarea[name=message]").fill("QA test: where can I buy Yazz in Ho?");
+    await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: "Send message" }).click();
     await form.locator("[role=status] [data-form-message], [role=alert]").first().waitFor({ timeout: 20000 }).catch(() => {});
     const msg = await form.locator("[data-form-message]").first().innerText().catch(() => "");
@@ -274,6 +275,7 @@ try {
     await form.locator("input[name=email]").fill(`qa.complaint.${ts}@example.com`);
     await form.locator("input[name=detail]").fill("Yazz pads, batch QA-1");
     await form.locator("textarea[name=message]").fill("QA test: torn pack.");
+    await form.locator("input[name=privacy]").check();
     await form.getByRole("button", { name: "Send message" }).click();
     await page.waitForFunction(() => /LX-\d{4}-\d{4}/.test(document.querySelector("form#contact-enquiry [data-form-message]")?.textContent ?? "") || document.querySelector("form#contact-enquiry [role=alert]"), null, { timeout: 20000 }).catch(() => {});
     const msg2 = await form.locator("[data-form-message]").first().innerText().catch(() => "");
@@ -295,6 +297,7 @@ try {
     await pform.locator("input[name=trading_location]").fill("Tamale");
     const ta = pform.locator("textarea[name=message]");
     if (await ta.count()) await ta.fill("QA test: we want to distribute Hooch.");
+    await pform.locator("input[name=privacy]").check();
     await pform.locator("button[type=submit]").click();
     await pform.locator("[data-form-message]").first().waitFor({ timeout: 20000 }).catch(() => {});
     const pm = await pform.locator("[data-form-message]").first().innerText().catch(() => "");

@@ -113,7 +113,13 @@ export function contactFallbackEmail(reasonLabel: string): string {
 
 // Contact Us ---------------------------------------------------------------------------------
 
-const CONTACT_FIELDS = ["reason", "name", "email", "phone", "detail", "region", "message"];
+const CONTACT_FIELDS = ["reason", "name", "email", "phone", "detail", "region", "message", "privacy"];
+
+/** The privacy notice tick box on Contact Us and Partner With Us (as on the Hooch form): only a ticked box counts. */
+const MSG_PRIVACY = "Please tick the box to agree to the privacy notice.";
+function checkPrivacy(v: Fields, errors: Fields) {
+  if (v.privacy !== "yes") errors.privacy = MSG_PRIVACY;
+}
 /** Reasons whose extra field is a company, business or outlet name: it goes to the CRM as the organisation. */
 const ORG_DETAIL_REASONS = new Set(["general", "distribution", "media"]);
 
@@ -124,6 +130,7 @@ const CONTACT_MESSAGES: Fields = {
   detail: "Please check this field.",
   region: "Please choose a region from the list.",
   message: "Please write your message.",
+  privacy: MSG_PRIVACY,
 };
 
 export type ContactRoute =
@@ -144,6 +151,7 @@ export function buildContact(fd: FormData): { values: Fields; errors: Fields; ro
   checkMax(v, "detail", detailIsOrg ? LIMITS.organisation : LIMITS.detail, "This field", errors);
   if (!v.message) errors.message = CONTACT_MESSAGES.message;
   else checkMax(v, "message", LIMITS.message, "Your message", errors);
+  checkPrivacy(v, errors);
 
   const common = { brand: BRAND, name: v.name, email: v.email || undefined, phone: v.phone || undefined };
 
@@ -203,7 +211,7 @@ const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref};
 
 // Partner With Us ------------------------------------------------------------------------------
 
-const PARTNER_FIELDS = ["route", "contact_name", "business_name", "email", "phone", "trading_location", "years_trading", "message"];
+const PARTNER_FIELDS = ["route", "contact_name", "business_name", "email", "phone", "trading_location", "years_trading", "message", "privacy"];
 
 const PARTNER_MESSAGES: Fields = {
   contact_name: "Please enter your name.",
@@ -213,6 +221,7 @@ const PARTNER_MESSAGES: Fields = {
   trading_location: "Please check your trading location.",
   years_trading: "Please check the years trading.",
   message: "Please check your message.",
+  privacy: MSG_PRIVACY,
 };
 
 export function buildPartner(fd: FormData): { values: Fields; errors: Fields; payload?: PartnerFormPayload } {
@@ -225,6 +234,7 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
   checkMax(v, "trading_location", LIMITS.location, "Trading location", errors);
   checkMax(v, "years_trading", LIMITS.years, "Years trading", errors);
   checkMax(v, "message", LIMITS.message, "Your message", errors);
+  checkPrivacy(v, errors);
   if (Object.keys(errors).length) return { values: v, errors };
   return {
     values: v,

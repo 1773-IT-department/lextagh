@@ -54,7 +54,7 @@ const regionName = (slug: string) => slug.split("-").map((w) => w.charAt(0).toUp
 
 // Consumer form ------------------------------------------------------------------------------------------------
 
-const CONSUMER_FIELDS = ["topic", "name", "email", "phone", "region", "product", "batch", "purchase_place", "purchase_date", "message"];
+const CONSUMER_FIELDS = ["topic", "name", "email", "phone", "region", "product", "batch", "purchase_place", "purchase_date", "message", "privacy"];
 
 const CONSUMER_MESSAGES: Fields = {
   name: "Please enter your name.",
@@ -66,6 +66,7 @@ const CONSUMER_MESSAGES: Fields = {
   purchase_place: "Please check where you bought it.",
   purchase_date: "Please give the date you bought it (not in the future).",
   message: "Please write your message.",
+  privacy: "Please tick the box to agree to the privacy notice.",
 };
 
 export type ConsumerRoute =
@@ -88,6 +89,8 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
   if (v.product && (!SLUG.test(v.product) || v.product.length > 120)) errors.product = CONSUMER_MESSAGES.product;
   if (!v.message) errors.message = CONSUMER_MESSAGES.message;
   else checkMax(v, "message", LIMITS.message, "Your message", errors);
+  // Consent to the privacy notice, as on the Hooch and Linzzy forms; only a box the visitor ticked counts.
+  if (v.privacy !== "yes") errors.privacy = CONSUMER_MESSAGES.privacy;
 
   const common = { brand: BRAND, name: v.name, email: v.email || undefined, phone: v.phone || undefined };
   const productName = v.product ? productNames[v.product] ?? v.product : "";
