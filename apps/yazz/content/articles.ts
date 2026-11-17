@@ -1086,3 +1086,29 @@ You don't need to know every answer. Sometimes the most important thing you can 
     ],
   },
 };
+
+/**
+ * What's Inside My Yazz®? (tips-just-4-you/10-whats-inside-my-yazz.md), a section of the Just 4 You view. Lexta's page
+ * is mostly instructions for content still to be verified, so the headings are Lexta's and every fact is a placeholder
+ * until Lexta sends verified product information (CONTENT-NEEDED.md). "What does each layer do?" is a list of layers
+ * that opens on tap, in place of Lexta's interactive diagram (no images); the layer names are placeholders too.
+ */
+export const WHATS_INSIDE = {
+  title: "What's Inside My Yazz®?",
+  heading: "Because What You Use Matters",
+  intro: "At Yazz®, we understand that consumers want to know more about the products they use. That's why product information should be clear and easy to understand.",
+  materials: { title: "What is a Yazz® sanitary pad made from?", body: "[PLACEHOLDER: a clear breakdown of the materials used in each Yazz® pad, verified by Lexta]" },
+  layers: {
+    title: "What does each layer do?",
+    items: [1, 2, 3, 4].map((n) => ({
+      name: `[PLACEHOLDER: layer ${n} name]`,
+      body: `[PLACEHOLDER: what layer ${n} does, from the actual construction of the Yazz® pad confirmed by Lexta]`,
+    })),
+  },
+  blocks: [
+    { title: "How is Yazz® quality checked?", body: "[PLACEHOLDER: Lexta Ghana Limited's actual quality-control and manufacturing processes]" },
+    { title: "Product Safety", body: "[PLACEHOLDER: verified information about product testing, applicable standards, manufacturing and consumer safety]" },
+    { title: "Packaging Information", body: "[PLACEHOLDER: what the product information and directions on Yazz® packaging mean]" },
+  ],
+  question: { title: "Have a Product Question?", body: "Contact Yazz® Consumer Care for product enquiries, feedback or concerns on" },
+};

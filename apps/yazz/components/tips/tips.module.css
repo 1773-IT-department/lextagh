@@ -56,6 +56,13 @@
 }
 .linkList a:hover { border-color: var(--yz-red); color: var(--yz-deep); }
 .linkList svg { flex: none; color: var(--yz-red); }
+/* What's Inside My Yazz®? */
+.insideGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+.insideCard { padding: 20px 22px; border-radius: 16px; background: #fff; min-width: 0; }
+.insideCard h3 { margin: 0; font-size: 15px; font-weight: 700; color: var(--yz-deep); }
+.insideCard p { margin: 8px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--yz-body); overflow-wrap: anywhere; }
+.insideLayers details summary { padding: 12px 2px; font-size: 14px; }
+.insideLayers p { margin: 0; }
 .empty { padding: 30px; border-radius: 18px; background: var(--yz-sky); color: var(--yz-body); font-size: 14px; line-height: 1.7; }
 .note { margin: 28px var(--yz-gutter) 0; padding: 16px 20px; border-radius: 14px; border: 1px dashed var(--yz-line-strong); font-size: 12.5px; line-height: 1.7; color: var(--yz-muted); }
 
@@ -119,6 +126,7 @@
 
 /* Lexta's ten Tips Just 4 You cards: two rows of five on wide screens. */
 @media (min-width: 1280px) { .tiles { grid-template-columns: repeat(5, minmax(0, 1fr)); } .tile { padding-right: 44px; } }
+@media (max-width: 1100px) { .insideGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 1100px) { .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 860px) {
   .artHero { grid-template-columns: 1fr; padding: 28px 22px; gap: 22px; }
@@ -130,7 +138,7 @@
 @media (max-width: 720px) {
   .hero { padding: 30px 22px 26px; border-radius: 22px; }
   .heroTitle { font-size: 30px; }
-  .tiles, .grid4, .linkList { grid-template-columns: 1fr; }
+  .tiles, .grid4, .linkList, .insideGrid { grid-template-columns: 1fr; }
   .panelBox { padding: 24px 20px; }
   .panelBody ul { columns: 1; }
   .artTitle { font-size: 30px; }

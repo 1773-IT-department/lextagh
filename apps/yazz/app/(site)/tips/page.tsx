@@ -4,6 +4,7 @@ import Icon from "@/components/Icon";
 import ArticleCard from "@/components/tips/ArticleCard";
 import SubscribeForm from "@/components/tips/SubscribeForm";
 import TipsPanel from "@/components/tips/TipsPanel";
+import WhatsInside from "@/components/tips/WhatsInside";
 import s from "@/components/tips/tips.module.css";
 import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
@@ -99,6 +100,8 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           </p>
         )}
       </section>
+
+      {category === "just-4-you" && <WhatsInside />}
 
       {panels?.closings.map((p) => <TipsPanel key={p.id} panel={p} />)}
 
