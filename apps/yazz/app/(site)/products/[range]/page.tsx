@@ -12,6 +12,7 @@ import tc from "@/components/tips/tips.module.css";
 import { ARTICLES, sortedArticles } from "@/content/articles";
 import { getYazzProducts, inRange } from "@/lib/products";
 import { isRangeSlug, RANGE_SLUGS, RANGES } from "@/lib/ranges";
+import { lexta } from "@/lib/site";
 import s from "@/components/range/range.module.css";
 
 /** Rebuilt at most hourly; the portal's product saves refresh it at once through /api/revalidate. */
@@ -146,6 +147,14 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
           </div>
         </section>
       )}
+
+      <div className={`yz-pad ${s.csrWrap}`}>
+        <p className={s.csr}>
+          <span className={s.csrIcon}><Icon name="heart" size={16} /></span>
+          <span><strong>{r.csr.sdg}</strong>, {r.csr.initiative}.</span>
+          <a href={lexta.csr} target="_blank" rel="noopener" className="yz-textlink">Community Impact (CSR) <Icon name="arrow" size={15} /></a>
+        </p>
+      </div>
 
       {reads.length > 0 && (
         <section className={`yz-pad ${s.reads}`} aria-labelledby="reads-title">
