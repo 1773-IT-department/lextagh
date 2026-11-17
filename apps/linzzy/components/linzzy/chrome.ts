@@ -10,9 +10,15 @@ export const FEM = { tone: "#C2185B", soft: "#EFE6FF", cat: "Feminine Care" };
 export const BABY = { tone: "#0E7A5B", soft: "#DDF7EC", cat: "Baby Care" };
 export const tone = (g: "fem" | "baby") => (g === "fem" ? FEM : BABY);
 
+/**
+ * The menu's page links. Lexta's top bar names Feminine Care and Baby Care as separate entries (Drive, website-copy.md:
+ * "Home | About | Feminine Care | Baby Care | Tips & Advice | ..."), so the one Products page has two entries, one per
+ * band; the site keeps its 6 pages.
+ */
 export const PAGES: [string, string][] = [
   ["/", "Home"],
-  ["/products", "Products"],
+  ["/products#fem", "Feminine Care"],
+  ["/products#baby", "Baby Care"],
   ["/about", "About Us"],
   ["/tips", "Tips & Advice"],
   ["/faqs", "FAQs"],
@@ -46,7 +52,13 @@ export function useChrome(here: string, firstChapter: string, opts: { hashOffset
       toggleMenu: () => setMenu((m) => !m),
       chapterNum: ch.num,
       chapterName: ch.name,
-      pages: PAGES.map(([href, label]) => ({ href, label, c: href === here ? "#F48FB1" : "#fff", current: href === here ? ("page" as const) : undefined })),
+      pages: PAGES.map(([href, label]) => {
+        const [path, hash] = href.split("#");
+        const on = path === here;
+        // A band of the page you are on (Feminine Care or Baby Care on /products): close the menu and scroll there.
+        const go = on && hash ? h(() => jumpTo(hash)) : undefined;
+        return { href, label, go, c: on ? "#F48FB1" : "#fff", current: on ? ("page" as const) : undefined };
+      }),
     },
     chapters: (list: [string, string, string][]) => list.map(([id, num, name]) => ({ num, name, href: `#${id}`, go: h(() => jumpTo(id)) })),
   };

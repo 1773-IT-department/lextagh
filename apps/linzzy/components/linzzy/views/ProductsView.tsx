@@ -76,7 +76,7 @@ export default function ProductsView({ v: vals }: { v: any }) {
                 {"\n      "}
                 {(vals.pages ?? []).map((n: any, i1: number) => (
                   <Fragment key={i1}>
-                    <a className="lzp2" href={n.href} aria-current={n.current} style={css(`display:block;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.14);color:${n.c};font-family:'DM Serif Display',serif;font-size:clamp(28px,3.4vw,44px);line-height:1.05`)}>
+                    <a className="lzp2" href={n.href} onClick={n.go} aria-current={n.current} style={css(`display:block;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.14);color:${n.c};font-family:'DM Serif Display',serif;font-size:clamp(28px,3.4vw,44px);line-height:1.05`)}>
                       {n.label}
                     </a>
                   </Fragment>
