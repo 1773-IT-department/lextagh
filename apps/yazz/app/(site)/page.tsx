@@ -18,7 +18,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: { absolute: "Yazz® | Trusted Quality. Made for Everyday Living." },
-  description: "Yazz®, a trademark brand of Lexta Ghana Limited. Feminine care, baby care, oral care, home care and tissues: practical care for the moments that matter. Find Yazz near you.",
+  description: "Yazz® is a trademark brand of Lexta Ghana Limited. From feminine care and baby essentials to oral care, home care and tissues, Yazz brings practical care into the moments that matter.",
   alternates: { canonical: "/" },
 };
 
@@ -48,8 +48,8 @@ const SLIDES: Slide[] = [
   },
   {
     eyebrow: "ORAL CARE",
-    title: ["Your Best", "Every"],
-    accent: ["Smiles,", "Day."],
+    title: ["Yazz", "Your Best"],
+    accent: ["Brushes.", "Smiles."],
     body: "Make good oral hygiene part of every day. Explore Yazz toothbrushes and toothpaste options and discover simple brushing habits for the whole family.",
     ctas: [{ label: "Explore Oral Care", href: "/products/oral-care", kind: "red" }, { label: "Oral Hygiene Tips", href: "/tips/tips-for-a-healthy-smile", kind: "ghost" }],
     image: { src: "/images/oral-care.webp", alt: "A man brushing his teeth with Yazz toothpaste on the counter" },
@@ -58,10 +58,10 @@ const SLIDES: Slide[] = [
 ];
 
 const TRUST = [
-  { icon: "shield", title: "Quality Products", sub: "You Can Trust" },
+  { icon: "shield", title: "Trusted Quality", sub: "Made for Everyday Living" },
   { icon: "heart", title: "Caring Brand", sub: "For Caring Families" },
-  { icon: "leaf", title: "Everyday Care", sub: "For Every Home" },
-  { icon: "people", title: "Proudly Ghanaian", sub: "From Lexta Ghana Limited" },
+  { icon: "leaf", title: "One Brand", sub: "Everyday Possibilities" },
+  { icon: "people", title: "Proudly From", sub: "Lexta Ghana Limited" },
 ];
 
 const BANDS = [
@@ -140,7 +140,6 @@ export default async function HomePage() {
           <div className={s.featuredHead}>
             <div>
               <h2 id="featured-title" className={s.featuredTitle}>Featured Products</h2>
-              <p>Practical care for everyday living, from every Yazz range.</p>
             </div>
             <Link href="/products" className="yz-textlink">View all products <Icon name="arrow" size={15} /></Link>
           </div>
@@ -155,8 +154,8 @@ export default async function HomePage() {
       )}
 
       <section className={`yz-pad ${s.promise}`} aria-labelledby="promise-title">
-        <p className="yz-eyebrow" style={{ textAlign: "center" }}>The Yazz® Promise</p>
-        <h2 id="promise-title" className="yz-h2" style={{ textAlign: "center", marginTop: 10 }}>Quality You Can Count On</h2>
+        <p className="yz-eyebrow" style={{ textAlign: "center" }}>Our promise</p>
+        <h2 id="promise-title" className="yz-h2" style={{ textAlign: "center", marginTop: 10 }}>The Yazz® Promise</h2>
         <p className="yz-lead" style={{ textAlign: "center", maxWidth: 640, margin: "12px auto 0" }}>{BRAND.promiseIntro[0]}</p>
         <div className={s.promiseGrid}>
           {BRAND.promise.map((p) => (
@@ -180,7 +179,7 @@ export default async function HomePage() {
           <Link href="/about" className="yz-btn yz-btn--navy yz-btn--sm" style={{ marginTop: 18 }}>Our Story <Icon name="arrow" size={15} /></Link>
         </div>
         <div className={s.brandNote} aria-hidden="true">
-          <p className="yz-script">Proudly<br />Ghanaian <span style={{ color: "#ED1B2E", fontSize: 16 }}>♥</span></p>
+          <p className="yz-script">100%<br />Ghanaian <span style={{ color: "#ED1B2E", fontSize: 16 }}>♥</span></p>
           <span className="yz-flagbars"><i /><i /><i /></span>
         </div>
       </section>

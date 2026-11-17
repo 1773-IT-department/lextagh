@@ -8,7 +8,7 @@ import { contact, whatsapp } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "FAQs",
-  description: "Answers on periods and puberty, Yazz® products, where to buy Yazz and trade, from the Yazz team at Lexta Ghana Limited.",
+  description: "You Have Questions. We Have Tips Just 4 You. Frequently asked period and product questions.",
   alternates: { canonical: "/faqs" },
   openGraph: { title: "FAQs | Yazz®", url: "/faqs" },
 };
@@ -31,7 +31,7 @@ export default function FaqsPage() {
       <section className={s.hero} aria-labelledby="faqs-title">
         <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Help centre</p>
         <h1 id="faqs-title" className={s.heroTitle}>How can we help?</h1>
-        <p className={s.heroBody}>Answers on periods and puberty, our products, where to buy Yazz® and trade.</p>
+        <p className={s.heroBody}>You Have Questions. We Have Tips Just 4 You.</p>
       </section>
 
       <div className={`yz-pad ${s.faqWrap}`}>
@@ -40,7 +40,7 @@ export default function FaqsPage() {
           <div className={s.help}>
             <span style={{ color: "#ED1B2E" }}><Icon name="chat" size={26} /></span>
             <h2>Still have a question? Contact us</h2>
-            <p>Our consumer care team is here to listen, serve and support.</p>
+            <p>We are here to listen, serve and support.</p>
             <Link href="/contact" className="yz-btn yz-btn--red yz-btn--sm" style={{ width: "100%" }}>Contact us <Icon name="arrow" size={15} /></Link>
             <a href={whatsapp(contact.whatsappCare)} className="yz-btn yz-btn--outline yz-btn--sm" style={{ width: "100%", marginTop: 10 }} target="_blank" rel="noopener">
               <Icon name="whatsapp" size={16} /> WhatsApp {contact.whatsappCare}
@@ -48,7 +48,7 @@ export default function FaqsPage() {
           </div>
           <div className={s.bulk}>
             <h2>Buying in bulk?</h2>
-            <p>Distributors, wholesalers, shops and institutions can send Lexta Ghana Limited a trade enquiry.</p>
+            <p>Contact Yazz Products for all inquiries.</p>
             <Link href="/contact#trade" className="yz-textlink">Trade enquiry <Icon name="arrow" size={15} /></Link>
           </div>
         </aside>

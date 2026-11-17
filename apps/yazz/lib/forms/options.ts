@@ -3,11 +3,12 @@
 
 /** The consumer form's topics. "problem" becomes a complaint; the others a CRM lead. */
 export const TOPICS = [
-  { value: "question", label: "Product question", hint: "Ask us anything about a Yazz product." },
-  { value: "problem", label: "Report a problem with a product", hint: "A problem with a Yazz pack. Your report goes to our consumer care team." },
-  { value: "feedback", label: "Feedback or product review", hint: "Tell us what you think of Yazz." },
-  { value: "stockist", label: "My shop does not stock Yazz", hint: "Tell us the shop's name and town." },
-  { value: "other", label: "Something else", hint: "Any other question for the Yazz team." },
+  // Hints quote Lexta's Contact copy (docs/content/yazz/website-copy.md); topics with no source line have none.
+  { value: "question", label: "Product question", hint: "" },
+  { value: "problem", label: "Report a problem with a product", hint: "Tell us the product, batch information, purchase location and what happened." },
+  { value: "feedback", label: "Feedback or product review", hint: "" },
+  { value: "stockist", label: "My shop does not stock Yazz", hint: "" },
+  { value: "other", label: "Something else", hint: "" },
 ] as const;
 export type Topic = (typeof TOPICS)[number]["value"];
 export const isTopic = (v: string | undefined): v is Topic => TOPICS.some((t) => t.value === v);

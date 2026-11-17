@@ -56,5 +56,5 @@ export const BRAND = {
     "Yazz® and associated Yazz names, logos, marks, product identities, packaging elements and brand assets are trademarks and/or intellectual property of Lexta Ghana Limited, subject to applicable registrations and intellectual property rights. Unauthorised reproduction, imitation, modification, distribution or commercial use is prohibited.",
   copyright: "© 2026 Lexta Ghana Limited. All rights reserved.",
   consumerSupport:
-    "We are here to listen, serve and support. If you have a question or concern, tell us the product, batch information, purchase location and what happened. Your enquiry will be handled by our consumer care team. To send photographs where appropriate, email support@yazzproducts.com.",
+    "We are here to listen, serve and support. If you have a question or concern, tell us the product, batch information, purchase location and what happened. Your enquiry will be handled by our consumer-care team. support@yazzproducts.com.",
 };

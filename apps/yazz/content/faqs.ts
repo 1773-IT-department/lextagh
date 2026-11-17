@@ -1,8 +1,8 @@
 /**
- * The FAQs page (/faqs): the accordion of the prototype's FAQs page. The questions are Lexta's "Ask Yazz®"
- * list ("yazz article.docx") plus where to buy and trade questions; each answer uses Lexta's own wording from the
- * articles and product content and links to the article that says more. Shop topics (orders, payment, delivery,
- * returns) are left out: the Yazz site sells nothing online (contract scope).
+ * The FAQs page (/faqs): the accordion of the prototype's FAQs page. The questions are Lexta's 13 "Ask Yazz®"
+ * questions (docs/content/yazz/tips-just-4-you/11-ask-yazz.md); each answer quotes Lexta's own articles and tips and
+ * links to the article that says more. The Products and Where to Buy items are headed with Lexta's own headings
+ * (About, Contact) and quote that copy. Shop topics are left out: the Yazz site sells nothing online (contract scope).
  */
 export type FaqGroup = {
   id: string;
@@ -21,7 +21,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         q: "What is a period?",
-        a: "A period is part of the menstrual cycle. The lining of the uterus builds up and, if pregnancy does not occur, the body sheds it through the vagina as blood and tissue.",
+        a: "During the menstrual cycle, the lining of the uterus builds up. If pregnancy does not occur, the body sheds this lining through the vagina. The blood and tissue leaving the body are what we call a menstrual period.",
         link: article("understanding-your-first-period"),
       },
       {
@@ -31,32 +31,32 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "How do I know my period is coming?",
-        a: "Getting familiar with your own cycle can help you recognise your usual pattern and prepare for your period. Tracking your cycle with a period tracker or calendar can help you understand your usual pattern and prepare for future periods.",
+        a: "Getting familiar with your own cycle can help you recognise your usual pattern and prepare for your period. Tracking your cycle can help you understand your usual pattern and prepare for future periods.",
         link: article("common-puberty-questions"),
       },
       {
         q: "How do I use a sanitary pad?",
-        a: "Wash your hands, unwrap the pad, peel away the backing, position it in the centre of your underwear and fold the wings around the sides. Change regularly, wrap and bin the used pad, and wash your hands. Never flush pads.",
+        a: "Wash and dry your hands. Remove the pad from its individual wrapper. Peel away the protective backing. Position the pad securely in the centre of your underwear. If your Yazz® pad has wings, fold them around the sides of your underwear to help keep the pad in place. Never flush sanitary pads down the toilet.",
         link: article("how-to-use-a-sanitary-pad"),
       },
       {
         q: "How often should I change my pad?",
-        a: "Regularly, according to your flow, comfort needs and the instructions provided with the product. Don't keep wearing a pad once it is saturated or uncomfortable.",
+        a: "Change your pad regularly according to your menstrual flow, comfort needs and the instructions provided with the product. Don't continue wearing a pad once it is saturated or uncomfortable.",
         link: article("common-puberty-questions"),
       },
       {
         q: "Which Yazz® pad should I choose?",
-        a: "Think about your flow, your day, your comfort and whether it is day or night, then compare the options using the details on their approved packaging.",
+        a: "Your flow can change during your period. What feels suitable during the first few days may be different from what you prefer toward the end of your period.",
         link: article("which-pad-is-right-4-me"),
       },
       {
         q: "Can I go to school during my period?",
-        a: "Yes. Most people can continue their usual activities during their period, depending on how they feel. A period kit in your school bag helps.",
+        a: "Yes. Most people can continue their usual activities during their period, depending on how they feel.",
         link: article("periods-at-school"),
       },
       {
         q: "How do I dispose of my sanitary pad?",
-        a: "Wrap the used pad and place it in a waste bin, then wash your hands. Never flush pads.",
+        a: "Wrap the used pad securely before placing it in an appropriate waste bin. Wash your hands afterwards. Never flush sanitary pads down the toilet.",
         link: article("how-to-use-a-sanitary-pad"),
       },
       {
@@ -66,12 +66,12 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "How can I prepare for my first period?",
-        a: "Learning about menstruation before your first period can make the experience feel much more manageable. Create a small Yazz® Period Kit for your school bag, handbag or backpack, and know which trusted adult you can ask for support.",
+        a: "Learning about menstruation before your first period can make the experience feel much more manageable.",
         link: article("understanding-your-first-period"),
       },
       {
         q: "How do I talk to my parents or caregiver about periods?",
-        a: "You don't need a perfect opening. Try something simple, such as \"I have a question about my period.\" You could also write your question down first.",
+        a: "You don't need a perfect opening. Try something simple: \"I have a question about my period.\" You could write your question down first or choose a quiet moment to speak.",
         link: article("talking-to-a-trusted-adult"),
       },
       {
@@ -81,7 +81,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "When should I talk to a healthcare professional?",
-        a: "If you are worried about something happening to your body, speak with a parent, caregiver, trusted adult or qualified healthcare professional. Don't rely only on friends or social media.",
+        a: "Don't rely only on friends or social media for health information. Speak with a parent, caregiver, trusted adult or qualified healthcare professional.",
         link: article("common-puberty-questions"),
       },
     ],
@@ -92,20 +92,20 @@ export const FAQ_GROUPS: FaqGroup[] = [
     icon: "box",
     items: [
       {
-        q: "Who makes Yazz®?",
-        a: "Yazz® is a trademark brand of Lexta Ghana Limited, a 100% Ghanaian consumer goods company.",
+        q: "Proudly From Lexta Ghana Limited",
+        a: "Yazz® forms part of the brand portfolio of Lexta Ghana Limited, a 100% Ghanaian consumer goods company committed to developing products and brands that serve evolving consumer needs.",
       },
       {
-        q: "How do I know a Yazz® product is genuine?",
-        a: "Look for the Yazz® mark. The Yazz® name, logo, brand identity and associated trademarks are proprietary assets of Lexta Ghana Limited and distinguish genuine Yazz® products. Imitation is not permitted; you can report it on +233 50 996 7400 or support@yazzproducts.com.",
+        q: "Look for the Yazz® Mark",
+        a: "The Yazz® name, logo, brand identity and associated trademarks are proprietary assets of Lexta Ghana Limited and distinguish genuine Yazz® products in the marketplace. Imitation is not permitted; reporting will be rewarded. Blow the whistle: +233 50 996 7400 or via email support@yazzproducts.com.",
       },
       {
-        q: "What should I do if a product irritates my skin?",
-        a: "In the highly unlikely event of irritation, discontinue use and report it on +233 50 996 7400 (WhatsApp) or support@yazzproducts.com.",
+        q: "Consumer Reports",
+        a: "In the highly unlikely event of irritation, please discontinue use and share a report to +233 50 996 7400 or via email support@yazzproducts.com.",
       },
       {
-        q: "How do I report a problem with a product?",
-        a: "Use the contact form and choose \"Report a problem with a product\". Tell us the product, batch information, purchase location and what happened. Your report goes to our consumer care team, and the form shows you a case number for it. To send photographs where appropriate, email support@yazzproducts.com.",
+        q: "Consumer Support",
+        a: "We are here to listen, serve and support. If you have a question or concern, tell us the product, batch information, purchase location and what happened. You may attach photographs where appropriate. Your enquiry will be handled by our consumer-care team. support@yazzproducts.com.",
         link: { href: "/contact?topic=problem#message", label: "Report a problem" },
       },
     ],
@@ -116,18 +116,14 @@ export const FAQ_GROUPS: FaqGroup[] = [
     icon: "pin",
     items: [
       {
-        q: "Can I order Yazz® online?",
-        a: "Not from this website. Yazz® products are sold through distributors, wholesalers and shops; Where to Buy shows the stockists listed near you.",
+        q: "Distributors, Wholesale and Modern Trade",
+        a: "[PLACEHOLDER: how retailers, wholesalers and distributors buy Yazz, with minimum order quantities, from Lexta]",
         link: { href: "/contact#where-to-buy", label: "Find a stockist" },
       },
       {
-        q: "How do I become a Yazz® stockist or distributor?",
-        a: "Send us your business details, region and expected volumes through the trade enquiry form. Your enquiry goes to Lexta Ghana Limited.",
+        q: "Stockist Enquiry",
+        a: "Contact Yazz Products for all inquiries. Enquiries: info@yazzproducts.com.",
         link: { href: "/contact#trade", label: "Trade enquiry" },
-      },
-      {
-        q: "What is the minimum bulk order?",
-        a: "[PLACEHOLDER: minimum order quantities for retailers, wholesalers and distributors, from Lexta]",
       },
     ],
   },

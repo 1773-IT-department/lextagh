@@ -108,7 +108,7 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
         <textarea id="c-message" name="message" className={f.textarea} required maxLength={3000} defaultValue={v.message ?? ""} placeholder="Tell us what you need, or what happened." {...inv("message")} />
         {err("message")}
       </div>
-      <p className={f.hint}>Please do not share sensitive health details in this form. We use your details only to answer you.</p>
+      <p className={f.hint}>Please do not share sensitive health details in this form.</p>
 
       <FormMessage state={state} />
       <div className={f.submitRow}>

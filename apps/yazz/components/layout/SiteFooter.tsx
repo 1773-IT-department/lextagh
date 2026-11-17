@@ -6,7 +6,7 @@ import { contact, lexta, socials, tel } from "@/lib/site";
 import s from "./footer.module.css";
 
 /**
- * Footer of the prototype's About, News and Contact pages: the navy "More Products. More Smiles." band, then the link
+ * Footer of the prototype's About, News and Contact pages: the navy band (with Lexta's tagline), then the link
  * columns. Links go only to this site's pages, and to the Lexta site for CSR, careers and the legal pages
  * (brand sites have no CSR or careers pages, by contract).
  */
@@ -15,7 +15,7 @@ export default function SiteFooter() {
   return (
     <footer className={s.footer}>
       <div className={s.band}>
-        <p className={`yz-script ${s.bandScript}`}>More<br />Products.<br />More Smiles.</p>
+        <p className={`yz-script ${s.bandScript}`}>Trusted Quality.<br />Made for<br />Everyday Living.</p>
         <div className={s.bandLogo}>
           <span className="yz-logo"><span style={{ fontSize: 42 }}>Yazz</span></span>
           <p className="yz-script">Caring brand for caring families.</p>
@@ -73,7 +73,7 @@ export default function SiteFooter() {
           {socials.some((x) => !x.href) && (
             <p className={s.placeholder}>[PLACEHOLDER: {socials.filter((x) => !x.href).map((x) => x.label.replace(/^Yazz on /, "")).join(", ")} link from Lexta]</p>
           )}
-          <p className={s.ghana}><span className="yz-flag" aria-hidden="true"><i /><i /><i /></span> Proudly Ghanaian</p>
+          <p className={s.ghana}><span className="yz-flag" aria-hidden="true"><i /><i /><i /></span> 100% Ghanaian</p>
         </div>
       </div>
 

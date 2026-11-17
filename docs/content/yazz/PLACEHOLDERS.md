@@ -1,89 +1,103 @@
-# Yazz site: placeholders and 1773-written copy
+# Yazz site: placeholders, removals and sources
 
-Content rewrite of 16 November 2026 (branch `content/yazz-source-rewrite`), approved by Desmond. Source order: Lexta's
-Drive content (`docs/content/yazz/`), then Yazz's original website (`ORIGINAL-SITE.md`), then copy written by 1773 from
-facts in those two sources. A slot that needs a fact neither source gives shows `[PLACEHOLDER: ...]`.
-Paths are relative to `apps/yazz/` unless they start with `docs/` or `supabase/`.
+Strict source sweep of 17 November 2026 (branch `content/yazz-strict-sources`). Desmond's rule: nothing from the
+prototype; every piece of visible copy comes from Lexta's Drive content (`docs/content/yazz/`, `docs/content/lexta/website-copy.md`)
+or from Yazz's current website yazzproducts.com (`ORIGINAL-SITE.md`, `original-site/yazzproducts-com.md`), quoted or very
+lightly adapted (casing, grammar, length, list joins). Copy 1773 wrote itself, even from source facts, is gone: removed where
+the layout survives without it, replaced by a source line or a visible `[PLACEHOLDER: ...]` where a slot would be empty.
+Interface text (navigation, buttons, form labels and options, validation and error messages, page and short section names,
+image alt text) needs no source. Paths are relative to `apps/yazz/` unless they start with `docs/` or `supabase/`.
 
-## 1. Placeholders left on the site
+Check used: every visible sentence over 6 words on every built page (product windows and FAQ answers included) is compared
+with the sources, case and punctuation insensitive, fuzzy (word trigram coverage 0.75). Result: 5 lines unmatched, all data or
+interface (a pack variant label, an ingredient list with "flavour" for "Flavor", a toothbrush variant label, a photo
+placeholder label, the phone number list).
 
-| Page | Slot | Exact placeholder | Why it is not filled | Who at Lexta likely knows |
+## 1. Placeholders on the site
+
+| Page | Slot | Exact placeholder | Who at Lexta likely knows |
+| --- | --- | --- | --- |
+| Tips & Advice, News category | Intro line under "Yazz® News" (was 1773's "News and announcements from Yazz® and Lexta Ghana Limited.") | `[PLACEHOLDER: one line introducing Yazz news, from Lexta marketing]` | Marketing (Yazz brand manager) |
+| FAQs, Where to Buy | Answer under "Distributors, Wholesale and Modern Trade" (replaces 1773's "Can I order online?", "How do I become a stockist?" and the old minimum order question) | `[PLACEHOLDER: how retailers, wholesalers and distributors buy Yazz, with minimum order quantities, from Lexta]` | Sales manager |
+| Products, product windows (pads and liners) | Quality line | `[PLACEHOLDER: confirm current ISO certification and year]` | Quality / QA manager |
+| Baby Care, Yazz baby wipes window | Lavender description | `[PLACEHOLDER: Lavender wipes description; Lexta's text repeats the Aloe Vera copy]` | Marketing |
+| Baby Care, Yazz baby diapers window | Large size weight | `[PLACEHOLDER: weight range]` | QA / product team |
+| Feminine Care, panty liners window | Regular (yellow pack) pack size | `[PLACEHOLDER: pack size from Lexta]` | Product / sales team |
+| Oral Care, windows | Total Care toothpaste and the 7 toothbrush pack sizes | `[PLACEHOLDER: pack size from Lexta]` | Product / sales team |
+| Home & Tissue, windows | Mama Yazz, individual wrap toilet tissue, individual tissue pack sizes | `[PLACEHOLDER: pack size from Lexta]` | Product / sales team |
+| Contact, footer | YouTube link | `[PLACEHOLDER: link from Lexta]`, `[PLACEHOLDER: YouTube link from Lexta]` | Marketing / social media |
+| Contact, live chat | Consumer care hours | `[PLACEHOLDER: Yazz consumer care hours]` | Consumer care team |
+| About, articles, product cards | Photos (factory personnel in Yazz outfits, production line, family with Yazz products, article thumbnails, missing pack shots) | `[PLACEHOLDER: <photo needed>]` | Marketing |
+| Tips & Advice, News (empty state, hidden while the 2022 story exists) | More news | `[PLACEHOLDER: Yazz news stories and press releases from Lexta]` | Marketing |
+| All product windows | SKU codes `TBC-YAZZ-101` to `143` (internal, not shown as copy) | (marked TBC) | Sales / ERP team |
+
+## 2. Removed (1773 or prototype copy, layout unchanged without it)
+
+| Page | Removed |
+| --- | --- |
+| Home, Featured Products | "Practical care for everyday living, from every Yazz range." |
+| Products, Our Complete Range | "Everything you need, all in one place." (the interface line "Open a product for its pack sizes..." stays) |
+| Products, badges | Sub lines "Products", "Everyday use", "Your Family", "Near You" (badges now read Quality, Reliability, Value, Accessibility) |
+| Tips & Advice hub | "Browse Tips Just 4 You on periods, puberty and confidence, guides Just 4 Parents & Caregivers, and care tips for the home." |
+| Newsletter band | "Leave your email address to hear about new Yazz® tips, products and announcements." |
+| Article sidebar | "See the range and find a stockist near you." |
+| Choosing My Yazz® article | "Compare the Yazz® options using the details on their approved packaging: pad lengths, pack contents and flow. You can see the Yazz® pads and panty liners on our Feminine Care page." |
+| FAQs, Ask Yazz® answers | 1773 additions: "A period kit in your school bag helps.", "Create a small Yazz® Period Kit for your school bag...", "...with a period tracker or calendar" (answers now quote the articles word for word) |
+| FAQs | Questions written by 1773: "Who makes Yazz®?", "How do I know a Yazz® product is genuine?", "What should I do if a product irritates my skin?", "How do I report a problem with a product?", "Can I order Yazz® online?", "How do I become a Yazz® stockist or distributor?", "What is the minimum bulk order?" (their sourced answers now sit under Lexta's own headings, section 3) |
+| Contact | "Become a Yazz Partner" card text ("Distributor, wholesaler, shop or institution? ..."); "Shops are listed by Lexta Ghana Limited."; "We use your details only to answer you."; form topic hints for question, feedback, stockist and other ("Ask us anything about a Yazz product." and so on); "To send photographs where appropriate, email ..." |
+| Care Tips articles | 1773 headings ("Look After Your Toothbrush", "Sort Your Laundry", "Dissolve and Soak", "Use the Right Amount", "Store It Safely", "Before You Change", "After the Change"); "for two minutes, with fluoride toothpaste where age-appropriate"; "and many come with a tongue cleaner" |
+| Fallback catalogue (`content/catalogue.ts`) | Every 1773 summary ("Ultra-thin pads with soft flexible wings ... in normal and heavy flow lengths.", "Pull up diapers with ...", "Gentle, alcohol free wipes for delicate skin.", "...is coming soon to the Yazz oral care range.", "a handy companion for school, work and travel" and the rest); 1773 feature lines ("Lengths of 150mm and 180mm", "Flexible rubber handle for an easy grip", "Protects against cavities and plaque", "Refreshes your breath", "Stimulates the gums"); "Brush your teeth twice daily." on toothpastes other than Fluoride |
+| Range pages | 1773 guide and habit step bodies (all replaced by Drive sentences); "for every household"; "morning and night" |
+
+## 3. Replaced with a source line (a slot that cannot be empty)
+
+| Page | Slot | Was | Now | Source |
 | --- | --- | --- | --- | --- |
-| Products, range pages, product windows (pads and liners) | Quality line in the features | `[PLACEHOLDER: confirm current ISO certification and year]` | Drive writes "Certified ISO09001:2000" and flags it to check; the 2000 edition of ISO 9001 is withdrawn, so it cannot be shown as a current certification | Quality / QA manager |
-| Baby Care, product window (Yazz baby wipes) | Lavender description | `[PLACEHOLDER: Lavender wipes description; Lexta's text repeats the Aloe Vera copy]` | Drive's Lavender text is a copy of the Aloe Vera text ("Aloe Vera-enriched") | Marketing (Yazz brand manager) |
-| Baby Care, product window (Yazz baby diapers) | Large size weight | `[PLACEHOLDER: weight range]` (variant "Large, [PLACEHOLDER: weight range]") | Drive gives 11 pieces but no weight for Large | QA / product team |
-| Feminine Care, product window (panty liners) | Regular (yellow pack) pack size | `[PLACEHOLDER: pack size from Lexta]` | Drive gives no details for the regular liner | Product / sales team |
-| Oral Care, product window | Total Care toothpaste pack size | `[PLACEHOLDER: pack size from Lexta]` | Not in Drive; the original site shows no size | Product / sales team |
-| Oral Care, product window | Pack size of each toothbrush (Princess, Monarch, Duchess, Duke, Kids, Double, Hanger): 7 SKUs | `[PLACEHOLDER: pack size from Lexta]` | Not in Drive or on the original site | Product / sales team |
-| Home & Tissue, product windows | Mama Yazz jumbo tissue, individual wrap luxury toilet tissue, individual tissue pack sizes | `[PLACEHOLDER: pack size from Lexta]` | Not in Drive | Product / sales team |
-| All product windows | SKU codes `TBC-YAZZ-101` to `143` | (codes marked TBC, internal) | Lexta has not sent real codes | Sales / ERP team |
-| Contact, footer | YouTube link | `[PLACEHOLDER: link from Lexta]`, `[PLACEHOLDER: YouTube link from Lexta]` | Not in Drive; the original site links no YouTube | Marketing / social media |
-| Contact, live chat | Consumer care hours | `[PLACEHOLDER: Yazz consumer care hours]` | Not in Drive or on the original site | Consumer care team |
-| FAQs, Where to Buy | Minimum bulk order | `[PLACEHOLDER: minimum order quantities for retailers, wholesalers and distributors, from Lexta]` | Trade terms are not in either source | Sales manager |
-| Tips & Advice, News (empty state, not shown while the 2022 story exists) | More news | `[PLACEHOLDER: Yazz news stories and press releases from Lexta]` | Lexta sent no news | Marketing |
-| About, articles | Photo blocks (factory personnel in Yazz outfits, production line or quality team, family with Yazz products, one thumbnail per article) | `[PLACEHOLDER: <photo needed>]` | No photos supplied (unchanged in this rewrite) | Marketing |
-| Product Management only (unpublished archive row, not on any site) | Kitchen towel | `[PLACEHOLDER: Yazz kitchen towel description, from Lexta]` | Drive's menu lists "Kitchen Towel" with no description; the original site sells Mama Yazz as a kitchen towel | Marketing |
+| Home hero, slide 3 | Headline | "Your Best Smiles, Every Day." | "Yazz Brushes. Your Best Smiles." | products.md "Yazz brushes: Your best smiles" |
+| Home | Trust strip | "Quality Products You Can Trust", "Everyday Care For Every Home", "Proudly Ghanaian From Lexta Ghana Limited" | "Trusted Quality, Made for Everyday Living", "One Brand, Everyday Possibilities", "Proudly From Lexta Ghana Limited" | website-copy.md Home, A Brand for Generations, Proudly From Lexta Ghana Limited |
+| Home, About | Promise heading | "Quality You Can Count On" | eyebrow "Our promise", heading "The Yazz® Promise" | website-copy.md |
+| Home, footer | Script notes | "Proudly Ghanaian", "More Products. More Smiles." | "100% Ghanaian", "Trusted Quality. Made for Everyday Living." | website-copy.md ("a 100% Ghanaian consumer goods company"; Home) |
+| Products | Hero title | "Everyday Essentials for Every Home." | "Trusted Quality. Made for Everyday Living." | website-copy.md Home |
+| Products | Stock up band | "Ready to Stock Up?" + 1773 line; script "More Products. More Smiles." | "Stockist Enquiry", "Contact Yazz Products for all inquiries."; "One brand. Everyday possibilities." | website-copy.md wireframe and Contact block; A Brand for Generations |
+| Range pages (all five) | Trade band | "Stocking for a shop or school?" and similar, 1773 body, prototype scripts ("More Comfort. More Smiles.", "Happy Babies. More Smiles.", "More Care for Your Home", "Fresher Cleaner Brighter") | "Stockist Enquiry", "Contact Yazz Products for all inquiries."; scripts "Own Your Confidence.", "Your Best Smiles.", "Every Sheet, a Touch of Care.", "Soothe. Hydrate. Protect.", "Brighter and Fresher Clothes." | website-copy.md; tips 00-landing-page; products.md |
+| Range pages | Range lead lines | 1773 summaries ("Taped diapers in four sizes...", etc.) | Lexta's product menu lists, e.g. "Diapers (Regular, Pull-Ups); Wipes (Lavender, Castor Oil, Aloe Vera)." | website-copy.md "Our products" |
+| Oral Care | Hero, range title, guide | "Simple Habits. For the whole family.", "For the Whole Family", "Two minutes, twice a day", "Fresh start. Every day." | "Make good oral hygiene part of every day.", "Our Oral Care Range", "Tips for a Healthy Smile", "Brush twice a day." | website-copy.md Oral Care landing; products.md |
+| Baby Care | Guide, habits, note | "Putting on a Yazz® diaper", "Safe changing habits", "Clean, dry, comfortable." | "How to Use Yazz Baby Diaper", "Caution", "Cottony soft. Super absorbent." | products.md |
+| Home Care | Guide title, hero note | "Washing with Yazz® Activ", "Fresher Cleaner Brighter" | "Check Pack for Direction", "Removes stubborn stains." | products.md |
+| Range pages | Feature cards and step titles | 1773 bodies and titles ("Three Wipe Variants", "Four Pack Sizes", "Back tapes behind", "Bin it straight away"...) | Drive sentences and fragments ("Specially designed wings ensure protection of your panties.", "500g / 200g / 5kg / 2kg.", "Place baby on diaper", "Plastic bags"...) | products.md, tips 03 and 05 |
+| Range pages | Meta descriptions | 1773 summaries | Each range's Drive landing copy | website-copy.md |
+| About | Headings | "A Ghanaian Brand With a Big Purpose", "Made for every generation", "Rooted in Our Communities." + 1773 paragraph, "Everyday Quality. Made for You." | "A Growing Ghanaian Brand", "Generations of trust", "Community Impact" + the six initiative names, "Caring Brand for Caring Families." | website-copy.md About; csr.md |
+| About | FAQ card line | "Answers on periods and puberty, our products..." | "Frequently asked period and product questions." | tips 00-landing-page (Ask Yazz® card) |
+| Tips | Newsletter heading | "Never Miss a Yazz Headline." | "Yazz® Tips & News." | website-copy.md tab name |
+| Tips | Care Tips blurb, article sidebar line | 1773 lines | "Helpful ideas for everyday living, created around the real questions families ask.", "We are here to listen, serve and support." | website-copy.md |
+| Care Tips articles | Titles, kickers, ledes | "Laundry Care with Yazz® Activ", "Diaper Changing Routines", "Clean, Dry and Comfortable", 1773 ledes | "Home Care Tips", "Baby Care Tips" (Lexta's topic names), "Everyday Care for Growing Families", Drive topic lines as ledes | website-copy.md Tips & Advice topics |
+| Common Puberty Questions | Lede | "thirteen questions about puberty and periods, answered simply." | The article's first three questions | articles/puberty-10 |
+| FAQs | Products and Where to Buy items | 1773 questions (section 2) | Lexta headings "Proudly From Lexta Ghana Limited", "Look for the Yazz® Mark", "Consumer Reports", "Consumer Support", "Stockist Enquiry" with quoted answers | website-copy.md About and Contact; products.md |
+| FAQs | Hero line, help and bulk boxes | 1773 lines | "You Have Questions. We Have Tips Just 4 You.", "We are here to listen, serve and support.", "Contact Yazz Products for all inquiries." | tips 11-ask-yazz; website-copy.md Contact |
+| Contact | Hero title, channel cards, trade intro, quick answers | "Talk to Yazz, or Find Us on a Shelf Near You", 1773 card lines, "Stock Yazz in Your Shop or Region" + 1773 line, "Before You Write" + 1773 line | "Contact Yazz Products for All Inquiries"; card lines from Lexta's contact block and the original Contact page ("Wholesaler / Modern Trade Onboarding.", "Distributors, Wholesale and Modern Trade.", "Partnerships / sponsorships, marketing partnerships and CSR proposals."); "Wholesaler / Modern Trade Onboarding"; "Ask Yazz®" + "Frequently asked period and product questions." | website-copy.md; lexta/website-copy.md; original-site/yazzproducts-com.md (Contact, Distributors) |
+| Every page | Meta descriptions (layout, Home, About, Products, Tips, FAQs, Contact) | 1773 summaries | Drive sentences | website-copy.md |
 
-The same product placeholders are written into Product Management by `supabase/migrations/0021_yazz_products_from_drive.sql`
-(written, not applied).
+## 4. Kept, with source
 
-## 2. Changed to match the sources
+| Copy | Source |
+| --- | --- |
+| Brand copy in `content/brand.ts` (intro, about, promise, Proudly From Lexta, A Brand for Generations, vision, mission, mark, trademark notice, consumer support) | website-copy.md Home, About, Contact (consumer support now ends with the support address instead of 1773's photographs line) |
+| Home slides 1 and 2, range hero titles and bodies (Feminine "Comfort. Confidence. Protection. Period.", Home & Tissue "Everyday Softness. Thoughtful Care.", Baby "Everyday Care. For growing families.", Home Care "Brighter. Fresher. Stain free.", lightly adapted from "Stay bright, fresher and stain-free") | website-copy.md landing copy; products.md; tips 00 |
+| Feminine Care guide "Using your Yazz® pad", note "Simple protection. Everyday confidence.", habits "Feeling fresh every day" | tips 03 and 05 (sentences now word for word) |
+| Fallback catalogue product text, features, usage, ingredients | products.md word for word (casing and list joins only); "xanthan gum" as products.md corrects it |
+| Tips Just 4 You and Just 4 Parents articles | Drive articles; four list items restored to Lexta's wording (period kit underwear and tracker, leaks at school, heavy bleeding, severe pain) and the body comments list restored as a list |
+| Article bylines "Yazz®" (no author), month dates, "N min read" | No author or reviewer in any source; dates as Lexta asked; reading time is computed from length (interface) |
+| News: "Yazz is the preferred Sanitary and Hygiene brand in 2022" | yazzproducts.com post of 2 December 2022, now captured word for word in `original-site/yazzproducts-com.md` |
+| Topic tiles, health notes, category titles and blurbs (Just 4 You, Just 4 Parents) | tips 00-landing-page, 06b, 07, 07b |
+| FAQ Ask Yazz® questions and answers | tips 11 (questions); articles puberty-02, puberty-08, puberty-10, tips 01, 02, 03, 04, parents-09 (answers, word for word) |
+| Contact details, socials | website-copy.md Contact block; ORIGINAL-SITE.md (Facebook, Instagram, TikTok) |
+| Interface text kept without a source | Nav and footer labels, buttons, "Explore Our Product Categories", "Our Complete Range", "Our ... Range", "The range", "Good to know", "How Can We Help?", "Help centre", "Questions & Answers", "Trade & Stockists", "Find Yazz Near You", map and form instructions, form fields and answer options (trade volume bands still for Lexta to confirm), validation and thank-you messages, empty and error states, image alt text |
 
-| Page | Before | After | Source |
-| --- | --- | --- | --- |
-| Products, Home, range pages (live data) | 7 prototype rows with invented claims (clinically tested washing powder, three toothpastes with "bleeding gums", "high absorbency ... full day" pads, "long nights" diapers, "last longer than the month" toothbrushes, Mama Yazz "two ply kitchen towel", pocket tissues on sale, wipes variant placeholders) | Migration 0021 writes Lexta's 16 products, their variants and pack sizes, and archives the prototype rows | Drive `products.md`, `content/catalogue.ts` |
-| Fallback catalogue | Pink liner pack placeholder; Large diaper with no weight marker; XXL pull ups "15kg and over"; XL "over 13kg"; Lavender description written by 1773; "methyichloroisthiazolinone" | "24 minty liners"; weight placeholder; "15kg"; "13kg and above"; placeholder; spelling corrected as in `products.md` | Drive `products.md` |
-| About, Home (promise cards) | Accessibility: "Making Yazz® products available"; Innovation: "changing needs" | "Working to make Yazz® products available"; "changing consumer needs" | Drive website-copy, The Yazz® Promise |
-| About, community impact | "programmes ... are run by Lexta Ghana Limited" | Programmes "set out" by Lexta, "several of them are still proposed" | Drive `csr.md` (Forest Project, Clean Hands Green Land, Bright Smiles are proposed) |
-| Products overview | Badge "Available Across Ghana" | "Find Yazz Near You" | Drive: "working to make ... available" |
-| Home & Tissue (Home band, range hero) | "Mama Yazz, tissue napkins and toilet rolls" | "Mama Yazz, kitchen towels and toilet rolls" | Drive Home & Tissue landing copy |
-| Home & Tissue range body | Second tissue paragraph only | Adds Drive's tissue intro sentence | Drive `products.md` Tissue intro |
-| Tips Just 4 You, Just 4 Parents | One merged health note on every article | Just 4 You: "A Note From Yazz®" word for word; Just 4 Parents: "Important Health Information" word for word | Drive tips 06b and 07b |
-| Tips Just 4 You hub | Blurb without the sign off | Adds "Know Your Body. Know Your Flow. Own Your Day." | Drive tips 00-intro |
-| Articles | Dropped sentences | Restored in the ledes: "Imagine seeing unexpected blood...", "Bodies develop. Skin changes...", "Good hygiene isn't about trying to look perfect.", "Let's replace myths with reliable information." | Drive articles parents-02, parents-08, puberty-06, parents-09 |
-| Articles | Byline "Yazz Care Team" | "Yazz®" (with the month where Lexta dated the article) | No author or reviewer named in any source |
-| News, 2022 award | Story reworded by 1773, with 1773 headings and tip box | Word for word as published on the original site on 2 December 2022 (title, every paragraph, citation; the original's own wording and spelling kept, including "A citation to celebrate the achievements of read as follows:") | Original site post (secondary source, allowed) |
-| FAQs, Ask Yazz® | 9 of Lexta's 13 questions | All 13, in Lexta's order; the 4 new answers quote Lexta's articles and tips | Drive tips 11 (questions); answers from tips 01, 02, 03, 04, puberty-02, puberty-10, parents-09 |
-| Contact | Hero dropped Drive's photographs line | "To send photographs where appropriate, email support@yazzproducts.com." (the form has no upload field) | Drive Contact, consumer support |
-| Contact, Consumer Care card | "a pack that did not meet our standard" | "Product questions, complaints, feedback and product reviews." | Drive Contact block |
+## 5. For the lead (not changed here)
 
-## 3. Service promises reworded (brief rule 6)
-
-| Where | Before | After |
-| --- | --- | --- |
-| Products, Contact (partner card, trade section), FAQs (stockist answer, bulk box) | "our trade team will come back to you (with terms)" | "Your enquiry goes to Lexta Ghana Limited." |
-| FAQs, report a problem | "our consumer care team handles every report and gives you a case number" | "Your report goes to our consumer care team, and the form shows you a case number for it." |
-| Contact form hint (report a problem) | "A pack that did not meet our standard. You will get a case number." | "A problem with a Yazz pack. Your report goes to our consumer care team." |
-| Complaint thank-you message | "our consumer care team will contact you" | "Your report has gone to our consumer care team." |
-| Article sidebar | "happy to help, privately and without judgement" | "Send us your question. It goes to our consumer care team." |
-| Range trade cards | "Order Yazz ... in bulk" | "Send a trade enquiry for Yazz ..." |
-| Where to Buy note | "Shops are listed by Lexta's sales team." | "Shops are listed by Lexta Ghana Limited." |
-| Newsletter band | "straight to your inbox" | "Leave your email address to hear about new Yazz® tips, products and announcements." |
-
-## 4. Expanded by 1773 (written by us from source facts)
-
-| Page | Slot | Text | Source facts used |
-| --- | --- | --- | --- |
-| Home hero slide 1 | Third button | "Where to Buy" | Drive asks for [Explore Products] [Tips Just 4 You] [Where to Buy] |
-| Home hero slide 1 | Script note | "Comfort. Confidence. Protection." | Drive "Yazz®, Comfort. Confidence. Protection. Period." |
-| Home hero slide 2 | Headline | "Know Your Flow. Own Your Day." | Drive tips 00-intro |
-| Home hero slide 3 | Headline | "Your Best Smiles, Every Day." | Drive toothbrushes "Your best smiles"; oral landing "part of every day" |
-| Home | Trust strip | "Quality Products You Can Trust" and three more | Drive: "solutions consumers can trust", "Caring brand for caring families", Proudly Ghanaian |
-| Home, About | Promise heading | "Quality You Can Count On" | Drive Quality: "standards that consumers can depend on" |
-| Home | Featured line | "Practical care for everyday living, from every Yazz range." | Drive Home intro |
-| Products | Hero | "Everyday Essentials for Every Home." | Drive tissue headline "Made for Every Home" |
-| Products | Script note | "Caring brand for caring families." | Drive |
-| Feminine Care | Hero, range title | "Comfort. Confidence. Protection. Period." / "Every Flow Is Different" | Drive |
-| Oral Care | Hero, range title, trade script | "Simple Habits. For the whole family." / "For the Whole Family" / "Your Best Smiles." | Drive oral landing copy, toothbrush headline |
-| Home & Tissue | Trade card title | "Stocking for a shop, office or hotel?" | Same pattern as the other ranges (replaces "Complete Home Care. All in One Brand.") |
-| Baby Care | Range body, feature | "Taped diapers in four sizes, pull up pants in five sizes ..." / "Cottony soft, super absorbent diapers with an elastic waist." | Drive size tables and features |
-| About | Headings | "A Ghanaian Brand With a Big Purpose", "Everyday Quality. Made for You.", eyebrows | Drive About copy (kept, no fact claimed) |
-| Footer | Values line | "Quality \| Reliability \| Value" (was "Healthier Families", a soft health claim) | Drive promise |
-| Footer, Contact | Scripts | "More Products. More Smiles." (kept) | Prototype slogan, no fact claimed |
-| Range pages | Guide and trade scripts, feature titles | e.g. "Simple protection. Everyday confidence.", "Happy Babies. More Smiles." (kept) | Prototype slogans, no fact claimed |
-| Care Tips articles | Titles, kickers, headings | "Tips for a Healthy Smile", "Laundry Care with Yazz® Activ" (kicker now Drive's "Stay Bright, Fresher and Stain Free"), "Diaper Changing Routines" | Every sentence is from Drive `products.md` |
-| All articles | Read times | "N min read" | Estimated from article length (Drive asks for a reading time) |
-| Common Puberty Questions | Lede | "You asked. Yazz® answers: thirteen questions about puberty and periods, answered simply." | Drive kicker "You Asked. Yazz® Answers." and the 13 questions |
-| Choosing My Yazz® | Last sentence | "You can see the Yazz® pads and panty liners on our Feminine Care page." | Replaces "lists every Yazz® pad", untrue until 0021 is applied |
-| FAQs | 4 new answers | see section 2 | Lexta's own sentences, lightly joined |
-| Contact | Hero title, channel cards, "Before You Write", trade form volume bands ("Under 10 cartons a month" ...) | Kept as UI copy; bands are answer options, not terms | None needed; bands for Lexta to confirm |
+- **Database copy**: the live product cards come from the Supabase products table (migration 0021), which holds the earlier
+  wording of `content/catalogue.ts`. The fallback catalogue now quotes products.md word for word, so the two have drifted;
+  to apply the strict rule to the live site, a follow up migration should copy the new `short`, `long`, `features` and
+  `usage` text from `content/catalogue.ts` into the Yazz rows (no Supabase change in this pass).
+- **Shared chat widget** (`packages/chat`): its interface text is shared with the Lexta site and was not checked here.
+- The original site's own Contact page uses @lextagh.com addresses; Drive's @yazzproducts.com addresses stay (Drive wins).
