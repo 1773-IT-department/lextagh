@@ -5,7 +5,7 @@
  * the real domain at go-live), then the Vercel project's stable address; with neither, links stay relative.
  *
  * lextaSiteUrl: the Lexta corporate site, where CSR, Careers and the privacy policy live (brand sites have no CSR or
- * careers pages). NEXT_PUBLIC_LEXTA_SITE_URL, else the lexta-web preview. Never a real Lexta domain here.
+ * careers pages). NEXT_PUBLIC_LEXTA_SITE_URL, else the main Lexta preview (lextagh.vercel.app). Never a real Lexta domain here.
  */
 const vercelHost =
   (process.env.VERCEL_ENV === "production" && process.env.VERCEL_PROJECT_PRODUCTION_URL) ||
@@ -17,7 +17,7 @@ const vercelUrl = vercelHost ? `https://${vercelHost}` : "";
 export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || vercelUrl).replace(/\/+$/, "");
 export const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
 
-export const LEXTA_PREVIEW_URL = "https://lexta-web-git-nextjs-1773-hr-consultancy-and-marketing.vercel.app";
+export const LEXTA_PREVIEW_URL = "https://lextagh.vercel.app";
 export const lextaSiteUrl = (process.env.NEXT_PUBLIC_LEXTA_SITE_URL || LEXTA_PREVIEW_URL).replace(/\/+$/, "");
 
 /** Pages of the Lexta site that Yazz links to. */

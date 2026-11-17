@@ -330,7 +330,7 @@ try {
     check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
     await page.goto(`${SITE}/about`);
     const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lexta/i.test(h)));
-    check(lextaLinks.length > 0 && lextaLinks.every((h) => /^https:\/\/lexta-web-/.test(h)), "about: the Lexta links go to the Lexta preview site, never a real domain", lextaLinks);
+    check(lextaLinks.length > 0 && lextaLinks.every((h) => /^https:\/\/lextagh\.vercel\.app\//.test(h)), "about: the Lexta links go to the Lexta preview site, never a real domain", lextaLinks);
 
     // The map: a stockist named with HTML shows as text.
     await page.goto(`${SITE}/contact`);
