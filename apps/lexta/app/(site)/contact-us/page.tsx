@@ -110,7 +110,7 @@ export default function ContactPage() {
                 <a href="tel:+233302235296" style={cardLink}>+233 (0) 302 235 296</a>
                 <a href="tel:+233302662970" style={cardLink}>+233 (0) 302 662 970</a>
               </div>
-              <div style={cardNote}>WhatsApp Customer Care: <a href="https://wa.me/233544351010" style={{ color: "inherit" }}>+233 (0) 544 351 010</a>. [PLACEHOLDER: phone line opening hours]</div>
+              <div style={cardNote}>WhatsApp Customer Care: <a href="https://wa.me/233544351010" style={{ color: "inherit" }}>+233 (0) 544 351 010</a>. [PLACEHOLDER: phone line opening hours]<br /><a href="https://whatsapp.com/channel/0029Vb7CGlb35fLvDzjVPU41" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>Follow the Lexta Ghana Limited channel on WhatsApp</a></div>
             </div>
             <div style={{ padding: "32px 30px 34px" }}>
               <div style={cardLabel}>Email us</div>

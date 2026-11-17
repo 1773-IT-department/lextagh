@@ -49,7 +49,7 @@
 | FAQs | FAQ answers (all 6: where to buy, where products are made, reporting a quality issue, becoming a distributor, CSR partnering, applying for a role) | Lexta's own answers (Desmond, 17 November 2026: keep the questions, answers are placeholders) | Sales / Operations / Customer care / HR |
 | Privacy Policy | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
 | Terms & Conditions | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
-| Site wide | Footer social badges | Lexta Facebook, Instagram, LinkedIn, TikTok addresses | Marketing |
+| Site wide | Footer social badges | Lexta Facebook, Instagram, LinkedIn, TikTok addresses (the WhatsApp badge links to the Lexta Ghana Limited channel from the Drive, 17 November 2026) | Marketing |
 | Site wide | Live chat | Lexta chat office hours (`lib/chat/hours.ts`) | Customer care |
 
 ## 2. Removed (no Lexta source, and the layout works without it)
