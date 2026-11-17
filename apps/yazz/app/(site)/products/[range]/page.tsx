@@ -60,6 +60,7 @@ export default async function RangePage({ params }: { params: Promise<{ range: s
           <div className={s.heroActions}>
             <a href="#range" className="yz-btn yz-btn--red">See the range <Icon name="arrow" size={17} /></a>
             <Link href="/contact#where-to-buy" className={`yz-btn ${s.outlineTone}`}><Icon name="pin" size={17} /> Where to Buy</Link>
+            <Link href={r.tipsCta.href} className={`yz-btn ${s.outlineTone}`}><Icon name="book" size={17} /> {r.tipsCta.label}</Link>
           </div>
         </div>
         <div className={s.heroPic}>

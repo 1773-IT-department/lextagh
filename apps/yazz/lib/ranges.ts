@@ -34,6 +34,8 @@ export type RangeInfo = {
   trade: { title: string; body: string; script: string[] };
   /** Tips & Advice topic for "Read more" links. */
   tipsTopic: string;
+  /** The hero's third button: Lexta's tips button for the range (website-copy.md, product landing copy), to its tips. */
+  tipsCta: { label: string; href: string };
   seo: { title: string; description: string };
 };
 
@@ -82,6 +84,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     },
     trade: { title: "Stockist Enquiry", body: "Contact Yazz Products for all inquiries.", script: ["Own Your", "Confidence."] },
     tipsTopic: "Feminine Care",
+    tipsCta: { label: "Tips Just 4 You", href: "/tips?category=just-4-you" },
     seo: {
       title: "Feminine Care: Yazz sanitary pads and panty liners",
       description: "Every flow is different. Explore Yazz sanitary pads and panty liners, compare the options on their approved packaging and learn practical period-care habits.",
@@ -122,6 +125,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     },
     trade: { title: "Stockist Enquiry", body: "Contact Yazz Products for all inquiries.", script: ["Your", "Best", "Smiles."] },
     tipsTopic: "Oral Care",
+    tipsCta: { label: "Oral Hygiene Tips", href: "/tips/tips-for-a-healthy-smile" },
     seo: {
       title: "Oral Care: Yazz toothpaste and toothbrushes",
       description: "Make good oral hygiene part of every day. Explore Yazz toothbrushes and toothpaste options and discover simple brushing habits for the whole family.",
@@ -151,6 +155,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     rangeBody: "Our range of tissue products is designed to support personal hygiene, family care and daily household needs. From individual toilet rolls to convenient pocket tissues, Yazz® brings practical care to the moments that matter.",
     trade: { title: "Stockist Enquiry", body: "Contact Yazz Products for all inquiries.", script: ["Every Sheet,", "a Touch of Care."] },
     tipsTopic: "Home & Tissue",
+    tipsCta: { label: "Read Home Tips", href: "/tips?category=care-tips" },
     seo: {
       title: "Home & Tissue: Mama Yazz, napkins and toilet tissue",
       description: "Care for the little moments at home. Discover Mama Yazz, kitchen towels and toilet rolls for everyday household routines. Pocket Tissue is coming soon.",
@@ -201,6 +206,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     },
     trade: { title: "Stockist Enquiry", body: "Contact Yazz Products for all inquiries.", script: ["Soothe.", "Hydrate.", "Protect."] },
     tipsTopic: "Baby Care",
+    tipsCta: { label: "Parenting Guides", href: "/tips/diaper-changing-routines" },
     seo: {
       title: "Baby Care: Yazz diapers, pull up pants and baby wipes",
       description: "Everyday care for growing families. Explore Yazz diapers and baby wipes, with practical guidance on changing routines, fit and safe product handling.",
@@ -251,6 +257,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     },
     trade: { title: "Stockist Enquiry", body: "Contact Yazz Products for all inquiries.", script: ["Brighter", "and Fresher", "Clothes."] },
     tipsTopic: "Home Care",
+    tipsCta: { label: "Home-Care Advice", href: "/tips/laundry-care-with-yazz-activ" },
     seo: {
       title: "Home Care: Yazz Activ washing powder with enzymes",
       description: "Make everyday laundry care simpler with Yazz detergent products and clear instructions for use, storage and responsible disposal.",
