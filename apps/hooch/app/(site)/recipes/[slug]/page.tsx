@@ -18,7 +18,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const r = recipeBySlug((await params).slug);
   if (!r) return { title: "Recipe not found" };
-  return { title: r.name, description: `${r.strap} ${r.method}`, alternates: { canonical: `/recipes/${r.slug}` }, openGraph: { images: [{ url: r.image.src, alt: r.image.alt }] } };
+  return { title: r.name, description: r.strap ? `${r.strap} ${r.method}` : r.method, alternates: { canonical: `/recipes/${r.slug}` }, openGraph: { images: [{ url: r.image.src, alt: r.image.alt }] } };
 }
 
 /** One recipe: its food photo (tilts, and crunches when tapped), what you need (a tick list), Lexta's method, the cereal it uses and the next idea. */
@@ -32,15 +32,16 @@ export default async function RecipePage({ params }: { params: Params }) {
   return (
     <>
       <section className={s.hero} data-tone={tone} aria-labelledby="r-title">
-        <Floaters count={8} seed={r.minutes * 7} />
+        <Floaters count={8} seed={(r.minutes ?? RECIPES.indexOf(r) + 2) * 7} />
         <div className={`hc-wrap ${s.heroInner}`}>
           <nav className={s.crumbs} aria-label="Breadcrumb"><Link href="/recipes">Breakfast Ideas &amp; Recipes</Link> <Icon name="chevron-right" size={14} /> <span aria-current="page">{r.name}</span></nav>
           <div className={s.split}>
             <div>
               <h1 id="r-title" className={s.heroTitle}>{r.name}</h1>
-              <p className={s.big} style={{ marginTop: 12, color: "var(--hc-red-deep)" }}>{r.strap}</p>
+              {r.strap && <p className={s.big} style={{ marginTop: 12, color: "var(--hc-red-deep)" }}>{r.strap}</p>}
               <div className={s.facts}>
-                <span className={s.fact}><Icon name="clock" size={16} /> Preparation: approximately {r.minutes} minutes</span>
+                <span className={s.fact}><Icon name="clock" size={16} /> {r.minutes ? `Preparation: approximately ${r.minutes} minutes` : `[PLACEHOLDER: preparation time for ${r.name} from Lexta]`}</span>
+                {r.servingsNeeded && <span className={s.fact}><Icon name="people" size={16} /> [PLACEHOLDER: {r.servingsNeeded} from Lexta]</span>}
                 <span className={s.fact}><Icon name="spoon" size={16} /> {r.moment}</span>
               </div>
             </div>

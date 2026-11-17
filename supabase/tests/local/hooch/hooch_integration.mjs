@@ -66,7 +66,9 @@ try {
       && frost.name === "Hooch® Frosted Flakes" && frost.skus[0].pack === "375g: 10 x 37.5g individual packs" && frost.portions === "10 x 37.5g individual packs",
       "catalogue: Cornflakes 500g (10 x 50g) and Frosted Flakes 375g (10 x 37.5g), as the Drive says");
     check(!catalogue.CATALOGUE.some((c) => /choco/i.test(c.slug + c.name)), "catalogue: no Choco Flakes (in no Lexta document; Desmond: Drive only)");
-    check(recipes.RECIPES.length === 4 && recipes.RECIPES.every((r) => r.image.src.startsWith("/images/hooch/") && r.minutes > 0 && (!r.photoNeeded || /from Lexta/.test(r.photoNeeded))), "recipes: Lexta's four recipes, each with a food photo (marked as a placeholder where it stands in)");
+    check(recipes.RECIPES.length === 6 && recipes.RECIPES.every((r) => r.image.src.startsWith("/images/hooch/") && (r.moment === "Dessert" ? !r.minutes && /from Lexta/.test(r.photoNeeded ?? "") && !!r.servingsNeeded : r.minutes > 0) && (!r.photoNeeded || /from Lexta/.test(r.photoNeeded))), "recipes: Lexta's four recipes plus the two short draft desserts (time, servings and photo as placeholders), each with a food photo");
+    const desserts = recipes.RECIPES.filter((r) => r.moment === "Dessert");
+    check(JSON.stringify(desserts.map((r) => [r.name, r.method])) === JSON.stringify([["Celebration Fruit Cups", "Arrange diced fruit and yoghurt in small cups, topping with cereal immediately before serving."], ["Crunchy Dessert Topper", "Sprinkle a small amount of cereal over a chilled fruit dessert just before serving."]]), "recipes: the two desserts carry Lexta's short draft method as written", desserts.map((r) => r.name));
     const all = JSON.stringify([catalogue.CATALOGUE, recipes.RECIPES, recipes.BEYOND]);
     check(!/[–—]| - /.test(all), "content: no em dashes or spaced hyphens");
     check(!PROTOTYPE_CLAIMS.test(all) && !/healthy|nutritious|boosts?|immun|energy/i.test(all.replace(/healthier routines/g, "")), "content: no claim beyond Lexta's wording (no health or energy claims)");

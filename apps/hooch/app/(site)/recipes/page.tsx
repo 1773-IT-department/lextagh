@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/recipes" },
 };
 
-/** Breakfast Ideas & Recipes: Lexta's four recipes, the creative kitchen questions and "Share Your Hooch® Recipe". */
+/** Breakfast Ideas & Recipes: Lexta's four recipes plus the two short draft desserts, the creative kitchen questions and "Share Your Hooch® Recipe". */
 export default function RecipesPage() {
   return (
     <>

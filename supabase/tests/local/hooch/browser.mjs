@@ -108,6 +108,7 @@ const PAGES = [
   ["home", "/"], ["about", "/about"], ["products", "/products"], ["product-cornflakes", "/products/cornflakes"], ["product-frosted-flakes", "/products/frosted-flakes"],
   ["recipes", "/recipes"], ["recipe-classic", "/recipes/classic-hooch-bowl"], ["recipe-frosted-fruit", "/recipes/frosted-fruit-delight"],
   ["recipe-yoghurt", "/recipes/yoghurt-crunch"], ["recipe-after-school", "/recipes/after-school-crunch"],
+  ["recipe-fruit-cups", "/recipes/celebration-fruit-cups"], ["recipe-dessert-topper", "/recipes/crunchy-dessert-topper"],
   ["nutrition", "/nutrition"], ["article", "/nutrition/what-makes-a-balanced-breakfast"], ["contact", "/contact"],
 ];
 
@@ -182,9 +183,12 @@ try {
     await page.goto(`${SITE}/recipes?3d=off`);
     await page.getByRole("button", { name: "Snacks", exact: true }).click();
     const snack = await page.locator("main a[href^='/recipes/']").count();
+    await page.getByRole("button", { name: "Desserts", exact: true }).click();
+    const desserts = await page.locator("main a[href^='/recipes/']").allInnerTexts();
     await page.getByRole("button", { name: "All ideas" }).click();
     const all = await page.locator("main a[href^='/recipes/']").count();
-    check(snack === 1 && all === 4, "recipes: the Snacks chip shows the one snack idea, All ideas all four", { snack, all });
+    check(snack === 1 && all === 6, "recipes: the Snacks chip shows the one snack idea, All ideas all six", { snack, all });
+    check(desserts.length === 2 && /Celebration Fruit Cups/.test(desserts[0]) && /Crunchy Dessert Topper/.test(desserts[1]) && desserts.every((d) => /\[PLACEHOLDER: time\]/.test(d)), "recipes: the Desserts chip shows Lexta's two short draft desserts, time as a placeholder", desserts);
 
     // The "You need" tick list by keyboard.
     await page.goto(`${SITE}/recipes/classic-hooch-bowl?3d=off`);
