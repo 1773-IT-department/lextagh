@@ -4,8 +4,8 @@
  * Products come from getPublishedProducts in @lexta/db (publishable key, so Row Level Security only returns
  * published products of active brands). Its requests are cached under the "products" tag for up to an hour;
  * the portal calls /api/revalidate after every product save, which clears the tag and rebuilds /our-brands.
- * If the database cannot be reached, or the site has no Supabase settings, a brand falls back to the approved
- * static cards in ./data.ts and a warning is logged, so the page never breaks.
+ * If the database cannot be reached, or the site has no Supabase settings, a brand falls back to the static
+ * cards in ./data.ts (the same Drive wording) and a warning is logged, so the page never breaks.
  */
 import { getPublishedProducts, isBrandSiteImage, type PublishedProduct } from "@lexta/db";
 import { hoochProducts, linzzyProducts, yazzProducts, type ProductCard, type ProductImage, type ProductMedia } from "./data";
@@ -13,7 +13,7 @@ import { hoochProducts, linzzyProducts, yazzProducts, type ProductCard, type Pro
 export const BRAND_SLUGS = ["yazz", "linzzy", "hooch"] as const;
 export type BrandSlug = (typeof BRAND_SLUGS)[number];
 
-/** The approved prototype cards: the fallback, and layout hints for the seeded products. */
+/** The static cards in Lexta's Drive wording: the fallback, and layout hints matched by slug. */
 export const staticRanges: Record<BrandSlug, ProductCard[]> = { yazz: yazzProducts, linzzy: linzzyProducts, hooch: hoochProducts };
 
 /** A card box holds at most three pack shots side by side (as the prototype's widest card does). */

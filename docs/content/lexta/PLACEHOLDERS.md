@@ -39,15 +39,14 @@
 | Contact Us | Head office note; Visit us "Postal address" | Lexta postal address (P. O. Box) | Admin |
 | Contact Us | Call us note | phone line opening hours | Customer care |
 | Contact Us | Visit us "Office hours", "Deliveries and collections" | Lexta office hours; trade collection hours and point | Admin / Logistics |
-| Contact Us | FAQ "How do I become a Lexta distributor?" | distributor appointment process and terms | Sales |
+| Contact Us | FAQ answers (all 4: becoming a distributor, where to buy, a concern about a product, applying for a job) | Lexta's own answers (Desmond, 17 November 2026: keep the questions, answers are placeholders) | Sales / Customer care / HR |
 | Contact Us | Lexta Square photo (code) | photo of Lexta Square | Marketing |
 | Partner With Us | Hero figures 1 and 3 | number of regions covered; typical response time | Sales |
 | Partner With Us | Routes (data.ts) | distributor terms; wholesale and modern trade terms; what Lexta looks for in each partner type (3) | Sales |
 | Partner With Us | "What you get", 2nd card | support Lexta offers trade partners (supply, terms, field support, training, reporting) | Sales |
 | Partner With Us | How it works, step 2 and its timing | Lexta's steps from application to first delivery; timing | Sales |
 | Partner With Us | "Have these ready", 4th item "Supporting documents" (items 1 to 3 are sourced, see section 5) | which supporting documents Lexta requires from partners | Sales |
-| FAQs | "Are your products made in Ghana?" | where each product line is made, and whether any lines are imported | Operations |
-| FAQs | "How do I become a distributor?" | documents Lexta requires from distributors | Sales |
+| FAQs | FAQ answers (all 6: where to buy, where products are made, reporting a quality issue, becoming a distributor, CSR partnering, applying for a role) | Lexta's own answers (Desmond, 17 November 2026: keep the questions, answers are placeholders) | Sales / Operations / Customer care / HR |
 | Privacy Policy | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
 | Terms & Conditions | Last updated | approval date; Lexta legal to review the lextagh.com text now on the page (section 5) | Lexta legal adviser |
 | Site wide | Footer social badges | Lexta Facebook, Instagram, LinkedIn, TikTok addresses | Marketing |
@@ -92,7 +91,7 @@
 | Our Brands Yazz lead; award line | yazz/website-copy.md (Home); yazz/ORIGINAL-SITE.md (Home Builders Africa Awards 2022 story) |
 | Our Brands Linzzy lead and two points; Hooch lead | linzzy/website-copy.md; hooch/website-copy.md |
 | Our Brands Hooch points | hooch/products.md (vitamins), hooch/website-copy.md (Convenience) |
-| Our Brands product cards | Supabase products (not changed; the fallback copy in `components/brands/data.ts` is the prototype's and shows only when the database is unreachable) |
+| Our Brands product cards | Supabase products (Drive wording, migrations 0016, 0017, 0021 to 0024); the fallback in `components/brands/data.ts` is a copy of the same cards, so it shows the same Drive wording (17 November 2026) |
 | People & Culture: hero and meta, "Why our people come first" paragraphs, five pillars, D&I, Growth heading and line | lextagh.com People, word for word |
 | CSR Dignity Project, cervical cancer text, Safe Bottoms, Forest, Clean Hands, Bright Smiles | yazz/csr.md and Drive CSR cards |
 | CSR Empowered Periods Campaign | lextagh.com post "The Empowered Periods Campaign" |
@@ -109,8 +108,8 @@
 
 ## 4. For the lead
 
-- FAQ questions (Contact Us and FAQs) are 1773 wording: neither source has a Lexta FAQ. They are kept only where the answer is sourced, as labels; Desmond may prefer Lexta to supply its own questions.
-- `components/brands/data.ts` fallback product copy (prototype text) only shows when Supabase is unreachable; the live cards come from the database.
+- FAQ questions (Contact Us and FAQs) are 1773 wording, as neither source has a Lexta FAQ. Decided by Desmond on 17 November 2026: keep the questions; every answer is a placeholder until Lexta sends its own (section 1).
+- `components/brands/data.ts` fallback cards now copy the live product cards (Drive wording); the site-data test checks they stay identical. Update them when products change in Product Management.
 - `packages/chat` widget text is interface text only; its default office hours (Mon to Fri 8 to 17) are used for availability, not shown.
 - The home page partner logo strip has 2 logos (MWAG, Ghana Police Service); since the gap fill each shows its name under it and the two share the box.
 
