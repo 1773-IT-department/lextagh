@@ -108,6 +108,7 @@ const PAGES = [
   ["home", "/"], ["about", "/about"], ["products", "/products"], ["product-cornflakes", "/products/cornflakes"], ["product-frosted-flakes", "/products/frosted-flakes"],
   ["recipes", "/recipes"], ["recipe-classic", "/recipes/classic-hooch-bowl"], ["recipe-frosted-fruit", "/recipes/frosted-fruit-delight"],
   ["recipe-yoghurt", "/recipes/yoghurt-crunch"], ["recipe-after-school", "/recipes/after-school-crunch"],
+  ["recipe-fruit-cups", "/recipes/celebration-fruit-cups"], ["recipe-dessert-topper", "/recipes/crunchy-dessert-topper"],
   ["nutrition", "/nutrition"], ["article", "/nutrition/what-makes-a-balanced-breakfast"], ["contact", "/contact"],
 ];
 
@@ -165,8 +166,30 @@ try {
     await page.goto(`${SITE}/products?3d=off`);
     const names = await page.locator("main a[href^='/products/'] [class*='productName']").allInnerTexts();
     check(JSON.stringify(names) === JSON.stringify(["Hooch® Cornflakes", "Hooch® Frosted Flakes"]), "products page: the two Drive cereals, nothing else", names);
-    const navItems = await page.getByRole("navigation", { name: "Main" }).locator("a").allInnerTexts();
-    check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact"]), "header: Lexta's six tabs", navItems);
+    const mainNav = page.getByRole("navigation", { name: "Main" });
+    // Top level only: the Our Products menu's links sit one level down.
+    const navItems = (await mainNav.locator(":scope > a, :scope > div > a:first-child").allInnerTexts()).map((x) => x.trim());
+    check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact", "Community Impact"]), "header: Lexta's six tabs, then Community Impact", navItems);
+    const ciHref = await mainNav.getByRole("link", { name: /Community Impact/ }).getAttribute("href");
+    check(ciHref === "https://lextagh.vercel.app/corporate-social-responsibility#programmes", "header: Community Impact links out to the Lexta CSR programmes", ciHref);
+    await mainNav.getByRole("link", { name: "Our Products" }).hover();
+    const cereals = await mainNav.locator("a[href^='/products/']").evaluateAll((as) => as.filter((a) => a.offsetParent).map((a) => [a.textContent, a.getAttribute("href")]));
+    check(JSON.stringify(cereals) === JSON.stringify([["Hooch® Cornflakes", "/products/cornflakes"], ["Hooch® Frosted Flakes", "/products/frosted-flakes"]]), "header: Our Products opens a small menu of the two cereal pages", cereals);
+    {
+      const fam = await page.getByRole("contentinfo").locator("a").evaluateAll((as) => as.map((a) => [a.textContent.replace(/[↗\s]+$/, "").trim(), a.getAttribute("href")]));
+      const want = [["Yazz®", "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app/"], ["Linzzy®", "https://lexta-linzzy.vercel.app/"]];
+      check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
+        "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
+    }
+    {
+      // Breadcrumbs (X2): Home, then the current page.
+      await page.goto(`${SITE}/recipes`);
+      const crumbs = page.getByRole("navigation", { name: "Breadcrumb" });
+      const home = await crumbs.getByRole("link", { name: "Home" }).getAttribute("href").catch(() => null);
+      const current = await crumbs.locator("[aria-current=page]").innerText().catch(() => "");
+      check(home === "/" && current.trim() === "Recipes", "breadcrumbs: /recipes shows Home > Recipes", { home, current });
+      await page.goto(`${SITE}/products?3d=off`);
+    }
     const films = await page.locator(".hc-video video").evaluateAll((vs) => vs.map((v) => ({ poster: v.getAttribute("poster"), muted: v.muted, loop: v.loop, inline: v.playsInline,
       types: [...v.querySelectorAll("source")].map((s) => s.type) })));
     check(films.length === 2 && films.every((f) => f.muted && f.loop && f.inline && f.poster?.startsWith("/videos/") && f.types.includes("video/webm") && f.types.includes("video/mp4")),
@@ -182,9 +205,12 @@ try {
     await page.goto(`${SITE}/recipes?3d=off`);
     await page.getByRole("button", { name: "Snacks", exact: true }).click();
     const snack = await page.locator("main a[href^='/recipes/']").count();
+    await page.getByRole("button", { name: "Desserts", exact: true }).click();
+    const desserts = await page.locator("main a[href^='/recipes/']").allInnerTexts();
     await page.getByRole("button", { name: "All ideas" }).click();
     const all = await page.locator("main a[href^='/recipes/']").count();
-    check(snack === 1 && all === 4, "recipes: the Snacks chip shows the one snack idea, All ideas all four", { snack, all });
+    check(snack === 1 && all === 6, "recipes: the Snacks chip shows the one snack idea, All ideas all six", { snack, all });
+    check(desserts.length === 2 && /Celebration Fruit Cups/.test(desserts[0]) && /Crunchy Dessert Topper/.test(desserts[1]) && desserts.every((d) => /\[PLACEHOLDER: time\]/.test(d)), "recipes: the Desserts chip shows Lexta's two short draft desserts, time as a placeholder", desserts);
 
     // The "You need" tick list by keyboard.
     await page.goto(`${SITE}/recipes/classic-hooch-bowl?3d=off`);

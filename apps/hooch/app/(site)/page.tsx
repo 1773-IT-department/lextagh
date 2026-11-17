@@ -95,7 +95,7 @@ export default async function HomePage() {
           </div>
           <Link href="/recipes" className="hc-btn">All Breakfast Ideas <Icon name="arrow" size={18} /></Link>
         </div>
-        <div className={s.recipeGrid}>{RECIPES.map((r, i) => <RecipeCard key={r.slug} r={r} i={i} />)}</div>
+        <div className={s.recipeGrid}>{RECIPES.filter((r) => r.moment !== "Dessert").map((r, i) => <RecipeCard key={r.slug} r={r} i={i} />)}</div>
       </section>
 
       {frosted && (

@@ -6,6 +6,7 @@ import s from "@/components/pages/pages.module.css";
 import RealPhoto from "@/components/fun/RealPhoto";
 import { BRAND } from "@/content/brand";
 import { contact, lexta } from "@/lib/site";
+import Breadcrumbs from "@/components/pages/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "About Hooch®",
@@ -22,6 +23,7 @@ export default function AboutPage() {
         <Floaters count={10} seed={5} />
         <div className={`hc-wrap ${s.heroInner} ${s.split}`}>
           <div>
+            <Breadcrumbs page="About Hooch®" />
             <p className="hc-sticker" style={{ background: "#fff" }}>{a.eyebrow}</p>
             <h1 id="about-title" className={s.heroTitle}>{a.title}</h1>
             <p className={s.heroLead}>{a.story[0]}</p>

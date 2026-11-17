@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
-import { lexta, lextaSiteUrl as LEXTA } from "@/lib/site";
+import { lexta, hoochSiteUrl as HOOCH, lextaSiteUrl as LEXTA, yazzSiteUrl as YAZZ } from "@/lib/site";
 
 export default function HomeView({ v: vals }: { v: any }) {
   return (
@@ -88,6 +88,10 @@ export default function HomeView({ v: vals }: { v: any }) {
                     {"\n      "}
                   </Fragment>
                 ))}
+                {/* Lexta's top bar names Community Impact: a small link out to the Lexta CSR page (no CSR page on brand sites). */}
+                <a href={`${LEXTA}/corporate-social-responsibility`} target="_blank" rel="noopener" style={{"display":"inline-block","marginTop":"18px","color":"#9EE6C8","fontWeight":"700","fontSize":"15px","letterSpacing":"0.04em"} as CSSProperties}>
+                  {"Community Impact ↗"}
+                </a>
                 {"\n    "}
               </nav>
               {"\n  "}
@@ -1067,6 +1071,14 @@ export default function HomeView({ v: vals }: { v: any }) {
               {"\n      "}
               <a href={`${LEXTA}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
                 {"Lexta Ghana Limited ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${YAZZ}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Yazz® ↗"}
+              </a>
+              {"\n      "}
+              <a href={`${HOOCH}/`} target="_blank" style={{"color":"#fff"} as CSSProperties}>
+                {"Hooch® ↗"}
               </a>
               {"\n      "}
               <a href={`${LEXTA}/privacy-policy`} target="_blank" style={{"color":"#fff"} as CSSProperties}>

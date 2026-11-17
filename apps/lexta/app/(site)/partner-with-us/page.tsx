@@ -5,6 +5,7 @@ import ApplicationForm from "@/components/partner/ApplicationForm";
 import RoutePicker from "@/components/partner/RoutePicker";
 import { RouteProvider } from "@/components/partner/RouteContext";
 import { benefits, steps } from "@/components/partner/data";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title from partner-with-us.html; description from Lexta's Drive content.
 const title = "Partner With Us | Lexta Ghana";
@@ -44,12 +45,18 @@ const checklist = [
   { title: "Supporting documents", text: "[PLACEHOLDER: which supporting documents Lexta requires from distributors, wholesalers and modern trade partners]" },
 ];
 
-export default function PartnerPage() {
+type Search = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function PartnerPage({ searchParams }: { searchParams: Search }) {
+  // "Propose a partnership" on the CSR page links here with ?route=CSR&initiative=<slug>: the form starts on them.
+  const q = await searchParams;
+  const one = (v: string | string[] | undefined) => (typeof v === "string" ? v.slice(0, 80) : undefined);
   return (
-    <RouteProvider>
+    <RouteProvider initialRoute={one(q.route)} initiative={one(q.initiative)}>
       <section data-screen-label="Partner hero" style={{ background: "#0c303e", padding: "74px 28px 66px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 46, alignItems: "center" }}>
           <div>
+            <Breadcrumbs items={[{ label: "Partner With Us" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Partner with us</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

@@ -40,6 +40,12 @@ const sections: LegalSection[] = [
   { heading: "Security", paras: [
     "The security of your Personal Information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.",
   ] },
+  // Retention notice Lexta asks for ("publish privacy/retention notices", docs/content/lexta/website-copy.md:54); the
+  // periods come from Lexta's legal adviser, none are invented here.
+  { heading: "How long we keep your information", paras: [
+    "This section sets out how long we keep the information you send us through the forms on this website.",
+    "[PLACEHOLDER: retention periods for enquiries, complaints, job applications and newsletter sign ups, from Lexta's legal adviser]",
+  ] },
   { heading: "Links To Other Sites", paras: [
     "Our Service may contain links to other sites that are not operated by us. If you click on a third party link, you will be directed to that third party’s site. We strongly advise you to review the Privacy Policy of every site you visit.",
     "We have no control over, and assume no responsibility for the content, privacy policies or practices of any third party sites or services.",

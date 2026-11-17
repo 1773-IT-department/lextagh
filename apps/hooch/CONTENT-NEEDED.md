@@ -32,6 +32,11 @@ Each item below appears on the site as a placeholder or is a decision to confirm
    - Recipe photos still needed for **Hooch® Yoghurt Crunch** and **The Hooch® After-School Crunch** (marked placeholders
      on their photos); the other two recipes use close matches (the bowl photo; flakes with strawberries).
 
+   - **Desserts (approved by Desmond, 17 November 2026)**: the Recipes page now has a Desserts chip with Lexta's two
+     short draft recipes, **Celebration Fruit Cups** and **Crunchy Dessert Topper** (method as written, website-copy.md
+     lines 74 to 75). **Lexta must confirm these two recipes still apply.** Their preparation time, servings and photos
+     are placeholders (`[PLACEHOLDER: time]` on the cards; preparation time, servings and photo on their pages).
+
 ## Brand
 7. **Logo**: only a 151 x 69 PNG exists (from the original Lexta site). A vector or larger logo would look sharper.
 8. **"Meet hochiro, coming soon"**: a seventh menu item in Lexta's document. Brand sites are capped at six pages, so it is
@@ -39,6 +44,11 @@ Each item below appears on the site as a placeholder or is a decision to confirm
    not used on its own until Lexta approves it.
 9. **Social links**: Lexta names no Hooch Facebook, Instagram or TikTok accounts (placeholders in the footer and on
    Contact). Only the Lexta WhatsApp channel links out.
+
+- **Community programmes on the Lexta CSR page (17 November 2026, Desmond approved)**: Stay in School, UtooCan and
+  Achievers Corner are now cards on the Lexta CSR page (tagged Hooch; UtooCan and Achievers Corner marked Proposed),
+  one Drive line each, no photos. The Hooch links go to its #programmes section. Lexta to send fuller descriptions
+  and photos when they have them.
 
 ## Contact
 10. **Email addresses**: decided by Desmond on 17 November 2026: use the Drive document's info@, marketing@ and
@@ -61,3 +71,12 @@ Each item below appears on the site as a placeholder or is a decision to confirm
 - "Share Your Hooch® Recipe" with uploads and admin approval for publishing: a moderated publishing flow is a new
   feature. The button sends the idea to the Hooch team through the contact form (a CRM lead).
 - Phase 2: games and library (Ludu, Oware), stories, comics, merchandise, online checkout.
+
+## Drive requests built 17 November 2026 (Desmond approved)
+- **Lexta family in the footer**: links to Lexta and the two sister brand sites. They use NEXT_PUBLIC_YAZZ_SITE_URL,
+  NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, falling back to the Vercel previews; Desmond sets the
+  real domains only at go-live (.env.example).
+- **Community Impact** in the menu (desktop last item, phone menu last): a link out to the Lexta CSR page, not a page.
+- **Breadcrumbs** (Home > Page) on the inner pages.
+- **Our Products menu** in the header lists the two cereal pages (Lexta's "Our Cereals (menu)"); the phone menu lists
+  them under Our Products.

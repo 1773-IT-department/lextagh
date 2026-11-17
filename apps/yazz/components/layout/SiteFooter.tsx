@@ -2,7 +2,7 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import { BRAND } from "@/content/brand";
 import { productLinks } from "@/lib/nav";
-import { contact, lexta, socials, tel } from "@/lib/site";
+import { contact, hoochSiteUrl, lexta, linzzySiteUrl, socials, tel } from "@/lib/site";
 import s from "./footer.module.css";
 
 /**
@@ -53,6 +53,8 @@ export default function SiteFooter() {
             <li><a href={lexta.csr} {...ext}>Community Impact (CSR) <Icon name="arrow" size={12} /></a></li>
             <li><a href={lexta.careers} {...ext}>Careers <Icon name="arrow" size={12} /></a></li>
             <li><a href={lexta.home} {...ext}>Lexta Ghana Limited <Icon name="arrow" size={12} /></a></li>
+            <li><a href={`${linzzySiteUrl}/`} {...ext}>Linzzy® <Icon name="arrow" size={12} /></a></li>
+            <li><a href={`${hoochSiteUrl}/`} {...ext}>Hooch® <Icon name="arrow" size={12} /></a></li>
             <li><a href={lexta.privacy} {...ext}>Privacy Policy <Icon name="arrow" size={12} /></a></li>
             <li><a href={lexta.terms} {...ext}>Terms &amp; Conditions <Icon name="arrow" size={12} /></a></li>
           </ul>

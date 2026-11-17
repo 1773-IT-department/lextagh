@@ -70,3 +70,32 @@ export function FormMessage({ state, tone = "light", style }: { state: FormState
     </>
   );
 }
+
+/**
+ * The privacy notice tick box, as on the Hooch and Linzzy consumer forms: required in the browser, and refused on the
+ * server (lib/forms/core.ts) when it arrives unticked.
+ */
+export function PrivacyConsent({ state, id, style }: { state: FormState; id: string; style?: CSSProperties }) {
+  const errorId = `${id}-error`;
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 6, ...style }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: 12, lineHeight: 1.6, color: "#12313d" }}>
+        <input
+          id={id}
+          type="checkbox"
+          name="privacy"
+          value="yes"
+          required
+          defaultChecked={state.values?.privacy === "yes"}
+          aria-invalid={state.fieldErrors?.privacy ? true : undefined}
+          aria-describedby={state.fieldErrors?.privacy ? errorId : undefined}
+          style={{ margin: "3px 0 0", width: 14, height: 14, flex: "0 0 auto", accentColor: "#12a3c4" }}
+        />
+        <label htmlFor={id}>
+          I agree to the <a href="/privacy-policy" target="_blank" rel="noopener" style={{ color: "#0b6d88", textDecoration: "underline" }}>privacy notice</a>.
+        </label>
+      </div>
+      <FieldError id={errorId} message={state.fieldErrors?.privacy} />
+    </div>
+  );
+}

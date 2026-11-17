@@ -1,8 +1,10 @@
 "use client";
 
+import { Select } from "@lexta/ui";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { FieldError, FormMessage, Honeypot, invalidProps, useServerForm } from "@/components/forms/FormParts";
+import { CSR_BRANDS, CSR_INITIATIVES } from "@/components/csr/programmes";
+import { FieldError, FormMessage, Honeypot, invalidProps, PrivacyConsent, useServerForm } from "@/components/forms/FormParts";
 import { useActiveRoute } from "./RouteContext";
 
 /* Values copied from partner-with-us.html. */
@@ -11,6 +13,9 @@ const field: CSSProperties = {
   border: "1px solid rgba(18,163,196,.35)", borderRadius: 7, padding: "12px 14px", fontSize: 13, color: "#12313d",
   background: "#fff", minWidth: 0, fontFamily: "inherit",
 };
+
+/* The dropdown's face (packages/ui Select), as on Contact Us. */
+const selectField: CSSProperties = { ...field, lineHeight: "21px" };
 
 const textFields = [
   { label: "Contact name", name: "contact_name", type: "text", placeholder: "Your name", autoComplete: "name", required: true, maxLength: 120 },
@@ -30,10 +35,16 @@ const errorId = (name: string) => `partner-${name}-error`;
  * organisation, with the picked route as the partnership type. Without JavaScript the form still posts.
  */
 export default function ApplicationForm() {
-  const { active, form } = useActiveRoute();
+  const { active, form, initiative } = useActiveRoute();
   const [state, formAction, pending] = form;
   const v = state.values ?? {};
   const { ref, onSubmit } = useServerForm(state, formAction, pending);
+  // CSR proposals name a brand and an initiative (Lexta: "brand and initiative required"); a "Propose a partnership"
+  // link on the CSR page preselects the initiative, and its brand where the programme names one.
+  const csr = active.key === "CSR";
+  const linked = CSR_INITIATIVES.find((i) => i.slug === initiative);
+  const csrInitiative = v.csr_initiative ?? linked?.slug ?? "";
+  const csrBrand = v.csr_brand ?? linked?.brand ?? "";
 
   return (
     <form
@@ -68,6 +79,30 @@ export default function ApplicationForm() {
           </div>
         ))}
       </div>
+      {csr && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))", gap: 14, marginTop: 14 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+            <label style={fieldLabel}>
+              Brand
+              <Select name="csr_brand" required defaultValue={csrBrand} {...invalidProps(state, "csr_brand", errorId("csr_brand"))} style={selectField}>
+                <option value="" disabled>Choose a brand</option>
+                {CSR_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+              </Select>
+            </label>
+            <FieldError id={errorId("csr_brand")} message={state.fieldErrors?.csr_brand} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, minWidth: 0 }}>
+            <label style={fieldLabel}>
+              Initiative
+              <Select name="csr_initiative" required defaultValue={csrInitiative} {...invalidProps(state, "csr_initiative", errorId("csr_initiative"))} style={selectField}>
+                <option value="" disabled>Choose an initiative</option>
+                {CSR_INITIATIVES.map((i) => <option key={i.slug} value={i.slug}>{i.title}</option>)}
+              </Select>
+            </label>
+            <FieldError id={errorId("csr_initiative")} message={state.fieldErrors?.csr_initiative} />
+          </div>
+        </div>
+      )}
       <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 14 }}>
         <label style={fieldLabel}>
           Tell us more
@@ -83,6 +118,7 @@ export default function ApplicationForm() {
         </label>
         <FieldError id={errorId("message")} message={state.fieldErrors?.message} />
       </div>
+      <PrivacyConsent state={state} id="partner-privacy" style={{ marginTop: 14 }} />
       <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 20 }}>
         <button
           type="submit"

@@ -11,6 +11,7 @@ import { getYazzProducts } from "@/lib/products";
 import { RANGE_SLUGS, RANGES } from "@/lib/ranges";
 import { contact, socials, tel, whatsapp } from "@/lib/site";
 import { ALL_REGIONS, getWhereToBuyRegions, getYazzStockists, type StockistItem } from "@/lib/where-to-buy";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
@@ -53,6 +54,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
 
   return (
     <>
+      <Breadcrumbs items={[{ label: "Contact" }]} />
       <section className={s.hero} aria-labelledby="contact-title">
         <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Get in touch</p>
         <h1 id="contact-title" className={s.heroTitle}>Contact Yazz Products for All Inquiries</h1>

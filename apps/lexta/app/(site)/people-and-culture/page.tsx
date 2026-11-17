@@ -6,6 +6,7 @@ import ImageSlot from "@/components/ImageSlot";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import pc from "@/components/people/people.module.css";
 import p from "@/components/proto.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // The prototype page had no title or description; these reuse its own hero copy.
 const title = "People and Culture | Life at Lexta Ghana Limited";
@@ -129,6 +130,7 @@ export default function PeopleAndCulturePage() {
         <div style={{ ...fill, background: "linear-gradient(100deg,rgba(6,32,42,.93) 0%,rgba(6,32,42,.68) 48%,rgba(6,32,42,.2) 82%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", width: "100%", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 680 }}>
+            <Breadcrumbs items={[{ label: "People & Culture" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>People and Culture</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6.4vw,56px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

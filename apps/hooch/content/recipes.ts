@@ -11,18 +11,22 @@
 export type Recipe = {
   slug: string;
   name: string;
-  /** Lexta's strapline under the name. */
-  strap: string;
+  /** Lexta's strapline under the name (the short draft recipes have none). */
+  strap?: string;
   /** Lexta's method, as written. */
   method: string;
-  minutes: number;
+  /** Preparation time; left out where Lexta gives none (a placeholder shows instead). */
+  minutes?: number;
+  /** Servings, only marked as still needed: Lexta gives no servings for any recipe yet. */
+  servingsNeeded?: string;
   /**
-   * Breakfast or snack, for the filter chips. Lexta files all four recipes under Breakfast Ideas & Recipes; only the
-   * After-School Crunch is a snack in Lexta's own words ("A Little Crunch for Snack Time"). No Desserts group: none of
-   * the four recipes is a dessert (see docs/content/hooch/PLACEHOLDERS.md).
+   * Breakfast, snack or dessert, for the filter chips ("Recipe grid: Breakfast / Snacks / Desserts",
+   * docs/content/hooch/website-copy.md:24). Lexta files the four main recipes under Breakfast Ideas & Recipes; only the
+   * After-School Crunch is a snack in Lexta's own words ("A Little Crunch for Snack Time"). The two desserts come from
+   * Lexta's short draft (website-copy.md:74-75) and wait for Lexta to confirm them (CONTENT-NEEDED.md).
    */
-  moment: "Breakfast" | "Snack";
-  /** Which cereal it uses (product slugs). */
+  moment: "Breakfast" | "Snack" | "Dessert";
+  /** Which cereal it uses (product slugs); empty where Lexta's method names none. */
   cereals: string[];
   /** What goes in, read from Lexta's method (no quantities: Lexta gives none). */
   youNeed: string[];
@@ -89,6 +93,34 @@ export const RECIPES: Recipe[] = [
     image: { src: "/images/hooch/photo-family.webp", alt: "A family at the table with bowls of Hooch cornflakes, a box of Hooch Cornflakes and a bowl of fruit", position: "55% 70%" },
     photoNeeded: "photo of The Hooch® After-School Crunch from Lexta",
     tone: "gold",
+  },
+  {
+    // Lexta's short draft (docs/content/hooch/website-copy.md:74), method as written; to be confirmed by Lexta.
+    slug: "celebration-fruit-cups",
+    name: "Celebration Fruit Cups",
+    method: "Arrange diced fruit and yoghurt in small cups, topping with cereal immediately before serving.",
+    servingsNeeded: "servings for Celebration Fruit Cups",
+    moment: "Dessert",
+    // Lexta's method says "cereal" without naming one, so no product is linked.
+    cereals: [],
+    youNeed: ["Diced fruit", "Yoghurt", "Cereal"],
+    image: { src: "/images/hooch/photo-bowl-berries.webp", alt: "Crunchy golden flakes with fresh strawberries", position: "30% 50%" },
+    photoNeeded: "photo of Celebration Fruit Cups from Lexta",
+    tone: "red",
+  },
+  {
+    // Lexta's short draft (docs/content/hooch/website-copy.md:75), method as written; to be confirmed by Lexta.
+    slug: "crunchy-dessert-topper",
+    name: "Crunchy Dessert Topper",
+    method: "Sprinkle a small amount of cereal over a chilled fruit dessert just before serving.",
+    servingsNeeded: "servings for Crunchy Dessert Topper",
+    moment: "Dessert",
+    // Lexta's method says "cereal" without naming one, so no product is linked.
+    cereals: [],
+    youNeed: ["A small amount of cereal", "A chilled fruit dessert"],
+    image: { src: "/images/hooch/cornflakes-bowl.webp", alt: "A bowl of golden Hooch cornflakes" },
+    photoNeeded: "photo of Crunchy Dessert Topper from Lexta",
+    tone: "sky",
   },
 ];
 

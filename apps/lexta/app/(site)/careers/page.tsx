@@ -8,6 +8,7 @@ import ApplicationForm from "@/components/careers/ApplicationForm";
 import OpenRoles from "@/components/careers/OpenRoles";
 import { getCareersJobs } from "@/components/careers/live";
 import p from "@/components/proto.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title and description from careers.html.
 const title = "Careers | Lexta Ghana";
@@ -83,6 +84,7 @@ export default async function CareersPage() {
         <div style={{ ...fill, background: "linear-gradient(100deg,rgba(6,32,42,.95) 0%,rgba(6,32,42,.72) 52%,rgba(6,32,42,.28) 86%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 700 }}>
+            <Breadcrumbs items={[{ label: "Careers" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Careers at Lexta</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,6.2vw,54px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

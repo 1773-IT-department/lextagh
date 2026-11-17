@@ -3,6 +3,7 @@ import Link from "next/link";
 import ArrowButton from "@/components/ArrowButton";
 import { faqGroups } from "@/components/faqs/data";
 import LinkedText from "@/components/LinkedText";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title and description from faqs.html.
 const title = "FAQs | Lexta Ghana";
@@ -19,6 +20,7 @@ export default function FaqsPage() {
     <>
       <section data-screen-label="FAQ hero" style={{ background: "#0c303e", padding: "70px 28px 60px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+          <Breadcrumbs items={[{ label: "FAQs" }]} />
           <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Help centre</div>
           <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
           <h1 style={{ margin: "20px 0 0", fontSize: "clamp(30px,5vw,48px)", lineHeight: 1.08, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

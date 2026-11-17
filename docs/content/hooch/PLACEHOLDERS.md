@@ -26,6 +26,7 @@ because no source has the fact.
 | Frosted Flakes product page (and DB `ingredients`) | Sugar figure | `[PLACEHOLDER: confirm the sugar figure and unit, given as "23"]` | Quality assurance / product manager |
 | Both product pages | Product code table | `TBC-HOOCH-101` / `TBC-HOOCH-102 [PLACEHOLDER: product code from Lexta]` | Sales / supply chain |
 | Recipes, Yoghurt Crunch and After-School Crunch (cards and pages) | Recipe photo | `[PLACEHOLDER: photo of Hooch® Yoghurt Crunch from Lexta]`, `[PLACEHOLDER: photo of The Hooch® After-School Crunch from Lexta]` | Marketing |
+| Recipes, Celebration Fruit Cups and Crunchy Dessert Topper (cards and pages; added 17 November 2026, Desmond approved) | Preparation time, servings, recipe photo | `[PLACEHOLDER: time]` (card), `[PLACEHOLDER: preparation time for <recipe> from Lexta]`, `[PLACEHOLDER: servings for <recipe> from Lexta]`, `[PLACEHOLDER: photo of <recipe> from Lexta]`; Lexta also to confirm both short draft recipes still apply | Marketing |
 | All four Nutrition & Family Tips articles | Article body | `[PLACEHOLDER: full article text from Lexta]` (Drive gives summaries only) | Marketing |
 | Contact (Contact Details box), live chat out of hours message | Consumer care hours | `[PLACEHOLDER: Hooch consumer care hours]` | Consumer care / customer service lead |
 | Contact (Stay Connected), footer | Hooch social links | `[PLACEHOLDER: link from Lexta]` (Facebook, Instagram, TikTok), footer `[PLACEHOLDER: Hooch Facebook, Instagram and TikTok links from Lexta]` | Marketing / social media team |
@@ -98,6 +99,7 @@ the chat team name "Hooch® customer care team" (from Drive "WhatsApp Customer C
 
 ## Not added (listed for Desmond)
 
-- **Desserts recipe group**: none of the four six tab draft recipes is a dessert. The short draft's "Crunchy Dessert
-  Topper" and "Celebration Fruit Cups" (no times, no photos) would need Lexta to confirm they still apply.
+- **Desserts recipe group**: BUILT 17 November 2026 (Desmond approved). The short draft's "Celebration Fruit Cups" and
+  "Crunchy Dessert Topper" are on the Recipes page under a Desserts chip, method as written, with placeholders for time,
+  servings and photo; Lexta to confirm they still apply.
 - "Meet hochiro, coming soon" (seventh menu item; brand sites are capped at six pages).

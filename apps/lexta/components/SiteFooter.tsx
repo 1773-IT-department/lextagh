@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
-import { footerQuickLinks, footerSupportLinks, portalUrl } from "./site-links";
+import { footerFamilyLinks, footerQuickLinks, footerSupportLinks, portalUrl } from "./site-links";
 
 const colTitle: CSSProperties = { fontSize: 13, fontWeight: 700, color: "#fff", marginBottom: 16 };
 const colLinks: CSSProperties = { display: "flex", flexDirection: "column", gap: 11 };
@@ -16,7 +16,7 @@ const socialStyle: CSSProperties = {
 };
 
 /**
- * Social links keep the approved prototype's look ("f", "ig", "in", "tk" text badges).
+ * Social links keep the approved prototype's look ("f", "ig", "in", "tk" text badges, and "wa" for the WhatsApp channel).
  * Lexta has not confirmed its own profile addresses (lextagh.com only linked Yazz accounts), so each href is empty and
  * the badge carries a [PLACEHOLDER: ...] note as its label until Lexta supplies the address. With an href, a badge
  * is a link announced as "Lexta on Facebook (opens in a new tab)".
@@ -26,6 +26,8 @@ const socials = [
   { label: "Instagram", short: "ig", href: "", placeholder: "[PLACEHOLDER: Lexta Instagram address]" },
   { label: "LinkedIn", short: "in", href: "", placeholder: "[PLACEHOLDER: Lexta LinkedIn page address]" },
   { label: "TikTok", short: "tk", href: "", placeholder: "[PLACEHOLDER: Lexta TikTok address]" },
+  // Lexta's own WhatsApp channel (docs/content/lexta/website-copy.md:125), the one real social link so far.
+  { label: "WhatsApp", short: "wa", href: "https://whatsapp.com/channel/0029Vb7CGlb35fLvDzjVPU41", placeholder: "" },
 ];
 
 /** Shared footer, ported from the prototype home page footer (the most complete version). */
@@ -68,6 +70,13 @@ export default function SiteFooter() {
           <div style={colTitle}>Quick Links</div>
           <div style={colLinks}>
             {footerQuickLinks.map((l) => <Link key={l.href} href={l.href} style={footLink}>{l.label}</Link>)}
+          </div>
+        </div>
+
+        <div>
+          <div style={colTitle}>Lexta family</div>
+          <div style={colLinks}>
+            {footerFamilyLinks.map((l) => <a key={l.label} href={l.href} target="_blank" rel="noopener" style={footLink}>{l.label}</a>)}
           </div>
         </div>
 

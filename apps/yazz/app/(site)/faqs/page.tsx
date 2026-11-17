@@ -5,6 +5,7 @@ import s from "@/components/faqs/faqs.module.css";
 import Icon from "@/components/Icon";
 import { FAQ_GROUPS } from "@/content/faqs";
 import { contact, whatsapp } from "@/lib/site";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "FAQs",
@@ -28,6 +29,7 @@ export default function FaqsPage() {
   };
   return (
     <>
+      <Breadcrumbs items={[{ label: "FAQs" }]} />
       <section className={s.hero} aria-labelledby="faqs-title">
         <p className="yz-eyebrow" style={{ color: "#FF8A95" }}>Help centre</p>
         <h1 id="faqs-title" className={s.heroTitle}>How can we help?</h1>

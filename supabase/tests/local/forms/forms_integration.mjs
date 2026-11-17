@@ -22,9 +22,12 @@ async function q(sql) {
   return r.out;
 }
 
+// Contact Us and Partner With Us need the privacy notice tick (X4): every call sends it ticked unless the test names
+// "privacy" itself (an empty string leaves it unticked).
 function fd(fields) {
   const f = new FormData();
-  for (const [k, v] of Object.entries(fields)) f.append(k, v);
+  if (!("privacy" in fields)) f.append("privacy", "yes");
+  for (const [k, v] of Object.entries(fields)) if (!(k === "privacy" && v === "")) f.append(k, v);
   return f;
 }
 
@@ -132,9 +135,36 @@ try {
     check(kind === "supplier" && town === "Ho, Volta", "organisation created as a supplier in Ho, Volta");
   }
   for (const [route, type] of [["Distributor", "Distributor"], ["Retail", "Retail and trade"], ["Institutional", "Institutional and bulk"], ["Private label", "Private label and export"], ["CSR", "CSR and community"]]) {
-    const s = await core.handlePartner(fd({ route, contact_name: "Route Test", business_name: `${route} Co ${stamp}`, email: mail(route.replace(" ", "")), website: "" }));
+    const csr = route === "CSR" ? { csr_brand: "Yazz", csr_initiative: "bright-smiles-school-tour" } : {};
+    const s = await core.handlePartner(fd({ route, contact_name: "Route Test", business_name: `${route} Co ${stamp}`, email: mail(route.replace(" ", "")), website: "", ...csr }));
     const desc = s.status === "success" ? await q(`select description from public.crm_leads where intake_reference = '${s.reference}'`) : "";
     check(desc.includes(`Partnership: ${type}`), `partner route ${route} maps to "${type}"`);
+  }
+
+  // CSR proposal (L2): brand and initiative are required on the CSR route, checked against the form's own lists, and
+  // reach the lead at the top of its text.
+  {
+    const programmes = await import("../../../../apps/lexta/components/csr/programmes.ts");
+    check(programmes.CSR_INITIATIVES[0].title === "Empowered Periods, Dignity Project" && programmes.CSR_INITIATIVES.length === programmes.programmes.length + 1,
+      "CSR initiatives: the Dignity Project band plus every programme card on the CSR page");
+    const hooch = programmes.programmes.filter((p) => p.tag === "Hooch").map((p) => [p.title, !!p.proposed]);
+    check(JSON.stringify(hooch) === JSON.stringify([["Stay in School", false], ["UtooCan, Anyone Can Be a Hero", true], ["Achievers Corner", true]]),
+      "CSR page: the three Hooch community programmes, UtooCan and Achievers Corner marked proposed");
+    check(programmes.proposeHref("lexta-forest-project") === "/partner-with-us?route=CSR&initiative=lexta-forest-project#apply", "CSR cards link to the CSR route with the initiative");
+    const biz = "Forest Friends " + stamp;
+    const s = await core.handlePartner(fd({ route: "CSR", contact_name: "Abena Forest", business_name: biz, email: mail("abena"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", message: "We can plant trees in Ho.", website: "" }));
+    const desc = s.status === "success" ? await q(`select replace(description, E'\\n', '~') from public.crm_leads where intake_reference = '${s.reference}'`) : "";
+    check(s.status === "success" && desc.includes("Partnership: CSR and community") && desc.includes("Brand: Hooch~Initiative: The Lexta Forest Project~~We can plant trees in Ho."),
+      `CSR proposal lands as a lead with its brand and initiative (${desc.slice(0, 160)})`);
+    const before = await counts();
+    const none = await core.handlePartner(fd({ route: "CSR", contact_name: "No Pick", business_name: "No Pick Ltd", email: mail("nopick"), website: "" }));
+    check(none.status === "error" && none.fieldErrors?.csr_brand && none.fieldErrors?.csr_initiative, "CSR proposal without brand and initiative is refused on the server");
+    const bad = await core.handlePartner(fd({ route: "CSR", contact_name: "Bad Pick", business_name: "Bad Pick Ltd", email: mail("badpick"), csr_brand: "Acme", csr_initiative: "not-a-programme", website: "" }));
+    check(bad.fieldErrors?.csr_brand && bad.fieldErrors?.csr_initiative, "CSR proposal with a brand or initiative not on the lists is refused");
+    const trade = await core.handlePartner(fd({ route: "Retail", contact_name: "Shop", business_name: "Shop " + stamp, email: mail("shopcsr"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", website: "" }));
+    const tdesc = trade.status === "success" ? await q(`select description from public.crm_leads where intake_reference = '${trade.reference}'`) : "x";
+    check(trade.status === "success" && !tdesc.includes("Initiative:"), "other routes need no brand or initiative and ignore them");
+    check((await counts()) !== before && none.status === "error", "only the valid submissions were saved");
   }
 
   // Newsletter: a contact with marketing consent, no lead.
@@ -159,6 +189,13 @@ try {
     check(bad.fieldErrors?.email && bad.fieldErrors?.phone && bad.fieldErrors?.region && bad.fieldErrors?.message, "bad email, phone, region and empty message each get a field message");
     const p = await core.handlePartner(fd({ route: "Retail", contact_name: "", business_name: "", email: "a@b.co", website: "" }));
     check(p.fieldErrors?.contact_name && p.fieldErrors?.business_name, "partner form needs a contact name and business name");
+    const noConsent = await core.handleContact(fd({ reason: "General enquiry", name: "No Tick", email: mail("notick"), region: "Volta", message: "Hi", privacy: "", website: "" }));
+    check(noConsent.status === "error" && noConsent.fieldErrors?.privacy === "Please tick the box to agree to the privacy notice." && Object.keys(noConsent.fieldErrors).length === 1,
+      "contact form without the privacy tick is refused on the server with an inline message", noConsent.fieldErrors);
+    const noConsentCare = await core.handleContact(fd({ reason: "Consumer care", name: "No Tick", email: mail("notick2"), region: "Volta", message: "Torn pack", privacy: "no", website: "" }));
+    check(noConsentCare.fieldErrors?.privacy, "consumer care without the privacy tick is refused too (any value but yes)");
+    const noConsentP = await core.handlePartner(fd({ route: "Retail", contact_name: "No Tick", business_name: "No Tick Ltd", email: mail("notick3"), privacy: "", website: "" }));
+    check(noConsentP.status === "error" && noConsentP.fieldErrors?.privacy && Object.keys(noConsentP.fieldErrors).length === 1, "partner form without the privacy tick is refused on the server");
     check((await counts()) === before, "invalid submissions save nothing");
   }
 

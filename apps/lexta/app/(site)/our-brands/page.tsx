@@ -9,6 +9,7 @@ import type { ProductCard } from "@/components/brands/data";
 import { getBrandRanges } from "@/components/brands/live";
 import p from "@/components/proto.module.css";
 import { hoochSiteUrl, linzzySiteUrl, yazzSiteUrl } from "@/components/site-links";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const title = "Our Brands | Yazz, Linzzy and Hooch by Lexta Ghana";
 const description =
@@ -113,6 +114,7 @@ export default async function OurBrandsPage() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(100deg,rgba(6,32,42,.94) 0%,rgba(6,32,42,.7) 46%,rgba(6,32,42,.22) 82%)", pointerEvents: "none" }} />
         <div style={{ position: "relative", width: "100%", maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ maxWidth: 660 }}>
+            <Breadcrumbs items={[{ label: "Our Brands" }]} />
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Our Brands</div>
             <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
             <h1 style={{ margin: "20px 0 0", fontSize: "clamp(30px,6vw,52px)", lineHeight: 1.08, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>

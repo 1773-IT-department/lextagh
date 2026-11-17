@@ -9,6 +9,7 @@ import { BRAND } from "@/content/brand";
 import { FAMILY_GUIDE } from "@/content/catalogue";
 import { FAQ_GROUPS } from "@/content/faqs";
 import { getHoochProducts } from "@/lib/products";
+import Breadcrumbs from "@/components/pages/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "Our Products",
@@ -24,6 +25,7 @@ export default async function ProductsPage() {
       <section className={s.hero} aria-labelledby="products-title">
         <Floaters count={12} seed={9} />
         <div className={`hc-wrap ${s.heroInner}`}>
+          <Breadcrumbs page="Our Products" />
           <p className="hc-sticker" style={{ background: "#fff" }}>Our Products</p>
           <h1 id="products-title" className={s.heroTitle}>{BRAND.productsTitle}</h1>
           <p className={s.heroLead}>{BRAND.twoChoices}</p>

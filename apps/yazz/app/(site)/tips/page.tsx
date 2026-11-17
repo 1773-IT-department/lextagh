@@ -7,6 +7,7 @@ import TipsPanel from "@/components/tips/TipsPanel";
 import WhatsInside from "@/components/tips/WhatsInside";
 import s from "@/components/tips/tips.module.css";
 import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, shownCategories, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -35,6 +36,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
 
   return (
     <>
+      <Breadcrumbs items={cat ? [{ label: "Tips & Advice", href: "/tips" }, { label: cat.label }] : [{ label: "Tips & Advice" }]} />
       <section className={s.hero} aria-labelledby="tips-title">
         <p className="yz-eyebrow">Tips &amp; Advice</p>
         <h1 id="tips-title" className={s.heroTitle}>{cat ? cat.title : "Helpful ideas for everyday living."}</h1>

@@ -6,6 +6,7 @@ import Photo from "@/components/Photo";
 import { BRAND } from "@/content/brand";
 import { RANGE_SLUGS, RANGES } from "@/lib/ranges";
 import { contact, lexta, tel } from "@/lib/site";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "About Us",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
+      <Breadcrumbs items={[{ label: "About Us" }]} />
       <section className={s.hero} aria-labelledby="about-title">
         <div className={s.heroText}>
           <p className="yz-eyebrow">About Yazz®</p>

@@ -193,6 +193,7 @@ try {
   await form.locator("input[name=email]").fill(`dropdown.${ts}@example.com`);
   await form.locator("textarea[name=message]").fill("Where can I buy Yazz?");
   await choose(form, "Region", "Volta");
+  await form.locator("input[name=privacy]").check();
   await form.getByRole("button", { name: "Send message" }).click();
   await site.locator("[data-form-message]").first().waitFor({ timeout: 20000 });
   check(/ENQ-|thank/i.test(await site.locator("[data-form-message]").first().innerText()), "1440 contact: the form sends with the chosen region");
@@ -266,6 +267,7 @@ try {
   await nojs.locator("input[name=name]").fill(`No Script ${ts}`);
   await nojs.locator("input[name=email]").fill(`noscript.${ts}@example.com`);
   await nojs.locator("textarea[name=message]").fill("Sent without JavaScript.");
+  await nojs.locator("input[name=privacy]").check();
   await nojs.getByRole("button", { name: "Send message" }).click();
   await nojs.waitForLoadState("load");
   check(/ENQ-|thank/i.test(await nojs.locator("body").innerText()), "no JavaScript: the contact form posts and thanks the visitor");

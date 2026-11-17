@@ -20,6 +20,18 @@ export const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
 export const LEXTA_PREVIEW_URL = "https://lextagh.vercel.app";
 export const lextaSiteUrl = (process.env.NEXT_PUBLIC_LEXTA_SITE_URL || LEXTA_PREVIEW_URL).replace(/\/+$/, "");
 
+/**
+ * The sister brand sites, for the footer's Lexta family links. NEXT_PUBLIC_YAZZ_SITE_URL, NEXT_PUBLIC_LINZZY_SITE_URL
+ * and NEXT_PUBLIC_HOOCH_SITE_URL, else each brand's Vercel preview. Desmond sets the real domains at go-live; never a
+ * real Lexta domain here.
+ */
+export const YAZZ_PREVIEW_URL = "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app";
+export const LINZZY_PREVIEW_URL = "https://lexta-linzzy.vercel.app";
+export const HOOCH_PREVIEW_URL = "https://lexta-hooch.vercel.app";
+export const yazzSiteUrl = (process.env.NEXT_PUBLIC_YAZZ_SITE_URL || YAZZ_PREVIEW_URL).replace(/\/+$/, "");
+export const linzzySiteUrl = (process.env.NEXT_PUBLIC_LINZZY_SITE_URL || LINZZY_PREVIEW_URL).replace(/\/+$/, "");
+export const hoochSiteUrl = (process.env.NEXT_PUBLIC_HOOCH_SITE_URL || HOOCH_PREVIEW_URL).replace(/\/+$/, "");
+
 /** Pages of the Lexta site that Linzzy links to. */
 export const lexta = {
   home: `${lextaSiteUrl}/`,

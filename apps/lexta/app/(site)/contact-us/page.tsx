@@ -8,6 +8,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import Enquiry from "@/components/contact/Enquiry";
 import Faq from "@/components/contact/Faq";
 import p from "@/components/proto.module.css";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Title and description from contact-us.html.
 const title = "Contact Us | Lexta Ghana";
@@ -73,6 +74,7 @@ export default function ContactPage() {
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 44, alignItems: "center" }}>
             <div>
+              <Breadcrumbs items={[{ label: "Contact Us" }]} />
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#3fc0dd" }}>Contact us</div>
               <div style={{ width: 46, height: 4, background: "#12a3c4", borderRadius: 2, marginTop: 18 }} />
               <h1 style={{ margin: "20px 0 0", fontSize: "clamp(32px,5vw,50px)", lineHeight: 1.06, fontWeight: 800, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
@@ -110,7 +112,7 @@ export default function ContactPage() {
                 <a href="tel:+233302235296" style={cardLink}>+233 (0) 302 235 296</a>
                 <a href="tel:+233302662970" style={cardLink}>+233 (0) 302 662 970</a>
               </div>
-              <div style={cardNote}>WhatsApp Customer Care: <a href="https://wa.me/233544351010" style={{ color: "inherit" }}>+233 (0) 544 351 010</a>. [PLACEHOLDER: phone line opening hours]</div>
+              <div style={cardNote}>WhatsApp Customer Care: <a href="https://wa.me/233544351010" style={{ color: "inherit" }}>+233 (0) 544 351 010</a>. [PLACEHOLDER: phone line opening hours]<br /><a href="https://whatsapp.com/channel/0029Vb7CGlb35fLvDzjVPU41" target="_blank" rel="noopener noreferrer" style={{ color: "inherit" }}>Follow the Lexta Ghana Limited channel on WhatsApp</a></div>
             </div>
             <div style={{ padding: "32px 30px 34px" }}>
               <div style={cardLabel}>Email us</div>

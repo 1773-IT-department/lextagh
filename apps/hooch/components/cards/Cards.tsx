@@ -40,11 +40,11 @@ export function RecipeCard({ r, i = 0 }: { r: Recipe; i?: number }) {
         {r.photoNeeded && <span className={s.recipePh}>[PLACEHOLDER: {r.photoNeeded}]</span>}
       </span>
       <span className={s.recipeChips}>
-        <span className={s.chip}><Icon name="clock" size={14} /> About {r.minutes} min</span>
+        <span className={s.chip}><Icon name="clock" size={14} /> {r.minutes ? `About ${r.minutes} min` : "[PLACEHOLDER: time]"}</span>
         <span className={s.chip}>{r.moment}</span>
       </span>
       <span className={s.recipeName}>{r.name}</span>
-      <span className={s.recipeStrap}>{r.strap}</span>
+      {r.strap && <span className={s.recipeStrap}>{r.strap}</span>}
       <span className={s.recipeGo} aria-hidden="true"><Icon name="arrow" size={20} /></span>
     </Link>
   );

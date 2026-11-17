@@ -4,7 +4,7 @@
   padding: 10px var(--hc-gutter); background: rgba(255, 210, 63, .96); backdrop-filter: saturate(1.3) blur(8px);
   border-bottom: 2px solid var(--hc-ink);
 }
-.brand { display: inline-flex; padding: 2px; border-radius: 40%; transition: transform .35s var(--hc-bounce); }
+.brand { display: inline-flex; flex: none; padding: 2px; border-radius: 40%; transition: transform .35s var(--hc-bounce); }
 .brand:hover { transform: rotate(-6deg) scale(1.08) translateY(-2px); }
 .brand:active { transform: scale(.94); }
 .logo { width: auto; height: 50px; filter: drop-shadow(2px 3px 0 var(--hc-ink)); }
@@ -16,6 +16,22 @@
 }
 .link:hover { background: #fff; color: var(--hc-ink); transform: translateY(-2px) rotate(-2deg); }
 .link[aria-current="page"] { background: var(--hc-ink); color: #fff; }
+.extLink { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 6px 10px; font-size: 14px; font-weight: 600; color: var(--hc-ink); white-space: nowrap; opacity: .8; }
+.extLink:hover { opacity: 1; text-decoration: underline; }
+
+/* "Our Products" menu: the two cereal pages, shown on hover or keyboard focus. */
+.drop { position: relative; }
+.dropCaret { margin-left: 4px; transition: transform .2s; }
+.drop:hover .dropCaret, .drop:focus-within .dropCaret { transform: rotate(180deg); }
+.dropMenu {
+  position: absolute; left: 0; top: 100%; z-index: 60; display: none; flex-direction: column; min-width: 220px; margin-top: 6px;
+  padding: 8px; background: var(--hc-cream); border: 2px solid var(--hc-ink); border-radius: 20px; box-shadow: var(--hc-shadow-sm);
+}
+.dropMenu::before { content: ""; position: absolute; left: 0; right: 0; top: -10px; height: 10px; }
+.drop:hover .dropMenu, .drop:focus-within .dropMenu { display: flex; animation: hcSheet .25s var(--hc-bounce); }
+.dropLink { display: block; padding: 10px 12px; border-radius: 12px; font-size: 15.5px; color: var(--hc-ink); white-space: nowrap; }
+.dropLink:hover, .dropLink:focus-visible { background: var(--hc-sun); color: var(--hc-ink); }
+.dropLink[aria-current="page"] { color: var(--hc-red-deep); }
 
 .actions { display: flex; align-items: center; gap: 12px; }
 .cta { white-space: nowrap; }
@@ -49,11 +65,19 @@
   border-bottom: 2px dashed var(--hc-line); animation: hcSheetItem .4s var(--hc-bounce) both;
 }
 .sheetLink[aria-current="page"] { color: var(--hc-red-deep); }
+.sheetSub {
+  display: block; padding: 9px 4px 9px 54px; font-size: 17px; font-weight: 600; color: var(--hc-ink);
+  border-bottom: 2px dashed var(--hc-line); animation: hcSheetItem .4s var(--hc-bounce) both;
+}
+.sheetSub[aria-current="page"] { color: var(--hc-red-deep); }
+.sheetExt { font-size: 18px; }
 .sheetIcon { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: var(--hc-sun); border: 2px solid var(--hc-ink); }
 @keyframes hcSheet { from { transform: translateY(-10px) scale(.96); opacity: 0; } to { transform: none; opacity: 1; } }
 @keyframes hcSheetItem { from { transform: translateX(-12px); opacity: 0; } to { transform: none; opacity: 1; } }
 
-@media (max-width: 1240px) { .nav { gap: 0; font-size: 15.5px; } .link { padding: 6px 10px; } }
+@media (max-width: 1240px) { .nav { gap: 0; font-size: 15.5px; } .link { padding: 6px 10px; } .extLink { font-size: 13px; padding: 6px 6px; } }
+/* Room for Community Impact just above the phone menu breakpoint. */
+@media (max-width: 1180px) { .header { gap: 12px; } .nav { font-size: 15px; } .link { padding: 6px 7px; } .extLink { padding: 6px 2px; } }
 @media (max-width: 1060px) { .nav { display: none; } .mobile { display: block; } }
 @media (max-width: 420px) { .cta { display: none; } .logo { height: 44px; } }
-@media (prefers-reduced-motion: reduce) { .sheet, .sheetLink { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .sheet, .sheetLink, .sheetSub, .drop .dropMenu { animation: none; } }

@@ -289,7 +289,9 @@ try {
     await pagesNav.waitFor({ timeout: 5000 });
     const navItems = await pagesNav.getByRole("link").allInnerTexts();
     check(await page.getByRole("button", { name: "Close", exact: true }).getAttribute("aria-expanded") === "true", "menu: Enter on Menu opens it (aria-expanded)");
-    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy"]), "menu: the 6 pages, Products as Feminine Care and Baby Care", navItems);
+    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy", "Community Impact ↗"]), "menu: the 6 pages, Products as Feminine Care and Baby Care, then Community Impact last", navItems);
+    const ci = pagesNav.getByRole("link", { name: /Community Impact/ });
+    check(await ci.getAttribute("href") === "https://lextagh.vercel.app/corporate-social-responsibility" && await ci.getAttribute("target") === "_blank", "menu: Community Impact links out to the Lexta CSR preview page");
     const navHrefs = await pagesNav.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     check(navHrefs[1] === "/products#fem" && navHrefs[2] === "/products#baby", "menu: Feminine Care and Baby Care open their band on /products", navHrefs);
     check(await pagesNav.locator('[aria-current="page"]').innerText().then((t) => t.trim()) === "Tips & Advice", "menu: the current page is marked");
@@ -297,6 +299,20 @@ try {
     await sleep(200);
     check(!(await pagesNav.isVisible()) && await menuBtn.getAttribute("aria-expanded") === "false", "menu: Escape closes it");
     check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() >= 1, "footer: links to the FAQs page");
+    {
+      const fam = await page.getByRole("contentinfo").locator("a").evaluateAll((as) => as.map((a) => [a.textContent.replace(/[↗\s]+$/, "").trim(), a.getAttribute("href")]));
+      const want = [["Yazz®", "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app/"], ["Hooch®", "https://lexta-hooch.vercel.app/"]];
+      check(want.every(([n, h]) => fam.some(([fn, fh]) => fn === n && fh === h)) && fam.some(([fn, fh]) => fn === "Lexta Ghana Limited" && fh === "https://lextagh.vercel.app/") && !fam.some(([, h]) => !/^mailto:/.test(h ?? "") && /lextagh\.com|yazzproducts\.com|linzzyproducts\.com|hoochfoods\.com/.test(h ?? "")),
+        "footer: Lexta family links to Lexta and the two sister brands' preview sites, never a real domain", fam.filter(([n]) => /Yazz|Linzzy|Hooch|Lexta/.test(n)));
+    }
+    {
+      // Breadcrumbs (X2): Home, then the current page.
+      await page.goto(`${SITE}/faqs`);
+      const crumbs = page.getByRole("navigation", { name: "Breadcrumb" });
+      const home = await crumbs.getByRole("link", { name: "Home" }).getAttribute("href").catch(() => null);
+      const current = await crumbs.locator("[aria-current=page]").innerText().catch(() => "");
+      check(home === "/" && current.trim() === "FAQs", "breadcrumbs: /faqs shows Home > FAQs", { home, current });
+    }
 
     // The scroll animations (home page): a reveal comes in as it scrolls into view, and the pinned "Care That Grows" track moves.
     await page.goto(`${SITE}/`);
@@ -333,7 +349,7 @@ try {
     check(await page.getByRole("button", { name: /Getting to know Linzzy's sanitary towel range/ }).count() === 0 && await page.getByRole("button", { name: /Interested in distributing or stocking Linzzy products\?/ }).count() === 1, "faqs: a topic chip shows only that group");
     check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
     await page.goto(`${SITE}/about`);
-    const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lexta/i.test(h)));
+    const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lextagh/i.test(h)));
     check(lextaLinks.length > 0 && lextaLinks.every((h) => /^https:\/\/lextagh\.vercel\.app\//.test(h)), "about: the Lexta links go to the Lexta preview site, never a real domain", lextaLinks);
 
     // The map: a stockist named with HTML shows as text.

@@ -2,25 +2,25 @@
 
 export type NavLink = { label: string; href: string };
 
-/** Desktop header links, in prototype order. */
+/** Desktop header links: Lexta's top bar order, News before CSR (docs/content/lexta/website-copy.md:61). */
 export const headerLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
   { label: "Brands", href: "/our-brands" },
   { label: "People & Culture", href: "/people-and-culture" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
 ];
 
-/** Mobile drawer links, in prototype order (adds FAQs, says "Our Brands"). */
+/** Mobile drawer links, in the header order (adds FAQs, says "Our Brands"). */
 export const mobileLinks: NavLink[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about-us" },
   { label: "Our Brands", href: "/our-brands" },
   { label: "People & Culture", href: "/people-and-culture" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
   { label: "FAQs", href: "/faqs" },
 ];
@@ -28,8 +28,8 @@ export const mobileLinks: NavLink[] = [
 export const footerQuickLinks: NavLink[] = [
   { label: "About Us", href: "/about-us" },
   { label: "Our Brands", href: "/our-brands" },
-  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "News", href: "/news" },
+  { label: "CSR", href: "/corporate-social-responsibility" },
   { label: "Careers", href: "/careers" },
 ];
 
@@ -58,9 +58,17 @@ export function isCurrent(href: string, pathname: string | null): boolean {
 }
 
 /**
- * The three brand websites. Until go-live they are the Vercel addresses (set per environment); the defaults are the
- * real domains, which Desmond points at the new sites at go-live.
+ * The three brand websites (Our Brands "Visit" buttons, the footer's Lexta family links). NEXT_PUBLIC_YAZZ_SITE_URL,
+ * NEXT_PUBLIC_LINZZY_SITE_URL and NEXT_PUBLIC_HOOCH_SITE_URL, else each brand's Vercel preview. Desmond sets the real
+ * domains at go-live; never a real Lexta domain here.
  */
-export const yazzSiteUrl = process.env.NEXT_PUBLIC_YAZZ_SITE_URL || "https://yazzproducts.com";
-export const linzzySiteUrl = process.env.NEXT_PUBLIC_LINZZY_SITE_URL || "https://linzzyproducts.com";
-export const hoochSiteUrl = process.env.NEXT_PUBLIC_HOOCH_SITE_URL || "https://hoochfoods.com";
+export const yazzSiteUrl = (process.env.NEXT_PUBLIC_YAZZ_SITE_URL || "https://lexta-yazz-1773-hr-consultancy-and-marketing.vercel.app").replace(/\/+$/, "");
+export const linzzySiteUrl = (process.env.NEXT_PUBLIC_LINZZY_SITE_URL || "https://lexta-linzzy.vercel.app").replace(/\/+$/, "");
+export const hoochSiteUrl = (process.env.NEXT_PUBLIC_HOOCH_SITE_URL || "https://lexta-hooch.vercel.app").replace(/\/+$/, "");
+
+/** The footer's Lexta family column: the three brand sites. */
+export const footerFamilyLinks: NavLink[] = [
+  { label: "Yazz", href: `${yazzSiteUrl}/` },
+  { label: "Linzzy", href: `${linzzySiteUrl}/` },
+  { label: "Hooch", href: `${hoochSiteUrl}/` },
+];
