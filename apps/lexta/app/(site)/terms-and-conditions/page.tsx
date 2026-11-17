@@ -3,7 +3,7 @@ import LegalPage, { type LegalSection } from "@/components/legal/LegalPage";
 
 // Title and description from terms-and-conditions.html.
 const title = "Terms & Conditions | Lexta Ghana";
-const description = "Terms of use for the Lexta Ghana website and terms of supply for trade customers.";
+const description = "Terms of use for the Lexta Ghana website.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -11,40 +11,46 @@ export const metadata: Metadata = {
   openGraph: { title, description, type: "website" },
 };
 
-/** Terms copied word for word from terms-and-conditions.html. Lexta must approve the text before go-live. */
+/**
+ * Standard website terms for a Ghanaian consumer-goods company, written by 1773 without company specific facts
+ * (Desmond, 16 November 2026). Supply terms, liability limits and other specifics are [PLACEHOLDER: ...] notes.
+ * Lexta's legal review is required before go-live.
+ */
 const sections: LegalSection[] = [
   { heading: "1. These terms", paras: [
-    "By using this website or placing an order with Lexta Ghana Limited you accept these terms. Where a signed trading agreement, distribution agreement or contract of supply exists between us, that agreement takes precedence over anything on this page.",
+    "These terms apply to your use of this website, run by Lexta Ghana Limited, Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra. By using the site you accept them. If you do not accept them, please do not use the site.",
   ] },
   { heading: "2. Using this website", paras: [
-    "You may view, download and print material from this site for your own business use in dealing with us. You may not copy, republish or use our content, images, brand names or logos for any other commercial purpose without our written permission.",
+    "You may view and print pages of this site for your own information. You may not copy, republish or use our content, images, brand names or logos for any commercial purpose without our written permission, or use the site in a way that breaks the law or harms the site or other users.",
   ] },
   { heading: "3. Product information", paras: [
-    "We describe our products as accurately as we can. Packaging, formulations and specifications may change as we improve our lines, and colours may differ on screen. Always read the pack for ingredients, directions and warnings before use.",
+    "We aim to describe our products accurately. Packaging, formulations and pack sizes may change, and colours may look different on screen. Always read the product pack for ingredients, directions and warnings before use.",
   ] },
-  { heading: "4. Orders and pricing", paras: [
-    "Prices quoted on this site or in correspondence are indicative and exclusive of VAT and levies unless stated otherwise. An order becomes binding only when we confirm it in writing. Quoted prices hold for 30 days unless the quotation says otherwise.",
+  { heading: "4. No online sales", paras: [
+    "This website does not sell products. Enquiries, quote requests and applications sent through the site are not orders and do not create a contract. Where to Buy shows stockists; prices and availability are set by the retailer.",
   ] },
-  { heading: "5. Payment", paras: [
-    "Opening orders are supplied on a pro-forma basis. Credit terms are available to approved partners after review and are set out in your trading agreement. Overdue accounts may be placed on hold and interest may be charged at the rate stated in that agreement.",
+  { heading: "5. Trade, partner and supplier applications", paras: [
+    "Sending an application through this site does not appoint you as a distributor, wholesaler, supplier or partner, and does not oblige us to trade with you. Any appointment or supply is agreed separately in writing.",
+    "[PLACEHOLDER: Lexta's terms of supply for trade customers, or a reference to where they are set out]",
   ] },
-  { heading: "6. Delivery, risk and title", paras: [
-    "Delivery dates are estimates given in good faith. Risk in the goods passes to you on delivery to your nominated address or on collection from our warehouse. Title stays with Lexta Ghana Limited until we have received payment in full.",
+  { heading: "6. Your submissions", paras: [
+    "When you send us a message, complaint, proposal or application, you confirm that the information is accurate and that you are entitled to share it, including any file you attach. We handle personal information as described in our Privacy Policy.",
   ] },
-  { heading: "7. Returns and claims", paras: [
-    "Claims for shortage, damage in transit or incorrect supply must reach us in writing within seven days of delivery, with the batch codes and supporting photographs. Goods returned by agreement must be unopened, in original packaging and within date.",
+  { heading: "7. Links to other websites", paras: [
+    "This site may link to other websites, including our brand websites and social media pages. We are not responsible for the content of websites we do not control.",
   ] },
-  { heading: "8. Partner and supplier applications", paras: [
-    "Submitting an application through this site does not create an appointment, an exclusive territory or any obligation on us to trade. Appointments take effect only through a written agreement signed by an authorised officer of Lexta Ghana Limited.",
+  { heading: "8. Liability", paras: [
+    "We work to keep this website accurate and available, but we cannot promise that it will always be free of errors or interruptions. Nothing in these terms limits any liability that cannot be limited under the laws of Ghana.",
+    "[PLACEHOLDER: any limit of Lexta's liability, as confirmed by Lexta's legal adviser]",
   ] },
-  { heading: "9. Liability", paras: [
-    "Nothing here limits our liability for death or personal injury caused by our negligence, for fraud, or for anything else that cannot be limited under Ghanaian law. Subject to that, our liability for any claim is limited to the invoice value of the goods concerned, and we are not liable for loss of profit or other indirect loss.",
+  { heading: "9. Intellectual property", paras: [
+    "Yazz, Linzzy, Hooch and Lexta, and the content, images and logos on this site, belong to Lexta Ghana Limited or are used with permission.",
   ] },
-  { heading: "10. Intellectual property", paras: [
-    "Yazz, Linzzy, Hooch and the other marks shown on this site are the property of Lexta Ghana Limited. Trade partners may use them only as agreed for the promotion and resale of genuine Lexta products.",
+  { heading: "10. Governing law", paras: [
+    "These terms are governed by the laws of the Republic of Ghana. [PLACEHOLDER: dispute resolution and jurisdiction wording, as confirmed by Lexta's legal adviser]",
   ] },
-  { heading: "11. Governing law", paras: [
-    "These terms are governed by the laws of the Republic of Ghana, and the courts of Ghana have exclusive jurisdiction over any dispute. We will always try to resolve matters commercially first.",
+  { heading: "11. Changes to these terms", paras: [
+    "We may update these terms from time to time. The date at the top of this page shows when they were last changed.",
   ] },
 ];
 
@@ -53,8 +59,8 @@ export default function TermsPage() {
     <LegalPage
       kicker="Legal"
       title="Terms & Conditions"
-      intro="The terms on which you use the Lexta Ghana website and on which we supply goods to trade, institutional and private-label customers."
-      updated="1 September 2026"
+      intro="The terms on which you use the Lexta Ghana website. [PLACEHOLDER: Lexta legal review before go-live]"
+      updated="[PLACEHOLDER: date Lexta approves these terms]"
       sections={sections}
     />
   );

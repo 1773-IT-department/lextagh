@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { isLiveStoryHref } from "@/content/news/held";
 
 /** Cervical cancer stories, linked to the Yazz site exactly as the prototype links them. */
 const stories = [
@@ -121,9 +122,13 @@ export default function ScreeningCarousel() {
     <div ref={wrap} data-carousel="1" style={{ position: "relative", overflow: "hidden", marginTop: 46 }}>
       <div ref={track} data-track="1" style={{ display: "flex", gap: GAP, alignItems: "stretch", willChange: "transform" }}>
         {[0, 1].map((copy) =>
-          stories.map((s) => (
+          stories.map((s) => {
+            // A card whose news story is held back (content/news/held.ts) shows without a link until Lexta approves it.
+            const live = isLiveStoryHref(s.href);
+            const Card = live ? "a" : "div";
+            return (
             // The second copy only makes the loop seamless: hidden from screen readers and keyboard.
-            <a key={`${copy}-${s.href}`} href={s.href} style={card} aria-hidden={copy ? true : undefined} tabIndex={copy ? -1 : undefined}>
+            <Card key={`${copy}-${s.href}`} href={live ? s.href : undefined} style={card} aria-hidden={copy ? true : undefined} tabIndex={copy && live ? -1 : undefined}>
               <div style={{ height: 180, overflow: "hidden" }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={s.img} alt={copy ? "" : s.alt} style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }} />
@@ -131,10 +136,11 @@ export default function ScreeningCarousel() {
               <div style={{ padding: "22px 22px 24px", display: "flex", flexDirection: "column", flex: 1 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>{s.title}</div>
                 <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,.8)" }}>{s.text}</p>
-                <span style={{ marginTop: "auto", paddingTop: 16, fontSize: 12, fontWeight: 600, color: "#3fc0dd" }}>Read more <span aria-hidden="true">→</span></span>
+                {live && <span style={{ marginTop: "auto", paddingTop: 16, fontSize: 12, fontWeight: 600, color: "#3fc0dd" }}>Read more <span aria-hidden="true">→</span></span>}
               </div>
-            </a>
-          )),
+            </Card>
+            );
+          }),
         )}
       </div>
     </div>

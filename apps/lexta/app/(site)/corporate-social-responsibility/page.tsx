@@ -7,11 +7,12 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import ScreeningCarousel from "@/components/csr/ScreeningCarousel";
 import csr from "@/components/csr/csr.module.css";
 import p from "@/components/proto.module.css";
+import { isLiveStoryHref } from "@/content/news/held";
 
 // Title and description exactly as the prototype's <helmet> sets them.
 const title = "Corporate Social Responsibility | Lexta Ghana";
 const description =
-  "Cervical cancer screening with MWAG, The Dignity Project against period poverty, oral health in schools, boreholes, reforestation and plastic recycling. See Lexta Ghana's CSR work.";
+  "Empowered Periods and The Dignity Project, cervical cancer awareness with MWAG, Safe Bottoms boreholes, and proposed programmes for oral health, tree planting and community clean-ups. See Lexta Ghana's CSR work.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -45,6 +46,7 @@ function Photo({ src, alt, box = photoBox }: { src: string; alt: string; box?: C
 }
 
 function StoryLink({ href, children, marginTop = 22 }: { href: string; children: ReactNode; marginTop?: number }) {
+  if (!isLiveStoryHref(href)) return null; // the story is held back until Lexta approves it (content/news/held.ts)
   return (
     <a href={href} style={{ ...storyLink, marginTop }}>
       {children} <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
@@ -53,36 +55,40 @@ function StoryLink({ href, children, marginTop = 22 }: { href: string; children:
 }
 
 const stats = [
-  { n: "2017", label: "Year our first CSR programme launched" },
-  { n: "5", label: "Pillars: health, dignity, oral care, water, environment" },
-  { n: "19", label: "Locations activated in a single day, 28 May 2026" },
-  { n: "10", label: "Partner associations, agencies and hospitals" },
+  { n: "2017", label: "Year the Lexta Teen Care Campaign, our first CSR programme, launched" },
+  { n: "6", label: "CSR initiatives across Lexta, Yazz and Linzzy" },
+  { n: "[PLACEHOLDER: Empowered Periods reach figure]", label: "Schools or locations reached by Empowered Periods" },
+  { n: "[PLACEHOLDER: number of partner organisations]", label: "Partner associations, agencies and hospitals" },
 ];
 
 const pillars = [
-  { n: "01", title: "Health and early detection", text: "Free cervical cancer screening and education, delivered with the medical professionals who can act on what they find." },
+  { n: "01", title: "Health and early detection", text: "Cervical cancer awareness, free screening and education, delivered with the medical professionals who can act on what they find." },
   { n: "02", title: "Dignity and education", text: "Keeping adolescent girls in school by removing the barrier of period poverty, and giving them the knowledge to manage their health with confidence." },
-  { n: "03", title: "Oral health", text: "Free screenings and hygiene workshops in schools, in partnership with dental professionals." },
-  { n: "04", title: "Water and sanitation", text: "Access to clean water in communities where safe hygiene is not currently possible." },
-  { n: "05", title: "Environment", text: "Restoring what our production takes, with responsible packaging disposal and community clean-up partnerships." },
+  { n: "03", title: "Oral health", text: "A proposed school tour of age-appropriate oral hygiene education, with qualified dental professionals and schools." },
+  { n: "04", title: "Water and sanitation", text: "Mechanised boreholes funded by Yazz and Linzzy diapers and wipes, with caregiver hygiene education." },
+  { n: "05", title: "Environment", text: "Proposed tree planting, responsible packaging disposal and community clean-up partnerships." },
 ];
 
-const programmes = [
+const programmes: { tag: string; title: string; href?: string; text: string }[] = [
+  {
+    tag: "Lexta Foundation", title: "Lexta Legacy Project",
+    text: "Supporting deprived communities with education, clean and safe water, one community at a time.",
+  },
   {
     tag: "Oral health", title: "The Bright Smiles School Tour", href: "/news/the-bright-smiles-school-tour",
-    text: "In partnership with the Ghana Dental Association, providing free biannual screenings and oral hygiene workshops in rural primary schools.",
+    text: "Healthy smiles begin with everyday habits. Linked to Yazz Toothpaste and Toothbrushes, this proposed tour offers age-appropriate oral hygiene education with qualified dental professionals and schools.",
   },
   {
     tag: "Water and sanitation", title: "The Safe Bottoms Initiative", href: "/news/the-safe-bottoms-initiative",
-    text: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants.",
+    text: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants. It also supports caregiver education and responsible disposal.",
   },
   {
     tag: "Environment", title: "The Lexta Forest Project", href: "/news/the-lexta-forest-project",
-    text: "A commitment to plant 10 indigenous trees for every 1,000 rolls of 100 percent virgin pulp tissue sold, restoring degraded forest reserves in the Ashanti and Eastern regions.",
+    text: "A proposed tree planting and environmental education platform, powered by Lexta and linked to Yazz tissue: 10 indigenous trees for every 1,000 rolls of 100% virgin pulp tissue sold, restoring degraded forest reserves.",
   },
   {
-    tag: "Circular economy", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
-    text: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, this programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
+    tag: "Responsible consumption", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
+    text: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, this proposed programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
   },
 ];
 
@@ -97,7 +103,7 @@ const unityGallery = [
 
 const partners: { logo?: { src: string; maxH: number; maxW: number }; name: string; label: string }[] = [
   { logo: { src: "/assets/partner-mwag.png", maxH: 78, maxW: 150 }, name: "Medical Women Association of Ghana", label: "Medical Women Association of Ghana" },
-  { logo: { src: "/assets/partner-gda.png", maxH: 78, maxW: 150 }, name: "Ghana Dental Association", label: "Ghana Dental Association" },
+  { name: "TBC", label: "[PLACEHOLDER: oral health partner, to be confirmed by Lexta]" },
   { logo: { src: "/assets/partner-ges.png", maxH: 70, maxW: 170 }, name: "Ghana Education Service", label: "Ghana Education Service" },
   { logo: { src: "/assets/partner-ghs.png", maxH: 78, maxW: 150 }, name: "Ghana Health Service", label: "Ghana Health Service" },
   { logo: { src: "/assets/partner-kbth.png", maxH: 78, maxW: 150 }, name: "Korle Bu Teaching Hospital", label: "Korle Bu Polyclinic, Family Medicine Department" },
@@ -109,12 +115,12 @@ const partners: { logo?: { src: string; maxH: number; maxW: number }; name: stri
 ];
 
 const sdgs = [
-  { n: "SDG 3", title: "Good health and wellbeing", text: "Cervical cancer screening, oral health workshops, reproductive health education." },
-  { n: "SDG 4", title: "Quality education", text: "Keeping girls in school through The Dignity Project, and supporting skills development through the GES Cook Art Competition." },
-  { n: "SDG 5", title: "Gender equality", text: "Menstrual health advocacy, girl child education, and the removal of a barrier that only affects half the population." },
+  { n: "SDG 3", title: "Good health and wellbeing", text: "Cervical cancer awareness and screening, reproductive health education, and the proposed Bright Smiles oral hygiene tour." },
+  { n: "SDG 4", title: "Quality education", text: "Health and hygiene education in schools through The Dignity Project and the Teen Care Campaign, and support for the GES Cook Art Competition." },
+  { n: "SDG 5", title: "Gender equality", text: "Empowered Periods: menstrual education and product access, so girls and women can manage menstruation with knowledge, confidence and support." },
   { n: "SDG 6", title: "Clean water and sanitation", text: "Mechanised boreholes through Safe Bottoms, and school sanitation through the Teen Care clean up competitions." },
   { n: "SDG 12", title: "Responsible consumption and production", text: "Clean Hands, Green Land: hygiene education, responsible packaging disposal and community clean-ups." },
-  { n: "SDG 15", title: "Life on land", text: "Reforestation of degraded reserves through The Lexta Forest Project." },
+  { n: "SDG 15", title: "Life on land", text: "Proposed tree planting to restore degraded forest reserves through The Lexta Forest Project." },
 ];
 
 export default function CorporateSocialResponsibilityPage() {
@@ -141,7 +147,7 @@ export default function CorporateSocialResponsibilityPage() {
               Care that leaves <span style={{ color: "#3fc0dd" }}>the shelf</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              Our care extends beyond our products. Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities.
+              Our care extends beyond our products. Through education, hygiene awareness, environmental responsibility and community partnerships, Lexta seeks to help create healthier, more informed and more sustainable communities. Explore initiatives by brand, submit a partnership proposal or request information about a programme.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="#programmes" padding="12px 12px 12px 20px">Explore our programmes</ArrowButton>
@@ -173,7 +179,7 @@ export default function CorporateSocialResponsibilityPage() {
             >
               {stats.map((s) => (
                 <div key={s.n} style={{ background: "#f7fcfe", padding: "24px 22px 26px" }}>
-                  <div style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-.03em", color: "#12313d", lineHeight: 1 }}>{s.n}</div>
+                  <div style={s.n.startsWith("[PLACEHOLDER") ? { fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: "#12313d" } : { fontSize: 34, fontWeight: 800, letterSpacing: "-.03em", color: "#12313d", lineHeight: 1 }}>{s.n}</div>
                   <div style={{ marginTop: 8, fontSize: 12, lineHeight: 1.7, fontWeight: 600, color: "#5d7883" }}>{s.label}</div>
                 </div>
               ))}
@@ -186,13 +192,13 @@ export default function CorporateSocialResponsibilityPage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <p style={{ margin: 0, fontSize: 15, lineHeight: 1.9, color: "#5d7883" }}>
-              A company that makes sanitary pads should be doing something about period poverty. A company that makes toothpaste should be in schools talking about oral health. A company that makes tissue from virgin pulp should be putting trees back in the ground.
+              A company that makes sanitary pads should be doing something about period poverty. A company that makes toothpaste should care about oral health in schools. A company that makes tissue should care about the forests it depends on.
             </p>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.9, color: "#5d7883" }}>
-              That is the whole of our CSR philosophy. We do not write cheques for causes we have nothing to do with. We work where our products, our expertise and our distribution network can actually change an outcome, and we partner with the people who know the subject better than we do.
+              That is the whole of our CSR philosophy. Each of our initiatives is linked to a product line, from Yazz and Linzzy sanitary towels to Yazz tissue and detergents. We work where our products, our expertise and our distribution network can actually change an outcome, and we partner with the people who know the subject better than we do.
             </p>
             <p style={{ margin: 0, fontSize: 14, lineHeight: 1.9, color: "#5d7883" }}>
-              Since 2017 that has meant standing in school assembly halls, market squares, teaching hospitals and community durbars across Ghana, alongside doctors, teachers, foundations and public agencies who were already doing the work.
+              Since the Teen Care Campaign began in 2017, that has meant standing in school assembly halls, market squares and teaching hospitals across Ghana, alongside doctors, teachers, foundations and public agencies who were already doing the work.
             </p>
           </div>
         </div>
@@ -233,10 +239,10 @@ export default function CorporateSocialResponsibilityPage() {
             <div>
               <h2 style={{ ...h2, margin: 0 }}>The Dignity Project</h2>
               <p style={lead}>
-                Our flagship initiative, led by Yazz. The aim is simple and specific: keep adolescent girls in school, with dignity, comfort and confidence in their personal care.
+                Every period deserves dignity. Empowered Periods, Dignity Project brings together our work on women's health, from menstrual education to cervical and breast cancer awareness, with Yazz and Linzzy sanitary towels and panty liners.
               </p>
               <p style={body}>
-                Period poverty is one of the quietest causes of school absenteeism in Ghana. Girls miss days every month because they do not have access to the products they need or a safe place to manage their period. The Dignity Project addresses that directly, through free product distribution, reproductive health education, and sustained presence in schools rather than a single visit.
+                Through menstrual education, product access partnerships and conversations in schools and communities, the project aims to help girls and women manage menstruation with knowledge, confidence and support, so that adolescent girls can stay in school with dignity, comfort and confidence in their personal care.
               </p>
             </div>
             <Photo src="/assets/original/web/lexta-kakel-1875-683x1024.webp" alt="The Dignity Project in schools" box={{ ...photoBox, maxHeight: 520 }} />
@@ -250,7 +256,7 @@ export default function CorporateSocialResponsibilityPage() {
           <div>
             <h2 style={h2Mid}>The Empowered Periods Campaign</h2>
             <p style={lead}>
-              Our annual nationwide activation, led by Yazz and Linzzy. In 2026 we activated across at least 19 locations in a single day on 28 May, distributing free sanitary products and delivering menstrual hygiene education to thousands of young women.
+              Our menstrual health campaign, led by Yazz and Linzzy, reaching thousands of schoolgirls every year with free sanitary products and menstrual hygiene education.
             </p>
             <p style={body}>
               The campaign combats period poverty and school absenteeism by supplying free premium sanitary products and hosting reproductive health seminars for schoolgirls annually. We believe no girl should miss an education because of a lack of basic hygiene resources.
@@ -270,7 +276,7 @@ export default function CorporateSocialResponsibilityPage() {
             <h2 style={h2Mid}>CroxItOut High School Tour 2026</h2>
             <p style={lead}>In partnership with MX24 TV, running under the theme “Awareness, Mentorship, Action” and the hashtag #EmpowerHer.</p>
             <p style={body}>
-              The tour takes our advocacy directly into senior high schools nationwide, combining education, mentorship sessions and product engagement across five focus areas: breast cancer awareness, menstrual hygiene, oral health, personal hygiene and mental health.
+              The tour takes our menstrual health advocacy into senior high schools, combining education, mentorship sessions and product engagement with students.
             </p>
             <StoryLink href="/news/yazz-partners-mx24-tv-for-the-2026-croxitout-high-school-tour">Read the full story</StoryLink>
           </div>
@@ -280,16 +286,22 @@ export default function CorporateSocialResponsibilityPage() {
 
       <section data-reveal="1" data-screen-label="Programme grid" style={{ background: "#fff", padding: "70px 28px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <h2 style={{ ...h2Mid, maxWidth: 600 }}>Programmes running alongside</h2>
+          <h2 style={{ ...h2Mid, maxWidth: 600 }}>Programmes across our brands</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 22, marginTop: 38 }}>
             {programmes.map((pr) => (
               <div key={pr.title} style={{ background: "#fff", borderRadius: 14, padding: "28px 26px 30px", boxShadow: "0 16px 34px rgba(11,60,78,.1)", display: "flex", flexDirection: "column" }}>
                 <div style={eyebrow}>{pr.tag}</div>
                 <h3 style={{ margin: "12px 0 0", fontSize: 18, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em" }}>{pr.title}</h3>
                 <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883" }}>{pr.text}</p>
-                <a href={pr.href} style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-                  Read the full story <span aria-hidden="true">→</span>
-                </a>
+                {pr.href ? (
+                  <a href={pr.href} style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
+                    Read the full story <span aria-hidden="true">→</span>
+                  </a>
+                ) : (
+                  <a href="#involved" style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
+                    Propose a partnership <span aria-hidden="true">→</span>
+                  </a>
+                )}
               </div>
             ))}
           </div>
@@ -320,15 +332,15 @@ export default function CorporateSocialResponsibilityPage() {
             <div>
               <div style={eyebrowDark}>Cervical cancer awareness</div>
               <h2 style={{ margin: "14px 0 0", fontSize: 32, lineHeight: 1.16, fontWeight: 700, letterSpacing: "-.03em", color: "#fff", textWrap: "pretty" }}>
-                Nearly a decade with the Medical Women Association of Ghana
+                Cervical cancer awareness with the Medical Women Association of Ghana
               </h2>
             </div>
             <div>
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.9, color: "rgba(255,255,255,.92)" }}>
-                Cervical cancer is the second most common cancer among women in Ghana. Of the 2,797 women diagnosed each year, 1,699 die. It is preventable and treatable when found early.
+                Knowledge can support prevention and earlier action. Yazz seeks to amplify professionally guided education on cervical health, screening and HPV vaccination through suitable health-sector partnerships.
               </p>
               <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.9, color: "rgba(255,255,255,.82)" }}>
-                Every January, we sponsor and support the Medical Women Association of Ghana in taking free screening and education directly to the communities that need it, alongside partners including SOFPOG, the Korle Bu Polyclinic Family Medicine Department, the Ablekuma South Sub Metro Health Directorate and regional health services.
+                We have sponsored and supported the Medical Women Association of Ghana in taking free screening and education directly to communities, from Tamale and Kumasi to Mamprobi and Korle Bu, alongside partners including SOFPOG, the Korle Bu Polyclinic Family Medicine Department, the Ablekuma South Sub Metro Health Directorate and regional health services.
               </p>
             </div>
           </div>
@@ -383,7 +395,7 @@ export default function CorporateSocialResponsibilityPage() {
             <div>
               <h3 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>GES Cook Art Competition</h3>
               <p style={body}>
-                We launched the second edition of the Cook Arts Schools Competition, an annual contest organised by the Ghana Education Service to promote Home Economics in second cycle schools. Ashaiman Senior High School took the title. The competition tours the country, with two students selected from each of the 16 regions to compete in the national final in Accra.
+                Yazz supported the second edition of the Cook Arts Schools Competition, an annual contest organised by the Ghana Education Service to promote Home Economics in second cycle schools. Ashaiman Senior High School took the title. The competition tours the country, with two students selected from each of the 16 regions to compete in the national final in Accra.
               </p>
               <StoryLink href="/news/yazz-partners-the-ges-cook-art-competition" marginTop={20}>Read the full story</StoryLink>
             </div>
@@ -477,7 +489,7 @@ export default function CorporateSocialResponsibilityPage() {
             <div style={{ ...eyebrow, color: "rgba(255,255,255,.85)" }}>Get involved</div>
             <h2 style={{ margin: "14px 0 0", fontSize: 32, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Partner with us</h2>
             <p style={{ margin: "16px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              We work best with organisations that bring expertise we do not have. If you run a school, a health facility, an NGO or a community programme and you think our products, our people or our distribution network could help, we would like to hear from you.
+              We work best with organisations that bring expertise we do not have. If you run a school, a health facility, an NGO or a community programme, send us your organisation, region, the initiative you are interested in and a short proposal. Proposals go to our CSR team at marketing@lextagh.com.
             </p>
             <Link
               href="/about-us#contact"
@@ -494,7 +506,7 @@ export default function CorporateSocialResponsibilityPage() {
             <div style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.4)", borderRadius: 12, padding: "26px 24px 28px" }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Request an outreach visit</h3>
               <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,.92)" }}>
-                Schools and institutions can request a Lexta or Yazz outreach session covering menstrual health, oral care, cervical cancer awareness or general hygiene.
+                Schools and institutions can invite a Lexta or Yazz outreach session on menstrual health, oral care, cervical cancer awareness or general hygiene. Tell us your organisation, region and the initiative you are interested in.
               </p>
               <Link href="/about-us#contact" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
                 Request a visit <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
@@ -503,7 +515,7 @@ export default function CorporateSocialResponsibilityPage() {
             <div style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.4)", borderRadius: 12, padding: "26px 24px 28px" }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>Read every story</h3>
               <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.85, color: "rgba(255,255,255,.92)" }}>
-                Our full archive of screenings, school tours and campaigns, from 2017 to today.
+                Stories from our community work, from the Teen Care Campaign in 2017 onwards.
               </p>
               <a href="/news?category=CSR" style={{ marginTop: 16, display: "inline-flex", alignItems: "center", gap: 10, fontSize: 13, fontWeight: 600, color: "#fff" }}>
                 View all CSR stories <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>

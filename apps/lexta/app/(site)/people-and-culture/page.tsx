@@ -10,7 +10,7 @@ import p from "@/components/proto.module.css";
 // The prototype page had no title or description; these reuse its own hero copy.
 const title = "People and Culture | Life at Lexta Ghana Limited";
 const description =
-  "We make products that hundreds of thousands of Ghanaian households depend on. That work is done by people, and how we treat them shows up in what leaves the factory.";
+  "We make everyday products that Ghanaian households depend on. That work is done by people, and how we treat them shows up in what reaches the shelf.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -91,7 +91,7 @@ const roles: (Photo & { title: string; text: string })[] = [
   },
   {
     placeholder: "Warehouse / fleet photo", ...photos.truck, alt: "Yazz branded truck with a team in red shirts", title: "Supply chain and logistics",
-    text: "Warehousing, fleet, procurement and planning. The discipline that keeps a product available in Tamale on the same terms as in Accra.",
+    text: "Warehousing, fleet, procurement and planning. The discipline that keeps our products on shelves across Ghana.",
   },
   {
     placeholder: "Office / admin team photo", ...photos.desk, alt: "Man in a blue suit seated at a desk", title: "Finance, HR and administration",
@@ -102,7 +102,7 @@ const roles: (Photo & { title: string; text: string })[] = [
 const growthPoints = [
   { title: "Structured onboarding", text: "A proper first few weeks, with someone accountable for showing you how things actually run here." },
   { title: "Mentorship", text: "Experienced colleagues who are expected to develop the people around them, not just deliver their own numbers." },
-  { title: "Ongoing training", text: "Technical certification, safety and compliance and professional development, kept current rather than filed away." },
+  { title: "Ongoing training", text: "Technical, safety and professional development, kept current rather than filed away." },
 ];
 
 const csrPhotos: Photo[] = [
@@ -111,14 +111,14 @@ const csrPhotos: Photo[] = [
 ];
 
 const hireSteps = [
-  { n: "1", title: "Apply", text: "Submit your application online. You will get a confirmation, not silence." },
-  { n: "2", title: "Screening", text: "We review every application. Shortlisted candidates hear from us within a defined window." },
+  { n: "1", title: "Apply", text: "Submit your application online. You receive a confirmation with your reference." },
+  { n: "2", title: "Screening", text: "Our HR team reviews applications and contacts shortlisted candidates." },
   { n: "3", title: "Interview", text: "A conversation with the hiring manager and the team you would work with. We will tell you what we are looking for." },
   { n: "4", title: "Assessment", text: "For some roles, a practical exercise relevant to the actual job. Nothing artificial." },
   { n: "5", title: "Offer and onboarding", text: "A clear offer, a proper start, and a structured first few weeks." },
 ];
 
-const arrangements = ["Full time", "Part time", "Contract", "Internship", "Remote"];
+const arrangements = ["Full time", "Part time", "Contract", "Internship", "[PLACEHOLDER: confirm engagement types Lexta offers]"];
 
 export default function PeopleAndCulturePage() {
   return (
@@ -141,7 +141,7 @@ export default function PeopleAndCulturePage() {
               Life at <span style={{ color: "#3fc0dd" }}>Lexta</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.92)", maxWidth: 600, textWrap: "pretty" }}>
-              We make products that hundreds of thousands of Ghanaian households depend on. That work is done by people, and how we treat them shows up in what leaves the factory.
+              We make everyday products that Ghanaian households depend on. That work is done by people, and how we treat them shows up in what reaches the shelf.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <ArrowButton href="/careers#openings" padding="12px 12px 12px 20px">View current openings</ArrowButton>
@@ -158,13 +158,13 @@ export default function PeopleAndCulturePage() {
             <h2 style={h2}>A company grows at the speed of its team</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 20 }}>
               <p style={{ margin: 0, fontSize: 15, lineHeight: 1.9, color: "#5d7883" }}>
-                Our greatest asset is not our machinery or our distribution network. It is the several hundred people who run them.
+                Our greatest asset is not our machinery or our distribution network. It is the people who run them.
               </p>
               <p style={{ ...body, margin: 0 }}>
                 We have never believed that a company can outgrow the people inside it. So we build for the long term: an environment where your wellbeing is taken seriously, your voice carries weight regardless of your title, and your development is treated as a shared investment rather than a personal problem.
               </p>
               <p style={{ ...body, margin: 0 }}>
-                Some of the people who joined Lexta in its early years are still here, in bigger roles than the ones they started in. That is not an accident, and it is the outcome we are most proud of.
+                We want the people who join Lexta to grow here, into bigger roles than the ones they started in. That is the outcome we work towards.
               </p>
             </div>
           </div>
@@ -259,7 +259,7 @@ export default function PeopleAndCulturePage() {
             <div style={eyebrow}>Growth</div>
             <h2 style={h2Small}>We would rather promote you than replace you</h2>
             <p style={{ ...body, margin: "18px 0 0" }}>
-              Our first instinct when a role opens is to look inside the building. We invest in continuous training, both technical and professional, and we pair newer team members with people who have done the job long enough to teach it properly.
+              Your progress is our progress. We invest in training, both technical and professional, and we pair newer team members with people who have done the job long enough to teach it properly.
             </p>
             <p style={{ ...body, margin: "14px 0 0" }}>
               Career paths here are discussed openly, not guessed at. You should know what the next role looks like, what it takes to get there, and who is helping you.
@@ -400,10 +400,10 @@ export default function PeopleAndCulturePage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 32, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Ready to make your mark?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              We are a Ghanaian manufacturer with room to grow, and we would rather grow with people who want to build something than people who want a desk.
+              We are a Ghanaian company with room to grow, and we would rather grow with people who want to build something than people who want a desk.
             </p>
             <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              If there is nothing open that fits you today, send us a general application anyway. We keep them, and we read them.
+              If there is nothing open that fits you today, send us a general application anyway. It goes to our HR team for future roles.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>

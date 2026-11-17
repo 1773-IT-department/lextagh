@@ -142,7 +142,7 @@ export default function ApplicationForm({ roles, interests }: { roles: RoleOptio
       style={{ position: "relative", background: "#f7fcfe", border: "1px solid rgba(18,163,196,.2)", borderRadius: 14, padding: "32px 30px 34px", boxShadow: "0 16px 34px rgba(11,60,78,.1)" }}
     >
       <div style={{ fontSize: 19, fontWeight: 700, color: "#12313d", letterSpacing: "-.015em" }}>{role ? "Role application" : "General application"}</div>
-      <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>Takes about two minutes. We read every one.</p>
+      <p style={{ margin: "10px 0 0", fontSize: 13, lineHeight: 1.8, color: "#5d7883" }}>Takes about two minutes. Your application goes to the Lexta HR team.</p>
 
       <input type="hidden" name="opening" value={role?.reference ?? ""} />
       {role && (
