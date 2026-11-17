@@ -34,10 +34,24 @@ export const CATEGORIES = [
     blurb: "Helpful ideas for everyday living, created around the real questions families ask.",
   },
   { slug: "news", label: "News", title: "Yazz® News", blurb: "[PLACEHOLDER: one line introducing Yazz news, from Lexta marketing]" },
+  // Lexta's Parenting editorial guides (website-copy.md:24, :52, :155): Pregnancy, 0 to 12 months and 12 to 24 months.
+  // Ready for the articles Lexta still has to send; hidden (no chip, no category view) while no article has it.
+  {
+    slug: "parenting-baby-care",
+    label: "Parenting & Baby Care",
+    title: "Parenting & Baby-Care Guides",
+    blurb: "From pregnancy planning to toddler routines, find accessible guidance for changing, preparing and learning.",
+    hideWhenEmpty: true,
+  },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
-export const isCategory = (v: string | undefined): v is CategorySlug => CATEGORIES.some((c) => c.slug === v);
+type Category = (typeof CATEGORIES)[number];
+/** A category is shown (chip, view, address) unless it waits for its first article. */
+const isShown = (c: Category) => !("hideWhenEmpty" in c && c.hideWhenEmpty) || ARTICLES.some((a) => a.category === c.slug);
+/** The categories with a chip and a view on the Tips page. */
+export const shownCategories = () => CATEGORIES.filter(isShown);
+export const isCategory = (v: string | undefined): v is CategorySlug => CATEGORIES.some((c) => c.slug === v && isShown(c));
 export const categoryOf = (slug: CategorySlug) => CATEGORIES.find((c) => c.slug === slug)!;
 
 export type Article = {
@@ -77,6 +91,7 @@ export const TIP_LABEL: Record<CategorySlug, string> = {
   "just-4-parents": "Yazz® Parent Tip",
   "care-tips": "Yazz® Tip",
   news: "Yazz®",
+  "parenting-baby-care": "Yazz® Parent Tip",
 };
 
 /** Shown under every Just 4 You article and on the Tips pages: Lexta's "A Note From Yazz®", word for word. */

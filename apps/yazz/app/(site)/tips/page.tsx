@@ -6,7 +6,7 @@ import SubscribeForm from "@/components/tips/SubscribeForm";
 import TipsPanel from "@/components/tips/TipsPanel";
 import WhatsInside from "@/components/tips/WhatsInside";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, shownCategories, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -45,7 +45,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
         </p>
         <nav className={s.filters} aria-label="Article categories">
           <Link href="/tips" className="yz-chip" aria-current={!category ? "true" : undefined}>All</Link>
-          {CATEGORIES.map((c) => (
+          {shownCategories().map((c) => (
             <Link key={c.slug} href={`/tips?category=${c.slug}`} className="yz-chip" aria-current={category === c.slug ? "true" : undefined}>{c.label}</Link>
           ))}
         </nav>

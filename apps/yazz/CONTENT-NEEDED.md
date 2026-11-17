@@ -72,7 +72,10 @@ as a marked placeholder block:
   for Lexta to decide on.
 - "My Period & Me": the document lists its sub-topics (what is a period, cycle, flow, tracking) but no text (the original site has the same introduction only).
 - Home & Tissue tips (kitchen hygiene, tissue handling, cleaning routines, waste reduction): topics only, no text.
-- Parenting editorial (pregnancy, 0 to 12 months, 12 to 24 months): topics only, no text.
+- Parenting editorial (waiting on Lexta's articles): Pregnancy, 0 to 12 months and 12 to 24 months guides, topics only,
+  no text. The "Parenting & Baby Care" category is ready in `content/articles.ts` (`parenting-baby-care`) and appears on
+  Tips & Advice (chip and category view) as soon as one article has it; until then it is hidden. The range page's
+  "Parenting Guides" button and the menu's Baby Care tips link go to Baby Care Tips meanwhile.
 - The undated articles (Just 4 Parents and the topic pages) need dates if Lexta wants them shown.
 - Article reviewers (waiting on Lexta): Lexta asks for "author/reviewer, date" on every article (website-copy.md:134).
   Articles now take an optional `reviewer` and `reviewDate` (`content/articles.ts`), shown after the author as
