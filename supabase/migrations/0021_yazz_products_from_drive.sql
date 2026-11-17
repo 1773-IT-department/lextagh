@@ -1,6 +1,6 @@
 -- 0021_yazz_products_from_drive: Lexta's real Yazz catalogue in Product Management, replacing the prototype rows.
 --
--- WRITTEN, NOT APPLIED. Desmond approved the content rewrite; the lead applies it after review.
+-- APPLIED to Lexta Gh on 17 November 2026, after PR 55 merged (Desmond approved the content rewrite).
 --
 -- Why: the Yazz site, the Lexta Our Brands page and the portal read the Yazz products from this table. The 7 published
 -- Yazz rows were seeded from the Lexta design prototype (0004) and carry text no Lexta document gives, some of it
