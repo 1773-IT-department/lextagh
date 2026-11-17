@@ -5,7 +5,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Fragment, type CSSProperties } from "react";
 import { css } from "../css";
-import { lextaSiteUrl as LEXTA } from "@/lib/site";
+import { lexta, lextaSiteUrl as LEXTA } from "@/lib/site";
 
 export default function HomeView({ v: vals }: { v: any }) {
   return (
@@ -871,6 +871,29 @@ export default function HomeView({ v: vals }: { v: any }) {
               {"\n    "}
             </div>
             {"\n  "}
+          </div>
+        </section>
+        {/* CARING BEYOND OUR PRODUCTS (Lexta's home copy): a compact band out to the Lexta CSR page, which holds Linzzy's
+            community initiatives (brand sites have no CSR page). Not a chapter, so the chapter numbers stay as designed. */}
+        <section aria-labelledby="caring-beyond" style={{"background":"#F4EEFF","padding":"clamp(60px,8vw,110px) clamp(20px,5vw,80px)"} as CSSProperties}>
+          <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(min(100%,420px),1fr))","gap":"28px clamp(40px,6vw,100px)","alignItems":"end"} as CSSProperties}>
+            <h2 id="caring-beyond" data-reveal="1" style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(40px,5vw,84px)","lineHeight":"0.92","letterSpacing":"-0.035em","color":"#23103a","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 40px))"} as CSSProperties}>
+              {"Caring Beyond "}
+              <em style={{"color":"#C2185B"} as CSSProperties}>
+                {"Our Products"}
+              </em>
+            </h2>
+            <div style={{"display":"flex","flexDirection":"column","gap":"14px","alignItems":"flex-start"} as CSSProperties}>
+              <p style={{"margin":"0","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.55","fontWeight":"600","color":"#23103a"} as CSSProperties}>
+                {"At Linzzy, care extends beyond the products we provide."}
+              </p>
+              <p style={{"margin":"0","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.55","color":"#3d2a55"} as CSSProperties}>
+                {"Through community-focused education, hygiene awareness and social responsibility initiatives, we seek to contribute to healthier, more informed and supported communities."}
+              </p>
+              <a className="lzh7" href={lexta.csr} target="_blank" rel="noopener" style={{"marginTop":"6px","padding":"16px 0","borderBottom":"1.5px solid #23103a","color":"#23103a","fontWeight":"700","fontSize":"14px","letterSpacing":"0.04em","textTransform":"uppercase"} as CSSProperties}>
+                {"Explore our community initiatives ↗"}
+              </a>
+            </div>
           </div>
         </section>
         {/* 10 CONNECT */}
