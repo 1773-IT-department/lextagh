@@ -22,9 +22,14 @@ export function parseBody(body: string): Block[] {
 
 /** The article text: headings, paragraphs, lists and the coloured Yazz tip box. */
 export default function ArticleBody({ article }: { article: Article }) {
-  const blocks = parseBody(article.body);
+  return <BodyText body={article.body} tipLabel={TIP_LABEL[article.category]} />;
+}
+
+/** Text in the article body format, outside an article too (the Tips page's intros and closings). */
+export function BodyText({ body, tipLabel = "Yazz® Tip", className = s.body }: { body: string; tipLabel?: string; className?: string }) {
+  const blocks = parseBody(body);
   return (
-    <div className={s.body}>
+    <div className={className}>
       {blocks.map((b, i) => {
         switch (b.kind) {
           case "h": return <h2 key={i}>{b.text}</h2>;
@@ -33,8 +38,8 @@ export default function ArticleBody({ article }: { article: Article }) {
           case "ol": return <ol key={i}>{b.items.map((t) => <li key={t}>{t}</li>)}</ol>;
           case "tip":
             return (
-              <aside key={i} className={s.tip} aria-label={TIP_LABEL[article.category]}>
-                <p className={`yz-script ${s.tipLabel}`}>{TIP_LABEL[article.category]}</p>
+              <aside key={i} className={s.tip} aria-label={tipLabel}>
+                <p className={`yz-script ${s.tipLabel}`}>{tipLabel}</p>
                 <p>{b.text}</p>
               </aside>
             );

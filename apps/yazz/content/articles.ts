@@ -976,3 +976,105 @@ export const MY_PERIOD_AND_ME = {
     { label: "When to speak with a trusted adult or healthcare professional", slug: "talking-to-a-trusted-adult" },
   ],
 };
+
+/**
+ * Intros and closings of the Tips & Advice category views, from Lexta's Tips Just 4 You pages, quoted and shortened
+ * where Lexta's text is long (never rewritten). Bodies use the article body format above.
+ *   Welcome to Tips Just 4 You       tips-just-4-you/00-intro.md
+ *   My First Period Checklist        tips-just-4-you/02-my-first-period.md
+ *   You're Growing. We're Listening. tips-just-4-you/06b-puberty-hub-closing.md (with its "Explore more" row)
+ *   Start With a Conversation        tips-just-4-you/07-just-4-parents-and-caregivers.md
+ *   The Conversation Starts at Home  tips-just-4-you/07b-parents-closing-message.md (and the close of 07)
+ */
+export type TipsPanel = {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  body: string;
+  /** A closing line in the script face. */
+  script?: string;
+  /** Lexta's "Explore more" row: titles of TOPIC_TILES. */
+  explore?: string[];
+  /** A link under the panel (interface label). */
+  more?: { label: string; href: string };
+};
+
+export const CATEGORY_PANELS: Partial<Record<CategorySlug, { intro?: TipsPanel; closings: TipsPanel[] }>> = {
+  "just-4-you": {
+    intro: {
+      id: "welcome",
+      eyebrow: "Tips Just 4 You",
+      title: "Welcome to Tips Just 4 You",
+      body: `Whether you're waiting for your first period, already learning about your cycle, looking for everyday hygiene tips, or you're a parent helping a young person through puberty, we've created something Just 4 You.
+
+Because the more you understand your body, the more confidently you can care for yourself.`,
+    },
+    closings: [
+      {
+        id: "first-period-checklist",
+        eyebrow: "My First Period",
+        title: "My First Period Checklist",
+        body: `Be ready before your period arrives. Create a small Yazz® Period Kit for your school bag, handbag or backpack. Consider including:
+
+- Yazz® Sanitary Pads
+- A clean pair of underwear
+- Tissues
+- A small pouch
+- A disposal bag
+- Your period tracker or calendar`,
+        script: "Periods shouldn't stop learning.",
+        more: { label: "Read Understanding Your First Period", href: "/tips/understanding-your-first-period" },
+      },
+      {
+        id: "growing",
+        title: "You're Growing. We're Listening.",
+        body: `Puberty doesn't come with a personal instruction manual.
+
+That's why Yazz® Tips Just 4 You exists to make periods, puberty, hygiene and growing up easier to understand.`,
+        explore: ["My First Period", "My Period & Me", "Periods at School", "Feeling Fresh", "Choose My Yazz®", "Just 4 Parents", "Ask Yazz®"],
+        script: "Know Your Body. Understand Your Period. Grow With Confidence.",
+      },
+    ],
+  },
+  "just-4-parents": {
+    intro: {
+      id: "start-with-a-conversation",
+      eyebrow: "Just 4 Parents & Caregivers",
+      title: "Start With a Conversation",
+      body: `You don't need to turn menstruation into one big, uncomfortable conversation.
+
+Create opportunities for simple, age-appropriate discussions about growing up, body changes, hygiene and periods. Let her know she can ask questions. Most importantly, help her understand that menstruation is normal.
+
+Explore practical Yazz® guides on:
+
+- How to explain menstruation
+- Preparing for her first period
+- Creating her first period kit
+- Understanding puberty
+- Discussing personal hygiene
+- Understanding period discomfort
+- Helping her manage periods at school
+- Supporting confidence during puberty
+- Separating period facts from myths
+- Knowing when to seek professional medical advice`,
+    },
+    closings: [
+      {
+        id: "conversation-starts-at-home",
+        eyebrow: "Yazz® Just 4 Parents & Caregivers",
+        title: "The Conversation Starts at Home",
+        body: `One of the most powerful things a parent or caregiver can give a young person approaching puberty isn't a sanitary pad. It's an environment where she knows:
+
+- I can ask questions.
+- I don't have to be ashamed of my period.
+- My changing body deserves care and respect.
+- If something worries me, someone will listen.
+
+Because preparing her for her period isn't one conversation. It's helping her understand her body, protect her health and grow with confidence.
+
+You don't need to know every answer. Sometimes the most important thing you can tell her is:`,
+        script: "\"You can always talk to me.\"",
+      },
+    ],
+  },
+};

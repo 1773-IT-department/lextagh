@@ -3,8 +3,9 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import ArticleCard from "@/components/tips/ArticleCard";
 import SubscribeForm from "@/components/tips/SubscribeForm";
+import TipsPanel from "@/components/tips/TipsPanel";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, CATEGORIES, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, sortedArticles, TOPIC_TILES } from "@/content/articles";
+import { ARTICLES, CATEGORIES, CATEGORY_PANELS, HEALTH_NOTE, HEALTH_NOTE_PARENTS, isCategory, MY_PERIOD_AND_ME, sortedArticles, TOPIC_TILES } from "@/content/articles";
 
 type Search = Promise<{ category?: string | string[] }>;
 
@@ -28,6 +29,7 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
   const cat = category ? CATEGORIES.find((c) => c.slug === category)! : null;
   const list = sortedArticles(category ? ARTICLES.filter((a) => a.category === category) : ARTICLES);
   const showTiles = !category || category === "just-4-you";
+  const panels = category ? CATEGORY_PANELS[category] : undefined;
   const health = !category || category === "just-4-you" || category === "just-4-parents";
 
   return (
@@ -47,6 +49,8 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           ))}
         </nav>
       </section>
+
+      {panels?.intro && <TipsPanel panel={panels.intro} />}
 
       {showTiles && (
         <section className={s.section} aria-labelledby="tiles-title">
@@ -95,6 +99,8 @@ export default async function TipsPage({ searchParams }: { searchParams: Search 
           </p>
         )}
       </section>
+
+      {panels?.closings.map((p) => <TipsPanel key={p.id} panel={p} />)}
 
       {health && <p className={s.note}>{category === "just-4-parents" ? HEALTH_NOTE_PARENTS : HEALTH_NOTE}</p>}
 

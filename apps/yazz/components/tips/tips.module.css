@@ -41,6 +41,14 @@
 .panelBox { padding: 30px 32px; border-radius: 22px; background: var(--yz-sky); }
 .panelText { margin: 10px 0 0; max-width: 720px; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); }
 .panelScript { margin: 18px 0 0; font-size: 26px; line-height: 1.2; color: var(--yz-red); }
+.panelBody { margin-top: 10px; max-width: 760px; font-size: 14.5px; line-height: 1.75; color: var(--yz-body); }
+.panelBody p, .panelBody ul { margin: 0; }
+.panelBody > * + p, .panelBody > * + ul { margin-top: 10px; }
+.panelBody ul { padding-left: 22px; columns: 2; column-gap: 32px; }
+.panelBody li { break-inside: avoid; }
+.panelBody li + li { margin-top: 4px; }
+.panelBody li::marker { color: var(--yz-red); }
+.explore { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; font-size: 13.5px; font-weight: 600; color: var(--yz-muted); }
 .linkList { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 22px; }
 .linkList a {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 14px; border-radius: 10px; background: #fff;
@@ -121,6 +129,7 @@
   .heroTitle { font-size: 30px; }
   .tiles, .grid4, .linkList { grid-template-columns: 1fr; }
   .panelBox { padding: 24px 20px; }
+  .panelBody ul { columns: 1; }
   .artTitle { font-size: 30px; }
   .artKicker { font-size: 24px; }
   .body { font-size: 15px; }
