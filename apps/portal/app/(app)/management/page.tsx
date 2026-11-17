@@ -19,12 +19,17 @@ export default async function ManagementOverview({ searchParams }: { searchParam
   const { supabase, f, brands, prev } = ctx;
   const brand = f.brand || undefined;
 
-  const [numbers, series, feedRes, firstStage] = await Promise.all([
+  let lateLeads = supabase.from("crm_leads").select("id", { count: "exact", head: true })
+    .eq("stage", "new").lt("response_due_at", new Date().toISOString());
+  if (brand) lateLeads = lateLeads.eq("brand_id", brand);
+  const [numbers, series, feedRes, firstStage, lateReplies] = await Promise.all([
     loadNumbers(ctx),
     loadSeries(ctx),
     supabase.rpc("management_activity", { p_from: f.from, p_to: f.to, p_brand: f.brand || null, p_limit: 8 }),
     // Applications still at the first stage, now (recruitment has no brand).
     supabase.from("job_applications").select("id", { count: "exact", head: true }).eq("stage", "new"),
+    // Website leads still at New after their reply-by time (0026). Left out if the database has no reply-by times yet.
+    lateLeads,
   ]);
   if (feedRes.error) console.error("[management] latest activity failed", feedRes.error);
   const feed = feedRes.error ? null : (feedRes.data as FeedPage);
@@ -44,6 +49,8 @@ export default async function ManagementOverview({ searchParams }: { searchParam
     { n: d.chat.awaiting_reply_now, text: plural(d.chat.awaiting_reply_now, "chat waiting for a reply", "chats waiting for a reply"), href: systemHref("/systems/chat", { status: "open" }),
       note: brand ? "the inbox shows every brand" : undefined },
     { n: d.orders.to_confirm_now, text: plural(d.orders.to_confirm_now, "order waiting to be confirmed", "orders waiting to be confirmed"), href: systemHref("/systems/orders", { status: "submitted", brand }) },
+    ...(lateReplies.error || lateReplies.count === null ? [] : [{ n: lateReplies.count, text: plural(lateReplies.count, "website lead overdue for a reply", "website leads overdue for a reply"),
+      href: systemHref("/systems/crm/leads", { reply: "overdue", brand }) }]),
     { n: d.crm.unassigned_website, text: plural(d.crm.unassigned_website, "website lead with no owner", "website leads with no owner"), href: systemHref("/systems/crm/leads", { owner: "unassigned", brand }),
       note: "the list shows every unassigned lead" },
     { n: d.field_sales.shops_to_confirm_now, text: plural(d.field_sales.shops_to_confirm_now, "new shop waiting for confirmation", "new shops waiting for confirmation"), href: systemHref("/systems/stockists", { status: "inactive", brand }) },

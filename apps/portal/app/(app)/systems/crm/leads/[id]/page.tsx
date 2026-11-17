@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { crmContactName, crmSourceLabel, crmStageLabel, type CrmActivity, type CrmLead } from "@lexta/db";
+import { crmContactName, crmSourceLabel, crmStageLabel, isLeadReplyOverdue, type CrmActivity, type CrmLead } from "@lexta/db";
 import ConfirmButton from "@/components/products/ConfirmButton";
 import ActivityForm from "@/components/crm/ActivityForm";
 import CrmTabs from "@/components/crm/CrmTabs";
@@ -15,9 +15,8 @@ import { deleteRecord } from "../../actions";
 
 export const metadata = { title: "Lead | Lexta Business System" };
 
-const LEAD_COLUMNS =
-  "id, title, description, contact_id, organisation_id, brand_id, source, stage, lost_reason, owner_id, next_action, next_action_date, " +
-  "estimated_monthly_volume, intake_reference, submitted_organisation_name, closed_at, created_at, updated_at, created_by, updated_by";
+// Every column of the lead. "*" so the page also loads on a database 0026 has not reached (no response_due_at).
+const LEAD_COLUMNS = "*";
 
 export default async function LeadPage({ params, searchParams }: {
   params: Promise<{ id: string }>;
@@ -103,6 +102,15 @@ export default async function LeadPage({ params, searchParams }: {
                   <span className="hint">Named on the website form: {lead.submitted_organisation_name}. Not linked yet.</span>
                 )}
               </dd>
+              {lead.response_due_at && (
+                <>
+                  <dt>Reply by</dt>
+                  <dd>
+                    {isLeadReplyOverdue(lead) ? <span className="overdue">{formatDateTime(lead.response_due_at)} (overdue)</span> : formatDateTime(lead.response_due_at)}
+                    <span className="hint">{lead.stage === "new" ? "Move the lead on from New once you have replied." : "The lead has moved on from New."}</span>
+                  </dd>
+                </>
+              )}
               <dt>Next action</dt>
               <dd>{lead.next_action || lead.next_action_date ? `${lead.next_action ?? "Follow up"}${lead.next_action_date ? `, by ${formatDate(lead.next_action_date)}` : ""}` : "Not set"}</dd>
               {lead.estimated_monthly_volume && (<><dt>Estimated volume</dt><dd>{lead.estimated_monthly_volume}</dd></>)}

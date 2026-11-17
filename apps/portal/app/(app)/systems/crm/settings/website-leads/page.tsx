@@ -1,7 +1,8 @@
 import Link from "next/link";
-import type { CrmStaff, CrmWebsiteLeadManager, CrmWebsiteLeadManagerChange } from "@lexta/db";
+import { DEFAULT_WEBSITE_REPLY_HOURS, type CrmStaff, type CrmWebsiteLeadManager, type CrmWebsiteLeadManagerChange } from "@lexta/db";
 import ClearBrandManagerButton from "@/components/crm/ClearBrandManagerButton";
 import WebsiteLeadManagersForm, { type BrandRow } from "@/components/crm/WebsiteLeadManagersForm";
+import WebsiteReplyTimeForm from "@/components/crm/WebsiteReplyTimeForm";
 import { formatDateTime, getCrmAccess } from "@/lib/crm";
 import { createClient } from "@/lib/supabase/server";
 import { canManageWebsiteLeads, roleLabel } from "@/lib/website-lead-managers";
@@ -23,14 +24,17 @@ export default async function WebsiteLeadManagersPage() {
   }
 
   const supabase = await createClient();
-  const [settingsRes, historyRes, linksRes, offBrandsRes] = await Promise.all([
+  const [settingsRes, historyRes, linksRes, offBrandsRes, replyRes] = await Promise.all([
     supabase.from("crm_website_lead_managers").select("id, brand_id, manager_id, created_at, updated_at, updated_by"),
     supabase.from("crm_website_lead_manager_changes")
       .select("id, scope, brand_id, brand_name, old_manager_id, old_manager_name, new_manager_id, new_manager_name, reason, changed_by, changed_by_name, created_at, updated_at")
       .order("created_at", { ascending: false }).order("id", { ascending: false }).limit(HISTORY_LIMIT),
     supabase.from("profile_brands").select("profile_id, brand_id"),
     supabase.from("brands").select("id, name").eq("is_active", false).order("name"),
+    // 0026. On a database the migration has not reached, the reply time panel is left out.
+    supabase.from("crm_website_lead_settings").select("reply_hours").maybeSingle<{ reply_hours: number }>(),
   ]);
+  if (replyRes.error) console.warn("[crm] reply time not available", replyRes.error.message);
   if (settingsRes.error) throw new Error("Could not load the website lead managers");
   if (historyRes.error) throw new Error("Could not load the change history");
   if (linksRes.error) throw new Error("Could not load brand access");
@@ -114,6 +118,8 @@ export default async function WebsiteLeadManagersPage() {
         defaultWarning={defaultPicker.warning}
         brands={brands}
       />
+
+      {!replyRes.error && <WebsiteReplyTimeForm hours={replyRes.data?.reply_hours ?? DEFAULT_WEBSITE_REPLY_HOURS} />}
 
       {offSettings.length > 0 && (
         <section className="panel">

@@ -157,7 +157,7 @@ Along the top: **Overview**, **Activity**, then one tab for each system: **Order
 
 ### The Overview tab
 
-* **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
+* **Needs attention** lists what is waiting right now, whatever the period: overdue complaints, website leads overdue for a reply, chats waiting for a reply, orders waiting to be confirmed, website leads with no owner, new shops waiting for confirmation and applications still at the first stage (New). Tap one to open that list in its system. If nothing is waiting, it says "Nothing needs attention right now."
 * **Key figures** shows two numbers for each system, with how they changed on the period of the same length just before (for example "42 new leads, Up 41 on the previous 30 days"). Tap a number to open those records in its system, or **More** to open that system's tab.
 * **Over time** has four small charts: orders submitted, new leads, complaints received and shop visits. Each column is a day (a week for longer periods, a month for more than a year). Point at a column to see its number, or tap **Show the numbers** for a table.
 * **Latest activity** shows the eight newest things recorded. Tap **See all activity** for the rest.
@@ -435,6 +435,8 @@ Messages from the website forms land in the CRM by themselves:
 * The **newsletter** sign up adds a contact with marketing consent.
 * **Contact Us, Consumer care** goes to Complaints instead (see [chapter 6](#6-complaints)).
 
+Leads from **Contact Us** and **Partner With Us** get a **Reply by** time: the reply time admin sets (24 hours until Lexta confirms its own) after the lead arrives. While such a lead is still at stage **New** after that time, the leads list shows **Overdue** next to its stage, and the management overview lists it under **Needs attention**. Moving the lead on to **Contacted** (or a later stage) once you have replied clears it.
+
 ### Website lead managers (admin only)
 
 Admin chooses who gets new website leads.
@@ -443,6 +445,7 @@ Admin chooses who gets new website leads.
 2. Choose a **Default manager**: they get every new website lead unless the brand has its own manager.
 3. Under **Manager per brand**, choose a manager for a brand, or leave **Use default**.
 4. Tap **Save managers**. **Recent changes** shows who changed what.
+5. Under **Reply time**, set how many hours the team has to reply to a website lead (1 to 720) and tap **Save reply time**. It applies to leads that arrive after you save. The 24 hours set now is a placeholder until Lexta confirms its reply time.
 
 A sales rep or marketer can only manage a brand they work on. If nobody is chosen, website leads stay unassigned; the management overview shows how many.
 

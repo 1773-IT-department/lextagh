@@ -102,7 +102,7 @@ begin
   perform pg_temp.ok(not exists (select 1 from public.crm_website_lead_managers) and not exists (select 1 from public.crm_website_lead_manager_changes),
     'nothing is seeded');
   perform pg_temp.ok((select string_agg(tgname, ',' order by tgname) from pg_trigger where tgrelid = 'public.crm_leads'::regclass
-      and not tgisinternal and tgtype & 2 = 2 and tgtype & 4 = 4) = 'crm_leads_check,crm_leads_set_authors,crm_leads_set_stage_fields,crm_leads_website_owner',
+      and not tgisinternal and tgtype & 2 = 2 and tgtype & 4 = 4) = 'crm_leads_check,crm_leads_reply_by,crm_leads_set_authors,crm_leads_set_stage_fields,crm_leads_website_owner',
     'the website owner trigger runs last of the before insert triggers on crm_leads');
   raise notice 'PASS: RLS on, search_path set, nothing seeded, trigger order';
 end $$;

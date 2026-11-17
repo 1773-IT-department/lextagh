@@ -74,3 +74,22 @@ export async function clearBrandWebsiteLeadManager(_prev: CrmFormState, form: Fo
   revalidatePath(PATH);
   return { message: "Cleared. This brand now uses the default manager." };
 }
+
+/** Saves how many hours the team has to reply to a website lead (0026). Only admins; Row Level Security checks again. */
+export async function saveWebsiteReplyHours(_prev: CrmFormState, form: FormData): Promise<CrmFormState> {
+  const access = await getCrmAccess();
+  if (!access.isAdmin) return { error: "Only admins can change the reply time." };
+  const raw = String(form.get("reply_hours") ?? "").trim();
+  const hours = /^[0-9]{1,4}$/.test(raw) ? Number(raw) : NaN;
+  if (!Number.isInteger(hours) || hours < 1 || hours > 720) {
+    return { error: "Please check the reply time.", fieldErrors: { reply_hours: "Enter whole hours from 1 to 720." } };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("crm_website_lead_settings").update({ reply_hours: hours }).eq("id", true).select("reply_hours");
+  if (error || !data?.length) {
+    if (error && error.code !== "42501") console.error("[crm] reply time save failed", error);
+    return { error: error?.code === "42501" || !error ? "Only admins can change the reply time." : "We could not save the reply time. Please try again. If it keeps happening, tell the IT team." };
+  }
+  revalidatePath(PATH);
+  return { message: `Saved. New website leads are due a reply within ${hours} ${hours === 1 ? "hour" : "hours"}.` };
+}

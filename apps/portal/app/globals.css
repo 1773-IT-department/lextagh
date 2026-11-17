@@ -207,6 +207,7 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
 .badge.stage.s-lost { background: #fff4e5; color: #8a4b00; }
 .badge.type { background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
 .overdue { color: var(--danger); font-weight: 600; }
+.badge.late { background: #fdecea; color: var(--danger); }
 .crm-detail { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
 .section-title { font-size: 17px; margin: 0 0 12px; }
 .panel-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
@@ -775,3 +776,4 @@ input, button, select, textarea { font-family: inherit; font-size: 15px; }
   .pwa-share { grid-template-columns: minmax(0, 1fr); }
   .pwa-qr { justify-self: start; }
 }
+.reply-hours input { max-width: 180px; }
