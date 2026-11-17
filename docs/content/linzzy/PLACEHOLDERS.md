@@ -26,7 +26,7 @@ before stay, because no source has the fact.
 | Tips & Advice and article page, "Period Hygiene 101" | Article photo | `[PLACEHOLDER: clean bathroom vanity with Linzzy Heavy Flow (Lexta's thumbnail guide)]` | Marketing (thumbnail guide owner) |
 | Tips & Advice and article page, "Keeping Your Baby Comfortable in Ghana's Warm Weather" | Article photo | `[PLACEHOLDER: warm weather baby care scene with Linzzy Baby Diapers]` | Marketing |
 | Products (data, not rendered) | Diaper sizes other than M and L | `[PLACEHOLDER: other sizes and pack quantities, confirmed against current packaging]` | Product / brand manager |
-| Products (data, not rendered) | Wipes ingredients | `[PLACEHOLDER: complete ingredient list for each wipes variant, from Lexta]` | Product / quality assurance |
+| Products, Linzzy Baby Wipes details panel, "Usage, Ingredients & Skin Sensitivity" row (shown since Z1) | Wipes ingredients | `[PLACEHOLDER: complete ingredient list for each wipes variant, from Lexta]` | Product / quality assurance |
 
 ## Removed (no source; the layout works without it)
 
@@ -79,17 +79,23 @@ before stay, because no source has the fact.
 Not counted as copy and unchanged: image alt text (describes each photo), the newsletter consent checkbox label (a form
 label; it states the opt in and unsubscribe Lexta's master copy requires), form confirmations and errors, the 404 page.
 
-## Not done: needs a design change (unchanged from the earlier rewrite)
+## Built 17 November 2026 (Desmond approved the Drive requests; branch `feature/linzzy-drive-requests`)
 
-1. **Product details panel, Lexta's product page fields** (headline, key features, recommended use, how to use, skin
-   sensitivity and allergy precautions, "Linzzy Says", related articles). The data is ready (database and
-   content/catalogue.ts) but the approved panel has no slot. The precautions are safety copy; Lexta recommends an
-   expandable "Usage, Ingredients & Skin Sensitivity" section on every product.
-2. **Home, "Caring Beyond Our Products"** (Drive Home, links to the Lexta CSR page). No slot on the home page.
-3. **Contact form fields "Subject" and "Optional Product Photograph or Supporting Document"** (Drive's suggested fields):
-   a new field, and uploads need a database change.
-4. **Tips & Advice section intro and the four baby content categories** (00-section-intro-and-structure.md): no slot.
-5. **Parent Corner participation** (Share Your Parenting Story, How it Works, submission form, expert reviewed Q&A):
+No new placeholders. Every new sentence is Lexta's Drive text; new labels are interface text.
+
+| Item | What | Source |
+| --- | --- | --- |
+| Z1 | Product details panel: headline above the name, "Key product features" tick list, one expandable "Usage, Ingredients & Skin Sensitivity" row (Recommended Use, How to Use, Skin Sensitivity & Allergy Precautions, Ingredients where given), "Linzzy says" line above the buttons | products.md (each product; the expandable section at :302) |
+| Z2 | Panel "Read more" with up to two related articles (catalogue `reads`); article pages link to their product (`/products?p=<slug>`) when exactly one product lists the article | products.md:20; website-copy.md:23; parent-corner.md:191 |
+| Z3 | Home band "Caring Beyond Our Products" (heading, two lines, Explore our community initiatives) between Parent Corner and Connect; About "Learn about the Safe Bottoms Initiative" link in the Lexta Family block; both to the Lexta CSR page | website-copy.md:150-156, :302 |
+| Z4 | Contact form "Subject (optional)" field, server checked (150 characters), sent as "Subject: ..." at the top of the lead or complaint text | website-copy.md:464-480 |
+| Z5 | Tips baby section: intro text (lightly adapted from "The Linzzy Tips & Advice page will serve as ..."), filter chips for the four baby content categories with their descriptions. The intro line "Little Moments, Loving Care, Bright Beginnings." and the feminine theme "Your Comfort. Your Confidence. Your Everyday Care." were already the two sections' taglines | tips-and-advice/00-section-intro-and-structure.md |
+| Z7 | Menu: Feminine Care and Baby Care in place of Products (`/products#fem`, `/products#baby`) | website-copy.md:19 |
+
+## Not done: needs a decision
+
+1. **Contact form "Optional Product Photograph or Supporting Document"**: uploads need a database change.
+2. **Parent Corner participation** (Share Your Parenting Story, How it Works, submission form, expert reviewed Q&A):
    needs a scope decision (LEXTA-CONTENT-GAPS D14).
 
 Filled in this change: Contact's "Your Voice Matters. Let's Keep the Conversation Going." now has a slot (the closing

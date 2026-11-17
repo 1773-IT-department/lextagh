@@ -14,13 +14,16 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
   Routes built: Home, About, Products (Feminine Care and Baby Care), Tips & Advice, Where to Buy and Contact; feminine
   care tips and baby tips as article cards that link to the relevant product range; enquiries into the shared CRM
   (brand Linzzy); complaints into the complaints tracker; footer with the Lexta family, privacy, terms and social links.
+- Separate "Feminine Care" and "Baby Care" menu entries (built 17 November 2026, Desmond's approval, item Z7): the
+  menu lists them in place of the single Products entry, pointing to the two bands of /products (`/products#fem`,
+  `/products#baby`), so the site keeps exactly its 6 pages. The header itself is the design's Where to Buy and Menu
+  buttons at every width, so the split is in the menu, on desktop and phone alike.
 - Not built as the wireframe asks, because it conflicts with the agreed 6 page design or scope:
-  - Separate "Feminine Care" and "Baby Care" top menu tabs: they are under one Products tab with a dropdown, so the
-    nav keeps exactly the 6 approved pages (Home, Products, About Us, Tips & Advice, FAQs, Contact).
   - "Community Impact" tab: no CSR page on brand sites. The footer of every page ("Community Impact (CSR)") links to
-    the Lexta site's CSR page, and the contact page's CSR card sends proposals to the partnerships email. The home
-    page does not carry Lexta's "Caring Beyond Our Products / Explore Our Community Initiatives" block: the approved
-    home design has no slot for it (see docs/content/linzzy/PLACEHOLDERS.md, "Not done: needs a design change").
+    the Lexta site's CSR page, and the contact page's CSR card sends proposals to the partnerships email. Since
+    17 November 2026 (Z3) the home page carries Lexta's "Caring Beyond Our Products" block with its Explore Our
+    Community Initiatives button, and the About page a "Learn about the Safe Bottoms Initiative" link, both out to the
+    Lexta CSR page.
   - "Where to Buy" as its own tab: it is part of Contact & Where to Buy, with a Where to Buy button in the header.
   - Hero "Shop the Range": there is no shop, so the button says "Explore Our Products".
   - "Enquiry → marketing@lextagh.com (proposed interim)" and "complaints → designated customer-care inbox (confirm)":
@@ -62,14 +65,17 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
 - The product cards show the database's short description, which is now the sentence of Lexta's own description that
   names the product (strict source sweep; migration `0023_linzzy_products_strict_drive_text.sql` is written, **not
   applied**: until Desmond applies it, the live site still shows the old 1773 one line summaries from 0016). The
-  product details panel shows Lexta's full description. Lexta's headline, key features, recommended use, how to
-  use, skin sensitivity and allergy precautions and "Linzzy Says" line are in the database or catalogue but the
-  approved panel design has no place for them: see PLACEHOLDERS.md, "Not done: needs a design change".
+  product details panel shows Lexta's full description and, since 17 November 2026 (Z1, Z2), Lexta's headline, key
+  features, one expandable "Usage, Ingredients & Skin Sensitivity" row (recommended use, how to use, skin sensitivity
+  and allergy precautions, ingredients where given), a Read more line with up to two related articles and the
+  "Linzzy Says" line. Each article links back to its product when exactly one product lists it.
 - SKU codes for every product (all `TBC-LINZZY-...` in the catalogue).
 - Diaper sizes: only Medium (42, 6 to 9 kg) and Large (40, 9 to 13 kg) are confirmed by Lexta. The original site also
   lists Small (44, 3 to 6 kg) and Extra Large (38, over 13 kg): please confirm against current packaging.
 - Complete ingredient lists for each wipes variant, and material and fragrance information for the towels and liners
-  (Lexta's "Required verification" table). The "0% alcohol and parabens" pack claim is not shown until verified.
+  (Lexta's "Required verification" table). The wipes ingredients placeholder is now visible in the product panel's
+  usage row; the towels and liners show no ingredients row until Lexta gives them. The "0% alcohol and parabens" pack
+  claim is not shown until verified.
 
 ## Contact and social
 
@@ -84,6 +90,8 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
   option until Lexta's sales team gives them. The "I am a" options follow Lexta's segments (distributor or
   wholesaler, modern trade or supermarket, other business).
 - The Lexta head office pin on the map is placed approximately at Dzorwulu; exact coordinates welcome.
+- Lexta's Contact form "Subject" field is built (Z4): optional, up to 150 characters, sent at the top of the CRM lead
+  or complaint text ("Subject: ...") as neither has a subject column.
 - Lexta's Contact form asks for an optional product photo or document upload. The complaint intake has no attachment
   field, so it is not built; the care team can ask for a photo by email or WhatsApp. Adding uploads would need a
   database change (not written).
@@ -94,6 +102,11 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
   page labels, Contact page lines) and every answer is the Drive text under it; only the grouping is 1773's. A list of
   real customer questions from Lexta's care team would make the page better. More can be added to
   `components/linzzy/faq-data.ts` on request.
+- Tips & Advice baby section (Z5): Lexta's intro, lightly adapted from "The Linzzy Tips & Advice page will serve as an
+  educational and supportive space ...", and the four baby content categories as filter chips. Two articles were
+  placed by 1773 because their topics are not one of the four: "Diaper Changing Made Easier" (Baby Hygiene & Daily
+  Care) under Baby Care Essentials, and "Keeping Your Baby Comfortable in Ghana's Warm Weather" (Baby Comfort &
+  Seasonal Care) under Diaper Fit & Comfort. Lexta may move them.
 - Article dates: none given, so none are shown.
 - Reading times: only Lexta's own figure, on the two articles that give one (3 minutes each); the other ten show none.
 - Tips & Advice sign up: Lexta's master content lists "Newsletter / educational updates" (opt in, with unsubscribe
