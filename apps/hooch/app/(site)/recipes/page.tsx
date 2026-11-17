@@ -9,7 +9,7 @@ import { BEYOND, RECIPES, RECIPES_INTRO, SHARE_RECIPE } from "@/content/recipes"
 
 export const metadata: Metadata = {
   title: "Breakfast Ideas & Recipes",
-  description: "Simple Hooch® breakfast ideas: the Classic Hooch® Bowl, the Frosted Fruit Delight, Hooch® Yoghurt Crunch and the After-School Crunch.",
+  description: "Breakfast doesn't have to be complicated to be enjoyable. Discover simple ways to add colour, variety and excitement to your Hooch® breakfast.",
   alternates: { canonical: "/recipes" },
 };
 

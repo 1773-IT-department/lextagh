@@ -44,8 +44,8 @@ export default function AboutPage() {
       </section>
 
       <section className={`hc-wrap ${s.section}`} aria-labelledby="values-title">
-        <p className="hc-eyebrow">Our Values</p>
-        <h2 id="values-title" className="hc-h2" style={{ marginTop: 12 }}>What Hooch® Stands For</h2>
+        <p className="hc-eyebrow">About Hooch®</p>
+        <h2 id="values-title" className="hc-h2" style={{ marginTop: 12 }}>Our Values</h2>
         <div className={`${s.grid4} ${s.mt}`}>
           {a.values.map((v, i) => (
             <div key={v.name} className={`${s.value} hc-wobble`} data-tone={v.tone} data-reveal="" style={{ "--d": `${i * 0.08}s` } as React.CSSProperties}>

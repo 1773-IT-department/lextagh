@@ -3,13 +3,13 @@
 
 /** The consumer form's topics. "problem" becomes a complaint; the others a CRM lead. */
 export const TOPICS = [
-  { value: "question", label: "Product question", hint: "Questions about Hooch® Cornflakes or Hooch® Frosted Flakes: packs, ingredients and how to enjoy them." },
-  { value: "problem", label: "Report a problem with a product", hint: "A concern about a Hooch® product. Your report goes to our consumer care team." },
-  { value: "feedback", label: "Share your breakfast experience", hint: "Your experience helps us improve." },
+  { value: "question", label: "Product question", hint: "Have a question about Hooch® products?" },
+  { value: "problem", label: "Report a problem with a product", hint: "" },
+  { value: "feedback", label: "Share your breakfast experience", hint: "Want to share your breakfast experience?" },
   { value: "recipe", label: "Share a Hooch® recipe idea", hint: "Share your favourite Hooch® breakfast combination with us for a chance to inspire other families." },
-  { value: "partnership", label: "Partnership opportunity", hint: "Partnerships, sponsorships and community opportunities with Hooch®." },
-  { value: "stockist", label: "My shop does not stock Hooch®", hint: "Tell us the shop's name and town." },
-  { value: "other", label: "Something else", hint: "Any other question for the Hooch® team." },
+  { value: "partnership", label: "Partnership opportunity", hint: "" },
+  { value: "stockist", label: "My shop does not stock Hooch®", hint: "" },
+  { value: "other", label: "Something else", hint: "" },
 ] as const;
 export type Topic = (typeof TOPICS)[number]["value"];
 export const isTopic = (v: string | undefined): v is Topic => TOPICS.some((t) => t.value === v);

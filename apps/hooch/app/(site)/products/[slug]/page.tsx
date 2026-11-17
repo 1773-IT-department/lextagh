@@ -111,7 +111,7 @@ export default async function ProductPage({ params }: { params: Params }) {
         <div className={s.grid2} style={{ alignItems: "center" }}>
           <div data-reveal="">
             <p className="hc-eyebrow">Watch</p>
-            <h2 id="film-title" className="hc-h2" style={{ marginTop: 12 }}>See the Crunch</h2>
+            <h2 id="film-title" className="hc-h2" style={{ marginTop: 12 }}>Packs and Product Video</h2>
             {p.skus.length > 0 && (
               <table className={s.skuTable}>
                 <thead><tr><th scope="col">Pack</th><th scope="col">Product code</th></tr></thead>

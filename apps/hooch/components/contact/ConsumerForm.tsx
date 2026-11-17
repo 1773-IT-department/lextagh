@@ -42,7 +42,7 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
           </label>
         ))}
       </fieldset>
-      <p className={f.hint} aria-live="polite">{TOPICS.find((t) => t.value === topic)?.hint}</p>
+      <p className={f.hint} aria-live="polite">{TOPICS.find((t) => t.value === topic)?.hint || null}</p>
 
       <div className={f.row3}>
         <div className={f.field}>
@@ -52,7 +52,7 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
         </div>
         <div className={f.field}>
           <label className={f.label} htmlFor="c-email">Email</label>
-          <input id="c-email" name="email" type="email" className={f.input} autoComplete="email" maxLength={254} defaultValue={v.email ?? ""} placeholder="you@email.com" {...inv("email")} aria-describedby={state.fieldErrors?.email ? "c-email-error" : "c-reach"} />
+          <input id="c-email" name="email" type="email" className={f.input} autoComplete="email" maxLength={254} defaultValue={v.email ?? ""} placeholder="you@email.com" {...inv("email")} aria-describedby={state.fieldErrors?.email ? "c-email-error" : undefined} />
           {err("email")}
         </div>
         <div className={f.field}>
@@ -61,7 +61,6 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
           {err("phone")}
         </div>
       </div>
-      <p id="c-reach" className={f.hint} style={{ marginTop: -8 }}>An email address or a phone number, so we can reply.</p>
 
       <div className={f.row2}>
         <div className={f.field}>
@@ -106,10 +105,9 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
 
       <div className={f.field}>
         <label className={f.label} htmlFor="c-message">Message</label>
-        <textarea id="c-message" name="message" className={f.textarea} required maxLength={3000} defaultValue={v.message ?? ""} placeholder="Tell us what you need, or what happened." {...inv("message")} />
+        <textarea id="c-message" name="message" className={f.textarea} required maxLength={3000} defaultValue={v.message ?? ""} {...inv("message")} />
         {err("message")}
       </div>
-      <p className={f.hint}>Please do not share sensitive health details in this form. We use your details only to answer you.</p>
       <label className={f.consent}>
         <input type="checkbox" name="privacy" value="yes" defaultChecked={v.privacy === "yes"} {...inv("privacy")} />
         <span>I agree to the <a href={lexta.privacy} target="_blank" rel="noopener">privacy notice</a>.</span>

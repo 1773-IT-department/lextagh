@@ -93,7 +93,7 @@ export default function TradeForm({ regions }: { regions: RegionOption[] }) {
       </fieldset>
       <div className={f.field}>
         <label className={f.label} htmlFor="t-message">Anything else? <span className={f.opt}>(optional)</span></label>
-        <textarea id="t-message" name="message" className={f.textarea} maxLength={3000} defaultValue={v.message ?? ""} placeholder="Storage capacity, delivery needs, products and quantities." {...inv("message")} />
+        <textarea id="t-message" name="message" className={f.textarea} maxLength={3000} defaultValue={v.message ?? ""} {...inv("message")} />
         {err("message")}
       </div>
       <FormMessage state={state} tone="dark" />

@@ -1,9 +1,10 @@
 # Hooch site: content still needed from Lexta
 
 Everything on the site comes from Lexta's "Hooch Foods website content.docx" (Google Drive, Hooch Tab Content;
-`docs/content/hooch/`). Desmond's instruction (14 November 2026): use the Drive content, and where something is missing
-show a clearly marked `[PLACEHOLDER: ...]`. Each item below appears on the site as a placeholder or is a decision to
-confirm.
+`docs/content/hooch/`) and Lexta's revised content PDF. Desmond's rule (17 November 2026, strict source sweep): nothing
+from the prototype and nothing 1773 wrote; where something is missing show a clearly marked `[PLACEHOLDER: ...]`. The
+full record (every placeholder, every removal, and what was kept with its source) is `docs/content/hooch/PLACEHOLDERS.md`.
+Each item below appears on the site as a placeholder or is a decision to confirm.
 
 ## Products
 1. **Pack sizes and range.** The Drive document gives Hooch® Cornflakes 500g (10 x 50g) and Hooch® Frosted Flakes 375g
@@ -12,7 +13,7 @@ confirm.
    0017 unpublishes it (and the prototype "Super Crunchy Corn Flakes") when Desmond applies it.
 2. **Real product codes** (shown as `TBC-HOOCH-101` and `TBC-HOOCH-102` with a placeholder).
 3. **Approved nutrition panel and allergen notice** (Lexta: "will be worked on and shared separately"). The site shows
-   Lexta's ingredient lines and "Contains barley (malt extract)".
+   Lexta's ingredient lines and `[PLACEHOLDER: allergen statement from Lexta]`.
 4. **Frosted Flakes sugar figure**: the document says "sugar 23" with no unit.
 5. **Product videos**: the hero and both product pages play short stand-in films we made from Lexta's own Hooch artwork
    (the pack shots and the bowl photo, with real flakes and strawberries falling). Lexta's real product films replace
@@ -45,9 +46,15 @@ confirm.
     yet, so these mailboxes need confirming.
 11. The document's line "Contact Yazz Products for all inquiries" is a copy slip from the Yazz document and is not shown.
 12. **Consumer care hours** (placeholder).
+13. **Complaint guidance and a privacy line on the contact form**: the strict sweep removed 1773's "Reporting a concern?"
+    box (what to include in a complaint) and the form's privacy hint. If Lexta wants them, they need Lexta's wording.
 
 ## Articles
-13. **Full text of the four Nutrition & Family Tips articles**: Lexta supplied only the summaries.
+14. **Full text of the four Nutrition & Family Tips articles**: Lexta supplied only the summaries.
+
+## Products in the database
+- Migration `0024_hooch_products_strict_drive_text.sql` (written, not applied: Desmond applies it) replaces 1773's card
+  summaries in the database with the first sentence of each Drive description, matching `content/catalogue.ts`.
 
 ## Out of scope (noted, not built)
 - "Share Your Hooch® Recipe" with uploads and admin approval for publishing: a moderated publishing flow is a new

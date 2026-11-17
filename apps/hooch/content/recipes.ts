@@ -48,7 +48,7 @@ export const RECIPES: Recipe[] = [
     minutes: 3,
     moment: "Breakfast",
     cereals: ["cornflakes"],
-    youNeed: ["Hooch® Cornflakes", "Milk", "Banana, sliced"],
+    youNeed: ["Hooch® Cornflakes", "Milk", "Sliced banana"],
     image: { src: "/images/hooch/photo-bowl-hands.webp", alt: "Hands holding a red bowl of golden Hooch cornflakes in milk on a red checked tablecloth" },
     tone: "sun",
   },

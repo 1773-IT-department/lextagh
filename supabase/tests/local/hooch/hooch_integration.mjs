@@ -105,7 +105,7 @@ try {
     check(live && JSON.stringify(list.map((p) => p.slug)) === JSON.stringify(CATALOGUE_SLUGS),
       "before 0017: the two Drive cereals show, in Lexta's order; Super Crunchy Corn Flakes and Choco Flakes are skipped", list.map((p) => p.slug));
     const frost = list.find((p) => p.slug === "frosted-flakes");
-    check(frost?.name === "Hooch® Frosted Flakes" && frost.short.startsWith("A sweet frosted finish") && !frost.features.includes("Low in fat"),
+    check(frost?.name === "Hooch® Frosted Flakes" && frost.short.startsWith("Add a little sweetness") && !frost.features.includes("Low in fat"),
       "before 0017: the database Frosted Flakes row shows the Drive wording", frost);
     check(frost?.images.length === 1 && frost.images[0].src === "/images/hooch/frosted-flakes-bowl.webp", "before 0017: the hotlinked shop photo is never used", frost?.images);
     check(clean(list), "before 0017: no prototype claim and no hotlinked photo anywhere", list.map((p) => [p.slug, p.images.map((i) => i.src)]));
@@ -159,7 +159,7 @@ try {
       "after 0017: a prototype row staff republish shows, with Cornflakes unpublished, and the catalogue does not come back", back);
     await asStaff(`update public.products set is_published = false where brand_id = ${hoochBrand} and slug = 'choco-flakes'`);
   }
-  await asStaff(`update public.products set name = 'Hooch® Cornflakes', short_description = 'The golden crunch of Hooch® Cornflakes: 500g, in 10 convenient packs of 50g.', is_published = true
+  await asStaff(`update public.products set name = 'Hooch® Cornflakes', short_description = 'Start your morning with the golden crunch of Hooch® Cornflakes.', is_published = true
     where brand_id = ${hoochBrand} and slug = 'cornflakes'`);
 
   // Where to Buy: only stockists that carry Hooch. ------------------------------------------------------------

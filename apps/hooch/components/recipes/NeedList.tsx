@@ -19,7 +19,7 @@ export default function NeedList({ items }: { items: string[] }) {
           </li>
         );
       })}
-      {got.length === items.length && <li className={s.ready} role="status">Ready? Pour, add and enjoy!</li>}
+      {got.length === items.length && <li className={s.ready} role="status">Make Every Morning a Hooch® Moment!</li>}
     </ul>
   );
 }
