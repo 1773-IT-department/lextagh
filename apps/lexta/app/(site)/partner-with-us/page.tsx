@@ -8,7 +8,7 @@ import { benefits, steps } from "@/components/partner/data";
 
 // Title and description from partner-with-us.html.
 const title = "Partner With Us | Lexta Ghana";
-const description = "Partner with Lexta Ghana as a distributor, retail chain, institutional buyer or private-label client across Ghana and Liberia.";
+const description = "Partner with Lexta Ghana as a distributor, wholesaler, modern trade or institutional buyer across Ghana and Liberia.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -25,9 +25,9 @@ const lead: CSSProperties = { margin: "14px 0 0", fontSize: 14, lineHeight: 1.9,
 const arrowBadge: CSSProperties = { width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 };
 
 const stats = [
-  { value: "16", text: "Regions covered by our distribution network" },
+  { value: "[PLACEHOLDER: number of regions covered]", text: "Regions covered by our distribution network" },
   { value: "2", text: "Markets served: Ghana and Liberia" },
-  { value: "48h", text: "Typical response to a complete application" },
+  { value: "[PLACEHOLDER: typical response time]", text: "Typical response to a complete application" },
   { value: "3", text: "Consumer brands available to trade partners" },
 ];
 
@@ -38,7 +38,7 @@ const contacts = [
 
 const checklist = [
   { title: "Business registration", text: "certificate of incorporation and TIN." },
-  { title: "Trade references", text: "two suppliers you currently buy from." },
+  { title: "Trade references", text: "suppliers you currently buy from." },
   { title: "Storage and fleet", text: "warehouse size and vehicles available." },
   { title: "Coverage plan", text: "the towns, routes or outlets you serve." },
 ];
@@ -55,7 +55,7 @@ export default function PartnerPage() {
               Grow with a house of <span style={{ color: "#3fc0dd" }}>everyday brands</span>
             </h1>
             <p style={{ margin: "18px 0 0", fontSize: 15, lineHeight: 1.8, color: "rgba(255,255,255,.9)", maxWidth: 520, textWrap: "pretty" }}>
-              Distributors, retail chains, institutional buyers and private-label clients build with Lexta across Ghana and Liberia, backed by stock depth, trade terms and a field team that shows up.
+              Distributors, wholesalers, modern trade and institutional buyers grow with Lexta across Ghana and Liberia. Select your partnership type and share your region and contact details.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 30 }}>
               <a
@@ -76,7 +76,7 @@ export default function PartnerPage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
             {stats.map((s) => (
               <div key={s.text} style={{ background: "rgba(255,255,255,.07)", border: "1px solid rgba(255,255,255,.16)", borderRadius: 13, padding: 24 }}>
-                <div style={{ fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.03em" }}>{s.value}</div>
+                <div style={s.value.startsWith("[PLACEHOLDER") ? { fontSize: 13, fontWeight: 700, lineHeight: 1.45, color: "#fff" } : { fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.03em" }}>{s.value}</div>
                 <div style={{ marginTop: 6, fontSize: 12, lineHeight: 1.7, color: "rgba(255,255,255,.72)" }}>{s.text}</div>
               </div>
             ))}
@@ -185,7 +185,7 @@ export default function PartnerPage() {
           <div>
             <h2 style={{ margin: 0, fontSize: 30, lineHeight: 1.18, fontWeight: 700, letterSpacing: "-.025em", color: "#fff", textWrap: "pretty" }}>Not sure which route fits?</h2>
             <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "rgba(255,255,255,.92)", maxWidth: 460 }}>
-              Talk it through with the trade team first. We will tell you honestly whether the coverage is open in your area.
+              Talk it through with the trade team first, and share your region so your enquiry reaches the right people.
             </p>
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "flex-end" }}>

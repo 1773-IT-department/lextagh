@@ -13,7 +13,7 @@ export default function RecipeFilter({ recipes }: { recipes: Recipe[] }) {
     <>
       <div className={s.filters} role="group" aria-label="Filter recipes">
         {(["all", "Breakfast", "Snack"] as const).map((m) => (
-          <button key={m} type="button" className="hc-chip" aria-pressed={moment === m} onClick={() => setMoment(m)}>{m === "all" ? "All ideas" : m}</button>
+          <button key={m} type="button" className="hc-chip" aria-pressed={moment === m} onClick={() => setMoment(m)}>{m === "all" ? "All ideas" : m === "Snack" ? "Snacks" : m}</button>
         ))}
       </div>
       <p className="hc-sr" aria-live="polite">{shown.length} recipes shown</p>

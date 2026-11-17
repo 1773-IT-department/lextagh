@@ -29,14 +29,14 @@ const INTERVAL = 6500; // prototype heroInterval default
 const slides: Slide[] = [
   {
     eyebrow: "Lexta Ghana Limited", title: "Caring for you ", highlight: "every\u00a0day", titleSize: 58, titleLeading: 1.05,
-    body: "Quality, affordability and everyday care, proudly from Ghana.", bodyMax: 460,
+    body: "Quality, affordability and everyday care, proudly from Ghana. Discover the Lexta family of brands serving personal care, feminine care, oral care, home and tissue needs, baby care and food.", bodyMax: 460,
     img: "/assets/hero-family-products.png", w: 1774, h: 887, alt: "Ghanaian family at home with Lexta and Yazz products", focus: "70% center",
-    ctas: [{ label: "Explore Our Brands", href: "/our-brands" }],
+    ctas: [{ label: "Explore Our Brands", href: "/our-brands" }, { label: "Partner with Us", href: "/partner-with-us", ghost: true }],
   },
   {
     eyebrow: "Proudly Ghanaian since 2002", title: "Two decades on ", highlight: "Ghana's shelves", titleSize: 58, titleLeading: 1.05,
-    body: "Founded in Accra and built here. What began as a home care supplier now serves millions of homes across the sub-region.", bodyMax: 470,
-    img: "/assets/hero-25-years.png", w: 1774, h: 887, alt: "25 years of quality products in homes across Ghana and beyond", focus: "75% center",
+    body: "Founded in Accra in 2002 and built here. What began as a home care supplier now brings Yazz, Linzzy and Hooch to households in Ghana and Liberia.", bodyMax: 470,
+    img: "/assets/hero-25-years.png", w: 1774, h: 887, alt: "Lexta products on shelves and in Ghanaian homes", focus: "75% center",
     ctas: [{ label: "Our story", href: "/about-us" }],
   },
   {
@@ -47,8 +47,8 @@ const slides: Slide[] = [
     ctas: [{ label: "See the range", href: "/our-brands" }],
   },
   {
-    eyebrow: "Made under our own roof", title: "What is care without ", highlight: "quality?", titleSize: 56, titleLeading: 1.06,
-    body: "Our production lines run to international hygiene and regulatory standards, with every batch checked before it leaves us.", bodyMax: 470,
+    eyebrow: "Manufacturing excellence", title: "What is care without ", highlight: "quality?", titleSize: 56, titleLeading: 1.06,
+    body: "Our production operates under stringent international hygiene and regulatory benchmarks, and every batch meets defined safety criteria before it leaves our facility.", bodyMax: 470,
     img: "/assets/hero-factory.png", w: 1774, h: 887, alt: "Lexta production line in Ghana packing Yazz and Corn Flakes", focus: "78% center",
     ctas: [{ label: "Inside our operation", href: "/about-us" }],
   },
@@ -60,7 +60,7 @@ const slides: Slide[] = [
   },
   {
     eyebrow: "Ghana. Liberia. Next.", title: "Built to ", highlight: "reach further", titleSize: 56, titleLeading: 1.06,
-    body: "A distribution network spanning Ghana, a wholly owned subsidiary in Monrovia, and an expanding footprint across West Africa.", bodyMax: 470,
+    body: "A distribution network across Ghana, a wholly owned subsidiary in Monrovia, Liberia, and an ambition to serve families throughout Africa.", bodyMax: 470,
     img: "/assets/hero-west-africa.png", w: 1672, h: 941, alt: "Lexta distribution from Ghana across West Africa", focus: "80% center",
     ctas: [{ label: "Contact us", href: "/contact-us" }, { label: "Bulk and institutional orders", href: "/contact-us", ghost: true }],
   },

@@ -75,7 +75,7 @@ export default function HeroSlider({ slides }: { slides: Slide[] }) {
             </div>
           </div>
           {sl.note && (
-            <p className={`yz-script ${s.slideNote}`} aria-hidden="true">Comfort<br />+ Protection<br />= Confidence<span className={s.noteLine} /></p>
+            <p className={`yz-script ${s.slideNote}`} aria-hidden="true">Comfort.<br />Confidence.<br />Protection.<span className={s.noteLine} /></p>
           )}
         </div>
       ))}

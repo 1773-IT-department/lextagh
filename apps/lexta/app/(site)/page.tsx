@@ -14,9 +14,9 @@ import VideoModule from "@/components/home/VideoModule";
 import { getWhereToBuyRegions } from "@/components/home/where-to-buy";
 import s from "@/components/home/home.module.css";
 
-const title = "Lexta Ghana Limited | Home Care, Personal Care & Food Manufacturer";
+const title = "Lexta Ghana Limited | Yazz, Linzzy and Hooch, Proudly from Ghana";
 const description =
-  "Ghanaian manufacturer of Yazz, Hooch and Linzzy. Quality home care, personal care and food products for families across Ghana and West Africa since 2002.";
+  "Lexta Ghana Limited is a Ghanaian consumer-goods company and the home of Yazz, Linzzy and Hooch: personal care, feminine care, oral care, home and tissue, baby care and food, proudly from Ghana since 2002.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -41,6 +41,9 @@ const outlineBtn: CSSProperties = {
   fontSize: 13, fontWeight: 600, padding: "11px 20px", borderRadius: 7,
 };
 const h2Base: CSSProperties = { fontWeight: 700, letterSpacing: "-.02em", color: "#12313d" };
+/** A figure Lexta has not confirmed yet shows its [PLACEHOLDER: ...] note, sized to fit the figure's slot. */
+const isPlaceholder = (t: string) => t.startsWith("[PLACEHOLDER");
+const placeholderFigure: CSSProperties = { fontSize: 13, fontWeight: 700, lineHeight: 1.45 };
 
 /* ---------- Page data (copy exactly as in the approved prototype) ---------- */
 
@@ -67,11 +70,11 @@ const values = [
 const brands = [
   {
     name: "YAZZ", color: "#0f5fa8", anchor: "yazz", bg: "#f4f0f6", img: "/assets/brand-yazz.png", w: 1080, h: 1080, alt: "Yazz oral care", contain: false,
-    text: "Sanitary pads, panty liners, baby wipes and diapers, toothpaste and toothbrushes, tissue and kitchen towels, washing powder. Ghana's most preferred sanitary and hygiene brand at the 2022 Home Builders Awards.",
+    text: "Sanitary pads, panty liners, baby wipes and diapers, toothpaste and toothbrushes, tissue and kitchen towels, washing powder. Ghana's most preferred sanitary and hygiene brand at the 2022 Home Builders Africa Awards.",
   },
   {
     name: "HOOCH", color: "#c0272d", anchor: "hooch", bg: "#f6f2ea", img: "/assets/brand-hooch.png", w: 1080, h: 1080, alt: "Hooch Frosted Flakes", contain: true,
-    text: "Corn flakes and frosted flakes. Vitamin fortified, low fat, made for mornings that need to last.",
+    text: "Hooch® Cornflakes and Hooch® Frosted Flakes, enriched with vitamins, with 10 individual packs in every product for easy family breakfasts.",
   },
   {
     name: "LINZZY", color: "#6a2b8f", anchor: "linzzy", bg: "#eef2fa", img: "/assets/brand-linzzy.png", w: 447, h: 447, alt: "Linzzy baby wipes", contain: false,
@@ -80,34 +83,34 @@ const brands = [
 ];
 
 const proof = [
-  { figure: "24 years", label: "Manufacturing in Ghana" },
+  { figure: "2002", label: "Founded in Accra, proudly Ghanaian" },
   { figure: "3 brands", label: "Across home, personal care and food" },
-  { figure: "200+", label: "Distribution partners" },
+  { figure: "[PLACEHOLDER: number of distribution partners]", label: "Distribution partners" },
   { figure: "2 markets", label: "Ghana and Liberia, with more coming" },
 ];
 
 const quality = [
-  { title: "Manufacturing", text: "Production runs to international hygiene and regulatory benchmarks, with batch level quality checks before anything ships." },
-  { title: "Distribution", text: "An Accra based supply chain built for volume, serving retail across Ghana and into Liberia." },
-  { title: "Research and development", text: "Products refined against how Ghanaian families actually use them, not against a laboratory assumption." },
+  { title: "Manufacturing", text: "Our production operates under stringent international hygiene and regulatory benchmarks, and every batch meets defined safety criteria before it leaves our facility." },
+  { title: "Distribution", text: "Headquartered in Accra, our supply chain is built for high volume delivery across Ghana and into West Africa, including our Liberian operation." },
+  { title: "Research and development", text: "We refine our products against how Ghanaian families actually use them, measuring quality, safety, freshness and value against real households." },
 ];
 
 const impactStroke = { stroke: "rgba(255,255,255,.85)", strokeWidth: "1.6" };
 const impact = [
   {
-    count: 25, suffix: "+", label: ["Years of", "Excellence"],
+    count: 0, suffix: "", text: "2002", label: ["Founded", "in Accra"],
     svg: <><circle cx="12" cy="12" r="8" {...impactStroke} /><path d="M12 7v5l4 2" {...impactStroke} /></>,
   },
   {
-    count: 500, suffix: "+", label: ["Dedicated", "Employees"],
+    count: 0, suffix: "", text: "[PLACEHOLDER: number of employees]", label: ["Dedicated", "Employees"],
     svg: <><circle cx="9" cy="9" r="3.4" {...impactStroke} /><circle cx="17" cy="10.5" r="2.6" {...impactStroke} /><path d="M3 20c1.2-3.2 3.3-4.6 6-4.6s4.8 1.4 6 4.6" {...impactStroke} /></>,
   },
   {
-    count: 10, suffix: "M+", label: ["Lives", "Impacted"],
+    count: 0, suffix: "", text: "[PLACEHOLDER: lives impacted figure]", label: ["Lives", "Impacted"],
     svg: <><circle cx="12" cy="12" r="7.5" {...impactStroke} /><circle cx="12" cy="12" r="3" {...impactStroke} /></>,
   },
   {
-    count: 3, suffix: "", label: ["Trusted", "Brands"],
+    count: 3, suffix: "", text: undefined, label: ["Trusted", "Brands"],
     svg: <><rect x="4" y="4" width="7" height="7" {...impactStroke} /><rect x="13" y="4" width="7" height="7" {...impactStroke} /><rect x="4" y="13" width="7" height="7" {...impactStroke} /><rect x="13" y="13" width="7" height="7" {...impactStroke} /></>,
   },
 ];
@@ -124,30 +127,30 @@ const partners = [
 const business = [
   {
     title: "Distributors", link: "Apply to distribute →", href: "/partner-with-us",
-    text: "Join a network of partners moving our brands across Ghana and the sub-region. We provide marketing support, trade terms and consumer insight.",
+    text: "Distributors, wholesalers and modern trade partners move Yazz, Linzzy and Hooch across Ghana. Select your partnership type and share your region and contact details.",
   },
   {
     title: "Bulk and institutional buyers", link: "Request a quote →", href: "/partner-with-us",
-    text: "Schools, hospitals, hotels, NGOs and government agencies. Volume pricing, reliable supply, direct account management.",
+    text: "Schools, hospitals, hotels, NGOs and government agencies can request a quote for the products and quantities they need.",
   },
   {
     title: "Export and regional partners", link: "Talk to us →", href: "/contact-us",
-    text: "Building on our Liberia operation, we are expanding into new West African markets.",
+    text: "With a wholly owned subsidiary in Monrovia, Liberia, and an ambition to serve families throughout Africa, we welcome conversations with regional partners.",
   },
 ];
 
 const news = [
   {
     tag: "CSR", date: "15 July 2026", title: "The Bright Smiles School Tour",
-    text: "Free biannual dental screenings and oral hygiene workshops in rural primary schools, with the Ghana Dental Association.",
+    text: "A proposed school tour bringing age-appropriate oral hygiene education to pupils, with qualified dental professionals and schools.",
   },
   {
-    tag: "Brands", date: "29 May 2026", title: "Yazz partners MX24 TV for the 2026 CroxItOut High School Tour",
-    text: "Awareness, mentorship and action, taking menstrual and oral care education into senior high schools.",
+    tag: "CSR", date: "15 July 2026", title: "The Safe Bottoms Initiative",
+    text: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund mechanised boreholes in communities facing water scarcity.",
   },
   {
-    tag: "Health", date: "February 2026", title: "Free public cervical cancer screening with SOFPOG, MWAG and Korle Bu Polyclinic",
-    text: "Screening and education on HPV, vaccination and the warning signs too often missed.",
+    tag: "CSR", date: "15 July 2026", title: "The Lexta Forest Project",
+    text: "A proposed commitment to plant 10 indigenous trees for every 1,000 rolls of 100% virgin pulp tissue sold, restoring degraded forest reserves.",
   },
 ];
 
@@ -204,12 +207,12 @@ export default async function HomePage() {
           >
             <div>
               <div style={eyebrow}>Who We Are</div>
-              <h2 style={{ ...h2Base, margin: "14px 0 0", fontSize: 33, lineHeight: 1.18, textWrap: "pretty" }}>A Ghanaian manufacturer, not a middleman</h2>
+              <h2 style={{ ...h2Base, margin: "14px 0 0", fontSize: 33, lineHeight: 1.18, textWrap: "pretty" }}>A Ghanaian consumer-goods company</h2>
               <p style={{ margin: "20px 0 0", fontSize: 14, lineHeight: 1.85, color: "#4d6a75", textWrap: "pretty" }}>
-                We make what we sell. From our facility in Accra, Lexta produces the home care, personal care and food products that carry the Yazz, Hooch and Linzzy names, and moves them through a distribution network reaching supermarkets, market traders and corner shops nationwide.
+                Lexta Ghana Limited is a Ghanaian consumer-goods company committed to making dependable everyday products more accessible to households. Across Yazz, Linzzy and Hooch, we bring care, innovation and value together with an ambition to serve families throughout Africa.
               </p>
               <p style={{ margin: "14px 0 0", fontSize: 14, lineHeight: 1.85, color: "#4d6a75", textWrap: "pretty" }}>
-                Founded in 2002 by Martin Brobbey on his return to Ghana, the company has grown from a single category supplier into one of the country's established consumer goods manufacturers, with a wholly owned subsidiary in Monrovia and plans for further expansion across the sub-region.
+                Founded in 2002 by Martin Brobbey on his return to Ghana, Lexta has grown from a single category supplier into a leader in home and personal care, with a wholly owned subsidiary in Monrovia, Liberia.
               </p>
               <ArrowButton href="/about-us" padding="10px 10px 10px 20px" style={{ marginTop: 26 }}>More about Lexta</ArrowButton>
             </div>
@@ -302,7 +305,7 @@ export default async function HomePage() {
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 30 }}>
           {proof.map((p) => (
             <div key={p.figure}>
-              <div style={{ fontSize: 30, fontWeight: 800, letterSpacing: "-.03em", color: "#3fc0dd" }}>{p.figure}</div>
+              <div style={isPlaceholder(p.figure) ? { ...placeholderFigure, color: "#3fc0dd" } : { fontSize: 30, fontWeight: 800, letterSpacing: "-.03em", color: "#3fc0dd" }}>{p.figure}</div>
               <div style={{ marginTop: 8, fontSize: 12.5, lineHeight: 1.6, color: "rgba(255,255,255,.75)" }}>{p.label}</div>
             </div>
           ))}
@@ -357,7 +360,11 @@ export default async function HomePage() {
             {impact.map((m) => (
               <div key={m.label.join(" ")} style={{ border: "1px solid rgba(255,255,255,.4)", borderRadius: 10, padding: "20px 12px", textAlign: "center" }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style={{ marginBottom: 8 }} aria-hidden="true">{m.svg}</svg>
-                <CountUp target={m.count} suffix={m.suffix} style={{ fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }} />
+                {m.text ? (
+                  <div style={isPlaceholder(m.text) ? { ...placeholderFigure, color: "#fff" } : { fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }}>{m.text}</div>
+                ) : (
+                  <CountUp target={m.count} suffix={m.suffix} style={{ fontSize: 30, fontWeight: 800, color: "#fff", letterSpacing: "-.02em" }} />
+                )}
                 <div style={{ fontSize: 12, lineHeight: 1.4, color: "rgba(255,255,255,.85)", marginTop: 4 }}>{twoLines(m.label)}</div>
               </div>
             ))}
@@ -491,7 +498,7 @@ export default async function HomePage() {
               Ready to make your mark? Explore our flexible career paths and be part of a team that is building a better tomorrow.
             </p>
             <p style={{ margin: "12px 0 0", fontSize: 14, lineHeight: 1.8, color: "rgba(255,255,255,.85)", maxWidth: 380 }}>
-              Lexta employs hundreds of people across manufacturing, sales, marketing and distribution. We hire for drive and we promote from within.
+              Grow with a company that believes in people and possibilities. Explore opportunities in production, sales, logistics, marketing and administration.
             </p>
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 26 }}>
               <ArrowButton href="/careers#openings" padding="11px 11px 11px 20px">Current openings</ArrowButton>

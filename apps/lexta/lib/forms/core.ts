@@ -77,13 +77,22 @@ export const CONTACT_REASONS: Record<string, NonNullable<ContactFormPayload["rea
 
 /** Region labels on the Contact Us form, to region slugs in public.regions (0005_stockists.sql). */
 export const REGION_SLUGS: Record<string, string> = {
-  "Greater Accra": "greater-accra",
+  Ahafo: "ahafo",
   Ashanti: "ashanti",
-  Western: "western",
-  Eastern: "eastern",
+  Bono: "bono",
+  "Bono East": "bono-east",
   Central: "central",
-  Volta: "volta",
+  Eastern: "eastern",
+  "Greater Accra": "greater-accra",
+  "North East": "north-east",
   Northern: "northern",
+  Oti: "oti",
+  Savannah: "savannah",
+  "Upper East": "upper-east",
+  "Upper West": "upper-west",
+  Volta: "volta",
+  Western: "western",
+  "Western North": "western-north",
   "Outside Ghana": "outside-ghana",
 };
 

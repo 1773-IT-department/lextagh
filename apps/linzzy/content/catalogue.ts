@@ -7,8 +7,8 @@
  *      product page extras); the database supplies the SKU codes, photos, published state and order,
  *   2. a product of this list the database lacks is shown from here, so the full range always shows,
  *   3. it is what the site shows if the database cannot be reached, and
- *   4. it is the data entry sheet for Product Management. Migration 0016 (written, not applied: Desmond decides) writes
- *      these six products and unpublishes the three rows seeded from the Lexta prototype (0004).
+ *   4. it is the data entry sheet for Product Management. Migration 0016 (applied to the project) wrote
+ *      these six products, corrected the seeded "Baby wipes" row and unpublished the two prototype umbrella rows (0004).
  * Pack contents are as written by Lexta. SKU codes are still to come. Pack shots come from the original
  * linzzyproducts.com (public/images/original), as allowed for gaps; every one is listed in CONTENT-NEEDED.md.
  * Not used, because Lexta's content says they must be verified first: "0% alcohol and parabens" on the wipes packs, and

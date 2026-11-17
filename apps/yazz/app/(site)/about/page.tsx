@@ -138,7 +138,7 @@ export default function AboutPage() {
           <div>
             <p className="yz-eyebrow">Community impact</p>
             <h2 id="impact-title" className={s.blueTitle}>Rooted in Our Communities.</h2>
-            <p className={s.para}>Yazz community programmes, from menstrual education in schools to hygiene and environmental activities, are run by Lexta Ghana Limited. Read about them, or propose a partnership, on the Lexta website.</p>
+            <p className={s.para}>Lexta Ghana Limited has set out Yazz community programmes on menstrual education, baby hygiene, oral care and the environment; several of them are still proposed. Read about them, or propose a partnership, on the Lexta website.</p>
           </div>
           <a href={lexta.csr} target="_blank" rel="noopener" className="yz-btn yz-btn--red">Our Impact at Lexta <Icon name="arrow" size={17} /></a>
         </div>

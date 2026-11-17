@@ -137,7 +137,7 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 }
 
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Hooch team and your reference is ${ref}.`;
-const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}; our consumer care team will contact you.`;
+const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report has gone to our consumer care team.`;
 
 export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
   if (trapped(fd)) {
@@ -224,7 +224,7 @@ export function buildTrade(fd: FormData, rangeNames: Record<string, string> = {}
   };
 }
 
-const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Hooch trade team and your reference is ${ref}.`;
+const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Hooch® team at Lexta Ghana Limited and your reference is ${ref}.`;
 
 export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}): Promise<FormState> {
   if (trapped(fd)) {

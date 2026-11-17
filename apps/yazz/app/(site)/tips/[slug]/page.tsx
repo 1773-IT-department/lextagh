@@ -6,7 +6,7 @@ import Photo from "@/components/Photo";
 import ArticleBody from "@/components/tips/ArticleBody";
 import ArticleCard from "@/components/tips/ArticleCard";
 import s from "@/components/tips/tips.module.css";
-import { ARTICLES, articleBySlug, categoryOf, HEALTH_NOTE, monthLabel } from "@/content/articles";
+import { ARTICLES, articleBySlug, categoryOf, HEALTH_NOTE, HEALTH_NOTE_PARENTS, monthLabel } from "@/content/articles";
 import { RANGES } from "@/lib/ranges";
 
 
@@ -53,7 +53,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <p className={s.artLede}>{article.lede}</p>
           <div className={s.artMeta}>
             <span><Icon name="clock" size={15} /> {article.readMinutes} min read</span>
-            <span><Icon name="edit" size={15} /> {article.date ? `Yazz Care Team, ${monthLabel(article.date)}` : "Yazz Care Team"}</span>
+            <span><Icon name="edit" size={15} /> {article.date ? `Yazz®, ${monthLabel(article.date)}` : "Yazz®"}</span>
           </div>
         </div>
         <div className={s.artPic}>
@@ -64,7 +64,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <div className={s.artGrid}>
         <article>
           <ArticleBody article={article} />
-          {health && <p className={s.health}>{HEALTH_NOTE}</p>}
+          {health && <p className={s.health}>{article.category === "just-4-parents" ? HEALTH_NOTE_PARENTS : HEALTH_NOTE}</p>}
           <div className={s.backRow}>
             <Link href={`/tips?category=${cat.slug}`} className="yz-btn yz-btn--outline"><Icon name="arrow-left" size={16} /> Back to {cat.label}</Link>
             {range && <Link href={`/products/${range.slug}`} className="yz-btn yz-btn--red">See Yazz {range.name} <Icon name="arrow" size={16} /></Link>}
@@ -80,7 +80,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           )}
           <div className={s.box}>
             <h2>Have a question?</h2>
-            <p>Our consumer care team is happy to help, privately and without judgement.</p>
+            <p>Send us your question. It goes to our consumer care team.</p>
             <Link href="/contact?topic=question#message" className={s.boxLink}>Contact us <Icon name="arrow" size={15} /></Link>
           </div>
           {range && (

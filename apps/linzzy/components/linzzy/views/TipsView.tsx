@@ -335,19 +335,19 @@ export default function TipsView({ v: vals }: { v: any }) {
                 </p>
                 {"\n        "}
                 <p style={{"margin":"16px 0","fontFamily":"'DM Serif Display',serif","fontSize":"clamp(30px,3.2vw,50px)","lineHeight":"1.02"} as CSSProperties}>
-                  {"“Who has helped you most on your parenting journey?”"}
+                  {"“What's One Baby Care Tip You Wish You Had Known Earlier?”"}
                 </p>
                 {"\n        "}
                 <p style={{"margin":"0 0 10px","fontSize":"15px"} as CSSProperties}>
-                  {"Community theme: Family Support"}
+                  {"Was it a smarter way to pack your diaper bag? A useful diaper-changing routine? Or a simple trick that made outings with your baby easier?"}
                 </p>
                 {"\n        "}
                 <p style={{"margin":"0","fontSize":"15px","lineHeight":"1.55"} as CSSProperties}>
-                  {"Would you like to share your answer or ask a question of your own? Write to us through the "}
+                  {"Tell us what you've learned and why it matters through the "}
                   <a href="/contact#message" style={{"color":"#fff","textDecoration":"underline"} as CSSProperties}>
                     {"Contact page"}
                   </a>
-                  {"."}
+                  {". Your little discovery could become another parent's big help!"}
                 </p>
                 {"\n      "}
               </div>
@@ -396,7 +396,7 @@ export default function TipsView({ v: vals }: { v: any }) {
               </h2>
               {"\n      "}
               <p style={{"margin":"16px 0 0","fontSize":"clamp(17px,1.4vw,20px)","color":"#1f3d33"} as CSSProperties}>
-                {"New Tips & Advice and Linzzy news in your inbox."}
+                {"Opt in to receive Linzzy educational updates by email."}
               </p>
               {"\n    "}
             </div>
@@ -406,14 +406,14 @@ export default function TipsView({ v: vals }: { v: any }) {
               {vals.subSent ? (
                 <>
                   <p role="status" data-form-message="" tabIndex={-1} style={{"margin":"0","padding":"22px 24px","background":"#0E7A5B","color":"#fff","fontWeight":"700","fontSize":"17px"} as CSSProperties}>
-                    {"Thank you. You're on the list."}
+                    {"Thank you. You have opted in to Linzzy educational updates."}
                     {vals.sub.state.reference ? <span style={{ display: "block", marginTop: 6, fontWeight: 500, fontSize: 15 }}>{`Your reference is ${vals.sub.state.reference}.`}</span> : null}
                   </p>
                 </>
               ) : null}
               {"\n      "}
               {vals.subOpen ? (
-                <form ref={vals.sub.ref} action={vals.sub.action} onSubmit={vals.sub.onSubmit} noValidate aria-label="Subscribe to Linzzy news">
+                <form ref={vals.sub.ref} action={vals.sub.action} onSubmit={vals.sub.onSubmit} noValidate aria-label="Sign up for Linzzy educational updates">
                   <Honeypot />
                   {"\n        "}
                   <label htmlFor="sub-email" style={{"display":"block","fontWeight":"700","fontSize":"13px","letterSpacing":"0.1em","textTransform":"uppercase","marginBottom":"10px","color":"#0B3D2E"} as CSSProperties}>
@@ -433,7 +433,7 @@ export default function TipsView({ v: vals }: { v: any }) {
                   {"\n        "}
                   <label style={{"display":"flex","gap":"10px","alignItems":"flex-start","marginTop":"14px","fontSize":"13px","lineHeight":"1.5","color":"#1f3d33"} as CSSProperties}>
                     <input type="checkbox" name="consent" value="yes" {...fieldAria(vals.sub.state, "consent", "sub-consent-error")} style={{"marginTop":"3px","accentColor":"#0E7A5B"} as CSSProperties} />
-                    {"Yes, I agree to receive emails from Linzzy (Lexta Ghana Limited). I can unsubscribe at any time."}
+                    {"Yes, I agree to receive educational updates by email from Linzzy (Lexta Ghana Limited). I can unsubscribe at any time."}
                   </label>
                   <Err id="sub-consent-error" msg={vals.sub.state.fieldErrors?.consent} />
                   {"\n      "}

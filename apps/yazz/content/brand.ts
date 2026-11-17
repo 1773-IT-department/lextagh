@@ -21,9 +21,9 @@ export const BRAND = {
     { icon: "shield", title: "Quality", body: "Maintaining standards that consumers can depend on.", tone: "#ED1B2E", bg: "#FCECEE" },
     { icon: "check", title: "Reliability", body: "Creating products designed for consistent everyday use.", tone: "#0B4FA5", bg: "#EAF2FD" },
     { icon: "heart", title: "Value", body: "Providing practical solutions that offer meaningful value to consumers.", tone: "#B05C10", bg: "#FDF3E7" },
-    { icon: "bulb", title: "Innovation", body: "Continuously exploring ways to improve our products and respond to changing needs.", tone: "#15803D", bg: "#E8F5EC" },
+    { icon: "bulb", title: "Innovation", body: "Continuously exploring ways to improve our products and respond to changing consumer needs.", tone: "#15803D", bg: "#E8F5EC" },
     { icon: "chat", title: "Consumer Care", body: "Listening to the people and households who choose Yazz®.", tone: "#6D3FC0", bg: "#F0EAFB" },
-    { icon: "people", title: "Accessibility", body: "Making Yazz® products available to more consumers across Ghana and beyond.", tone: "#C2477F", bg: "#FDEDF5" },
+    { icon: "people", title: "Accessibility", body: "Working to make Yazz® products available to more consumers across Ghana and beyond.", tone: "#C2477F", bg: "#FDEDF5" },
   ],
   lexta: {
     title: "Proudly From Lexta Ghana Limited",
@@ -56,5 +56,5 @@ export const BRAND = {
     "Yazz® and associated Yazz names, logos, marks, product identities, packaging elements and brand assets are trademarks and/or intellectual property of Lexta Ghana Limited, subject to applicable registrations and intellectual property rights. Unauthorised reproduction, imitation, modification, distribution or commercial use is prohibited.",
   copyright: "© 2026 Lexta Ghana Limited. All rights reserved.",
   consumerSupport:
-    "We are here to listen, serve and support. If you have a question or concern, tell us the product, batch information, purchase location and what happened. Your enquiry will be handled by our consumer care team.",
+    "We are here to listen, serve and support. If you have a question or concern, tell us the product, batch information, purchase location and what happened. Your enquiry will be handled by our consumer care team. To send photographs where appropriate, email support@yazzproducts.com.",
 };

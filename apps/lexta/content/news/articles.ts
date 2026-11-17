@@ -15,7 +15,11 @@
  *   and list (bullet points, items plus optional intro).
  *
  * Copy rules: no em dashes, en dashes or spaced hyphens. Never invent facts, quotes or photos.
+ *
+ * Held stories: stories listed in held.ts stay in this file but are not shown anywhere until Lexta approves them.
  */
+
+import { isLiveStory } from "./held";
 
 export type NewsCategory = "CSR" | "Health" | "Brands" | "Partnerships" | "Company";
 
@@ -46,15 +50,16 @@ export type Article = {
   originalUrl: string;
 };
 
-export const articles: Article[] = [
+/** Every story, including those held back (see held.ts). Pages use `articles`, the live ones only. */
+export const allArticles: Article[] = [
   {
     slug: "the-bright-smiles-school-tour",
     title: "The Bright Smiles School Tour",
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "Free biannual dental screenings and oral hygiene workshops in rural primary schools, with the Ghana Dental Association.",
-    standfirst: "In partnership with the Ghana Dental Association, The Bright Smiles School Tour brings free dental screenings and oral hygiene workshops to rural primary schools twice a year.",
+    excerpt: "A proposed school tour bringing age-appropriate oral hygiene education to pupils, with qualified dental professionals and schools.",
+    standfirst: "Healthy smiles begin with everyday habits. The Bright Smiles School Tour is a proposed Yazz programme of age-appropriate oral hygiene education, built on partnerships with qualified dental professionals and schools.",
     readingMinutes: 2,
     image: "/assets/original/web/lexta-kakel-1897-scaled.webp",
     imageAlt: "Image from the original story",
@@ -67,50 +72,34 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The Bright Smiles School Tour is Lexta Ghana's oral health programme for young children. Working in partnership with the Ghana Dental Association, the tour provides free biannual dental screenings and oral hygiene workshops in rural primary schools."
+        text: "The Bright Smiles School Tour is the oral care initiative in Lexta's CSR programme, linked to Yazz Toothpaste and Toothbrushes. It proposes age-appropriate oral hygiene education for pupils, delivered through partnerships with qualified dental professionals and schools."
       },
       {
         type: "p",
-        text: "Screenings give dental professionals the chance to spot problems early and advise children and their families on next steps. The workshops focus on the everyday habits that prevent problems in the first place: how and when to brush, why sugary snacks and drinks matter, and why regular check ups are worth the trip."
+        text: "The tour brings together three strands: oral hygiene education, empowerment and academic support. The idea is simple. Healthy smiles begin with everyday habits, and the school years are when those habits are formed."
       },
       {
         type: "h2",
-        text: "Why start in primary school"
+        text: "Working with the right people"
       },
       {
         type: "p",
-        text: "Tooth decay is one of the most common health problems among children anywhere in the world, and it is largely preventable. The habits that protect teeth for life are formed early, which makes the primary school years the right moment to teach them."
-      },
-      {
-        type: "p",
-        text: "Dental pain is also more than a health issue. A child with toothache finds it hard to concentrate, and may miss school altogether. Helping children keep their teeth healthy supports their learning as well as their wellbeing."
+        text: "Our approach to community work is to act where our products can make a practical difference, and to work alongside the people who know the subject best. For Bright Smiles, that means qualified dental professionals, together with the schools that know their pupils."
       },
       {
         type: "h2",
-        text: "Why rural schools"
+        text: "Status"
       },
       {
         type: "p",
-        text: "Families in rural communities often live further from dental clinics and may find it harder to reach regular care. Taking screenings and workshops into rural primary schools brings that care to children where they already are, and returning twice a year allows progress to be followed rather than measured once."
-      },
-      {
-        type: "h2",
-        text: "Working with the experts"
+        text: "The Bright Smiles School Tour is a proposed programme. It is part of the oral health pillar of our CSR work and contributes to Sustainable Development Goal 3, good health and wellbeing."
       },
       {
         type: "p",
-        text: "Our approach to corporate social responsibility is to work where our products and expertise can change an outcome, and to partner with the people who know the subject best. A company that makes oral care products should be in schools talking about oral health, and the Ghana Dental Association brings the clinical knowledge to make those visits count."
-      },
-      {
-        type: "p",
-        text: "The Bright Smiles School Tour is part of the oral health pillar of our CSR programme and contributes to Sustainable Development Goal 3, good health and wellbeing. Schools that would like to be considered for a visit can request an outreach session through our website."
+        text: "Schools that would like to invite the tour, and dental professionals who would like to take part, can contact our team through the Partner With Us page."
       }
     ],
     sources: [
-      {
-        name: "Yazz Products: The Bright Smiles School Tour",
-        url: "https://yazzproducts.com/the-bright-smiles-school-tour/"
-      },
       {
         name: "Lexta Ghana: Corporate Social Responsibility",
         url: "/corporate-social-responsibility"
@@ -124,8 +113,8 @@ export const articles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "For every jumbo pack sold, Lexta funds mechanised boreholes in communities facing water scarcity.",
-    standfirst: "For every jumbo pack sold, Lexta funds the construction and maintenance of mechanised boreholes in communities facing water scarcity, so that safe hygiene for infants is possible in the first place.",
+    excerpt: "For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund mechanised boreholes in communities facing water scarcity.",
+    standfirst: "Good baby hygiene begins with information and access. For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants.",
     readingMinutes: 2,
     image: "/assets/original/web/lexta-kakel-1875-683x1024.webp",
     imageAlt: "Image from the original story",
@@ -138,31 +127,19 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "The Safe Bottoms Initiative links an everyday purchase to a lasting community benefit. For every jumbo pack sold, Lexta Ghana funds the construction and maintenance of mechanised boreholes in communities facing water scarcity."
+        text: "The Safe Bottoms Initiative links an everyday purchase to a community need. For every jumbo pack sold, Yazz and Linzzy diapers and wipes fund the construction and maintenance of mechanised boreholes in communities facing water scarcity, to ensure safe hygiene for infants."
       },
       {
         type: "p",
-        text: "The idea is straightforward. Good infant hygiene depends on clean water: for bathing a baby, for washing hands before and after a change, and for keeping the home clean. Where safe water is scarce, even families with the right products struggle to keep their children clean and healthy. Safe Bottoms addresses that underlying need."
+        text: "It is a safe drinking water initiative for communities and for today's child. Good infant hygiene depends on clean water: for bathing a baby, for washing hands before and after a change, and for keeping the home clean."
       },
       {
         type: "h2",
-        text: "Why water comes first"
+        text: "More than water"
       },
       {
         type: "p",
-        text: "Access to safe water shapes almost every part of family health. When water has to be carried over long distances, every litre is rationed, and hygiene is often the first thing to be cut back. Infants and young children are among the most vulnerable to the illnesses that follow poor sanitation."
-      },
-      {
-        type: "p",
-        text: "A reliable water point close to home changes that. It saves time, particularly for the women and girls who usually fetch water, and it makes regular handwashing and bathing realistic rather than aspirational."
-      },
-      {
-        type: "h2",
-        text: "Built to last"
-      },
-      {
-        type: "p",
-        text: "Funding covers maintenance as well as construction. A borehole that falls into disrepair stops serving its community, so the initiative is designed to keep water flowing over time rather than to mark a single opening day."
+        text: "Safe Bottoms is designed to support caregiver education, responsible diaper and wipe disposal and community hygiene partnerships, so that access to water goes together with the information families need."
       },
       {
         type: "h2",
@@ -170,7 +147,7 @@ export const articles: Article[] = [
       },
       {
         type: "p",
-        text: "Safe Bottoms is part of the water and sanitation pillar of Lexta's CSR programme and contributes to Sustainable Development Goal 6, clean water and sanitation. It reflects a principle that runs through all our community work: we act where our products and our business can make a practical difference."
+        text: "Safe Bottoms is the baby care initiative in Lexta's CSR programme and contributes to Sustainable Development Goal 6, clean water and sanitation."
       },
       {
         type: "p",
@@ -178,10 +155,6 @@ export const articles: Article[] = [
       }
     ],
     sources: [
-      {
-        name: "Yazz Products: The Safe Bottoms Initiative",
-        url: "https://yazzproducts.com/the-safe-bottoms-initiative/"
-      },
       {
         name: "Lexta Ghana: Corporate Social Responsibility",
         url: "/corporate-social-responsibility"
@@ -195,8 +168,8 @@ export const articles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "Ten indigenous trees planted for every 1,000 rolls of virgin pulp tissue sold, restoring reserves in Ashanti and the Eastern region.",
-    standfirst: "Lexta commits to planting ten indigenous trees for every 1,000 rolls of 100 percent virgin pulp tissue sold, restoring degraded forest reserves in the Ashanti and Eastern regions.",
+    excerpt: "A proposed commitment to plant 10 indigenous trees for every 1,000 rolls of 100% virgin pulp tissue sold, restoring degraded forest reserves.",
+    standfirst: "Care for our homes should go hand in hand with care for the environment. The Lexta Forest Project is a proposed tree planting and environmental education platform linking everyday paper use with responsible stewardship.",
     readingMinutes: 2,
     image: "/assets/original/web/lexta-lexta-teen-care-campaign.webp",
     imageAlt: "Image from the original story",
@@ -205,50 +178,38 @@ export const articles: Article[] = [
     body: [
       {
         type: "h2",
-        text: "Putting trees back"
+        text: "The commitment"
       },
       {
         type: "p",
-        text: "Our tissue is made from 100 percent virgin pulp, which comes from trees. The Lexta Forest Project is our commitment to give back what that production takes. For every 1,000 rolls of 100 percent virgin pulp tissue sold, Lexta commits to planting ten indigenous trees."
+        text: "The Lexta Forest Project, also known as the Yazz Forest Project, is the tissue initiative in Lexta's CSR programme. It sets out a commitment to plant 10 indigenous trees for every 1,000 rolls of 100% virgin pulp Yazz tissue sold, restoring degraded forest reserves."
       },
       {
         type: "p",
-        text: "The planting is focused on degraded forest reserves in the Ashanti and Eastern regions, two parts of Ghana where forest cover has come under pressure."
+        text: "Its message is a simple one: plant a tree today."
       },
       {
         type: "h2",
-        text: "Why indigenous species"
+        text: "Why it matters"
       },
       {
         type: "p",
-        text: "The project plants indigenous trees rather than fast growing exotic species. Native trees belong to the local ecosystem: they support the birds, insects and other wildlife that depend on them, and they help restore the character of a forest rather than simply adding tree cover."
+        text: "Tissue is an everyday product, and the project links that everyday use with responsible stewardship of the land. Alongside planting, it is planned as a platform for environmental education, so that communities and young people are part of the work."
       },
       {
         type: "h2",
-        text: "Why forests matter"
+        text: "Status"
       },
       {
         type: "p",
-        text: "Forests protect soils and water sources, provide habitat, store carbon and support the livelihoods of many communities. When a reserve is degraded, those benefits are lost along with the trees. Restoration is slow work, and it depends on long term commitment rather than one off planting days."
-      },
-      {
-        type: "h2",
-        text: "Linking sales to restoration"
+        text: "The Lexta Forest Project is a proposed programme. It is part of the environment pillar of our CSR work and contributes to Sustainable Development Goal 15, life on land."
       },
       {
         type: "p",
-        text: "Tying planting to tissue sales means the project grows with the business. As more households choose our tissue, more trees go into the ground. It is a direct expression of the philosophy behind all our CSR work: a company that makes tissue from virgin pulp should be putting trees back."
-      },
-      {
-        type: "p",
-        text: "The Lexta Forest Project is part of the environment pillar of our CSR programme and contributes to Sustainable Development Goal 15, life on land. Organisations involved in forest restoration in the Ashanti and Eastern regions that would like to work with us can contact our team through the Partner With Us page."
+        text: "Organisations involved in tree planting and forest restoration that would like to support a green activity can contact our team through the Partner With Us page."
       }
     ],
     sources: [
-      {
-        name: "Yazz Products: The Lexta Forest Project",
-        url: "https://yazzproducts.com/the-lexta-forest-project/"
-      },
       {
         name: "Lexta Ghana: Corporate Social Responsibility",
         url: "/corporate-social-responsibility"
@@ -262,8 +223,8 @@ export const articles: Article[] = [
     category: "CSR",
     date: "15 July 2026",
     isoDate: "2026-07-15",
-    excerpt: "Clean homes and a cleaner environment belong together: hygiene education, responsible packaging disposal and community clean-ups.",
-    standfirst: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, Clean Hands, Green Land focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
+    excerpt: "Clean homes and a cleaner environment belong together: a proposed programme of hygiene education, responsible packaging disposal and community clean-ups.",
+    standfirst: "Clean homes and a cleaner environment belong together. Led by Yazz Detergent, Clean Hands, Green Land is a proposed programme focused on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
     readingMinutes: 2,
     image: "/assets/original/web/lexta-kakel-1845-1024x683.webp",
     imageAlt: "Image from the original story",
@@ -271,15 +232,39 @@ export const articles: Article[] = [
     draft: true,
     body: [
       {
+        type: "h2",
+        text: "The programme"
+      },
+      {
         type: "p",
-        text: "[PLACEHOLDER: approved Clean Hands, Green Land article body from Lexta]"
+        text: "Clean Hands, Green Land is the home care initiative in Lexta's CSR programme, linked to Yazz Detergents. It is a clean home, safe environment initiative for communities and for today's leaders."
+      },
+      {
+        type: "p",
+        text: "The proposed programme has three parts: practical hygiene education, responsible disposal of packaging, and community clean-up partnerships."
+      },
+      {
+        type: "h2",
+        text: "Why it matters"
+      },
+      {
+        type: "p",
+        text: "A clean home is only part of the picture. What happens to packaging after use, and how clean our streets and shared spaces are, matters to the health of every household. Clean Hands, Green Land brings those two together."
+      },
+      {
+        type: "h2",
+        text: "Status"
+      },
+      {
+        type: "p",
+        text: "Clean Hands, Green Land is a proposed programme. It contributes to Sustainable Development Goal 12, responsible consumption and production."
+      },
+      {
+        type: "p",
+        text: "Communities, schools and organisations that would like to join an activation can contact our team through the Partner With Us page."
       }
     ],
     sources: [
-      {
-        name: "Yazz Products: Clean Hands, Green Land",
-        url: "https://yazzproducts.com/clean-hands-green-land/"
-      },
       {
         name: "Lexta Ghana: Corporate Social Responsibility",
         url: "/corporate-social-responsibility"
@@ -1211,3 +1196,6 @@ export const articles: Article[] = [
     originalUrl: "https://lextagh.com/2017/05/30/lexta-teen-care-campaign/"
   }
 ];
+
+/** The stories the site shows, lists and builds pages for: every story except those held back in held.ts. */
+export const articles: Article[] = allArticles.filter((a) => isLiveStory(a.slug));

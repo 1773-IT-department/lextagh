@@ -30,6 +30,11 @@ export const FAQ_GROUPS: FaqGroup[] = [
         link: article("common-puberty-questions"),
       },
       {
+        q: "How do I know my period is coming?",
+        a: "Getting familiar with your own cycle can help you recognise your usual pattern and prepare for your period. Tracking your cycle with a period tracker or calendar can help you understand your usual pattern and prepare for future periods.",
+        link: article("common-puberty-questions"),
+      },
+      {
         q: "How do I use a sanitary pad?",
         a: "Wash your hands, unwrap the pad, peel away the backing, position it in the centre of your underwear and fold the wings around the sides. Change regularly, wrap and bin the used pad, and wash your hands. Never flush pads.",
         link: article("how-to-use-a-sanitary-pad"),
@@ -50,14 +55,29 @@ export const FAQ_GROUPS: FaqGroup[] = [
         link: article("periods-at-school"),
       },
       {
-        q: "What should I keep in my period kit?",
-        a: "Sanitary pads, clean underwear, tissues, a small disposal bag and a period calendar or tracker.",
+        q: "How do I dispose of my sanitary pad?",
+        a: "Wrap the used pad and place it in a waste bin, then wash your hands. Never flush pads.",
+        link: article("how-to-use-a-sanitary-pad"),
+      },
+      {
+        q: "Why can my menstrual flow change?",
+        a: "Your flow can change during your period. What feels suitable during the first few days may be different from what you prefer toward the end of your period. Cycle length, menstrual flow and symptoms can vary between individuals and sometimes between cycles.",
+        link: article("which-pad-is-right-4-me"),
+      },
+      {
+        q: "How can I prepare for my first period?",
+        a: "Learning about menstruation before your first period can make the experience feel much more manageable. Create a small Yazz® Period Kit for your school bag, handbag or backpack, and know which trusted adult you can ask for support.",
         link: article("understanding-your-first-period"),
       },
       {
         q: "How do I talk to my parents or caregiver about periods?",
         a: "You don't need a perfect opening. Try something simple, such as \"I have a question about my period.\" You could also write your question down first.",
         link: article("talking-to-a-trusted-adult"),
+      },
+      {
+        q: "What should I keep in my period kit?",
+        a: "Sanitary pads, clean underwear, tissues, a small disposal bag and a period calendar or tracker.",
+        link: article("understanding-your-first-period"),
       },
       {
         q: "When should I talk to a healthcare professional?",
@@ -85,7 +105,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       },
       {
         q: "How do I report a problem with a product?",
-        a: "Use the contact form and choose \"Report a problem with a product\". Tell us the product, batch information, purchase location and what happened; our consumer care team handles every report and gives you a case number.",
+        a: "Use the contact form and choose \"Report a problem with a product\". Tell us the product, batch information, purchase location and what happened. Your report goes to our consumer care team, and the form shows you a case number for it. To send photographs where appropriate, email support@yazzproducts.com.",
         link: { href: "/contact?topic=problem#message", label: "Report a problem" },
       },
     ],
@@ -97,12 +117,12 @@ export const FAQ_GROUPS: FaqGroup[] = [
     items: [
       {
         q: "Can I order Yazz® online?",
-        a: "Not from this website. Yazz® products are sold through distributors, wholesalers and shops; Where to Buy shows the stockists near you.",
+        a: "Not from this website. Yazz® products are sold through distributors, wholesalers and shops; Where to Buy shows the stockists listed near you.",
         link: { href: "/contact#where-to-buy", label: "Find a stockist" },
       },
       {
         q: "How do I become a Yazz® stockist or distributor?",
-        a: "Send us your business details, region and expected volumes through the trade enquiry form and our trade team will come back to you.",
+        a: "Send us your business details, region and expected volumes through the trade enquiry form. Your enquiry goes to Lexta Ghana Limited.",
         link: { href: "/contact#trade", label: "Trade enquiry" },
       },
       {

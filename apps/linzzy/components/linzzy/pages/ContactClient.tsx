@@ -142,7 +142,7 @@ export default function ContactClient({
       { label: "Phone", name: "phone", type: "tel", auto: "tel", required: false, max: 24 },
       { label: "Region", name: "region", type: "text", auto: "off", required: false, max: 60 },
       { label: "Town or trading location", name: "trading_location", type: "text", auto: "address-level2", required: false, max: 120 },
-      { label: "Years trading (optional)", name: "years_trading", type: "text", auto: "off", required: false, max: 20 },
+      { label: "Years in business (optional)", name: "years_trading", type: "text", auto: "off", required: false, max: 20 },
     ],
     trade: { ...trade, state: tradeState, pending: tradePending, action: tradeAction, v: tradeState.values ?? {} },
     tradeSent: tradeState.status === "success",

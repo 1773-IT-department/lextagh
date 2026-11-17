@@ -71,5 +71,8 @@ export const FAMILY_GUIDE = {
   note: "Illustrative planning guide only, assuming one individual pack per person per breakfast. One pack may not meet everyone's nutritional or energy needs.",
 };
 
-/** Lexta: nutrition and allergen details "will be worked on and shared separately". */
-export const ALLERGEN_NOTE = "Contains barley (malt extract). [PLACEHOLDER: approved Hooch nutrition panel and allergen notice from Lexta]";
+/**
+ * Lexta: nutrition and allergen details "will be worked on and shared separately". The ingredient lists above name malt
+ * extract powder from barley, as Lexta lists them, but Lexta has given no allergen statement, so none is written here.
+ */
+export const ALLERGEN_NOTE = "[PLACEHOLDER: allergen statement from Lexta]";

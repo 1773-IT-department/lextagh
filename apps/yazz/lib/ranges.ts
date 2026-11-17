@@ -47,8 +47,8 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     image: { src: "/images/feminine-care.webp", alt: "A smiling young woman holding a pack of Yazz sanitary pads, with Yazz panty liners on the table" },
     imageNeeded: "Yazz sanitary pads and panty liners pack shots",
     hero: {
-      title: ["Comfort.", "Protection."],
-      script: ["Confidence,", "every day."],
+      title: ["Comfort.", "Confidence."],
+      script: ["Protection.", "Period."],
       body: "Every flow is different. Explore Yazz sanitary pads and panty liners, compare the options on their approved packaging and learn practical period-care habits.",
       note: ["Comfort.", "Confidence.", "Protection."],
     },
@@ -58,7 +58,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       { icon: "air", title: "Ultra-Thin & Soft", body: "A soft dry web cover for a natural feeling, with round edges for comfort." },
       { icon: "drop", title: "Wider Coverage", body: "A wider pad for maximum coverage against leakage." },
     ],
-    rangeTitle: "Care for Every You",
+    rangeTitle: "Every Flow Is Different",
     rangeBody: "Sanitary pads in normal and heavy flow lengths, and panty liners for every day.",
     guide: {
       eyebrow: "How to use",
@@ -80,7 +80,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
         { title: "Dispose responsibly", body: "Wrap used pads and place them in a waste bin. Do not flush them." },
       ],
     },
-    trade: { title: "Stocking for a shop or school?", body: "Order Yazz pads and liners in bulk for your shop, school or organisation.", script: ["More", "Comfort.", "More Smiles."] },
+    trade: { title: "Stocking for a shop or school?", body: "Send a trade enquiry for Yazz pads and liners for your shop, school or organisation.", script: ["More", "Comfort.", "More Smiles."] },
     tipsTopic: "Feminine Care",
     seo: {
       title: "Feminine Care: Yazz sanitary pads and panty liners",
@@ -96,8 +96,8 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     image: { src: "/images/oral-care.webp", alt: "A smiling man brushing his teeth, with Yazz Fresh Mint toothpaste on the counter" },
     imageNeeded: "Yazz toothpaste and toothbrush pack shots",
     hero: {
-      title: ["Healthy Smiles."],
-      script: ["Brighter days,", "every morning."],
+      title: ["Simple Habits."],
+      script: ["For the whole", "family."],
       body: "Make good oral hygiene part of every day. Explore Yazz toothbrushes and toothpaste options and discover simple brushing habits for the whole family.",
       note: ["Your best", "smiles."],
     },
@@ -107,7 +107,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       { icon: "sparkle", title: "Tongue Cleaner", body: "An innovative tongue cleaner designed to gently clean the tongue." },
       { icon: "air", title: "Fresh Breath", body: "Toothpaste for natural fresh breath, clean and healthy teeth." },
     ],
-    rangeTitle: "A Smile for Everyone",
+    rangeTitle: "For the Whole Family",
     rangeBody: "Toothpaste in Herbal, Whitening, Fluoride, Charcoal and Total Care, and toothbrushes for the whole family.",
     guide: {
       eyebrow: "Tips for a healthy smile",
@@ -120,7 +120,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
         { title: "Every 3 months", body: "Change your toothbrush, and visit the dentist regularly for check-ups." },
       ],
     },
-    trade: { title: "Stocking for a shop or clinic?", body: "Order Yazz toothpaste and toothbrushes in bulk for your shop or clinic.", script: ["Fresher", "Breath.", "More Smiles."] },
+    trade: { title: "Stocking for a shop or clinic?", body: "Send a trade enquiry for Yazz toothpaste and toothbrushes for your shop or clinic.", script: ["Your", "Best", "Smiles."] },
     tipsTopic: "Oral Care",
     seo: {
       title: "Oral Care: Yazz toothpaste and toothbrushes",
@@ -138,7 +138,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     hero: {
       title: ["Everyday Softness."],
       script: ["Thoughtful Care."],
-      body: "Care for the little moments at home. Discover Mama Yazz, tissue napkins and toilet rolls for everyday household routines. Pocket Tissue is coming soon.",
+      body: "Care for the little moments at home. Discover Mama Yazz, kitchen towels and toilet rolls for everyday household routines. Pocket Tissue is coming soon.",
       note: ["Made for", "Every Home."],
     },
     features: [
@@ -148,8 +148,8 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
       { icon: "leaf", title: "Pocket Tissue, Soon", body: "Extra soft, 3-ply and made from 100% virgin-plus material." },
     ],
     rangeTitle: "Our Home & Tissue Range",
-    rangeBody: "From individual toilet rolls to convenient pocket tissues, Yazz® brings practical care to the moments that matter.",
-    trade: { title: "Complete Home Care. All in One Brand.", body: "Order Yazz tissue and napkins in bulk for your shop, office or hotel.", script: ["More Care", "for Your Home"] },
+    rangeBody: "Our range of tissue products is designed to support personal hygiene, family care and daily household needs. From individual toilet rolls to convenient pocket tissues, Yazz® brings practical care to the moments that matter.",
+    trade: { title: "Stocking for a shop, office or hotel?", body: "Send a trade enquiry for Yazz tissue and napkins for your shop, office or hotel.", script: ["More Care", "for Your Home"] },
     tipsTopic: "Home & Tissue",
     seo: {
       title: "Home & Tissue: Mama Yazz, napkins and toilet tissue",
@@ -173,12 +173,12 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
     },
     features: [
       { icon: "clock", title: "12 Hours Protection", body: "Up to 12 hours leakage protection in diapers and pull up pants." },
-      { icon: "drop", title: "Super Absorbent", body: "Cottony soft diapers with an elastic waist for a secure fit." },
+      { icon: "drop", title: "Super Absorbent", body: "Cottony soft, super absorbent diapers with an elastic waist." },
       { icon: "leaf", title: "Alcohol Free Wipes", body: "Gentle, multi-purpose cleansing that leaves skin soft and nourished." },
       { icon: "heart", title: "Three Wipe Variants", body: "Lavender, Castor Oil and Aloe Vera, for everyday care." },
     ],
     rangeTitle: "Our Baby Care Range",
-    rangeBody: "Taped diapers and pull up pants in every size, and baby wipes in three variants.",
+    rangeBody: "Taped diapers in four sizes, pull up pants in five sizes, and baby wipes in three variants.",
     guide: {
       eyebrow: "How to use",
       title: "Putting on a Yazz® diaper",
@@ -199,7 +199,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
         { title: "Bags out of reach", body: "Plastic bags are dangerous for children; keep them out of reach." },
       ],
     },
-    trade: { title: "Stocking for a shop or pharmacy?", body: "Order Yazz diapers and baby wipes in bulk for your shop or pharmacy.", script: ["Happy", "Babies.", "More Smiles."] },
+    trade: { title: "Stocking for a shop or pharmacy?", body: "Send a trade enquiry for Yazz diapers and baby wipes for your shop or pharmacy.", script: ["Happy", "Babies.", "More Smiles."] },
     tipsTopic: "Baby Care",
     seo: {
       title: "Baby Care: Yazz diapers, pull up pants and baby wipes",
@@ -249,7 +249,7 @@ export const RANGES: Record<RangeSlug, RangeInfo> = {
         { title: "If swallowed", body: "Drink plenty of clean water or milk and seek medical assistance." },
       ],
     },
-    trade: { title: "Stocking for a shop or laundry?", body: "Order Yazz Activ detergent in bulk for your shop, laundry or institution.", script: ["Fresher", "Cleaner", "Brighter"] },
+    trade: { title: "Stocking for a shop or laundry?", body: "Send a trade enquiry for Yazz Activ detergent for your shop, laundry or institution.", script: ["Fresher", "Cleaner", "Brighter"] },
     tipsTopic: "Home Care",
     seo: {
       title: "Home Care: Yazz Activ washing powder with enzymes",

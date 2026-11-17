@@ -16,14 +16,16 @@ const socialStyle: CSSProperties = {
 };
 
 /**
- * Social links keep the approved prototype's look ("f", "ig", "in", "tk" text badges) and its profile URLs.
- * The badge letters are hidden from screen readers; each link is announced as "Lexta on Facebook (opens in a new tab)".
+ * Social links keep the approved prototype's look ("f", "ig", "in", "tk" text badges).
+ * Lexta has not confirmed its own profile addresses (lextagh.com only linked Yazz accounts), so each href is empty and
+ * the badge carries a [PLACEHOLDER: ...] note as its label until Lexta supplies the address. With an href, a badge
+ * is a link announced as "Lexta on Facebook (opens in a new tab)".
  */
 const socials = [
-  { label: "Facebook", short: "f", href: "https://www.facebook.com/lextagh" },
-  { label: "Instagram", short: "ig", href: "https://www.instagram.com/lextagh" },
-  { label: "LinkedIn", short: "in", href: "https://www.linkedin.com/company/lextagh" },
-  { label: "TikTok", short: "tk", href: "https://www.tiktok.com/@lextagh" },
+  { label: "Facebook", short: "f", href: "", placeholder: "[PLACEHOLDER: Lexta Facebook page address]" },
+  { label: "Instagram", short: "ig", href: "", placeholder: "[PLACEHOLDER: Lexta Instagram address]" },
+  { label: "LinkedIn", short: "in", href: "", placeholder: "[PLACEHOLDER: Lexta LinkedIn page address]" },
+  { label: "TikTok", short: "tk", href: "", placeholder: "[PLACEHOLDER: Lexta TikTok address]" },
 ];
 
 /** Shared footer, ported from the prototype home page footer (the most complete version). */
@@ -49,9 +51,15 @@ export default function SiteFooter() {
           </p>
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             {socials.map((s) => (
-              <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`Lexta on ${s.label} (opens in a new tab)`} title={`Lexta on ${s.label}`} style={socialStyle}>
-                <span aria-hidden="true">{s.short}</span>
-              </a>
+              s.href ? (
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`Lexta on ${s.label} (opens in a new tab)`} title={`Lexta on ${s.label}`} style={socialStyle}>
+                  <span aria-hidden="true">{s.short}</span>
+                </a>
+              ) : (
+                <span key={s.label} role="img" aria-label={`Lexta on ${s.label}: ${s.placeholder}`} title={s.placeholder} style={socialStyle}>
+                  <span aria-hidden="true">{s.short}</span>
+                </span>
+              )
             ))}
           </div>
         </div>

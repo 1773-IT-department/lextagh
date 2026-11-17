@@ -96,7 +96,7 @@ export default function ApplicationForm() {
           {pending ? "Sending..." : "Submit application"}
           <span aria-hidden="true" style={{ width: 22, height: 22, borderRadius: "50%", background: "rgba(255,255,255,.28)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12 }}>→</span>
         </button>
-        <span style={{ fontSize: 11.5, color: "#5d7883" }}>We reply within two working days.</span>
+        <span style={{ fontSize: 11.5, color: "#5d7883" }}>Your application goes to the Lexta trade desk.</span>
       </div>
       <FormMessage state={state} style={{ marginTop: 14 }} />
       <div style={{ marginTop: 12, fontSize: 11, lineHeight: 1.7, color: "#8fa8b2" }}>
