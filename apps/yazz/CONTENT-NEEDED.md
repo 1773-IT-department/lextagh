@@ -70,7 +70,12 @@ as a marked placeholder block:
 - News: one story from the original site (the 2022 Home Builders Africa Award). More Yazz news stories and press
   releases are welcome; the original site's other news is CSR (out of scope) or a sensitive April 2026 product update
   for Lexta to decide on.
-- "My Period & Me": the document lists its sub-topics (what is a period, cycle, flow, tracking) but no text (the original site has the same introduction only).
+- "My Period & Me": the document lists its sub-topics (what is a period, cycle, flow, tracking) but no text (the original
+  site has the same introduction only). It is built as a link list to the existing articles; "Common changes you may
+  notice during your cycle" is left out until an article covers it.
+- "What's Inside My Yazz®?" (built as a section of the Just 4 You view, with placeholders): verified pad materials, the
+  name and purpose of each pad layer (and how many layers), Lexta's quality checks, product testing and standards, and
+  what the packaging information means. See docs/content/yazz/PLACEHOLDERS.md section 1.
 - Home & Tissue tips (kitchen hygiene, tissue handling, cleaning routines, waste reduction): topics only, no text.
 - Parenting editorial (waiting on Lexta's articles): Pregnancy, 0 to 12 months and 12 to 24 months guides, topics only,
   no text. The "Parenting & Baby Care" category is ready in `content/articles.ts` (`parenting-baby-care`) and appears on
@@ -91,13 +96,15 @@ The contract allows 6 pages per brand site and no CSR pages, shop, quizzes, pare
   the footer link to the CSR page of the Lexta site instead.
 - The "Find My Yazz" interactive pad selector (flow, day or night, what matters most).
 - Parenting tools: diaper planner, diaper finder, saved reminders, pregnancy calendar, matchmakers and calculators.
-- "What's Inside My Yazz?" with an interactive pad diagram (also needs verified material and testing information).
+- An interactive pad diagram for "What's Inside My Yazz?" (pictures): the section itself is built, with the layers as a
+  list that opens on tap.
 - "Yazz Period Talk" school and community programmes (CSR).
 - Access to a blog backend for Lexta staff (articles are edited by 1773 on request).
 - A separate Legal / Trademark page: the trademark notice is on About Us and the short statement in the footer.
   (The sixth page is FAQs, as Desmond chose.)
 - Separate "Where to Buy" and "Tips & Advice" mega menu tabs: Where to Buy is part of Contact & Where to Buy, and the
-  Tips & Advice menu lists the article categories.
+  Tips & Advice menu lists the article categories. The Products menu has Lexta's second level links (two or three per
+  range); Pocket Tissue (coming soon) and Kitchen Towel are reached through the Home & Tissue range page.
 
 - Better panty liner pack shot: the one from the original site is only 225 x 225 px and looks soft in the product window.
 - Product Management: the seeded "Tissue" product lists pocket tissues while Lexta's content calls Pocket Tissue "coming soon". The site hides the coming soon card while a live product sells pocket tissues; staff should correct the product.
