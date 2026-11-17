@@ -44,9 +44,14 @@ const checklist = [
   { title: "Supporting documents", text: "[PLACEHOLDER: which supporting documents Lexta requires from distributors, wholesalers and modern trade partners]" },
 ];
 
-export default function PartnerPage() {
+type Search = Promise<Record<string, string | string[] | undefined>>;
+
+export default async function PartnerPage({ searchParams }: { searchParams: Search }) {
+  // "Propose a partnership" on the CSR page links here with ?route=CSR&initiative=<slug>: the form starts on them.
+  const q = await searchParams;
+  const one = (v: string | string[] | undefined) => (typeof v === "string" ? v.slice(0, 80) : undefined);
   return (
-    <RouteProvider>
+    <RouteProvider initialRoute={one(q.route)} initiative={one(q.initiative)}>
       <section data-screen-label="Partner hero" style={{ background: "#0c303e", padding: "74px 28px 66px" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: 46, alignItems: "center" }}>
           <div>

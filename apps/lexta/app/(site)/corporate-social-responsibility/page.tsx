@@ -5,6 +5,7 @@ import ArrowButton from "@/components/ArrowButton";
 import ImageSlot from "@/components/ImageSlot";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import csr from "@/components/csr/csr.module.css";
+import { dignityInitiative, programmes, proposeHref } from "@/components/csr/programmes";
 import p from "@/components/proto.module.css";
 import { isLiveStoryHref } from "@/content/news/held";
 
@@ -66,29 +67,6 @@ const pillars = [
   { n: "03", title: "Bright Smiles", text: "Healthy smiles begin with everyday habits. The Bright Smiles School Tour proposes age-appropriate oral-hygiene education and partnerships with qualified dental professionals and schools." },
   { n: "04", title: "Safe Bottoms", text: "Good baby hygiene begins with information and access. Safe Bottoms is designed to support caregiver education, responsible diaper and wipe disposal and community hygiene partnerships." },
   { n: "05", title: "Forest and Clean Hands", text: "Care for our homes should go hand in hand with care for the environment. Clean homes and a cleaner environment belong together." },
-];
-
-const programmes: { tag: string; title: string; href?: string; text: string }[] = [
-  {
-    tag: "Lexta Foundation", title: "Lexta Legacy Project",
-    text: "Supporting deprived communities with education, clean and safe water, one community at a time.",
-  },
-  {
-    tag: "Oral health", title: "The Bright Smiles School Tour", href: "/news/the-bright-smiles-school-tour",
-    text: "Healthy smiles begin with everyday habits. The Bright Smiles School Tour proposes age-appropriate oral-hygiene education and partnerships with qualified dental professionals and schools.",
-  },
-  {
-    tag: "Water and sanitation", title: "The Safe Bottoms Initiative", href: "/news/the-safe-bottoms-initiative",
-    text: "For every jumbo pack sold, Yazz Diapers/Wipes funds the construction/maintenance of mechanised boreholes in communities facing water scarcity to ensure safe hygiene for infants. Safe Bottoms is designed to support caregiver education, responsible diaper and wipe disposal and community hygiene partnerships.",
-  },
-  {
-    tag: "Environment", title: "The Lexta Forest Project", href: "/news/the-lexta-forest-project",
-    text: "The Lexta Forest Project is a proposed tree-planting and environmental-education platform linking everyday paper use with responsible stewardship. Commitment to plant 10 indigenous trees for every 1,000 rolls of 100% Virgin Pulp tissue sold, restoring degraded forest reserves.",
-  },
-  {
-    tag: "Responsible consumption", title: "Clean Hands, Green Land", href: "/news/clean-hands-green-land",
-    text: "Clean homes and a cleaner environment belong together. This proposed programme focuses on practical hygiene education, responsible packaging disposal and community clean-up partnerships.",
-  },
 ];
 
 const unityGallery = [
@@ -249,6 +227,9 @@ export default function CorporateSocialResponsibilityPage() {
               <p style={body}>
                 Through menstrual education, product-access partnerships and school/community conversations, Empowered Periods aims to help girls and women manage menstruation with knowledge, confidence and support.
               </p>
+              <Link href={proposeHref(dignityInitiative.slug)} aria-label={`Propose a partnership: ${dignityInitiative.title}`} style={storyLink}>
+                Propose a partnership <span aria-hidden="true" style={{ fontSize: 14 }}>→</span>
+              </Link>
             </div>
             <Photo src="/assets/original/web/lexta-kakel-1875-683x1024.webp" alt="The Dignity Project in schools" box={{ ...photoBox, maxHeight: 520 }} />
           </div>
@@ -280,15 +261,17 @@ export default function CorporateSocialResponsibilityPage() {
                 <div style={eyebrow}>{pr.tag}</div>
                 <h3 style={{ margin: "12px 0 0", fontSize: 18, fontWeight: 700, color: "#12313d", letterSpacing: "-.01em" }}>{pr.title}</h3>
                 <p style={{ margin: "12px 0 0", fontSize: 13, lineHeight: 1.85, color: "#5d7883" }}>{pr.text}</p>
-                {pr.href ? (
-                  <a href={pr.href} style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
-                    Read the full story <span aria-hidden="true">→</span>
-                  </a>
-                ) : (
-                  <a href="#involved" style={{ marginTop: "auto", paddingTop: 18, fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
+                {/* Every card proposes a partnership for its own programme (Partner With Us, CSR route, initiative chosen). */}
+                <div style={{ marginTop: "auto", paddingTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
+                  {pr.href && (
+                    <a href={pr.href} style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
+                      Read the full story <span aria-hidden="true">→</span>
+                    </a>
+                  )}
+                  <Link href={proposeHref(pr.slug)} aria-label={`Propose a partnership: ${pr.title}`} style={{ fontSize: 13, fontWeight: 600, color: "#12a3c4" }}>
                     Propose a partnership <span aria-hidden="true">→</span>
-                  </a>
-                )}
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -475,7 +458,7 @@ export default function CorporateSocialResponsibilityPage() {
               Explore initiatives by brand, submit a partnership proposal or request information about a programme.
             </p>
             <Link
-              href="/about-us#contact"
+              href="/partner-with-us?route=CSR#apply"
               style={{
                 marginTop: 24, display: "inline-flex", alignItems: "center", gap: 12, background: "#fff", color: "#0b6d88", fontSize: 13,
                 fontWeight: 600, padding: "12px 12px 12px 20px", borderRadius: 7,

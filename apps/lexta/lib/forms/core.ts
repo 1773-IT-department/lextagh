@@ -39,6 +39,7 @@ import {
   type Fields,
 } from "@lexta/forms/core";
 import { reasons as contactReasons } from "../../components/contact/data";
+import { CSR_BRANDS, CSR_INITIATIVES } from "../../components/csr/programmes";
 
 // The parts every site shares live in packages/forms; these stay exported from here as before.
 export {
@@ -211,7 +212,7 @@ const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref};
 
 // Partner With Us ------------------------------------------------------------------------------
 
-const PARTNER_FIELDS = ["route", "contact_name", "business_name", "email", "phone", "trading_location", "years_trading", "message", "privacy"];
+const PARTNER_FIELDS = ["route", "contact_name", "business_name", "email", "phone", "trading_location", "years_trading", "message", "privacy", "csr_brand", "csr_initiative"];
 
 const PARTNER_MESSAGES: Fields = {
   contact_name: "Please enter your name.",
@@ -222,6 +223,8 @@ const PARTNER_MESSAGES: Fields = {
   years_trading: "Please check the years trading.",
   message: "Please check your message.",
   privacy: MSG_PRIVACY,
+  csr_brand: "Please choose the brand your proposal is for.",
+  csr_initiative: "Please choose the initiative your proposal is for.",
 };
 
 export function buildPartner(fd: FormData): { values: Fields; errors: Fields; payload?: PartnerFormPayload } {
@@ -235,6 +238,20 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
   checkMax(v, "years_trading", LIMITS.years, "Years trading", errors);
   checkMax(v, "message", LIMITS.message, "Your message", errors);
   checkPrivacy(v, errors);
+  // CSR proposals: brand and initiative are required (Lexta's Drive), from the lists the form offers only. They go to
+  // the lead at the top of the message, so the team sees them first.
+  let message = v.message;
+  if (PARTNER_TYPES[v.route] === "csr") {
+    const brand = (CSR_BRANDS as readonly string[]).includes(v.csr_brand) ? v.csr_brand : "";
+    const initiative = CSR_INITIATIVES.find((i) => i.slug === v.csr_initiative)?.title ?? "";
+    if (!brand) errors.csr_brand = PARTNER_MESSAGES.csr_brand;
+    if (!initiative) errors.csr_initiative = PARTNER_MESSAGES.csr_initiative;
+    message = [`Brand: ${brand}`, `Initiative: ${initiative}`].join("\n") + (v.message ? `\n\n${v.message}` : "");
+    if (!errors.message && message.length > LIMITS.message) errors.message = MSG_TOO_LONG;
+  } else {
+    v.csr_brand = "";
+    v.csr_initiative = "";
+  }
   if (Object.keys(errors).length) return { values: v, errors };
   return {
     values: v,
@@ -248,7 +265,7 @@ export function buildPartner(fd: FormData): { values: Fields; errors: Fields; pa
       partner_type: PARTNER_TYPES[v.route] ?? "distributor",
       location: v.trading_location || undefined,
       years_trading: v.years_trading || undefined,
-      message: v.message || undefined,
+      message: message || undefined,
     },
   };
 }
