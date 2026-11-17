@@ -115,6 +115,11 @@ export type Acknowledgement = {
   details?: [string, string | undefined][];
   /** Newsletter: the one click unsubscribe page for this subscriber. */
   unsubscribeUrl?: string;
+  /**
+   * Newsletter: the Lexta site's address (where /unsubscribe lives). The sender (packages/forms/src/acknowledge.ts)
+   * turns it into unsubscribeUrl with the subscriber's token. Never a real Lexta domain before go-live.
+   */
+  lextaSiteUrl?: string;
 };
 
 const NOUN: Record<AcknowledgementKind, string> = {

@@ -426,6 +426,15 @@ Leads move through stages: **New**, **Contacted**, **Qualified**, **Proposal**, 
 
 Customer care cannot add organisations.
 
+### Newsletter subscribers
+
+Newsletter sign ups from the Lexta, Yazz, Linzzy and Hooch websites arrive as contacts with marketing consent **Agreed**. On the **Contacts** tab, the **Newsletter** filter shows:
+
+* **Subscribed**: everyone with marketing consent, so everyone who may get the newsletter.
+* **Unsubscribed**: people who used the unsubscribe link in one of our emails. Their consent shows **Unsubscribed** with the date. Do not turn their consent back on yourself; they can sign up again on the website.
+
+Every newsletter email must carry the person's own unsubscribe link (the acknowledgement email does this already). The link opens a page on the Lexta website where they press **Unsubscribe**.
+
 ### Website leads
 
 Messages from the website forms land in the CRM by themselves:

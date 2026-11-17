@@ -41,6 +41,7 @@ import {
   type FormContext,
 } from "@lexta/forms/core";
 import { reasons as contactReasons } from "../../components/contact/data";
+import { lextaSiteUrl } from "../../content/site";
 import { CSR_BRANDS, CSR_INITIATIVES } from "../../components/csr/programmes";
 
 // The parts every site shares live in packages/forms; these stay exported from here as before.
@@ -341,5 +342,5 @@ export async function handleNewsletter(fd: FormData, ctx: FormContext = {}): Pro
   if (!formsConfigured()) return unavailable(values, SUPPORT_EMAIL);
   const result = await safely(() => submitWebsiteEnquiry({ form: "newsletter", payload }));
   return acknowledged(fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, SUPPORT_EMAIL),
-    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "Newsletter sign up", reference, routeTo: SUPPORT_EMAIL, email: values.email }));
+    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "Newsletter sign up", reference, routeTo: SUPPORT_EMAIL, email: values.email, lextaSiteUrl }));
 }

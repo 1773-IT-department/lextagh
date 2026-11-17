@@ -276,3 +276,36 @@ export type CrmWebsiteLeadManagerChange = Timestamps & {
   changed_by: string | null;
   changed_by_name: string | null;
 };
+
+// Newsletter unsubscribe (0028) ------------------------------------------------------------------------------------
+
+/** An unsubscribe token as the database makes them: 48 hex characters. */
+export const isNewsletterToken = (token: unknown): token is string => typeof token === "string" && /^[0-9a-f]{48}$/.test(token);
+
+export type UnsubscribeResult = { ok: true } | { ok: false; reason: "invalid" | "error" };
+
+/**
+ * The Lexta site's /unsubscribe page: turns marketing consent off for the token's contact (public.newsletter_unsubscribe).
+ * "invalid" for a token the database does not know; nothing else is ever revealed.
+ */
+export async function newsletterUnsubscribe(token: string, client?: SupabaseClient): Promise<UnsubscribeResult> {
+  if (!isNewsletterToken(token)) return { ok: false, reason: "invalid" };
+  const supabase = client ?? createPublicClient();
+  const { data, error } = await supabase.rpc("newsletter_unsubscribe", { token });
+  if (error) return { ok: false, reason: "error" };
+  return data === true ? { ok: true } : { ok: false, reason: "invalid" };
+}
+
+/**
+ * Website server only: the unsubscribe token of a subscribed email, for the newsletter acknowledgement email. The
+ * request is signed with the chat secret (see packages/forms/src/acknowledge.ts). Null when there is none or on error.
+ */
+export async function newsletterUnsubscribeToken(
+  request: { email: string; issuedAt: number; signature: string }, client?: SupabaseClient,
+): Promise<string | null> {
+  const supabase = client ?? createPublicClient();
+  const { data, error } = await supabase.rpc("newsletter_unsubscribe_token", {
+    email: request.email, issued_at: request.issuedAt, signature: request.signature,
+  });
+  return !error && isNewsletterToken(data) ? data : null;
+}

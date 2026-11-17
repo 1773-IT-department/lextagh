@@ -210,6 +210,24 @@ try {
     let threw = false;
     try { await Promise.all(after); } catch { threw = true; }
     check(s2.status === "success" && !threw, "acknowledgements: a failed send never fails the form");
+    // Newsletter (P4): the acknowledgement carries the subscriber's own unsubscribe link on the Lexta site.
+    const CHAT = "harness-chat-secret-forms-newsletter-0123456789";
+    await q(`delete from private.chat_intake_secret`);
+    await q(`insert into private.chat_intake_secret (secret) values ('${CHAT}')`);
+    process.env.CHAT_INTAKE_SECRET = CHAT;
+    sent.length = 0;
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) { sent.push(JSON.parse(init.body)); return new Response("{}", { status: 200 }); } return realFetch(url, init); };
+    const nack = acks.find((a) => a.kind === "newsletter");
+    await acknowledge(nack);
+    const token = await q(`select t.token from public.crm_newsletter_tokens t join public.crm_contacts c on c.id = t.contact_id where c.email = '${mail("ackn")}'`);
+    const toSub = sent.find((m) => m.to[0] === mail("ackn"));
+    check(/^[0-9a-f]{48}$/.test(token) && nack.lextaSiteUrl === "https://lextagh.vercel.app" && toSub?.text.includes(`https://lextagh.vercel.app/unsubscribe?token=${token}`)
+      && toSub?.headers?.["List-Unsubscribe"] === `<https://lextagh.vercel.app/unsubscribe?token=${token}>`,
+      "newsletter acknowledgement: the subscriber's own unsubscribe link on the Lexta site (preview fallback)", toSub);
+    delete process.env.CHAT_INTAKE_SECRET;
+    sent.length = 0;
+    await acknowledge(nack);
+    check(sent.some((m) => m.to[0] === mail("ackn") && m.text.includes("reply with the word unsubscribe")), "newsletter acknowledgement: without the secret it says to reply with unsubscribe");
     globalThis.fetch = realFetch;
     delete process.env.RESEND_API_KEY; delete process.env.MAIL_FROM;
   }

@@ -42,7 +42,7 @@ import {
   type FormState,
 } from "@lexta/forms/core";
 import { ATTACHMENT_MESSAGES, attachmentValues, complaintAttachmentFrom, keepAttachment } from "@lexta/forms/complaint-file";
-import { contact } from "../site";
+import { contact, lextaSiteUrl } from "../site";
 import { isTopic, topicLabel, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
 export { isTopic, TOPICS, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
@@ -310,5 +310,6 @@ export async function handleNewsletter(fd: FormData, ctx: FormContext = {}): Pro
   if (!formsConfigured()) return unavailable(values, contact.supportEmail);
   const result = await safely(() => submitWebsiteEnquiry({ form: "newsletter", payload }));
   return acknowledged(fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, contact.supportEmail),
-    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "newsletter sign up", reference, routeTo: contact.partnershipsEmail, email: values.email }));
+    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "newsletter sign up", reference, routeTo: contact.partnershipsEmail, email: values.email,
+      lextaSiteUrl }));
 }
