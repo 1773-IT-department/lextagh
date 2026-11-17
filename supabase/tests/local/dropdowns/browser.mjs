@@ -59,11 +59,14 @@ async function waitFor(url) {
 const STORE = mkdtempSync(path.join(os.tmpdir(), "lexta-dropdown-store-"));
 run("node", [`${ROOT}/supabase/tests/local/browser/gateway.mjs`, "54401"], { env: { ...process.env, SHIM_STORAGE_DIR: STORE } });
 const env = { ...process.env, NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54401", NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_harness",
-  NEXT_PUBLIC_PORTAL_URL: "http://127.0.0.1:3101", FIELD_PHOTO_SECRET: PHOTO_SECRET };
+  NEXT_PUBLIC_PORTAL_URL: "http://127.0.0.1:3101", FIELD_PHOTO_SECRET: PHOTO_SECRET, REVALIDATE_SECRET: "harness-revalidate-secret-dropdowns" };
 run(`${ROOT}/apps/lexta/node_modules/.bin/next`, ["start", "-p", "3100", "-H", "127.0.0.1"], { cwd: `${ROOT}/apps/lexta`, env });
 run(`${ROOT}/apps/portal/node_modules/.bin/next`, ["start", "-p", "3101", "-H", "127.0.0.1"], { cwd: `${ROOT}/apps/portal`, env });
 console.log(`started pids ${procs.map((p) => p.pid).join(", ")}`);
 const SITE = "http://127.0.0.1:3100";
+// The Contact form's regions are in alphabetical order (apps/lexta/components/contact/data.ts), so the field starts on
+// the first one.
+const FIRST_REGION = "Ahafo";
 const PORTAL = "http://127.0.0.1:3101";
 
 const browser = await chromium.launch({ args: ["--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1"] });
@@ -100,7 +103,7 @@ try {
   const form = site.getByRole("form", { name: "Send a message" });
   const combo = form.getByRole("combobox", { name: "Region", exact: true });
   const native = form.locator("select[name=region]");
-  check(await combo.getAttribute("aria-haspopup") === "listbox" && await combo.getAttribute("aria-expanded") === "false" && await combo.innerText() === "Greater Accra",
+  check(await combo.getAttribute("aria-haspopup") === "listbox" && await combo.getAttribute("aria-expanded") === "false" && await combo.innerText() === FIRST_REGION,
     "1440 contact: a combobox named by its label, closed, showing the chosen region");
   check(await native.getAttribute("aria-hidden") === "true" && await native.getAttribute("tabindex") === "-1" && await native.isVisible(),
     "1440 contact: the real select stays as the face, hidden from screen readers and from Tab");
@@ -119,11 +122,11 @@ try {
   const list = site.locator(`#${listId}`);
   check(await combo.getAttribute("aria-expanded") === "true" && await list.getAttribute("role") === "listbox" && await list.isVisible(), "1440 contact: Down Arrow opens the listbox it controls");
   const activeText = async () => { const id = await combo.getAttribute("aria-activedescendant"); return id ? site.locator(`#${id}`).innerText() : ""; };
-  check(await activeText() === "Greater Accra", "1440 contact: the chosen option is active when the list opens");
-  check(await list.getByRole("option", { name: "Greater Accra" }).locator("svg").count() === 1, "1440 contact: the chosen option is ticked");
+  check(await activeText() === FIRST_REGION, "1440 contact: the chosen option is active when the list opens");
+  check(await list.getByRole("option", { name: FIRST_REGION, exact: true }).locator("svg").count() === 1, "1440 contact: the chosen option is ticked");
   await site.keyboard.press("ArrowDown");
   const second = await activeText();
-  check(second !== "Greater Accra" && await list.getByRole("option", { name: second }).getAttribute("aria-selected") === "true", "1440 contact: Down Arrow moves the active option", second);
+  check(second !== FIRST_REGION && await list.getByRole("option", { name: second }).getAttribute("aria-selected") === "true", "1440 contact: Down Arrow moves the active option", second);
   await site.keyboard.press("End");
   const options = await list.getByRole("option").allInnerTexts();
   check(await activeText() === options.at(-1), "1440 contact: End goes to the last option");
@@ -199,7 +202,7 @@ try {
   check(/ENQ-|thank/i.test(await site.locator("[data-form-message]").first().innerText()), "1440 contact: the form sends with the chosen region");
   check(await db(`select count(*) from public.crm_leads l join public.crm_contacts c on c.id = l.contact_id where c.full_name = 'Dropdown Visitor ${ts}' and l.description like '%Region: Volta%'`) === "1",
     "1440 contact: the CRM lead has the region chosen in the dropdown");
-  check(await native.inputValue() === "Greater Accra" && await combo.innerText() === "Greater Accra", "1440 contact: after sending, the field and the dropdown go back to the first region");
+  check(await native.inputValue() === FIRST_REGION && await combo.innerText() === FIRST_REGION, "1440 contact: after sending, the field and the dropdown go back to the first region");
 
   // Where to Buy (Home): the prototype's look, the branded list, and the finder.
   await site.goto(`${SITE}/`);
@@ -273,8 +276,13 @@ try {
   check(/ENQ-|thank/i.test(await nojs.locator("body").innerText()), "no JavaScript: the contact form posts and thanks the visitor");
   check(await db(`select count(*) from public.crm_leads l join public.crm_contacts c on c.id = l.contact_id where c.full_name = 'No Script ${ts}' and l.description like '%Region: Northern%'`) === "1",
     "no JavaScript: the lead has the region chosen in the select");
+  // The role picker lists open roles, so it only shows when there are some. /careers is built ahead (refreshed hourly or
+  // by /api/revalidate) and the build had no database, so refresh it now that the demo seed has opened two roles.
+  const rv = await fetch(`${SITE}/api/revalidate`, { method: "POST", headers: { "x-revalidate-secret": "harness-revalidate-secret-dropdowns", "content-type": "application/json" }, body: "{}" });
+  check(rv.status === 200, "careers: the page is refreshed after the demo seed opens roles", rv.status);
   await nojs.goto(`${SITE}/careers`);
   const roleSel = nojs.locator("select[name=opening_choice]");
+  if (!(await roleSel.count())) { await sleep(1500); await nojs.reload(); }
   const interest = nojs.locator("select[name=interest]");
   check((await roleSel.count()) === 1 && await roleSel.evaluate((s) => getComputedStyle(s).appearance) === "none", "no JavaScript: Careers shows the restyled role picker");
   check(await interest.isVisible() && await interest.evaluate((s) => getComputedStyle(s).appearance) === "none", "no JavaScript: Careers area of interest is restyled");
