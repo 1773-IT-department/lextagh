@@ -81,6 +81,10 @@ export default function ProductsView({ v: vals }: { v: any }) {
                     </a>
                   </Fragment>
                 ))}
+                {/* Lexta's top bar names Community Impact: a small link out to the Lexta CSR page (no CSR page on brand sites). */}
+                <a href={`${LEXTA}/corporate-social-responsibility`} target="_blank" rel="noopener" style={{"display":"inline-block","marginTop":"18px","color":"#9EE6C8","fontWeight":"700","fontSize":"15px","letterSpacing":"0.04em"} as CSSProperties}>
+                  {"Community Impact ↗"}
+                </a>
                 {"\n    "}
               </nav>
               {"\n  "}

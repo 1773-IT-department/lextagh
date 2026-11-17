@@ -197,7 +197,9 @@ try {
     await page.goto(`${SITE}/`);
     const navItems = await page.getByRole("navigation", { name: "Main" }).evaluate((nav) =>
       [...nav.children].map((c) => (c.matches("a") ? c : c.querySelector(":scope > a"))?.textContent?.trim() ?? ""));
-    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact"]), "header: the nav has the 6 pages", navItems);
+    check(JSON.stringify(navItems) === JSON.stringify(["Home", "Products", "About Us", "Tips & Advice", "FAQs", "Contact", "Community Impact"]), "header: the nav has the 6 pages, then Community Impact", navItems);
+    const ciHref = await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: /Community Impact/ }).getAttribute("href");
+    check(ciHref === "https://lextagh.vercel.app/corporate-social-responsibility", "header: Community Impact links out to the Lexta CSR preview page", ciHref);
     check(await page.getByRole("contentinfo").getByRole("link", { name: "FAQs", exact: true }).count() === 1, "footer: links to the FAQs page");
     {
       const fam = await page.getByRole("contentinfo").locator("a").evaluateAll((as) => as.map((a) => [a.textContent.replace(/[↗\s]+$/, "").trim(), a.getAttribute("href")]));

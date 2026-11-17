@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState, type ComponentProps, type KeyboardE
 import { flushSync } from "react-dom";
 import Icon from "@/components/Icon";
 import { productLinks, tipsLinks, type NavLink } from "@/lib/nav";
+import { lexta } from "@/lib/site";
 import s from "./header.module.css";
 
 /**
@@ -16,7 +17,8 @@ import s from "./header.module.css";
  * (aria-expanded). Without JavaScript they open on hover and keyboard focus with CSS alone; once the page runs, the
  * open state is the component's alone (hover, the button, arrow keys), so Escape or a click outside closes the list even
  * while the pointer or focus is still there. Arrow keys move through an open list, Escape returns focus to the button.
- * Phones get a menu button and a panel built on <details>, which also opens without JavaScript.
+ * Phones get a menu button and a panel built on <details>, which also opens without JavaScript. "Community Impact"
+ * comes last on both, a small link out to the Lexta CSR page.
  */
 /**
  * A second level link. Product windows open from the address (#product-...), which DialogEnhancer follows through the
@@ -132,6 +134,8 @@ export default function SiteHeader() {
         <Dropdown label="Tips & Advice" href="/tips" links={tipsLinks} active={is("/tips")} />
         {top("/faqs", "FAQs")}
         {top("/contact", "Contact")}
+        {/* Lexta's top bar names Community Impact: a link out to the Lexta CSR page (no CSR page on brand sites). */}
+        <a href={lexta.csr} target="_blank" rel="noopener" className={s.extLink}>Community Impact <Icon name="arrow" size={12} /></a>
       </nav>
 
       <div className={s.actions}>
@@ -169,6 +173,7 @@ export default function SiteHeader() {
             </div>
             <Link href="/faqs" className={s.sheetLink} aria-current={is("/faqs") ? "page" : undefined}>FAQs</Link>
             <Link href="/contact" className={s.sheetLink} aria-current={is("/contact") ? "page" : undefined}>Contact &amp; Where to Buy</Link>
+            <a href={lexta.csr} target="_blank" rel="noopener" className={`${s.sheetLink} ${s.sheetExt}`}>Community Impact <Icon name="arrow" size={14} /></a>
             <Link href="/contact#where-to-buy" className="yz-btn yz-btn--red" style={{ marginTop: 14 }}>
               <Icon name="pin" size={17} /> Find a stockist
             </Link>

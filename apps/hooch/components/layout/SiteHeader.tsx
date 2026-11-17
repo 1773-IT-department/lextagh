@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import Icon from "@/components/Icon";
 import MotionToggle from "@/components/motion/MotionToggle";
 import { NAV } from "@/lib/nav";
+import { lexta } from "@/lib/site";
 import s from "./header.module.css";
 
 /**
@@ -39,6 +40,8 @@ export default function SiteHeader() {
         ) : (
           <Link key={l.href} href={l.href} className={s.link} aria-current={is(l.href) ? "page" : undefined}>{l.label}</Link>
         ))}
+        {/* Lexta's top bar names Community: a small link out to the Lexta CSR page (no CSR page on brand sites). */}
+        <a href={`${lexta.csr}#programmes`} target="_blank" rel="noopener" className={s.extLink}>Community Impact <Icon name="arrow" size={13} /></a>
       </nav>
 
       <div className={s.actions}>
@@ -59,6 +62,9 @@ export default function SiteHeader() {
             )).flatMap((link, i) => [link, ...(NAV[i].children ?? []).map((c) => (
               <Link key={c.href} href={c.href} className={s.sheetSub} aria-current={path === c.href ? "page" : undefined} style={{ animationDelay: `${i * 40 + 20}ms` }}>{c.label}</Link>
             ))])}
+            <a href={`${lexta.csr}#programmes`} target="_blank" rel="noopener" className={`${s.sheetLink} ${s.sheetExt}`} style={{ animationDelay: `${NAV.length * 40}ms` }}>
+              <span className={s.sheetIcon}><Icon name="heart" size={20} /></span> Community Impact <Icon name="arrow" size={16} />
+            </a>
             <Link href="/contact#where-to-buy" className="hc-btn hc-btn--red" style={{ marginTop: 16 }}>
               <Icon name="pin" size={17} /> Find a stockist
             </Link>

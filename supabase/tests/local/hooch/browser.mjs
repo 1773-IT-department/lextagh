@@ -168,7 +168,9 @@ try {
     check(JSON.stringify(names) === JSON.stringify(["Hooch® Cornflakes", "Hooch® Frosted Flakes"]), "products page: the two Drive cereals, nothing else", names);
     const mainNav = page.getByRole("navigation", { name: "Main" });
     const navItems = (await mainNav.locator("a").allInnerTexts()).map((x) => x.trim()).filter(Boolean);
-    check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact"]), "header: Lexta's six tabs", navItems);
+    check(JSON.stringify(navItems) === JSON.stringify(["Home", "About Hooch®", "Our Products", "Recipes", "Nutrition & Tips", "Contact", "Community Impact"]), "header: Lexta's six tabs, then Community Impact", navItems);
+    const ciHref = await mainNav.getByRole("link", { name: /Community Impact/ }).getAttribute("href");
+    check(ciHref === "https://lextagh.vercel.app/corporate-social-responsibility#programmes", "header: Community Impact links out to the Lexta CSR programmes", ciHref);
     await mainNav.getByRole("link", { name: "Our Products" }).hover();
     const cereals = await mainNav.locator("a[href^='/products/']").evaluateAll((as) => as.filter((a) => a.offsetParent).map((a) => [a.textContent, a.getAttribute("href")]));
     check(JSON.stringify(cereals) === JSON.stringify([["Hooch® Cornflakes", "/products/cornflakes"], ["Hooch® Frosted Flakes", "/products/frosted-flakes"]]), "header: Our Products opens a small menu of the two cereal pages", cereals);

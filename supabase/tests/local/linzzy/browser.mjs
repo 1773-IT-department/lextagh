@@ -289,7 +289,9 @@ try {
     await pagesNav.waitFor({ timeout: 5000 });
     const navItems = await pagesNav.getByRole("link").allInnerTexts();
     check(await page.getByRole("button", { name: "Close", exact: true }).getAttribute("aria-expanded") === "true", "menu: Enter on Menu opens it (aria-expanded)");
-    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy"]), "menu: the 6 pages, Products as Feminine Care and Baby Care", navItems);
+    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy", "Community Impact ↗"]), "menu: the 6 pages, Products as Feminine Care and Baby Care, then Community Impact last", navItems);
+    const ci = pagesNav.getByRole("link", { name: /Community Impact/ });
+    check(await ci.getAttribute("href") === "https://lextagh.vercel.app/corporate-social-responsibility" && await ci.getAttribute("target") === "_blank", "menu: Community Impact links out to the Lexta CSR preview page");
     const navHrefs = await pagesNav.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
     check(navHrefs[1] === "/products#fem" && navHrefs[2] === "/products#baby", "menu: Feminine Care and Baby Care open their band on /products", navHrefs);
     check(await pagesNav.locator('[aria-current="page"]').innerText().then((t) => t.trim()) === "Tips & Advice", "menu: the current page is marked");
