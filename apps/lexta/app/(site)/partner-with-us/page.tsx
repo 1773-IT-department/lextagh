@@ -86,9 +86,9 @@ export default function PartnerPage() {
 
       <section data-screen-label="Partnership routes" style={{ ...section, background: "#fff" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto" }}>
-          <div style={eyebrow}>Ways to partner</div>
-          <h2 style={h2}>Six routes into the business</h2>
-          <p style={{ ...lead, maxWidth: 600 }}>Pick the one closest to your operation. Each has its own terms, minimums and onboarding path.</p>
+          <div style={eyebrow}>Partner with Us</div>
+          <h2 style={h2}>Select your partnership type</h2>
+          <p style={{ ...lead, maxWidth: 600 }}>For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details. For CSR, submit a partnership proposal.</p>
           <RoutePicker />
         </div>
       </section>
