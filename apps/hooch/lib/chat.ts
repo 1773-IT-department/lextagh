@@ -6,7 +6,7 @@ import { contact, lexta } from "./site";
 export const HOOCH_CHAT: ChatBrandConfig = {
   brand: "hooch",
   brandName: "Hooch",
-  teamName: "Hooch care team",
+  teamName: "Hooch® customer care team",
   supportEmail: contact.supportEmail,
   officeHoursText: contact.officeHours,
   storageKey: "hooch-chat-v1",

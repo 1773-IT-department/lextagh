@@ -14,7 +14,7 @@ import { ALL_REGIONS, getHoochStockists, getWhereToBuyRegions, type StockistItem
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
-  description: "Find a shop that stocks Hooch® near you, ask a question, share your breakfast experience, or send a distributor and business enquiry to the Hooch® team at Lexta Ghana Limited.",
+  description: "Contact the Hooch® team at Lexta Ghana Limited: ask a product question, share your breakfast experience, report a concern, or send a distribution or partnership enquiry.",
   alternates: { canonical: "/contact" },
 };
 
@@ -45,8 +45,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
   const ways = [
     { icon: "bowl", tone: "lilac", title: "Product Questions", body: "Have a question about Hooch® products? Ask about our cereals, packs, ingredients and how to enjoy them.", action: "Ask a question", href: "/contact?topic=question#message" },
     { icon: "heart", tone: "mint", title: "Share Your Breakfast Experience", body: "At Hooch®, we value the families and consumers who make us part of their daily routines.", action: "Share your experience", href: "/contact?topic=feedback#message" },
-    { icon: "shield", tone: "berry", title: "Complaints & Product Reviews", body: "A concern about a Hooch® product? Tell us and our consumer care team will contact you.", action: "Report a problem", href: "/contact?topic=problem#message" },
-    { icon: "truck", tone: "butter", title: "Distribution Enquiries", body: "Interested in stocking or distributing Hooch®? Talk to our team about availability and distribution.", action: "Trade enquiry", href: "#trade" },
+    { icon: "shield", tone: "berry", title: "Complaints & Product Reviews", body: "A concern about a Hooch® product? Tell us here and your report goes to our consumer care team.", action: "Report a problem", href: "/contact?topic=problem#message" },
+    { icon: "truck", tone: "butter", title: "Distribution Enquiries", body: "Interested in stocking or distributing Hooch®? Send us a distribution enquiry.", action: "Trade enquiry", href: "#trade" },
     { icon: "handshake", tone: "lilac", title: "Partnerships & Sponsorships", body: "Partnership, sponsorship and community opportunities with Hooch®.", action: "Send a proposal", href: "/contact?topic=partnership#message" },
   ];
 
@@ -97,7 +97,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
         <aside className={s.sideCol} aria-label="Contact details">
           <div className={s.checklist}>
             <h2>Reporting a concern?</h2>
-            <p>Where you can, include the product name, pack size, batch number, and where and when you bought it. Our team will review your submission and advise on the next steps.</p>
+            <p>Where you can, include the product name, pack size, batch number, and where and when you bought it. Your report goes to our consumer care team.</p>
           </div>
           <div className={s.office}>
             <h2>Get in Touch</h2>
@@ -135,7 +135,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
           <div className={s.tradeIntro}>
             <p className="hc-eyebrow" style={{ color: "var(--hc-sun)" }}>Distributors and business enquiries</p>
             <h2 id="trade-title">Stock Hooch® in Your Shop or Region</h2>
-            <p>Interested in stocking or distributing Hooch® Cornflakes and Hooch® Frosted Flakes? Contact our team to discuss product availability and distribution opportunities.</p>
+            <p>Interested in stocking or distributing Hooch® Cornflakes and Hooch® Frosted Flakes? Tell us about your business and your enquiry goes to the Hooch® team at Lexta Ghana Limited.</p>
             <p className={s.tradeMail}><Icon name="mail" size={17} /> <a href={`mailto:${contact.tradeEmail}`}>{contact.tradeEmail}</a></p>
           </div>
           <TradeForm regions={regions} />

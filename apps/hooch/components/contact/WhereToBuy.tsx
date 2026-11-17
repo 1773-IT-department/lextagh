@@ -117,8 +117,8 @@ export default function WhereToBuy({
             )}
             {result.state === "done" && list.length === 0 && (
               <li className={s.listNote}>
-                We are adding Hooch stockists {region === ALL_REGIONS ? "across Ghana" : `in ${regionName}`}. Try another region, or{" "}
-                <Link href="/contact?topic=stockist#message">ask us</Link> to find your nearest shop.
+                No Hooch® stockists are listed {region === ALL_REGIONS ? "here" : `in ${regionName}`} yet.{" "}
+                <Link href="/contact?topic=stockist#message">Ask us</Link> where to find Hooch® near you.
               </li>
             )}
             {list.map((x) => (
@@ -146,7 +146,7 @@ export default function WhereToBuy({
         </div>
         <StockistMap stockists={list} selected={selected} onSelect={setSelected} viewKey={`${result.state}:${result.region}:${type}`} />
       </div>
-      <p className={s.mapNote}>Shops are listed by Lexta&apos;s sales team. Your shop stocks Hooch and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
+      <p className={s.mapNote}>Shops are listed by Lexta Ghana Limited. Your shop stocks Hooch® and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
     </div>
   );
 }

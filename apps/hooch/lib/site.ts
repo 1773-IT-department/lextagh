@@ -31,10 +31,12 @@ export const lexta = {
 
 /**
  * Hooch contact details, from Lexta's "Hooch Foods website content.docx" (Contact Us tab). The phone list is the same
- * Lexta list as on the Yazz and Linzzy sites; the emails are the @hoochfoods.com addresses that document gives (to be
- * confirmed: Lexta's PDF routes Hooch to @linzzyproducts.com addresses, and hoochfoods.com does not serve a working site
- * yet, see CONTENT-NEEDED.md). The document's line "Contact Yazz Products for all inquiries" is a copy slip from the
- * Yazz document and is not shown. Text and mailto only.
+ * Lexta list as on the Yazz and Linzzy sites; the first ("+233 02235296" in the document) is shown normalised as
+ * +233 302 235 296, the number on Lexta's original site (to be confirmed). The emails are the @hoochfoods.com addresses
+ * that document gives, used the same way on every page, About included (to be confirmed: Lexta's PDF routes Hooch to
+ * @linzzyproducts.com addresses, and hoochfoods.com does not serve a working site yet, see
+ * docs/content/hooch/PLACEHOLDERS.md). The document's line "Contact Yazz Products for all inquiries" is a copy slip
+ * from the Yazz document and is not shown. Text and mailto only.
  */
 export const contact = {
   company: "Lexta Ghana Limited",
