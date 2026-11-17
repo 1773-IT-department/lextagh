@@ -77,7 +77,7 @@ export default function WhereToBuy({
     <div className={s.locator}>
       {product && (
         <p className={s.productNote}>
-          <Icon name="box" size={18} /> Looking for <strong>{product.name}</strong>? These shops stock Hooch products; call ahead to check the pack you need.
+          <Icon name="box" size={18} /> Looking for <strong>{product.name}</strong>?
         </p>
       )}
       <form action="/contact#where-to-buy" method="get" className={s.finder} onSubmit={(e) => { e.preventDefault(); choose(region); }}>
@@ -146,7 +146,6 @@ export default function WhereToBuy({
         </div>
         <StockistMap stockists={list} selected={selected} onSelect={setSelected} viewKey={`${result.state}:${result.region}:${type}`} />
       </div>
-      <p className={s.mapNote}>Shops are listed by Lexta Ghana Limited. Your shop stocks Hooch® and is not listed? <Link href="/contact#trade">Tell us</Link>.</p>
     </div>
   );
 }

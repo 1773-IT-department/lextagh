@@ -3,7 +3,8 @@
  * docs/content/hooch/website-copy.md): the six tab draft (Home, About Hooch®, Nutrition & Family Tips, Contact Us) and
  * the earlier short draft where the six tab draft is silent (Who We Are, Community). Only dashes were replaced.
  * The wireframe table, the click routes and the Phase 2 notes are Lexta's yellow highlights: instructions to the builder
- * that appear nowhere on the site. The interface labels (button words, the little "crunch" shouts) are ours.
+ * that appear nowhere on the site. The interface labels (button words) are ours; the little tap shouts use Drive words ("Crunch", "Delicious",
+ * "Sweet Crunch", "Happy Mornings").
  */
 export const BRAND = {
   promise: "Good Nutrition, Brighter Tomorrow.",

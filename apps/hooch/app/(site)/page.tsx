@@ -50,7 +50,7 @@ export default async function HomePage() {
               <i style={{ "--img": "url(/images/hooch/bits/flake-sharp.webp)", right: "-6%", top: "6%", "--s": "78px", "--d": "-2s" } as React.CSSProperties} />
               <i style={{ "--img": "url(/images/hooch/bits/flake-1.webp)", left: "4%", top: "-5%", "--s": "58px", "--d": "-4s" } as React.CSSProperties} />
             </span>
-            <span className={`hc-sticker hc-sticker--red ${s.heroBadge}`}>10 packs inside!</span>
+            <span className={`hc-sticker hc-sticker--red ${s.heroBadge}`}>10 individual packs</span>
           </div>
         </div>
         <MilkWave />
@@ -157,7 +157,7 @@ export default async function HomePage() {
           <p>{BRAND.contact.body[0]}</p>
           <div className={s.heroActions}>
             <Link href="/contact#message" className="hc-btn">Send Us a Message <Icon name="chat" size={18} /></Link>
-            <Link href="/contact#where-to-buy" className="hc-btn hc-btn--ink"><Icon name="pin" size={18} /> Find Hooch® Near You</Link>
+            <Link href="/contact#where-to-buy" className="hc-btn hc-btn--ink"><Icon name="pin" size={18} /> Find a Stockist</Link>
           </div>
         </div>
       </section>

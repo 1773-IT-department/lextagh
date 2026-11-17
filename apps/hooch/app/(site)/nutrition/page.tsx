@@ -7,13 +7,13 @@ import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import { ARTICLES } from "@/content/articles";
 import { BRAND } from "@/content/brand";
-import { ALLERGEN_NOTE } from "@/content/catalogue";
+import { ALLERGEN_NOTE, VITAMINS } from "@/content/catalogue";
 import { FAQ_GROUPS } from "@/content/faqs";
 import { getHoochProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Nutrition & Family Tips",
-  description: "Good Habits Today. Brighter Tomorrows. Practical, easy-to-understand breakfast guidance for households, and answers to questions about Hooch® cereals.",
+  description: "Good Habits Today. Brighter Tomorrows. Our Nutrition & Family Tips hub shares practical, easy-to-understand guidance for households.",
   alternates: { canonical: "/nutrition" },
 };
 
@@ -44,8 +44,8 @@ export default async function NutritionPage() {
             {n.promise.map((p) => <p key={p}>{p}</p>)}
           </div>
           <div className={s.panel} data-tone="red" data-reveal="" style={{ "--d": ".1s" } as React.CSSProperties}>
-            <h2>On the pack</h2>
-            <p>Both Hooch® cereals are enriched with vitamins. You will find the full ingredient list for each cereal on its product page.</p>
+            <h2>Nutrition &amp; ingredients</h2>
+            <p>Enriched with vitamins. {VITAMINS}</p>
             <p><strong>Allergens:</strong> {ALLERGEN_NOTE}</p>
             <div className={s.actions}>
               {products.map((p) => <Link key={p.slug} href={`/products/${p.slug}`} className="hc-btn hc-btn--sm">{p.name} <Icon name="arrow" size={16} /></Link>)}
@@ -55,10 +55,10 @@ export default async function NutritionPage() {
       </section>
 
       <section id="faqs" className={`hc-wrap ${s.section} ${s.sectionLast}`} aria-labelledby="faq-title">
-        <p className="hc-eyebrow">Product FAQs</p>
-        <h2 id="faq-title" className="hc-h2" style={{ marginTop: 12, marginBottom: 24 }}>Your Questions, Answered</h2>
+        <p className="hc-eyebrow">FAQs</p>
+        <h2 id="faq-title" className="hc-h2" style={{ marginTop: 12, marginBottom: 24 }}>Product FAQs</h2>
         <Faq groups={FAQ_GROUPS} />
-        <p className="hc-lead" style={{ marginTop: 24 }}>More ideas for the kitchen are on <Link href="/recipes#beyond-title" className="hc-textlink">Beyond the Bowl</Link>.</p>
+        <p className="hc-lead" style={{ marginTop: 24 }}><Link href="/recipes#beyond-title" className="hc-textlink">Beyond the Bowl: Get Creative with Hooch®!</Link></p>
       </section>
     </>
   );

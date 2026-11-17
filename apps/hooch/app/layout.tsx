@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase,
   title: { default: "Hooch® | Good Nutrition, Brighter Tomorrow", template: "%s | Hooch®" },
   description:
-    "Hooch® Cornflakes and Hooch® Frosted Flakes, breakfast cereals from Lexta Ghana Limited in 10 convenient individual packs. Breakfast ideas, family tips and where to buy.",
+    "With two delicious cereal options and 10 convenient individual packs per product, there's a Hooch® breakfast moment for everyone.",
   applicationName: "Hooch",
   openGraph: { siteName: "Hooch®", type: "website", locale: "en_GH", images: [{ url: "/images/hooch/cornflakes-bowl.webp", width: 1200, height: 1200, alt: "A box of Hooch® Cornflakes, 500g" }] },
   twitter: { card: "summary_large_image" },

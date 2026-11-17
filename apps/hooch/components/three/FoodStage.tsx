@@ -42,7 +42,8 @@ function canRun3d(): boolean {
   }
 }
 
-const SHOUTS = ["Crunch!", "Munch!", "Yum!", "Crunch!", "Pop!"];
+/** Words from Lexta's Hooch copy ("Sweet Crunch. Happy Mornings.", "Simple. Crunchy. Delicious."). */
+const SHOUTS = ["Crunch!", "Delicious!", "Crunch!", "Sweet Crunch!", "Happy Mornings!"];
 
 /** Always shown on the live stage, before and after the visitor plays with it (Desmond, 16 Nov 2026). */
 export const STAGE_HINT = "Tap a box to shake out the flakes, or drag to spin it!";

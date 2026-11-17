@@ -10,7 +10,8 @@ import { useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { useMotionPaused } from "@/lib/motion";
 
 const BITS = ["/images/hooch/bits/flake-sharp.webp", "/images/hooch/bits/flake-1.webp", "/images/hooch/bits/flake-2.webp", "/images/hooch/bits/flake-5.webp", "/images/hooch/bits/berry-1.webp"];
-const SHOUTS = ["Crunch!", "Yum!", "Munch!", "Pop!"];
+/** Words from Lexta's Hooch copy ("Sweet Crunch. Happy Mornings.", "Simple. Crunchy. Delicious."). */
+const SHOUTS = ["Crunch!", "Delicious!", "Sweet Crunch!", "Happy Mornings!"];
 
 type Burst = { id: number; x: number; y: number; word: string; bits: { dx: number; dy: number; r: number; src: string; s: number }[] };
 

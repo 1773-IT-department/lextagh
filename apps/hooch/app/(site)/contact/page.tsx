@@ -14,7 +14,7 @@ import { ALL_REGIONS, getHoochStockists, getWhereToBuyRegions, type StockistItem
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
-  description: "Contact the Hooch® team at Lexta Ghana Limited: ask a product question, share your breakfast experience, report a concern, or send a distribution or partnership enquiry.",
+  description: "Have a question about Hooch® products? Want to share your breakfast experience or make an enquiry?",
   alternates: { canonical: "/contact" },
 };
 
@@ -43,11 +43,11 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
 
   // Lexta's Contact Us routes: a product question, feedback, a distribution enquiry or a partnership opportunity.
   const ways = [
-    { icon: "bowl", tone: "lilac", title: "Product Questions", body: "Have a question about Hooch® products? Ask about our cereals, packs, ingredients and how to enjoy them.", action: "Ask a question", href: "/contact?topic=question#message" },
+    { icon: "bowl", tone: "lilac", title: "Product Questions", body: "Have a question about Hooch® products?", action: "Ask a question", href: "/contact?topic=question#message" },
     { icon: "heart", tone: "mint", title: "Share Your Breakfast Experience", body: "At Hooch®, we value the families and consumers who make us part of their daily routines.", action: "Share your experience", href: "/contact?topic=feedback#message" },
-    { icon: "shield", tone: "berry", title: "Complaints & Product Reviews", body: "A concern about a Hooch® product? Tell us here and your report goes to our consumer care team.", action: "Report a problem", href: "/contact?topic=problem#message" },
-    { icon: "truck", tone: "butter", title: "Distribution Enquiries", body: "Interested in stocking or distributing Hooch®? Send us a distribution enquiry.", action: "Trade enquiry", href: "#trade" },
-    { icon: "handshake", tone: "lilac", title: "Partnerships & Sponsorships", body: "Partnership, sponsorship and community opportunities with Hooch®.", action: "Send a proposal", href: "/contact?topic=partnership#message" },
+    { icon: "shield", tone: "berry", title: "Complaints & Product Reviews", body: `Consumer Reports: ${contact.consumerReports}`, action: "Report a problem", href: "/contact?topic=problem#message" },
+    { icon: "truck", tone: "butter", title: "Distribution Enquiries", body: `Enquiries: ${contact.enquiriesEmail}`, action: "Trade enquiry", href: "#trade" },
+    { icon: "handshake", tone: "lilac", title: "Partnerships & Sponsorships", body: `Partnerships/sponsorships: ${contact.partnershipsEmail}`, action: "Send a proposal", href: "/contact?topic=partnership#message" },
   ];
 
   return (
@@ -67,7 +67,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
       </section>
 
       <section className={`hc-wrap ${s.ways}`} aria-labelledby="ways-title">
-        <h2 id="ways-title" className="hc-h2">How Can We Help You?</h2>
+        <h2 id="ways-title" className="hc-h2">Get in Touch</h2>
         <div className={s.wayGrid}>
           {ways.map((w) => (
             <div key={w.title} className={s.way} data-tone={w.tone}>
@@ -82,8 +82,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
 
       <section id="where-to-buy" className={`hc-wrap ${s.wtb}`} aria-labelledby="wtb-title">
         <p className="hc-eyebrow">Where to buy</p>
-        <h2 id="wtb-title" className="hc-h2" style={{ marginTop: 12 }}>Find Hooch® Near You</h2>
-        <p className="hc-lead" style={{ marginTop: 14, maxWidth: 640 }}>Choose your region, search by town or shop, then tap a shop to see it on the map.</p>
+        <h2 id="wtb-title" className="hc-h2" style={{ marginTop: 12 }}>Find a Stockist</h2>
         <WhereToBuy regions={regions} initialRegion={region} initial={stockists} regionFromUrl={regionFromUrl} product={product ? { slug: product.slug, name: product.name } : null} />
       </section>
 
@@ -95,12 +94,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
           <ConsumerForm regions={regions} products={groups} initialTopic={topic} initialProduct={product?.slug ?? ""} initialRegion={regionFromUrl && region !== ALL_REGIONS ? region : ""} />
         </div>
         <aside className={s.sideCol} aria-label="Contact details">
-          <div className={s.checklist}>
-            <h2>Reporting a concern?</h2>
-            <p>Where you can, include the product name, pack size, batch number, and where and when you bought it. Your report goes to our consumer care team.</p>
-          </div>
           <div className={s.office}>
-            <h2>Get in Touch</h2>
+            <h2>Contact Details</h2>
             <p><strong>Hooch® Foods</strong><br />A brand of {contact.company}<br />{contact.addressLines.join(", ")}</p>
             <ul>
               <li><Icon name="phone" size={17} /> <span>{contact.phones.map((p, i) => <span key={p}>{i > 0 && " / "}<a href={tel(p)}>{p}</a></span>)}</span></li>
@@ -133,9 +128,10 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
       <section id="trade" className={`hc-wrap ${s.tradeWrap}`} aria-labelledby="trade-title">
         <div className={s.trade}>
           <div className={s.tradeIntro}>
-            <p className="hc-eyebrow" style={{ color: "var(--hc-sun)" }}>Distributors and business enquiries</p>
-            <h2 id="trade-title">Stock Hooch® in Your Shop or Region</h2>
-            <p>Interested in stocking or distributing Hooch® Cornflakes and Hooch® Frosted Flakes? Tell us about your business and your enquiry goes to the Hooch® team at Lexta Ghana Limited.</p>
+            <p className="hc-eyebrow" style={{ color: "var(--hc-sun)" }}>Trade enquiries</p>
+            <h2 id="trade-title">Distribution Enquiries</h2>
+            {/* Lexta's revised content PDF, People, careers and contact (docs/content/lexta/website-copy.md). */}
+            <p>For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details.</p>
             <p className={s.tradeMail}><Icon name="mail" size={17} /> <a href={`mailto:${contact.tradeEmail}`}>{contact.tradeEmail}</a></p>
           </div>
           <TradeForm regions={regions} />
@@ -144,8 +140,8 @@ export default async function ContactPage({ searchParams }: { searchParams: Sear
 
       <section className={`hc-wrap ${s.quick}`} aria-labelledby="quick-title">
         <div>
-          <h2 id="quick-title" className="hc-h2">Before You Write</h2>
-          <p className="hc-lead" style={{ marginTop: 14 }}>Questions about our cereals, recipes and family breakfast tips may already be answered here.</p>
+          <h2 id="quick-title" className="hc-h2">Quick Links</h2>
+          <p className="hc-lead" style={{ marginTop: 14 }}>Our Nutrition &amp; Family Tips hub shares practical, easy-to-understand guidance for households.</p>
         </div>
         <div className={s.quickLinks}>
           <Link href="/nutrition#faqs" className={s.quickLink}><Icon name="chat" size={22} /> Product FAQs <Icon name="arrow" size={18} /></Link>

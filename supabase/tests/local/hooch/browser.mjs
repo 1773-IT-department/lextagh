@@ -191,7 +191,7 @@ try {
     const items = page.locator("main ul button[aria-pressed]");
     const n = await items.count();
     for (let i = 0; i < n; i += 1) { await items.nth(i).focus(); await page.keyboard.press("Enter"); }
-    check(n === 3 && await page.getByText("Ready? Pour, add and enjoy!").isVisible(), "recipe: ticking every item by keyboard shows the ready message");
+    check(n === 3 && await page.getByText("Make Every Morning a Hooch® Moment!", { exact: true }).isVisible(), "recipe: ticking every item by keyboard shows the ready message");
 
     // The tap a pack toy was removed (Desmond, 16 Nov 2026): the 10 packs band keeps its heading, text and family guide only.
     await page.goto(`${SITE}/?3d=off`);
@@ -260,7 +260,7 @@ try {
     const box = await sp.locator("[data-mode]").first().boundingBox();
     await sp.mouse.click(box.x + box.width / 2, box.y + box.height * 0.5);
     await sleep(300);
-    const burst = await sp.locator("[data-mode] span[aria-hidden='true']").filter({ hasText: /Crunch!|Munch!|Yum!|Pop!/ }).count();
+    const burst = await sp.locator("[data-mode] span[aria-hidden='true']").filter({ hasText: /Crunch!|Delicious!|Sweet Crunch!|Happy Mornings!/ }).count();
     check(burst >= 1, "3D: tapping the box makes a crunch burst", burst);
     await sctx.close();
 

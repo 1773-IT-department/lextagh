@@ -21,7 +21,7 @@
 import type { HoochProduct } from "../lib/products";
 
 /** Lexta's nutrition line, the same for both cereals. Exact figures must match the approved packaging. */
-const VITAMINS = "Vitamins: Vit E, Thiamine B1, Riboflavin B2, Niacin B3, Pantothenic Acid B5, Vit B6, Vit B12, Folic Acid.";
+export const VITAMINS = "Vitamins: Vit E, Thiamine B1, Riboflavin B2, Niacin B3, Pantothenic Acid B5, Vit B6, Vit B12, Folic Acid.";
 
 export const CATALOGUE: HoochProduct[] = [
   {
@@ -31,7 +31,7 @@ export const CATALOGUE: HoochProduct[] = [
     flavour: "classic",
     tagline: "Super Classic Crunchy. Everyday Goodness.",
     portions: "10 x 50g individual packs",
-    short: "The golden crunch of Hooch® Cornflakes: 500g, in 10 convenient packs of 50g.",
+    short: "Start your morning with the golden crunch of Hooch® Cornflakes.",
     long: "Start your morning with the golden crunch of Hooch® Cornflakes. With its enjoyable crispy texture and convenient individual portions, it's an easy breakfast option for the whole family. Each 500g product contains 10 smaller packs of 50g, allowing family members to prepare their own cereal portions with less measuring.",
     features: ["Convenient individual portions", "Quick and simple to prepare", "Enjoyable crunchy texture", "Easy to combine with milk and fruit", "Practical for family breakfast planning"],
     usage: "Pour one individual pack into a bowl, add your preferred milk and enjoy. Add fruit or other toppings for variety.",
@@ -47,7 +47,7 @@ export const CATALOGUE: HoochProduct[] = [
     flavour: "frosted",
     tagline: "Sweet Crunch. Happy Mornings.",
     portions: "10 x 37.5g individual packs",
-    short: "A sweet frosted finish on a crispy flake: 375g, in 10 convenient packs of 37.5g.",
+    short: "Add a little sweetness to your breakfast routine with Hooch® Frosted Flakes.",
     long: "Add a little sweetness to your breakfast routine with Hooch® Frosted Flakes. Combining a crispy texture with a sweet frosted finish, it's a delightful choice for families who enjoy a sweeter cereal. Each 375g product contains 10 smaller packs of 37.5g, conveniently portioned for everyday breakfast preparation.",
     features: ["Sweet frosted taste", "Crispy, enjoyable texture", "Convenient individual packs", "Quick preparation for busy mornings", "Enjoyable as cereal or a snack"],
     usage: "Pour one pack into a bowl, add milk and serve. Pair with fresh fruit to create a more varied breakfast.",

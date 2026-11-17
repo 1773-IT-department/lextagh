@@ -7,11 +7,12 @@ import Icon from "@/components/Icon";
 import s from "@/components/pages/pages.module.css";
 import { BRAND } from "@/content/brand";
 import { FAMILY_GUIDE } from "@/content/catalogue";
+import { FAQ_GROUPS } from "@/content/faqs";
 import { getHoochProducts } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Our Products",
-  description: "Hooch® Cornflakes (500g, 10 x 50g packs) and Hooch® Frosted Flakes (375g, 10 x 37.5g packs): two delicious choices, one Hooch® family.",
+  description: "Two Delicious Choices. One Hooch® Family. With two delicious cereal options and 10 convenient individual packs per product, there's a Hooch® breakfast moment for everyone.",
   alternates: { canonical: "/products" },
 };
 
@@ -36,7 +37,7 @@ export default async function ProductsPage() {
 
       <section className={`hc-wrap ${s.section}`} aria-labelledby="films-title">
         <p className="hc-eyebrow">Watch</p>
-        <h2 id="films-title" className="hc-h2" style={{ marginTop: 12 }}>Hooch® in Action</h2>
+        <h2 id="films-title" className="hc-h2" style={{ marginTop: 12 }}>Product Videos</h2>
         <div className={`${s.grid2} ${s.mt}`}>
           {products.map((p) => (
             <VideoSlot key={p.slug} needed={`${p.name} product video from Lexta`} poster={p.images[0] ?? { src: "/images/hooch/cornflakes-bowl.webp", alt: p.name }} film={filmFor(p.slug)} />
@@ -56,10 +57,10 @@ export default async function ProductsPage() {
             <p className={s.note}>{FAMILY_GUIDE.note}</p>
           </div>
           <div className={s.panel} data-reveal="" style={{ "--d": ".1s" } as React.CSSProperties}>
-            <h2>Questions About Our Cereals?</h2>
-            <p>Can I eat Hooch® without milk? How should I store it? What is the difference between Cornflakes and Frosted Flakes?</p>
+            <h2>Product FAQs</h2>
+            <ul className={s.ticks}>{FAQ_GROUPS.flatMap((g) => g.items).map((f) => <li key={f.q}><span className={s.tick}><Icon name="chat" size={14} /></span> {f.q}</li>)}</ul>
             <div className={s.actions}>
-              <Link href="/nutrition#faqs" className="hc-btn hc-btn--red">Product FAQs <Icon name="arrow" size={18} /></Link>
+              <Link href="/nutrition#faqs" className="hc-btn hc-btn--red">See the Answers <Icon name="arrow" size={18} /></Link>
               <Link href="/contact#where-to-buy" className="hc-btn"><Icon name="pin" size={18} /> Where to Buy</Link>
             </div>
           </div>
