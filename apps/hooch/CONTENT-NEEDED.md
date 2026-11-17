@@ -41,13 +41,14 @@ Each item below appears on the site as a placeholder or is a decision to confirm
    Contact). Only the Lexta WhatsApp channel links out.
 
 ## Contact
-10. **Email addresses**: the Drive document gives info@, marketing@ and support@hoochfoods.com; Lexta's PDF routes Hooch
-    to @linzzyproducts.com addresses. The site uses the hoochfoods.com ones; hoochfoods.com does not serve a working site
-    yet, so these mailboxes need confirming.
+10. **Email addresses**: decided by Desmond on 17 November 2026: use the Drive document's info@, marketing@ and
+    support@hoochfoods.com (not the PDF's @linzzyproducts.com addresses). hoochfoods.com does not serve a working site
+    yet, so Lexta should make sure these mailboxes receive mail before go-live.
 11. The document's line "Contact Yazz Products for all inquiries" is a copy slip from the Yazz document and is not shown.
 12. **Consumer care hours** (placeholder).
-13. **Complaint guidance and a privacy line on the contact form**: the strict sweep removed 1773's "Reporting a concern?"
-    box (what to include in a complaint) and the form's privacy hint. If Lexta wants them, they need Lexta's wording.
+13. **Complaint guidance and a privacy line on the contact form**: TO REQUEST FROM LEXTA (Desmond, 17 November 2026).
+    The strict sweep removed 1773's "Reporting a concern?" box (what to include in a complaint) and the form's privacy
+    hint; both go back in with Lexta's own wording when it arrives.
 
 ## Articles
 14. **Full text of the four Nutrition & Family Tips articles**: Lexta supplied only the summaries.

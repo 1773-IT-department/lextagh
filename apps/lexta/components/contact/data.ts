@@ -51,8 +51,8 @@ export const regions = [
 ];
 
 export const faqs: { q: string; a: string; links?: TextLink[] }[] = [
-  { q: "How do I become a Lexta distributor?", a: "For distributors, wholesalers and modern trade, select your partnership type and share your region and contact details on the Partner With Us form. [PLACEHOLDER: distributor appointment process and terms]", links: [{ phrase: "Partner With Us form", href: "/partner-with-us#apply" }] },
-  { q: "Where can I buy your products?", a: "Use the stockist finder on our Home page to find one near you.", links: [{ phrase: "stockist finder", href: "/#where-to-buy" }] },
-  { q: "I have a concern about a product I bought. What should I do?", a: "Complaints & product reviews: support@lextagh.com. Consumer Reports: +233 (0) 509 967 400. Please include the product, batch and store." },
-  { q: "How do I apply for a job?", a: "To enquire about careers, use the Careers form.", links: [{ phrase: "Careers form", href: "/careers#general" }] },
+  { q: "How do I become a Lexta distributor?", a: "[PLACEHOLDER: Lexta's answer on how to become a Lexta distributor]" },
+  { q: "Where can I buy your products?", a: "[PLACEHOLDER: Lexta's answer on where customers can buy Lexta products]" },
+  { q: "I have a concern about a product I bought. What should I do?", a: "[PLACEHOLDER: Lexta's answer on what to do about a concern with a product]" },
+  { q: "How do I apply for a job?", a: "[PLACEHOLDER: Lexta's answer on how to apply for a job at Lexta]" },
 ];

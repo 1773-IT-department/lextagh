@@ -43,7 +43,7 @@ they have no visible title or caption, only a screen reader description of what 
 | Contact, Where to Buy | "Shops are listed by Lexta Ghana Limited. Your shop stocks Hooch® and is not listed? Tell us." | |
 | Contact, beside the form | The "Reporting a concern?" box: "Where you can, include the product name, pack size, batch number, and where and when you bought it. Your report goes to our consumer care team." | The side column keeps Contact Details and Stay Connected. Lead: Lexta may want guidance for complaints here; it needs Lexta's words |
 | Contact, Send Us a Message | "An email address or a phone number, so we can reply." | Form hint (the validation message still says so if both are empty) |
-| Contact, Send Us a Message | "Please do not share sensitive health details in this form. We use your details only to answer you." | Form hint. Lead: Lexta may want a privacy line here; it needs Lexta's words |
+| Contact, Send Us a Message | "Please do not share sensitive health details in this form. We use your details only to answer you." | Form hint. To request from Lexta (Desmond, 17 November 2026): complaint guidance and a privacy line in Lexta's words |
 | Contact, both forms | Textarea placeholders "Tell us what you need, or what happened." and "Storage capacity, delivery needs, products and quantities." | |
 | Contact, topic hints | "A concern about a Hooch® product. Your report goes to our consumer care team." (Report a problem), "Partnerships, sponsorships and community opportunities with Hooch®." (Partnership), "Tell us the shop's name and town." (My shop does not stock Hooch®), "Any other question for the Hooch® team." (Something else) | No hint shows for those four topics |
 
@@ -92,7 +92,7 @@ the chat team name "Hooch® customer care team" (from Drive "WhatsApp Customer C
 
 | Slot | What is shown | Note |
 | --- | --- | --- |
-| Emails (Contact, About, footer, forms, chat) | info@, marketing@, support@hoochfoods.com | **Conflict, for the lead.** The Hooch Drive document gives these (Contact Us tab, and the short draft "[Partner With Hooch] marketing@hoochfoods.com"). Lexta's revised PDF routes Hooch partnerships to marketing@linzzyproducts.com and complaints to support@linzzyproducts.com, and its wireframe proposes marketing@lextagh.com for proposals. The site keeps the Hooch Drive addresses; hoochfoods.com does not serve a working site, so the mailboxes must be confirmed live |
+| Emails (Contact, About, footer, forms, chat) | info@, marketing@, support@hoochfoods.com | **Decided by Desmond, 17 November 2026: use the Hooch Drive addresses.** The Hooch Drive document gives these (Contact Us tab, and the short draft "[Partner With Hooch] marketing@hoochfoods.com"). Lexta's revised PDF routes Hooch partnerships to marketing@linzzyproducts.com and complaints to support@linzzyproducts.com, and its wireframe proposes marketing@lextagh.com for proposals. The site keeps the Hooch Drive addresses; hoochfoods.com does not serve a working site, so the mailboxes must be confirmed live |
 | First phone | +233 302 235 296 | Drive gives "+233 02235296" (malformed); read as Lexta's +233 (0) 302 235 296 |
 | Office address | Lexta Square, Olusegun Obasanjo Highway, Dzorwulu, Accra | From the Linzzy document (Lexta contact block); the Hooch document gives none |
 

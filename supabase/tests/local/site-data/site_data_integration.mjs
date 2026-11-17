@@ -59,15 +59,18 @@ try {
     const yazz = await db.getPublishedProducts("yazz");
     check(
       same(yazz.map((p) => p.slug), [
-        "sanitary-pads-and-panty-liners", "toothpaste", "toothbrushes", "washing-powder", "baby-wipes", "baby-diapers", "tissue", "mama-yazz-kitchen-towel",
+        "sanitary-pads", "panty-liners", "baby-diapers", "baby-pull-up-pants", "baby-wipes", "toothpaste-herbal", "toothpaste-whitening",
+        "toothpaste-fluoride", "toothpaste-charcoal", "toothpaste-total-care", "toothbrushes", "washing-powder", "mama-yazz-jumbo-tissue",
+        "toilet-tissue-individual-wrap", "tissue-napkin", "individual-tissue",
       ]),
-      "getPublishedProducts(yazz): the 8 seeded products in display order",
+      "getPublishedProducts(yazz): Lexta's 16 Drive products (0021) in display order",
       yazz.map((p) => p.slug),
     );
-    const toothpaste = yazz.find((p) => p.slug === "toothpaste");
-    check(toothpaste?.images.length === 3 && toothpaste.images[0].is_primary && toothpaste.images[0].url === "/images/yazz/toothpaste-charcoal-new.webp", "images come primary first; a prototype link to an old Lexta site is shown from its local copy (LEGACY_IMAGE_COPIES)", toothpaste?.images.map((i) => i.url));
-    check(toothpaste?.skus.length === 3 && toothpaste.skus.every((s) => s.is_active), "active SKUs come with the product");
-    check(!("brand" in (toothpaste ?? {})), "the brand join is not leaked into the product");
+    const wipes = yazz.find((p) => p.slug === "baby-wipes");
+    check(wipes?.images.length === 3 && wipes.images[0].url === "/images/yazz/baby-wipes-yellow.webp", "images come in order; a link to an old Yazz site is shown from its local copy (LEGACY_IMAGE_COPIES)", wipes?.images.map((i) => i.url));
+    const pads = yazz.find((p) => p.slug === "sanitary-pads");
+    check(pads?.skus.length === 5 && pads.skus.every((s) => s.is_active) && pads.skus[0].sku_code === "TBC-YAZZ-101", "active SKUs come with the product, in order", pads?.skus.map((s) => s.sku_code));
+    check(!("brand" in (pads ?? {})), "the brand join is not leaked into the product");
     check((await db.getPublishedProducts("linzzy")).length === 6 && (await db.getPublishedProducts("hooch")).length === 2, "Linzzy: Lexta's 6 catalogue products (0016); Hooch: Lexta's 2 Drive cereals (0017)");
     check((await db.getPublishedProducts("lexta")).length === 0, "the corporate brand has no products");
   }
@@ -124,25 +127,25 @@ try {
       const local = pics.map((x) => x.slice(7, -1)).filter((src) => src.startsWith("/"));
       check(local.every((src) => existsSync(new URL(`../../../../apps/lexta/public${src}`, import.meta.url))), "Our Brands: every local picture exists in the Lexta site", local.filter((src) => !existsSync(new URL(`../../../../apps/lexta/public${src}`, import.meta.url))));
     }
-    const tail = ranges.yazz.slice(6).map((c) => [c.name, c.media.kind]);
-    check(
-      same(tail, [["Tissue", "single"], ["Mama Yazz kitchen towel", "single"]]),
-      "Tissue and Mama Yazz kitchen towel are two products in the database, so they show as two cards",
-      tail,
-    );
+    // The static cards are a copy of the live page in Lexta's Drive wording, so a database outage changes nothing visible.
+    const shape = (r) => Object.fromEntries(Object.entries(r).map(([b, cards]) => [b, cards.map((c) => [c.slug, c.name, c.description, c.media, c.beforeAfter ?? null])]));
+    check(same(shape(ranges), shape(live.staticRanges)), "static fallback cards match the live cards exactly (names, Drive descriptions, order and pictures)",
+      Object.keys(ranges).map((b) => [b, ranges[b].length, live.staticRanges[b].length]));
+    const wash = ranges.yazz.find((c) => c.slug === "washing-powder");
+    check(wash?.beforeAfter?.before.src === "/images/yazz/washing-dirty-cloth.webp" && wash.media.kind === "grid" && wash.media.images.length === 2, "Yazz washing powder shows its before/after strip", wash);
   }
 
   // ---------- Products: edits show up, drafts and inactive brands never do ----------
   {
-    await q(`update public.products set name = 'Toothpaste (new name)' where slug = 'toothpaste'
+    await q(`update public.products set name = 'Toothpaste (new name)' where slug = 'toothpaste-herbal'
                and brand_id = (select id from public.brands where slug = 'yazz');`);
     let yazz = await live.getBrandRanges().then((r) => r.yazz);
-    check(yazz[1]?.name === "Toothpaste (new name)", "a renamed product shows its new name");
+    check(yazz[5]?.name === "Toothpaste (new name)", "a renamed product shows its new name");
 
-    await q(`update public.products set is_published = false where slug = 'toothpaste'
+    await q(`update public.products set is_published = false where slug = 'toothpaste-herbal'
                and brand_id = (select id from public.brands where slug = 'yazz');`);
     yazz = await live.getBrandRanges().then((r) => r.yazz);
-    check(yazz.length === 7 && !yazz.some((c) => c.slug === "toothpaste"), "an unpublished product disappears");
+    check(yazz.length === 15 && !yazz.some((c) => c.slug === "toothpaste-herbal"), "an unpublished product disappears");
 
     await q(`insert into public.products (brand_id, slug, name, short_description, is_published, sort_order)
              values ((select id from public.brands where slug = 'linzzy'), 'draft-test', 'Draft test', 'Not ready', false, 1);`);
@@ -169,7 +172,7 @@ try {
 
     // Put the seed back.
     await q(`update public.brands set is_active = true where slug = 'hooch';
-             update public.products set name = 'Toothpaste', is_published = true where slug = 'toothpaste';
+             update public.products set name = 'Yazz Herbal toothpaste', is_published = true where slug = 'toothpaste-herbal';
              delete from public.products where slug in ('draft-test', 'new-test');`);
     check(same((await live.getBrandRanges()).linzzy, linzzyCards), "back to the seed: identical again");
   }
@@ -247,7 +250,7 @@ try {
     warnings.length = 0;
     process.env.NEXT_PUBLIC_SUPABASE_URL = "http://127.0.0.1:9";
     const ranges = await live.getBrandRanges();
-    check(same(ranges, live.staticRanges), "database down: Our Brands shows the approved static cards");
+    check(same(ranges, live.staticRanges), "database down: Our Brands shows the static cards (Drive wording)");
     check(same(await wtb.getWhereToBuyRegions(), wtb.FALLBACK_REGIONS), "database down: the region picker shows the prototype list");
     const down = await apiGet("greater-accra");
     check(down.status === 503 && down.body.ok === false && !JSON.stringify(down.body).includes("127.0.0.1"), "database down: /api/stockists answers 503 without details");
@@ -309,7 +312,7 @@ try {
 
     delete process.env.NEXT_PUBLIC_SUPABASE_URL;
     delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-    check(same(await live.getBrandRanges(), live.staticRanges), "no Supabase settings: Our Brands shows the approved static cards");
+    check(same(await live.getBrandRanges(), live.staticRanges), "no Supabase settings: Our Brands shows the static cards (Drive wording)");
     check(same(await wtb.getWhereToBuyRegions(), wtb.FALLBACK_REGIONS), "no Supabase settings: the region picker shows the prototype list");
     useShim();
   }
