@@ -9,7 +9,8 @@
  *   3. it is what the site shows if the database cannot be reached, and
  *   4. it is the data entry sheet for Product Management. Migration 0016 (applied to the project) wrote
  *      these six products, corrected the seeded "Baby wipes" row and unpublished the two prototype umbrella rows (0004).
- * Pack contents are as written by Lexta. SKU codes are still to come. Pack shots come from the original
+ * Every text is Lexta's own sentence (the card summary, `short`, is the sentence of Lexta's description that names the
+ * product; strict source sweep, migration 0023). Pack contents are as written by Lexta. SKU codes are still to come. Pack shots come from the original
  * linzzyproducts.com (public/images/original), as allowed for gaps; every one is listed in CONTENT-NEEDED.md.
  * Not used, because Lexta's content says they must be verified first: "0% alcohol and parabens" on the wipes packs, and
  * the original site's diaper claims and Small and Extra Large sizes.
@@ -26,7 +27,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "heavy-flow-sanitary-towels", name: "Linzzy Heavy Flow Sanitary Towels", range: "feminine-care", category: "Feminine care",
     headline: "Extra Care for Your Heavier Days",
-    short: "Higher-absorbency towels for heavier days: 12 towels of 290 mm, plus 2 complimentary panty liners.",
+    short: "Linzzy Heavy Flow Sanitary Towels are designed for women who prefer higher absorbency during heavier menstrual flow.",
     long: "Some menstrual days require additional protection. Linzzy Heavy Flow Sanitary Towels are designed for women who prefer higher absorbency during heavier menstrual flow. Featuring the brand's Absorb, Lock and Breathe design positioning, this variant offers a practical option for managing heavier days while supporting everyday comfort.",
     features: ["Higher-absorbency menstrual protection", "290 mm towel length", "Designed for heavier-flow days", "Includes complimentary panty liners", "Comfort-focused design"],
     skus: [sku("Heavy Flow", "12 Heavy Flow Sanitary Towels, 290 mm + 2 Complimentary Panty Liners, 155 mm")],
@@ -41,7 +42,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "cool-mint-sanitary-towels", name: "Linzzy Cool Mint Sanitary Towels", range: "feminine-care", category: "Feminine care",
     headline: "A Refreshing Choice for Your Period Routine",
-    short: "A cooling-style option in a mixed-length pack: 260 mm and 290 mm towels, plus 3 panty liners.",
+    short: "Linzzy Cool Mint Sanitary Towels provide a cooling-style option within the feminine care collection.",
     long: "Every woman has different preferences when it comes to menstrual care. Linzzy Cool Mint Sanitary Towels provide a cooling-style option within the feminine care collection. The pack combines sanitary towels of different lengths, allowing consumers to choose according to their flow and coverage preferences.",
     features: ["Cool Mint variant", "Two sanitary towel lengths", "Panty liners included", "Absorb, Lock and Breathe design positioning", "Convenient mixed-length pack"],
     skus: [sku("Cool Mint", "6 Sanitary Towels, 260 mm + 6 Sanitary Towels, 290 mm + 3 Panty Liners, 155 mm")],
@@ -56,7 +57,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "extra-long-sanitary-towels", name: "Linzzy Extra Long Sanitary Towels", range: "feminine-care", category: "Feminine care",
     headline: "Extended Coverage for the Moments That Matter",
-    short: "Extended 330 mm coverage for rest, travel and busy days, with 290 mm towels and 2 complimentary panty liners.",
+    short: "Linzzy Extra Long Sanitary Towels offer an extended-length option for consumers who prefer additional coverage.",
     long: "Whether you're resting, travelling or managing a busy day, choosing a sanitary towel with suitable coverage can make a difference. Linzzy Extra Long Sanitary Towels offer an extended-length option for consumers who prefer additional coverage.",
     features: ["Extended 330 mm coverage", "Additional 290 mm towels", "Complimentary panty liners", "Designed for consumers who prefer longer towels", "Comfort-focused design"],
     skus: [sku("Extra Long", "9 Extra Long Sanitary Towels, 330 mm + 2 Sanitary Towels, 290 mm + 2 Complimentary Panty Liners, 155 mm")],
@@ -71,7 +72,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "panty-liners", name: "Linzzy Panty Liners", range: "feminine-care", category: "Feminine care",
     headline: "Little Essentials for Everyday Care",
-    short: "A compact 155 mm liner for light spotting or small amounts of moisture, 30 in a pack.",
+    short: "Linzzy Panty Liners offer a compact option for managing light spotting or small amounts of moisture.",
     long: "Sometimes, the smallest essentials make everyday routines more convenient. Linzzy Panty Liners offer a compact option for managing light spotting or small amounts of moisture. Designed for light protection rather than regular menstrual flow, these liners can be incorporated into personal care routines according to individual preference.",
     features: ["Compact 155 mm design", "30 liners per pack", "Suitable for light spotting and small amounts of moisture", "Convenient everyday care option"],
     skus: [sku("Panty Liners", "30 Panty Liners, 155 mm")],
@@ -87,7 +88,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "baby-diapers", name: "Linzzy Baby Diapers", range: "baby-care", category: "Baby care",
     headline: "Made for Little Moves and Everyday Comfort",
-    short: "Unisex disposable diapers with a flexible-comfort design, in sizes for growing babies.",
+    short: "Linzzy Baby Diapers feature a flexible-comfort design intended to support everyday diapering needs.",
     long: "Every baby has a world to discover. From stretching little legs to learning how to crawl, babies need diapers that fit comfortably and allow natural movement. Linzzy Baby Diapers feature a flexible-comfort design intended to support everyday diapering needs.",
     features: ["Flexible Comfort design", "Unisex diaper range", "Different sizes for growing babies", "Disposable diaper format", "Designed for everyday baby care"],
     skus: [
@@ -107,7 +108,7 @@ export const CATALOGUE: LinzzyProduct[] = [
   {
     slug: "baby-wipes", name: "Linzzy Baby Wipes", range: "baby-care", category: "Baby care",
     headline: "A Fresh Touch for Everyday Baby Care",
-    short: "80 wipes in a resealable pack, in Pink (Rose Perfume), Blue (Lavender Perfume) and Yellow.",
+    short: "Linzzy Baby Wipes offer a convenient cleaning option for everyday care routines at home or on the go.",
     long: "Little hands, tiny feet and unexpected messes are all part of raising a baby. Linzzy Baby Wipes offer a convenient cleaning option for everyday care routines at home or on the go. Available in different variants, Linzzy Baby Wipes provide parents with options to suit their preferences.",
     features: ["Convenient resealable packaging", "80 wipes per pack", "Different product variants", "Suitable for everyday external cleaning, subject to label directions", "Portable for diaper bags and travel"],
     skus: [

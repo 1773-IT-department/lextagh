@@ -198,18 +198,15 @@ export default function ContactView({ v: vals }: { v: any }) {
           <h2 data-reveal="1" style={{"margin":"14px 0 0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(50px,8vw,150px)","lineHeight":"0.88","letterSpacing":"-0.04em"} as CSSProperties}>
             {"\n    "}
             <span style={{"display":"block","opacity":"var(--r,0)","transform":"translateX(calc((1 - var(--r,0)) * -10vw))"} as CSSProperties}>
-              {"Find Linzzy"}
+              {"Find a"}
             </span>
             {"\n    "}
             <span style={{"display":"block","fontStyle":"italic","color":"#9EE6C8","opacity":"var(--r,0)","transform":"translateX(calc((1 - var(--r,0)) * 10vw))"} as CSSProperties}>
-              {"Near You"}
+              {"Stockist"}
             </span>
             {"\n  "}
           </h2>
           {"\n  "}
-          <p style={{"margin":"24px 0 0","maxWidth":"640px","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.6","color":"#d9cdea"} as CSSProperties}>
-            {"Choose your region, search by town or shop, then tap a shop to see it on the map."}
-          </p>
           {"\n  "}
           <form method="get" action="/contact#where-to-buy" onSubmit={vals.onWtbSubmit} aria-label="Find a stockist" style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(min(100%,280px),1fr))","gap":"20px 32px","marginTop":"40px"} as CSSProperties}>
             {"\n    "}
@@ -266,13 +263,6 @@ export default function ContactView({ v: vals }: { v: any }) {
             {"\n  "}
           </div>
           {"\n  "}
-          <p style={{"margin":"20px 0 0","fontSize":"14px","color":"#d9cdea"} as CSSProperties}>
-            {"Your shop stocks Linzzy and is not listed? "}
-            <a href="#trade" onClick={vals.jump.trade} style={{"color":"#9EE6C8","textDecoration":"underline"} as CSSProperties}>
-              {"Tell us"}
-            </a>
-            {"."}
-          </p>
         </section>
         {/* MESSAGE */}
         <section id="message" data-chapter="Send Us a Message" data-num="03" data-screen-label="04 Send Us a Message" style={{"background":"#FBF8FF","padding":"clamp(80px,10vw,140px) clamp(20px,5vw,80px)"} as CSSProperties}>
@@ -370,9 +360,6 @@ export default function ContactView({ v: vals }: { v: any }) {
                       {"\n          "}
                     </div>
                     {"\n          "}
-                    <p style={{"margin":"-14px 0 0","fontSize":"13px","color":"#7a6890"} as CSSProperties}>
-                      {"An email address or a phone number, so we can reply."}
-                    </p>
                     {"\n          "}
                     <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(min(100%,240px),1fr))","gap":"20px 28px"} as CSSProperties}>
                       {"\n            "}
@@ -442,14 +429,11 @@ export default function ContactView({ v: vals }: { v: any }) {
                     {"\n          "}
                     <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase"} as CSSProperties}>
                       {"Message"}
-                      <textarea name="message" required maxLength={3000} defaultValue={vals.msg.v.message ?? ""} {...fieldAria(vals.msg.state, "message", "c-message-error")} placeholder="Tell us what you need, or what happened." style={{"minHeight":"150px","padding":"14px 0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"18px","background":"transparent","color":"#23103a","resize":"vertical","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
+                      <textarea name="message" required maxLength={3000} defaultValue={vals.msg.v.message ?? ""} {...fieldAria(vals.msg.state, "message", "c-message-error")} style={{"minHeight":"150px","padding":"14px 0","border":"0","borderBottom":"1.5px solid #23103a","fontSize":"18px","background":"transparent","color":"#23103a","resize":"vertical","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
                       </textarea>
                       <Err id="c-message-error" msg={vals.msg.state.fieldErrors?.message} />
                     </label>
                     {"\n          "}
-                    <p style={{"margin":"0","fontSize":"13px","color":"#7a6890"} as CSSProperties}>
-                      {"Please do not share sensitive health details in this form. We use your details only to answer you."}
-                    </p>
                     {"\n          "}
                     <label style={{"display":"flex","gap":"10px","alignItems":"center","fontSize":"14px"} as CSSProperties}>
                       <input type="checkbox" name="privacy" value="yes" {...fieldAria(vals.msg.state, "privacy", "c-privacy-error")} style={{"accentColor":"#C2185B"} as CSSProperties} />
@@ -478,7 +462,7 @@ export default function ContactView({ v: vals }: { v: any }) {
               <div style={{"background":"#EFE6FF","padding":"28px"} as CSSProperties}>
                 {"\n        "}
                 <h3 style={{"margin":"0 0 10px","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"28px"} as CSSProperties}>
-                  {"Reporting a concern?"}
+                  {"Consumer Feedback and Complaints"}
                 </h3>
                 {"\n        "}
                 <p style={{"margin":"0 0 14px","fontSize":"15px"} as CSSProperties}>
@@ -595,13 +579,13 @@ export default function ContactView({ v: vals }: { v: any }) {
             <div className="lz-side" style={{"position":"sticky","top":"110px","display":"flex","flexDirection":"column","gap":"16px"} as CSSProperties}>
               {"\n      "}
               <p style={{"margin":"0","fontSize":"13px","fontWeight":"700","letterSpacing":"0.2em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
-                {"Distributors and business enquiries"}
+                {"Trade enquiries"}
               </p>
               {"\n      "}
               <h2 data-reveal="1" style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(44px,5.6vw,96px)","lineHeight":"0.9","letterSpacing":"-0.035em","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 60px))"} as CSSProperties}>
-                {"Stock Linzzy in Your Shop or "}
+                {"Distributors and "}
                 <em style={{"color":"#9EE6C8"} as CSSProperties}>
-                  {"Region"}
+                  {"Business Enquiries"}
                 </em>
               </h2>
               {"\n      "}
@@ -724,7 +708,7 @@ export default function ContactView({ v: vals }: { v: any }) {
                     {"\n          "}
                     <label style={{"display":"flex","flexDirection":"column","gap":"6px","fontSize":"12px","fontWeight":"700","letterSpacing":"0.1em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
                       {"Anything else? (optional)"}
-                      <textarea name="message" maxLength={3000} defaultValue={vals.trade.v.message ?? ""} placeholder="Storage capacity, delivery needs, products and quantities." style={{"minHeight":"110px","padding":"12px 0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"17px","background":"transparent","color":"#fff","resize":"vertical","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
+                      <textarea name="message" maxLength={3000} defaultValue={vals.trade.v.message ?? ""} style={{"minHeight":"110px","padding":"12px 0","border":"0","borderBottom":"1.5px solid rgba(255,255,255,0.6)","fontSize":"17px","background":"transparent","color":"#fff","resize":"vertical","outline":"none","textTransform":"none","letterSpacing":"0","fontWeight":"400"} as CSSProperties}>
                       </textarea>
                     </label>
                     <FormError state={vals.trade.state} dark />
@@ -743,21 +727,21 @@ export default function ContactView({ v: vals }: { v: any }) {
           </div>
         </section>
         {/* BEFORE YOU WRITE */}
-        <section id="before" data-chapter="Before You Write" data-num="05" data-screen-label="06 Before You Write" style={{"background":"#FFF1C9","padding":"clamp(70px,9vw,130px) clamp(20px,5vw,80px)"} as CSSProperties}>
+        <section id="before" data-chapter="Your Voice Matters" data-num="05" data-screen-label="06 Your Voice Matters" style={{"background":"#FFF1C9","padding":"clamp(70px,9vw,130px) clamp(20px,5vw,80px)"} as CSSProperties}>
           {"\n  "}
           <div style={{"display":"grid","gridTemplateColumns":"repeat(auto-fit,minmax(min(100%,400px),1fr))","gap":"32px clamp(40px,6vw,100px)","alignItems":"end"} as CSSProperties}>
             {"\n    "}
             <div>
               {"\n      "}
               <h2 data-reveal="1" style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(44px,6vw,104px)","lineHeight":"0.9","letterSpacing":"-0.035em","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 60px))"} as CSSProperties}>
-                {"Before You "}
+                {"Your Voice "}
                 <em style={{"color":"#C2185B"} as CSSProperties}>
-                  {"Write"}
+                  {"Matters."}
                 </em>
               </h2>
               {"\n      "}
               <p style={{"margin":"18px 0 0","maxWidth":"560px","fontSize":"clamp(17px,1.4vw,20px)","lineHeight":"1.6","color":"#4a3b20"} as CSSProperties}>
-                {"Many questions about our products, periods, baby care and where to buy Linzzy are answered in our FAQs."}
+                {"Let's Keep the Conversation Going."}
               </p>
               {"\n    "}
             </div>

@@ -1,14 +1,14 @@
 // The choices the Linzzy forms offer, shared by the forms (browser) and lib/forms/core.ts (server). No imports, so the
 // browser bundle never pulls in server code.
 
-/** The consumer form's topics. "problem" becomes a complaint; the others a CRM lead. */
+/** The consumer form's topics. "problem" becomes a complaint; the others a CRM lead. Hints quote Lexta's Contact page (Drive); a topic Lexta wrote no line for has none. */
 export const TOPICS = [
-  { value: "question", label: "Product information", hint: "Questions about our sanitary towels, panty liners, baby diapers or baby wipes." },
-  { value: "problem", label: "Report a problem with a product", hint: "A concern about a Linzzy product. Your report goes to our consumer care team." },
+  { value: "question", label: "Product information", hint: "Have questions about our sanitary towels, panty liners, baby diapers or baby wipes?" },
+  { value: "problem", label: "Report a problem with a product", hint: "If you have a concern about a Linzzy product, please contact our customer support team directly." },
   { value: "feedback", label: "Feedback or product review", hint: "Your experience helps us improve." },
-  { value: "partnership", label: "Partnership, media or collaboration", hint: "Community partnerships, media enquiries and brand collaborations." },
-  { value: "stockist", label: "My shop does not stock Linzzy", hint: "Tell us the shop's name and town." },
-  { value: "other", label: "Something else", hint: "Any other question for the Linzzy team." },
+  { value: "partnership", label: "Partnership, media or collaboration", hint: "For brand partnerships, media enquiries, educational campaigns and promotional collaborations, please contact our team." },
+  { value: "stockist", label: "My shop does not stock Linzzy", hint: "" },
+  { value: "other", label: "Something else", hint: "" },
 ] as const;
 export type Topic = (typeof TOPICS)[number]["value"];
 export const isTopic = (v: string | undefined): v is Topic => TOPICS.some((t) => t.value === v);

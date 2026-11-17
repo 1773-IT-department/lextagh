@@ -7,7 +7,7 @@ import { ALL_REGIONS, getLinzzyStockists, getWhereToBuyRegions, type StockistIte
 
 export const metadata: Metadata = {
   title: "Contact & Where to Buy",
-  description: "Find a shop that stocks Linzzy near you, contact Linzzy consumer care, or send a distributor and business enquiry to the Linzzy team at Lexta Ghana Limited.",
+  description: "Whether you need product information, want to share your experience, make a business enquiry or explore a partnership, our team is ready to hear from you.",
   alternates: { canonical: "/contact" },
 };
 

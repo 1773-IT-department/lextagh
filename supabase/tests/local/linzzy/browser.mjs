@@ -249,11 +249,11 @@ try {
     const pins = await page.locator(".leaflet-marker-icon").count();
     check(pins >= 3, `where to buy: the Leaflet map shows the shops with a position and the head office (${pins} pins)`);
     await page.locator("#wtb-region").selectOption("ashanti").catch(async () => { await page.locator("#wtb-region").evaluate((s) => { s.value = "ashanti"; s.dispatchEvent(new Event("change", { bubbles: true })); }); });
-    await page.getByText(/We are adding Linzzy stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: Ashanti (only a Hooch shop) shows the friendly empty message"), (e) => check(false, "where to buy: Ashanti empty message", e.message));
+    await page.getByText(/No Linzzy stockists are listed in Ashanti yet/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: Ashanti (only a Hooch shop) shows the friendly empty message"), (e) => check(false, "where to buy: Ashanti empty message", e.message));
     const remembered = await page.evaluate(() => localStorage.getItem("linzzy-region"));
     check(remembered === "ashanti", "where to buy: the chosen region is remembered for the product pages' Where to buy links", remembered);
     await page.goto(`${SITE}/contact?product=baby-wipes#where-to-buy`);
-    await page.getByText(/We are adding Linzzy stockists in Ashanti/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
+    await page.getByText(/No Linzzy stockists are listed in Ashanti yet/).waitFor({ timeout: 10000 }).then(() => check(true, "where to buy: a product's Where to buy link arrives with the remembered region preselected"), (e) => check(false, "where to buy: remembered region", e.message));
     check(await page.locator("#wtb-region").inputValue() === "ashanti", "where to buy: the region dropdown shows the remembered region");
     await page.locator("#wtb-region").selectOption("all");
     await page.locator("#where-to-buy li strong").first().waitFor({ timeout: 10000 });
@@ -318,15 +318,15 @@ try {
 
     // FAQs: a question opens its answer, a topic chip shows only that group.
     await page.goto(`${SITE}/faqs`);
-    const qBtn = page.getByRole("button", { name: /Is a longer towel more absorbent\?/ });
+    const qBtn = page.getByRole("button", { name: /How to make the right choice/ });
     await qBtn.focus();
     await page.keyboard.press("Enter");
     check(await qBtn.getAttribute("aria-expanded") === "true" && await page.getByText(/a longer towel is not automatically more absorbent/).first().isVisible(), "faqs: Enter on a question opens its answer");
     await page.keyboard.press("Space");
     check(await qBtn.getAttribute("aria-expanded") === "false", "faqs: Space closes it again");
-    await page.getByRole("button", { name: "Where to Buy", exact: true }).click();
+    await page.getByRole("button", { name: "About Linzzy", exact: true }).click();
     await sleep(300);
-    check(await page.getByRole("button", { name: /Which Linzzy sanitary towel should I choose\?/ }).count() === 0 && await page.getByRole("button", { name: /Where can I buy Linzzy products\?/ }).count() === 1, "faqs: a topic chip shows only that group");
+    check(await page.getByRole("button", { name: /Getting to know Linzzy's sanitary towel range/ }).count() === 0 && await page.getByRole("button", { name: /Interested in distributing or stocking Linzzy products\?/ }).count() === 1, "faqs: a topic chip shows only that group");
     check(await page.locator('script[type="application/ld+json"]').count() === 1, "faqs: the FAQ structured data is on the FAQs page");
     await page.goto(`${SITE}/about`);
     const lextaLinks = await page.locator("a[href]").evaluateAll((as) => as.map((a) => a.href).filter((h) => /lexta/i.test(h)));
@@ -439,7 +439,7 @@ try {
     check(trow === "website_partner_form|linzzy", "trade enquiry (JS): a Linzzy lead from the website partner form", { tref, trow });
 
     await page.goto(`${SITE}/tips`);
-    const sub = page.getByRole("form", { name: "Subscribe to Linzzy news" });
+    const sub = page.getByRole("form", { name: "Sign up for Linzzy educational updates" });
     await sub.locator("[name=email]").fill(`news.js.${stamp}@example.com`);
     await sub.locator("input[name=consent]").check();
     await sub.getByRole("button", { name: /Subscribe/ }).click();

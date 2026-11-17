@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Products",
-  description: "Linzzy Feminine Care and Baby Care: Heavy Flow, Cool Mint and Extra Long sanitary towels, Panty Liners, Baby Diapers and Baby Wipes, from Lexta Ghana Limited.",
+  description: "Our Collection. Your Choice. Your Comfort. Discover Linzzy Cool Mint, Heavy Flow, Extra Long Sanitary Towels and Panty Liners. Explore our baby diapers and wipes, created for families who value comfort, cleanliness and convenient care.",
   alternates: { canonical: "/products" },
 };
 

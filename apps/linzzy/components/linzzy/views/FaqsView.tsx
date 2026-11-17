@@ -107,7 +107,7 @@ export default function FaqsView({ v: vals }: { v: any }) {
           </h1>
           {"\n  "}
           <p style={{"margin":"clamp(30px,4vw,60px) 0 0","maxWidth":"620px","fontSize":"clamp(18px,1.5vw,22px)","lineHeight":"1.55","color":"#3d2a55"} as CSSProperties}>
-            {"Answers on our sanitary towels, panty liners, baby diapers and baby wipes, and where to buy Linzzy."}
+            {"Have questions about our sanitary towels, panty liners, baby diapers or baby wipes?"}
           </p>
         </section>
         <section id="answers" style={{"background":"#FBF8FF","padding":"clamp(30px,4vw,60px) clamp(20px,5vw,80px) clamp(90px,11vw,160px)"} as CSSProperties}>
@@ -145,7 +145,7 @@ export default function FaqsView({ v: vals }: { v: any }) {
               <div style={{"background":"#23103a","color":"#fff","padding":"28px","display":"flex","flexDirection":"column","gap":"12px"} as CSSProperties}>
                 {"\n        "}
                 <h2 style={{"margin":"0","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"32px","lineHeight":"1"} as CSSProperties}>
-                  {"Still have a question?"}
+                  {"How Can We Help You?"}
                 </h2>
                 {"\n        "}
                 <p style={{"margin":"0 0 6px","fontSize":"15px","lineHeight":"1.55","color":"#d9cdea"} as CSSProperties}>

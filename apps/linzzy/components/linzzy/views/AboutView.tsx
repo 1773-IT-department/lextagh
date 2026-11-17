@@ -285,7 +285,7 @@ export default function AboutView({ v: vals }: { v: any }) {
           <div style={{"padding":"clamp(40px,6vw,100px) clamp(20px,5vw,80px)","display":"flex","flexDirection":"column","justifyContent":"center","gap":"16px"} as CSSProperties}>
             {"\n    "}
             <p style={{"margin":"0","fontSize":"13px","fontWeight":"700","letterSpacing":"0.2em","textTransform":"uppercase","color":"#F48FB1"} as CSSProperties}>
-              {"For women"}
+              {"Feminine Care"}
             </p>
             {"\n    "}
             <h2 data-reveal="1" style={{"margin":"0 0 8px","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(38px,4.4vw,72px)","lineHeight":"0.95","letterSpacing":"-0.03em","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 50px))"} as CSSProperties}>
@@ -311,7 +311,7 @@ export default function AboutView({ v: vals }: { v: any }) {
           <div style={{"padding":"clamp(40px,6vw,100px) clamp(20px,5vw,80px)","display":"flex","flexDirection":"column","justifyContent":"center","gap":"16px"} as CSSProperties}>
             {"\n    "}
             <p style={{"margin":"0","fontSize":"13px","fontWeight":"700","letterSpacing":"0.2em","textTransform":"uppercase","color":"#9EE6C8"} as CSSProperties}>
-              {"For babies and families"}
+              {"Baby Care"}
             </p>
             {"\n    "}
             <h2 data-reveal="1" style={{"margin":"0 0 8px","fontFamily":"'DM Serif Display',serif","fontWeight":"400","fontSize":"clamp(38px,4.4vw,72px)","lineHeight":"0.95","letterSpacing":"-0.03em","opacity":"var(--r,0)","transform":"translateY(calc((1 - var(--r,0)) * 50px))"} as CSSProperties}>

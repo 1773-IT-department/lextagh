@@ -8,7 +8,7 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: { absolute: "Linzzy | Gentle Care for Bright Beginnings" },
-  description: "Linzzy, a feminine, maternal and baby care brand of Lexta Ghana Limited. Sanitary towels, panty liners, baby diapers and baby wipes for everyday cleanliness, comfort and confidence.",
+  description: "Welcome to Linzzy, where thoughtful care meets everyday comfort. Our range of feminine hygiene and baby care essentials is thoughtfully developed to support everyday cleanliness, comfort and confidence.",
   alternates: { canonical: "/" },
 };
 

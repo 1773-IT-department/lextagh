@@ -10,11 +10,11 @@ import { useChrome } from "../chrome";
 // The prototype has no article page; this one is built from the Tips page's type, colours and cards.
 
 export type ArticleData = {
-  slug: string; title: string; lede: string; topic: string; minutes: number; body: string; g: "fem" | "baby";
+  slug: string; title: string; lede: string; topic: string; minutes: number | null; body: string; g: "fem" | "baby";
   catLabel: string; img: { src: string; alt: string } | null; ph: string; says: string | null; community: string | null;
   notice: { title: string; text: string };
 };
-export type ReadData = { slug: string; title: string; topic: string; minutes: number; img: string | null; alt: string; ph: string };
+export type ReadData = { slug: string; title: string; topic: string; minutes: number | null; img: string | null; alt: string; ph: string };
 
 const serif = "'DM Serif Display',serif";
 const eyebrow = (color: string): CSSProperties => ({ margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color });
@@ -30,7 +30,7 @@ export default function ArticleClient({ a, reads }: { a: ArticleData; reads: Rea
   return (
     <ShellView v={v}>
       <section id="top" data-chapter={a.catLabel} data-num="00" style={{ background: "#FBF8FF", padding: `clamp(130px,16vw,200px) ${pad} clamp(40px,6vw,80px)` }}>
-        <p style={eyebrow(tone)}><a href="/tips" style={{ color: "inherit" }}>Tips &amp; Advice</a> · {a.catLabel} · {a.topic} · {a.minutes} min read</p>
+        <p style={eyebrow(tone)}><a href="/tips" style={{ color: "inherit" }}>Tips &amp; Advice</a> · {a.catLabel} · {a.topic}{a.minutes ? ` · ${a.minutes} min read` : ""}</p>
         <h1 data-reveal="1" style={{ margin: "22px 0 0", maxWidth: 1100, fontFamily: serif, fontWeight: 400, fontSize: "clamp(42px,6.4vw,104px)", lineHeight: 0.95, letterSpacing: "-0.03em", color: "#23103a", opacity: "var(--r,1)" as unknown as number, transform: "translateY(calc((1 - var(--r,1)) * 40px))" }}>{a.title}</h1>
         <p style={{ margin: "28px 0 0", maxWidth: 760, fontSize: "clamp(19px,1.6vw,24px)", lineHeight: 1.5, color: "#3d2a55" }}>{a.lede}</p>
       </section>
@@ -73,7 +73,7 @@ export default function ArticleClient({ a, reads }: { a: ArticleData; reads: Rea
               <div style={{ padding: 28, background: "#FFF1C9", color: "#23103a" }}>
                 <p style={eyebrow("#5B1A7A")}>Community corner</p>
                 <p style={{ margin: "12px 0 0", fontFamily: serif, fontSize: "clamp(22px,2vw,28px)", lineHeight: 1.15 }}>{a.community}</p>
-                <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.5 }}>Share your answer with us through the <a href="/contact?topic=feedback#message" style={{ color: "#C2185B", textDecoration: "underline" }}>Contact page</a>.</p>
+                <p style={{ margin: "14px 0 0", fontSize: 15, lineHeight: 1.5 }}><a href="/contact?topic=feedback#message" style={{ color: "#C2185B", textDecoration: "underline" }}>Contact Linzzy →</a></p>
               </div>
             )}
             <p style={{ margin: 0, padding: 28, background: "#fff", fontSize: 14, lineHeight: 1.6, color: "#3d2a55" }}><strong style={{ display: "block", marginBottom: 6, color: "#23103a" }}>{a.notice.title}</strong>{a.notice.text}</p>
@@ -92,7 +92,7 @@ export default function ArticleClient({ a, reads }: { a: ArticleData; reads: Rea
               <a href={`/tips/${r.slug}`} aria-hidden="true" tabIndex={-1} style={{ display: "block", aspectRatio: "4/5", overflow: "hidden", background: soft }}>
                 {r.img ? <img className="lzt6" src={r.img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center 35%", transition: "transform .8s" }} /> : <span style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center", fontFamily: "ui-monospace,Menlo,monospace", fontSize: 12, color: "#5B1A7A" }}>{r.ph}</span>}
               </a>
-              <p style={eyebrow(tone)}>{r.topic} · {r.minutes} min read</p>
+              <p style={eyebrow(tone)}>{r.topic}{r.minutes ? ` · ${r.minutes} min read` : ""}</p>
               <h3 style={{ margin: 0, fontFamily: serif, fontWeight: 400, fontSize: "clamp(24px,2vw,30px)", lineHeight: 1.1 }}><a href={`/tips/${r.slug}`} style={{ color: "#23103a" }}>{r.title}</a></h3>
             </article>
           ))}

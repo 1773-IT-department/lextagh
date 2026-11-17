@@ -32,7 +32,7 @@ export default function TipsClient({ tips, notices }: { tips: ProtoTip[]; notice
 
   const items = (g: "fem" | "baby") =>
     tips.filter((t) => t.g === g).map((t, i) => ({
-      ...t, hasImg: !!t.img, noImg: !t.img, img: t.img ?? "", mins: `${t.minutes} min read`,
+      ...t, hasImg: !!t.img, noImg: !t.img, img: t.img ?? "", mins: t.minutes ? ` · ${t.minutes} min read` : "",
       href: `/tips/${t.slug}`, open: h(() => router.push(`/tips/${t.slug}`)), speed: ["0", "0.06", "0.12"][i % 3],
     }));
 
