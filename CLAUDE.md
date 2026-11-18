@@ -27,3 +27,5 @@ delete its `.html` file, remove it from `legacyPages`, check it on phone and des
 - Never deploy to or touch Lexta's real domains (lextagh.com, yazzproducts.com, linzzyproducts.com, hoochfoods.com). Previews only. Desmond alone does go-live.
 - Work on branches and open pull requests; `main` is the live prototype until Desmond approves the switch.
 - Run `pnpm build` before pushing. Do not push a broken build.
+- Vercel does not deploy automatically (`git.deploymentEnabled: false`, 100 deployments a day on Hobby). After a merge to `main`,
+  deploy only the apps that changed: `bash scripts/changed-apps.sh <old main> <new main>`, then see `docs/ops/DEPLOYS.md`.
