@@ -2,10 +2,6 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "regions": ["dub1"],
   "git": {
-    "deploymentEnabled": {
-      "**": false,
-      "main": true
-    }
-  },
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude)vercel.json' ../../packages ../../pnpm-lock.yaml ../../package.json ../../turbo.json"
+    "deploymentEnabled": false
+  }
 }
