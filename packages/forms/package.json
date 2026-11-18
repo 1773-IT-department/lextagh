@@ -3,9 +3,22 @@
   "private": true,
   "exports": {
     "./core": "./src/core.ts",
-    "./react": "./src/react.tsx"
+    "./react": "./src/react.tsx",
+    "./complaint-file": "./src/complaint-file.ts",
+    "./attachment": "./src/attachment.tsx",
+    "./acknowledge": "./src/acknowledge.ts"
   },
-  "dependencies": { "@lexta/db": "workspace:*" },
-  "peerDependencies": { "react": "^19.1.0" },
-  "devDependencies": { "@types/react": "^19.1.0", "react": "^19.1.0" }
+  "dependencies": {
+    "@lexta/db": "workspace:*",
+    "@lexta/chat": "workspace:*",
+    "@lexta/mail": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "react": "^19.1.0",
+    "@types/node": "^22.0.0"
+  }
 }

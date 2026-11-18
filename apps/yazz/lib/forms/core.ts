@@ -28,6 +28,7 @@ import {
   fromResult,
   invalid,
   LIMITS,
+  MSG_CHECK_FIELDS,
   MSG_TOO_LONG,
   payloadTooLarge,
   read,
@@ -35,15 +36,21 @@ import {
   tooLarge,
   trapped,
   unavailable,
+  acknowledged,
   type Fields,
+  type FormContext,
   type FormState,
 } from "@lexta/forms/core";
-import { contact } from "../site";
+import { ATTACHMENT_MESSAGES, attachmentValues, complaintAttachmentFrom, keepAttachment } from "@lexta/forms/complaint-file";
+import { contact, lextaSiteUrl } from "../site";
 import { isTopic, topicLabel, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
 export { isTopic, TOPICS, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
-export { initialFormState, type FormState } from "@lexta/forms/core";
+export { initialFormState, type FormContext, type FormState } from "@lexta/forms/core";
+
+/** The site's name in the acknowledgement emails (P1). */
+const SITE = "Yazz";
 
 export const BRAND = "yazz";
 
@@ -139,19 +146,38 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Yazz team and your reference is ${ref}.`;
 const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report has gone to our consumer care team.`;
 
-export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
+/** The acknowledgement (P1) of the consumer form; the copy goes to the support inbox in lib/site.ts. */
+const consumerAck = (kind: "complaint" | "enquiry", v: Fields, routeTo: string) => (reference: string) => ({
+  kind, site: SITE, form: kind === "complaint" ? "product problem report" : "contact form message", reference, routeTo,
+  name: v.name, email: v.email || undefined, phone: v.phone || undefined,
+  details: [["Topic", isTopic(v.topic) ? topicLabel(v.topic) : v.topic], ["Region", v.region], ["Product", v.product], ["Batch code", v.batch],
+    ["Where bought", v.purchase_place], ["Date bought", v.purchase_date], ["File", v.attachment_name ? `${v.attachment_name} (on the case in the Business System)` : undefined],
+    ["Message", v.message]] as [string, string | undefined][],
+});
+
+export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const problem = fd.get("topic") === "problem";
     const ref = fakeReference(problem ? "complaint" : "contact");
     return { status: "success", reference: ref, message: problem ? complaintThanks(ref) : consumerThanks(ref), values: {} };
   }
-  const { values, errors, route } = buildConsumer(fd, productNames);
+  const built = buildConsumer(fd, productNames);
+  const { errors, route } = built;
+  // A file the browser already uploaded is kept on an error, so the visitor does not choose it again.
+  const values = built.values.topic === "problem" ? { ...built.values, ...attachmentValues(fd) } : built.values;
   if (!route) return invalid(values, errors);
   const email = contact.supportEmail;
   if (!formsConfigured()) return unavailable(values, email);
   if (payloadTooLarge(route.payload)) return tooLarge(values);
 
   if (route.kind === "complaint") {
+    // The optional photo or document: uploaded with a one time ticket, then claimed by the complaint (0027).
+    const file = await complaintAttachmentFrom(fd, { ip: ctx.ip });
+    if (file.kind === "error") {
+      return { status: "error", message: MSG_CHECK_FIELDS, fieldErrors: { attachment: file.message }, values: keepAttachment(values, file, true) };
+    }
+    if (file.kind === "ready") route.payload = { ...route.payload, attachment_path: file.path, attachment_name: file.name };
+    const kept = keepAttachment(values, file);
     let result = await safely(() => submitComplaint(route.payload));
     // A product the database does not know as a published Yazz product (for example one shown while the database was
     // unreachable) must not lose the complaint: send it again with the product named in the text instead.
@@ -160,14 +186,15 @@ export async function handleConsumer(fd: FormData, productNames: Record<string, 
       const message = route.productName && !rest.message.startsWith("Product:") ? `Product: ${route.productName}\n${rest.message}` : rest.message;
       result = await safely(() => submitComplaint({ ...rest, message: message.slice(0, LIMITS.message) }));
     }
-    return fromResult(result, values,
-      { name: "name", email: "email", phone: "phone", message: "message", batch_number: "batch", purchase_place: "purchase_place", purchase_date: "purchase_date", product: "product" },
-      CONSUMER_MESSAGES, complaintThanks, email);
+    const state = acknowledged(fromResult(result, kept,
+      { name: "name", email: "email", phone: "phone", message: "message", batch_number: "batch", purchase_place: "purchase_place", purchase_date: "purchase_date", product: "product", attachment: "attachment" },
+      { ...CONSUMER_MESSAGES, attachment: ATTACHMENT_MESSAGES.upload }, complaintThanks, email), ctx, consumerAck("complaint", kept, email));
+    return state.fieldErrors?.attachment ? { ...state, values: keepAttachment(values, file, true) } : state;
   }
   const result = await safely(() => submitWebsiteEnquiry({ form: "contact", payload: route.payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "name", email: "email", phone: "phone", message: "message", region: "region", detail: "product" },
-    CONSUMER_MESSAGES, consumerThanks, email);
+    CONSUMER_MESSAGES, consumerThanks, email), ctx, consumerAck("enquiry", values, email));
 }
 
 // Trade and distributor enquiry ----------------------------------------------------------------------------------
@@ -226,7 +253,7 @@ export function buildTrade(fd: FormData, rangeNames: Record<string, string> = {}
 
 const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Yazz trade team and your reference is ${ref}.`;
 
-export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}): Promise<FormState> {
+export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("partner");
     return { status: "success", reference: ref, message: tradeThanks(ref), values: {} };
@@ -236,9 +263,14 @@ export async function handleTrade(fd: FormData, rangeNames: Record<string, strin
   if (!formsConfigured()) return unavailable(values, contact.tradeEmail);
   if (payloadTooLarge(payload)) return tooLarge(values);
   const result = await safely(() => submitWebsiteEnquiry({ form: "partner", payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "contact_name", organisation_name: "business_name", email: "email", phone: "phone", region: "region", location: "trading_location", years_trading: "years_trading", estimated_monthly_volume: "volume", message: "message" },
-    TRADE_MESSAGES, tradeThanks, contact.tradeEmail);
+    TRADE_MESSAGES, tradeThanks, contact.tradeEmail), ctx, (reference) => ({
+    kind: "partner", site: SITE, form: "trade enquiry", reference, routeTo: contact.tradeEmail,
+    name: payload.name, email: payload.email, phone: payload.phone,
+    details: [["Enquiry type", values.route], ["Business name", payload.organisation_name], ["Region", values.region], ["Trading location", payload.location],
+      ["Years trading", payload.years_trading], ["Expected volume", payload.estimated_monthly_volume], ["Message", payload.message]],
+  }));
 }
 
 // Newsletter -----------------------------------------------------------------------------------------------------
@@ -260,7 +292,7 @@ export function buildNewsletter(fd: FormData) {
 
 const newsletterThanks = (ref: string) => `Thank you, you are subscribed to Yazz news. Your reference is ${ref}.`;
 
-export async function handleNewsletter(fd: FormData): Promise<FormState> {
+export async function handleNewsletter(fd: FormData, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("newsletter");
     return { status: "success", reference: ref, message: newsletterThanks(ref), values: {} };
@@ -269,5 +301,7 @@ export async function handleNewsletter(fd: FormData): Promise<FormState> {
   if (!payload) return invalid(values, errors);
   if (!formsConfigured()) return unavailable(values, contact.supportEmail);
   const result = await safely(() => submitWebsiteEnquiry({ form: "newsletter", payload }));
-  return fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, contact.supportEmail);
+  return acknowledged(fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, contact.supportEmail),
+    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "newsletter sign up", reference, routeTo: contact.partnershipsEmail, email: values.email,
+      lextaSiteUrl }));
 }

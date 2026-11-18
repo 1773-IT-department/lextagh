@@ -75,6 +75,24 @@ The same pattern applies to `private.recruitment_intake_secret` and `private.fie
 
 Email for order alerts is not built: the Distributor orders inbox shows `[PLACEHOLDER: email Lexta sales when an order is submitted, once email is set up]`. At launch, sales checks the inbox in the portal. Adding the alert is a small follow up once the email provider is chosen `[TO CONFIRM: in scope, and when]`.
 
+### 2.4a Acknowledgement emails from the website forms (Desmond, at go-live)
+
+Every website form (Lexta Contact Us, Partner With Us, Careers and newsletter; the Yazz, Linzzy and Hooch consumer, trade and newsletter forms) can send two emails once a submission is saved: an acknowledgement to the sender (reference, what happens next, how to reply) and a copy to the form's routing inbox (marketing@, support@, hr@ or the brand address in each site's config). The reference is in the subject of both, so replies stay in one thread. The code is in `packages/mail` and sends through Resend's HTTP API.
+
+It is **off** until both variables below are set. Without them nothing is sent, nothing errors and the forms work exactly as before. A failed send never fails a form: it is logged (status only) and the visitor still gets their reference.
+
+1. **Choose the sending domain** `[TO CONFIRM: for example mail.lextagh.com, a subdomain keeps the main domain's mail reputation separate]`. Desmond only; never on a preview.
+2. **Verify it with Resend**: create a Resend account for Lexta, add the domain, and put the SPF (TXT), DKIM (TXT) and optional DMARC records Resend shows into Lexta's DNS (section 3.4). Wait until Resend shows the domain as Verified.
+3. **Create an API key** in Resend with "Sending access" for that domain only.
+4. **Set the variables** on the four website Vercel projects (lexta-web, lexta-yazz, lexta-linzzy, lexta-hooch), Production scope:
+   * `RESEND_API_KEY`: the key from step 3.
+   * `MAIL_FROM`: a sender on the verified domain, for example `Lexta Ghana <no-reply@mail.lextagh.com>` (per brand if wanted, for example `Yazz <no-reply@...>`).
+   * Optional, previews only: `MAIL_REDIRECT_TO` sends every email to one test inbox instead (the subject names the real recipient), so routing can be checked without writing to customers or the real inboxes. Never set it in Production.
+5. **Redeploy** each project, then send one test from each form and check both emails arrive and that replying keeps the reference in the subject.
+6. **Fill the placeholders** in the email wording (`packages/mail/src/index.ts`): the reply and response times for enquiries, complaints, trade enquiries and applications.
+
+Newsletter acknowledgements carry the unsubscribe link (the Lexta site's `/unsubscribe` page, migration 0028).
+
 ### 2.5 Real staff accounts and roles
 
 The Users and access screen is not built, so accounts are created from the Supabase dashboard:
@@ -147,6 +165,7 @@ Preview scope values stay on the preview addresses.
 | `www` | CNAME | `cname.vercel-dns.com`, or the target Vercel shows | website |
 | `portal` | CNAME | `cname.vercel-dns.com`, or the target Vercel shows | portal |
 | as given by the email provider | TXT and CNAME | SPF and DKIM records | portal emails from `no-reply@lextagh.com` |
+| as given by Resend (for example `send.mail`, `resend._domainkey.mail`) | TXT (and MX for the bounce subdomain, if Resend asks) | SPF and DKIM for the website sending domain | form acknowledgement emails (section 2.4a) |
 
 Take care:
 

@@ -501,6 +501,35 @@ try {
     const crow = caseNo ? await q(`select b.slug || '|' || coalesce(p.slug, '') || '|' || coalesce(c.batch_number, '') from public.complaints c join public.brands b on b.id = c.brand_id left join public.products p on p.id = c.product_id where c.case_number = '${caseNo}'`) : "";
     check(crow === "linzzy|heavy-flow-sanitary-towels|BW-77", "consumer form (JS): a product problem becomes a Linzzy complaint with product and batch", { caseNo, crow });
 
+    // Optional Product Photograph or Supporting Document (X3): only for a problem report, uploaded with a ticket.
+    await page.reload();
+    check(await form.locator("[name=attachment]").count() === 0, "complaint file: no file field for a question");
+    await form.getByRole("button", { name: "Report a problem with a product" }).click();
+    const fileInput = form.locator("input[name=attachment]");
+    check(await fileInput.isVisible() && await page.evaluate(() => { const f = document.querySelector("#message form"); const m = f.querySelector("[name=message]"); const a = f.querySelector("[name=attachment]"); return !!(m.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_FOLLOWING); }),
+      "complaint file: an optional photo or document field under Message for a product problem");
+    await form.locator("[name=name]").fill("Abena File");
+    await form.locator("[name=email]").fill(`abena.file.${stamp}@example.com`);
+    await form.locator("[name=message]").fill("The pack was torn. Photo attached.");
+    await form.locator("input[name=privacy]").check();
+    await fileInput.setInputFiles({ name: "big.pdf", mimeType: "application/pdf", buffer: Buffer.alloc(5 * 1024 * 1024 + 10, 0x25) });
+    await form.getByRole("button", { name: /Submit Enquiry/ }).click();
+    await page.locator("#c-attachment-error").waitFor({ timeout: 15000 }).catch(() => {});
+    check(/5 MB or smaller/.test(await page.locator("#c-attachment-error").innerText().catch(() => "")), "complaint file: over 5 MB is refused in the browser before anything is sent");
+    const png = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(1200, 3)]);
+    await fileInput.setInputFiles({ name: "torn pack.png", mimeType: "image/png", buffer: png });
+    for (const w of [1440, 390]) {
+      await page.setViewportSize({ width: w, height: w === 390 ? 844 : 900 });
+      await fileInput.scrollIntoViewIfNeeded();
+      await form.screenshot({ path: path.join(OUT, `complaint-file-${w}.png`) });
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await form.getByRole("button", { name: /Submit Enquiry/ }).click();
+    await ok.filter({ hasText: /LX-/ }).waitFor({ timeout: 20000 }).catch(() => {});
+    const fileCase = /LX-\d{4}-\d{4,}/.exec(await ok.innerText().catch(() => ""))?.[0];
+    const frow = fileCase ? await q(`select f.file_name || '|' || f.mime_type || '|' || f.size_bytes from public.complaints c join public.complaint_files f on f.complaint_id = c.id where c.case_number = '${fileCase}'`) : "";
+    check(frow === "torn pack.png|image/png|1208", "complaint file (JS): the browser uploads the photo and it is on the Linzzy case", { fileCase, frow });
+
     const trade = page.locator("#trade form");
     await trade.locator("[name=contact_name]").fill("Yaw JS");
     await trade.locator("[name=business_name]").fill(`JS Traders ${stamp}`);

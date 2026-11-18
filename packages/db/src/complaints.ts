@@ -189,6 +189,10 @@ export type ComplaintFormPayload = {
   purchase_place?: string;
   /** YYYY-MM-DD, not in the future. */
   purchase_date?: string;
+  /** The path beginComplaintFileUpload returned, uploaded to complaint-files (0027). The complaint claims it. */
+  attachment_path?: string;
+  /** The file name as the visitor had it; the database cleans it. */
+  attachment_name?: string;
 };
 
 export type ComplaintResult =
@@ -199,7 +203,8 @@ export type ComplaintResult =
 
 /**
  * Logs a website complaint through public.submit_complaint. Visitors never read complaint data: the only thing that
- * comes back is the case number to show them. Leave out empty fields rather than sending "". No files for now.
+ * comes back is the case number to show them. Leave out empty fields rather than sending "". An optional photo or
+ * document goes up first with beginComplaintFileUpload and is claimed here with attachment_path (0027).
  */
 export async function submitComplaint(payload: ComplaintFormPayload, client?: SupabaseClient): Promise<ComplaintResult> {
   const supabase = client ?? createPublicClient();
@@ -212,4 +217,62 @@ export async function submitComplaint(payload: ComplaintFormPayload, client?: Su
     return { ok: false, reason: "invalid", field };
   }
   return { ok: false, reason: "error" };
+}
+
+// Website photo or document (0027) -------------------------------------------------------------------------------
+
+/** What the website complaint forms take: one JPG, PNG or PDF of at most 5 MB. */
+export const COMPLAINT_WEBSITE_FILE_MAX_BYTES = 5 * 1024 * 1024;
+export const COMPLAINT_WEBSITE_FILE_TYPES = { jpg: "image/jpeg", png: "image/png", pdf: "application/pdf" } as const;
+export type ComplaintWebsiteFileType = (typeof COMPLAINT_WEBSITE_FILE_TYPES)[keyof typeof COMPLAINT_WEBSITE_FILE_TYPES];
+
+/** A ticketed upload path: <uuid>/<clean name>.<jpg|png|pdf>, as public.begin_complaint_file_upload makes them. */
+export const isComplaintUploadPath = (path: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[A-Za-z0-9][A-Za-z0-9._-]{0,99}\.(jpg|png|pdf)$/.test(path);
+
+/** A signed request for a complaint upload ticket, made by the website server (packages/forms/src/complaint-file.ts). */
+export type ComplaintFileTicketRequest = {
+  nonce: string;
+  issuedAt: number;
+  ipHash: string;
+  mimeType: ComplaintWebsiteFileType;
+  sizeBytes: number;
+  signature: string;
+  fileName: string;
+};
+
+export type ComplaintTicketResult =
+  | { ok: true; path: string }
+  | { ok: false; reason: "rejected" | "rate_limited" | "not_configured" | "error" };
+
+/** Website server only: asks public.begin_complaint_file_upload for the one path this upload may use. */
+export async function beginComplaintFileUpload(request: ComplaintFileTicketRequest, client?: SupabaseClient): Promise<ComplaintTicketResult> {
+  const supabase = client ?? createPublicClient();
+  const { data, error } = await supabase.rpc("begin_complaint_file_upload", {
+    nonce: request.nonce, issued_at: request.issuedAt, ip_hash: request.ipHash, mime_type: request.mimeType,
+    size_bytes: request.sizeBytes, signature: request.signature, file_name: request.fileName,
+  });
+  if (error) {
+    if (error.code === "PT429") return { ok: false, reason: "rate_limited" };
+    if (error.code === "55000") return { ok: false, reason: "not_configured" };
+    if (error.code === "22023" && /attachment_/.test(error.message)) return { ok: false, reason: "rejected" };
+    return { ok: false, reason: "error" };
+  }
+  const path = typeof data === "string" ? data : "";
+  return isComplaintUploadPath(path) ? { ok: true, path } : { ok: false, reason: "error" };
+}
+
+/**
+ * Uploads the checked bytes to the ticket's path with the publishable key (the no JavaScript path; with JavaScript the
+ * visitor's browser uploads itself). Nothing can be read back.
+ */
+export async function uploadComplaintWebsiteFile(path: string, bytes: ArrayBuffer, contentType: ComplaintWebsiteFileType,
+  client?: SupabaseClient): Promise<{ ok: true } | { ok: false; reason: "rejected" | "error" }> {
+  const supabase = client ?? createPublicClient();
+  const { error } = await supabase.storage.from(COMPLAINT_FILES_BUCKET)
+    .upload(path, new Blob([bytes], { type: contentType }), { contentType, upsert: false });
+  if (!error) return { ok: true };
+  const e = error as { status?: number; statusCode?: string | number };
+  const status = Number(e.status ?? e.statusCode ?? 0);
+  return { ok: false, reason: [400, 403, 413, 415].includes(status) ? "rejected" : "error" };
 }

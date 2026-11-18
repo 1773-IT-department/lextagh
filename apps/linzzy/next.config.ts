@@ -10,7 +10,11 @@ import type { NextConfig } from "next";
  *   6. Contact & Where to Buy     /contact
  */
 const nextConfig: NextConfig = {
-  transpilePackages: ["@lexta/chat", "@lexta/db", "@lexta/forms", "@lexta/ui"],
+  transpilePackages: ["@lexta/chat", "@lexta/db", "@lexta/forms", "@lexta/mail", "@lexta/ui"],
+  // "Report a problem" can carry a photo or document (at most 5 MB). With JavaScript the browser uploads it straight
+  // to Storage; without JavaScript it comes in the form post. Server actions take 1 MB by default; allow Vercel's own
+  // request limit, 4.5 MB, and no more (so without JavaScript files up to about 4.4 MB go through).
+  experimental: { serverActions: { bodySizeLimit: "4.5mb" } },
 };
 
 export default nextConfig;

@@ -1,9 +1,10 @@
 "use client";
 
 import { DateInput, Select } from "@lexta/ui";
+import { ATTACHMENT_ACCEPT, useComplaintAttachment } from "@lexta/forms/attachment";
 import { Honeypot, invalidProps, useServerForm } from "@lexta/forms/react";
 import { useActionState, useState } from "react";
-import { submitConsumerForm } from "@/app/actions/forms";
+import { startComplaintUpload, submitConsumerForm } from "@/app/actions/forms";
 import Icon from "@/components/Icon";
 import { FieldError, FormMessage, idleState } from "@/components/forms/FormParts";
 import f from "@/components/forms/forms.module.css";
@@ -17,14 +18,18 @@ export type ProductGroup = { label: string; options: { slug: string; name: strin
 /**
  * The consumer contact form (the prototype's "How Can We Help?"). "Report a problem with a product" goes to the
  * complaints tracker (case number), every other topic to the CRM as a website lead, brand Yazz. The problem fields
- * (batch, where and when bought) show for that topic with CSS alone, so the form also works without JavaScript.
+ * (batch, where and when bought, an optional photo or document) show for that topic with CSS alone, so the form also
+ * works without JavaScript. The file goes up with a one time ticket (packages/forms/src/complaint-file.ts).
  */
 export default function ConsumerForm({ regions, products, initialTopic, initialProduct, initialRegion }: {
   regions: RegionOption[]; products: ProductGroup[]; initialTopic: Topic; initialProduct: string; initialRegion: string;
 }) {
   const [state, action, pending] = useActionState(submitConsumerForm, idleState);
-  const { ref, onSubmit } = useServerForm(state, action, pending);
+  const file = useComplaintAttachment(startComplaintUpload);
+  const { ref, onSubmit, preparing } = useServerForm(state, action, pending, file.prepare);
+  const busy = pending || preparing;
   const v = state.values ?? {};
+  const fileError = file.error ?? state.fieldErrors?.attachment;
   const [topic, setTopic] = useState<Topic>((v.topic as Topic) || initialTopic);
   const inv = (n: string) => invalidProps(state, n, `c-${n}-error`);
   const err = (n: string) => <FieldError id={`c-${n}-error`} message={state.fieldErrors?.[n]} />;
@@ -109,6 +114,20 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
         <textarea id="c-message" name="message" className={f.textarea} required maxLength={3000} defaultValue={v.message ?? ""} placeholder="Tell us what you need, or what happened." {...inv("message")} />
         {err("message")}
       </div>
+      <div className={`${f.field} ${s.problemOnly} ${s.fileField}`}>
+        <label className={f.label} htmlFor="c-attachment">Photo or document <span className={f.opt}>(optional)</span></label>
+        <input id="c-attachment" name="attachment" type="file" accept={ATTACHMENT_ACCEPT} className={`${f.input} ${s.file}`}
+          onChange={file.clearError} aria-invalid={fileError ? true : undefined} aria-describedby={fileError ? "c-attachment-error" : "c-attachment-hint"} />
+        <span id="c-attachment-hint" className={f.hint}>One JPG, PNG or PDF, up to 5 MB. A photo of the pack and its batch code helps us most.</span>
+        {v.attachment_path && (
+          <span className={f.hint}>
+            <input type="hidden" name="attachment_path" value={v.attachment_path} />
+            <input type="hidden" name="attachment_name" value={v.attachment_name ?? ""} />
+            Attached: {v.attachment_name || "your file"}. Choose a new file to replace it.
+          </span>
+        )}
+        <FieldError id="c-attachment-error" message={fileError ?? undefined} />
+      </div>
       <p className={f.hint}>Please do not share sensitive health details in this form.</p>
       <label className={f.consent}>
         <input type="checkbox" name="privacy" value="yes" required defaultChecked={v.privacy === "yes"} {...inv("privacy")} />
@@ -118,8 +137,8 @@ export default function ConsumerForm({ regions, products, initialTopic, initialP
 
       <FormMessage state={state} />
       <div className={f.submitRow}>
-        <button type="submit" className="yz-btn yz-btn--red" aria-disabled={pending || undefined}>
-          {pending ? "Sending..." : <>Send Message <Icon name="arrow" size={17} /></>}
+        <button type="submit" className="yz-btn yz-btn--red" aria-disabled={busy || undefined}>
+          {preparing ? "Uploading..." : pending ? "Sending..." : <>Send Message <Icon name="arrow" size={17} /></>}
         </button>
       </div>
     </form>

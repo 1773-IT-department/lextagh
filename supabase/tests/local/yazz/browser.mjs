@@ -483,6 +483,34 @@ try {
     const crow = caseNo ? await q(`select b.slug || '|' || coalesce(p.slug, '') || '|' || coalesce(c.batch_number, '') from public.complaints c join public.brands b on b.id = c.brand_id left join public.products p on p.id = c.product_id where c.case_number = '${caseNo}'`) : "";
     check(crow === "yazz|baby-wipes|BW-77", "consumer form (JS): a product problem becomes a Yazz complaint with product and batch", { caseNo, crow });
 
+    // The optional photo or document (X3): only for a problem report, uploaded with a ticket, on the case.
+    await page.reload();
+    check(!(await page.locator("#c-attachment").isVisible()), "complaint file: hidden for a question");
+    await form.locator("label").filter({ hasText: "Report a problem with a product" }).click();
+    check(await page.locator("#c-attachment").isVisible() && await page.locator("#c-attachment").getAttribute("accept") === ".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf",
+      "complaint file: an optional JPG, PNG or PDF field under Message for a product problem");
+    await page.fill("#c-name", "Abena File");
+    await page.fill("#c-email", `abena.file.${stamp}@example.com`);
+    await page.fill("#c-message", "The seal was broken. Photo attached.");
+    await form.locator("input[name=privacy]").check();
+    await page.locator("#c-attachment").setInputFiles({ name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("hello") });
+    await form.getByRole("button", { name: /Send Message/ }).click();
+    await page.locator("#c-attachment-error").waitFor({ timeout: 15000 }).catch(() => {});
+    check(/JPG, PNG or PDF/.test(await page.locator("#c-attachment-error").innerText().catch(() => "")), "complaint file: a wrong type is refused in the browser before anything is sent");
+    const jpg = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(3000, 9)]);
+    await page.locator("#c-attachment").setInputFiles({ name: "broken seal.jpg", mimeType: "image/jpeg", buffer: jpg });
+    for (const w of [1440, 390]) {
+      await page.setViewportSize({ width: w, height: w === 390 ? 844 : 900 });
+      await page.locator("#c-attachment").scrollIntoViewIfNeeded();
+      await form.screenshot({ path: path.join(OUT, `complaint-file-${w}.png`) });
+    }
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await form.getByRole("button", { name: /Send Message/ }).click();
+    await ok.filter({ hasText: /LX-/ }).waitFor({ timeout: 20000 }).catch(() => {});
+    const fileCase = /LX-\d{4}-\d{4,}/.exec(await ok.innerText().catch(() => ""))?.[0];
+    const frow = fileCase ? await q(`select f.file_name || '|' || f.mime_type || '|' || f.size_bytes from public.complaints c join public.complaint_files f on f.complaint_id = c.id where c.case_number = '${fileCase}'`) : "";
+    check(frow === "broken seal.jpg|image/jpeg|3004", "complaint file (JS): the browser uploads the photo and it is on the Yazz case", { fileCase, frow });
+
     const trade = page.locator("#trade form");
     await page.fill("#t-name", "Yaw JS");
     await page.fill("#t-business", `JS Traders ${stamp}`);
@@ -531,6 +559,20 @@ try {
     const tref = /PTN-[0-9A-F]{10}/.exec(await page.locator("body").innerText())?.[0];
     const trow = tref ? await q(`select l.source || '|' || b.slug from public.crm_leads l join public.brands b on b.id = l.brand_id where l.intake_reference = '${tref}'`) : "";
     check(trow === "website_partner_form|yazz", "trade enquiry without JavaScript: posts and lands a Yazz partner lead", { tref, trow });
+
+    // A product problem with a photo, without JavaScript: the file travels in the form post.
+    await page.goto(`${SITE}/contact?topic=problem#message`);
+    check(await page.locator("#c-attachment").isVisible(), "complaint file without JavaScript: the field shows for a product problem");
+    await page.fill("#c-name", "Kojo NoJS File");
+    await page.fill("#c-email", `kojo.nojs.${stamp}@example.com`);
+    await page.fill("#c-message", "Receipt attached.");
+    await page.locator("#message form input[name=privacy]").check();
+    await page.locator("#c-attachment").setInputFiles({ name: "receipt.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%harness\n") });
+    await Promise.all([page.waitForLoadState("load"), page.locator("#message form").getByRole("button", { name: /Send Message/ }).click()]);
+    await sleep(500);
+    const nfCase = /LX-\d{4}-\d{4,}/.exec(await page.locator("body").innerText())?.[0];
+    const nfRow = nfCase ? await q(`select f.file_name || '|' || f.mime_type from public.complaints c join public.complaint_files f on f.complaint_id = c.id where c.case_number = '${nfCase}'`) : "";
+    check(nfRow === "receipt.pdf|application/pdf", "complaint file without JavaScript: the PDF is on the Yazz case", { nfCase, nfRow });
 
     await page.goto(`${SITE}/contact#message`);
     await page.fill("#c-name", "");

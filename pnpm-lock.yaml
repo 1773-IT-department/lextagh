@@ -275,16 +275,31 @@ importers:
 
   packages/forms:
     dependencies:
+      '@lexta/chat':
+        specifier: workspace:*
+        version: link:../chat
       '@lexta/db':
         specifier: workspace:*
         version: link:../db
+      '@lexta/mail':
+        specifier: workspace:*
+        version: link:../mail
     devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
       '@types/react':
         specifier: ^19.1.0
         version: 19.3.0
       react:
         specifier: ^19.1.0
         version: 19.3.1
+
+  packages/mail:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.5
 
   packages/ui:
     devDependencies:

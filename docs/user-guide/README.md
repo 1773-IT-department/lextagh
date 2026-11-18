@@ -426,6 +426,15 @@ Leads move through stages: **New**, **Contacted**, **Qualified**, **Proposal**, 
 
 Customer care cannot add organisations.
 
+### Newsletter subscribers
+
+Newsletter sign ups from the Lexta, Yazz, Linzzy and Hooch websites arrive as contacts with marketing consent **Agreed**. On the **Contacts** tab, the **Newsletter** filter shows:
+
+* **Subscribed**: everyone with marketing consent, so everyone who may get the newsletter.
+* **Unsubscribed**: people who used the unsubscribe link in one of our emails. Their consent shows **Unsubscribed** with the date. Do not turn their consent back on yourself; they can sign up again on the website.
+
+Every newsletter email must carry the person's own unsubscribe link (the acknowledgement email does this already). The link opens a page on the Lexta website where they press **Unsubscribe**.
+
 ### Website leads
 
 Messages from the website forms land in the CRM by themselves:
@@ -436,6 +445,8 @@ Messages from the website forms land in the CRM by themselves:
 * **Contact Us, Consumer care** goes to Complaints instead (see [chapter 6](#6-complaints)).
 
 Leads from **Contact Us** and **Partner With Us** get a **Reply by** time: the reply time admin sets (24 hours until Lexta confirms its own) after the lead arrives. While such a lead is still at stage **New** after that time, the leads list shows **Overdue** next to its stage, and the management overview lists it under **Needs attention**. Moving the lead on to **Contacted** (or a later stage) once you have replied clears it.
+
+**Acknowledgement emails.** Once Desmond switches email on, everyone who sends a website form with an email address gets an acknowledgement with their reference, and a copy goes to the form's inbox (marketing@, support@, hr@ or the brand address). The reference is in the subject of both. Reply to the copy to answer the customer directly, and keep the reference in the subject so the thread stays together. The record itself is always in the Business System: search for the reference.
 
 ### Website lead managers (admin only)
 
@@ -514,7 +525,9 @@ You can also close straight away; closing needs **How it was resolved**.
 
 * Severity sets the targets: Critical 4 hours to respond and 2 days to resolve; High 1 day and 5 days; Normal 2 and 10 days; Low 3 and 15 days. Late cases are marked **Overdue**.
 * A health or safety concern or a foreign object is always at least High.
-* Website complaints (Contact Us, reason Consumer care) arrive at **New** with no owner.
+* Website complaints (Contact Us, reason Consumer care, and "Report a problem with a product" on the Yazz, Linzzy and Hooch sites) arrive at **New** with no owner.
+* On the Yazz and Linzzy sites the customer can add one photo or document (JPG, PNG or PDF, up to 5 MB) to a problem report. It shows under **Files** on the case, like a file you added yourself, and the timeline says **File added**.
+* Admins: a photo or document sent from a website form that was never sent (the visitor gave up) cannot be opened by anyone. After an hour it is listed under **Unclaimed website uploads** at the foot of the complaints list; tap **Remove unclaimed website uploads** to clear them.
 * Files: photos (JPG, PNG, WebP, HEIC) or PDF, up to 10 MB each. Only people who can see the complaint can open them.
 * A closed case is read only. You can still add notes, calls and emails. Reopen it to change details, owner or files.
 * Only admin deletes a complaint, and only one logged by mistake.

@@ -5,6 +5,7 @@
 //
 // Plain server code with no Next.js imports, so the local harness tests (supabase/tests/local/forms and yazz) run it.
 import type { ComplaintResult, EnquiryResult } from "@lexta/db";
+import type { Acknowledgement } from "@lexta/mail";
 
 export type FormState = {
   status: "idle" | "success" | "error";
@@ -154,4 +155,19 @@ export function batchCodeFrom(detail: string): string | undefined {
   const m = /\b(?:batch|lot)\b(?:\s*(?:code|no\.?|number))?\s*[:#.]?\s*([A-Za-z0-9][A-Za-z0-9\-/.]*)/i.exec(detail);
   const code = (m?.[1] ?? (/\d/.test(detail) && !/\s/.test(detail) ? detail : undefined))?.replace(/[.\-/]+$/, "");
   return code && code.length <= LIMITS.batch ? code : undefined;
+}
+
+/**
+ * What a form handler knows about its request besides the form: the visitor's address (upload limits) and how to send
+ * the acknowledgement emails (P1). The server actions pass notify (after the response, with Next.js after()); tests
+ * and callers that leave it out send nothing.
+ */
+export type FormContext = { ip?: string; notify?: (ack: Acknowledgement) => void };
+
+/** After a real submission was saved, hands the acknowledgement to ctx.notify. Never fails the form. */
+export function acknowledged(state: FormState, ctx: FormContext, build: (reference: string) => Acknowledgement): FormState {
+  if (state.status === "success" && state.reference && ctx.notify) {
+    try { ctx.notify(build(state.reference)); } catch (e) { console.warn("[forms] acknowledgement not queued", e instanceof Error ? e.name : "error"); }
+  }
+  return state;
 }

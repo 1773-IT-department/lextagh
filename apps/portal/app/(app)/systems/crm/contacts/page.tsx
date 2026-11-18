@@ -2,15 +2,15 @@ import { Select } from "@lexta/ui";
 import Link from "next/link";
 import { crmChannelLabel, crmContactName } from "@lexta/db";
 import CrmTabs from "@/components/crm/CrmTabs";
-import { cleanSearch, getCrmAccess, NO_CRM_ACCESS, PAGE_SIZE, staffName } from "@/lib/crm";
+import { cleanSearch, formatDate, getCrmAccess, NO_CRM_ACCESS, PAGE_SIZE, staffName } from "@/lib/crm";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Contacts | Lexta Business System" };
 
-type Search = { q?: string; consent?: string; owner?: string; page?: string; deleted?: string };
+type Search = { q?: string; consent?: string; newsletter?: string; owner?: string; page?: string; deleted?: string };
 type Row = {
   id: string; full_name: string | null; email: string | null; phone: string | null; job_title: string | null;
-  preferred_channel: string | null; consent_marketing: boolean; owner_id: string | null;
+  preferred_channel: string | null; consent_marketing: boolean; marketing_unsubscribed_at: string | null; owner_id: string | null;
   organisation: { name: string } | { name: string }[] | null;
 };
 
@@ -21,19 +21,23 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
 
   const q = cleanSearch(params.q, 80);
   const consent = params.consent === "yes" || params.consent === "no" ? params.consent : "";
+  // Newsletter (P4): subscribed = marketing consent on; unsubscribed = consent off after using an unsubscribe link.
+  const newsletter = params.newsletter === "subscribed" || params.newsletter === "unsubscribed" ? params.newsletter : "";
   const owner = params.owner === "mine" || params.owner === "unassigned" ? params.owner : "";
   const page = Math.max(1, Math.min(1000, Number.parseInt(params.page ?? "1", 10) || 1));
-  const filtered = !!(q || consent || owner);
+  const filtered = !!(q || consent || newsletter || owner);
 
   const supabase = await createClient();
   let query = supabase.from("crm_contacts")
-    .select("id, full_name, email, phone, job_title, preferred_channel, consent_marketing, owner_id, organisation:crm_organisations!crm_contacts_organisation_id_fkey(name)", { count: "exact" });
+    .select("id, full_name, email, phone, job_title, preferred_channel, consent_marketing, marketing_unsubscribed_at, owner_id, organisation:crm_organisations!crm_contacts_organisation_id_fkey(name)", { count: "exact" });
   if (q) {
     // Same rule as public.crm_phone_key (0007): drop leading zeros, a leading 233, then leading zeros again.
     const digits = q.replace(/[^0-9]/g, "").replace(/^0+/, "").replace(/^233/, "").replace(/^0+/, "");
     query = query.or([`full_name.ilike.*${q}*`, `email.ilike.*${q}*`, `phone.ilike.*${q}*`, ...(digits.length >= 4 ? [`phone_key.ilike.*${digits}*`] : [])].join(","));
   }
   if (consent) query = query.eq("consent_marketing", consent === "yes");
+  if (newsletter === "subscribed") query = query.eq("consent_marketing", true);
+  else if (newsletter === "unsubscribed") query = query.eq("consent_marketing", false).not("marketing_unsubscribed_at", "is", null);
   if (owner === "mine") query = query.eq("owner_id", access.userId);
   else if (owner === "unassigned") query = query.is("owner_id", null);
   const from = (page - 1) * PAGE_SIZE;
@@ -46,6 +50,7 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
     const sp = new URLSearchParams();
     if (q) sp.set("q", q);
     if (consent) sp.set("consent", consent);
+    if (newsletter) sp.set("newsletter", newsletter);
     if (owner) sp.set("owner", owner);
     if (p > 1) sp.set("page", String(p));
     const s = sp.toString();
@@ -75,6 +80,14 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
             <option value="">Any</option>
             <option value="yes">Agreed</option>
             <option value="no">Not agreed</option>
+          </Select>
+        </div>
+        <div className="field">
+          <label htmlFor="newsletter">Newsletter</label>
+          <Select id="newsletter" name="newsletter" defaultValue={newsletter}>
+            <option value="">Any</option>
+            <option value="subscribed">Subscribed</option>
+            <option value="unsubscribed">Unsubscribed</option>
           </Select>
         </div>
         <div className="field">
@@ -116,7 +129,10 @@ export default async function ContactsPage({ searchParams }: { searchParams: Pro
                       <td data-label="Phone">{c.phone ?? <span className="small">None</span>}</td>
                       <td data-label="Email">{c.email ?? <span className="small">None</span>}</td>
                       <td data-label="Prefers">{crmChannelLabel(c.preferred_channel) || <span className="small">Not known</span>}</td>
-                      <td data-label="Consent"><span className={`badge ${c.consent_marketing ? "on" : "off"}`}>{c.consent_marketing ? "Agreed" : "No"}</span></td>
+                      <td data-label="Consent">
+                        <span className={`badge ${c.consent_marketing ? "on" : "off"}`}>{c.consent_marketing ? "Agreed" : c.marketing_unsubscribed_at ? "Unsubscribed" : "No"}</span>
+                        {!c.consent_marketing && c.marketing_unsubscribed_at && <span className="hint">{formatDate(c.marketing_unsubscribed_at)}</span>}
+                      </td>
                       <td data-label="Owner">{c.owner_id ? (c.owner_id === access.userId ? "Me" : staffName(access, c.owner_id)) : <span className="small">Unassigned</span>}</td>
                     </tr>
                   );

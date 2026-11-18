@@ -215,3 +215,28 @@ export async function deleteComplaint(id: string): Promise<void> {
   afterChange();
   redirect(`${BASE}?deleted=1`);
 }
+
+/**
+ * Admins: removes photos and documents uploaded from a website complaint form that no complaint claimed within an
+ * hour (public.unclaimed_website_complaint_files, 0027). Only admins may remove complaint files.
+ */
+export async function cleanUnclaimedWebsiteUploads(_prev: CrmFormState, _form: FormData): Promise<CrmFormState> {
+  const access = await getComplaintAccess();
+  if (!access.isAdmin) return { error: "Only admins remove unclaimed uploads." };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("unclaimed_website_complaint_files");
+  if (error) {
+    console.error("[complaints] unclaimed list failed", error);
+    return { error: "We could not list the unclaimed uploads. Please try again." };
+  }
+  const names = ((data ?? []) as { name: string }[]).map((r) => r.name);
+  if (!names.length) return { message: "Nothing to clean up." };
+  const { data: removed, error: removeError } = await supabase.storage.from(COMPLAINT_FILES_BUCKET).remove(names);
+  if (removeError) {
+    console.error("[complaints] cleanup failed", removeError);
+    return { error: "The uploads could not be removed. Please try again." };
+  }
+  revalidatePath(BASE);
+  const n = removed?.length ?? 0;
+  return { message: n === 1 ? "Removed 1 unclaimed upload." : `Removed ${n} unclaimed uploads.` };
+}

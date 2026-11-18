@@ -20,3 +20,10 @@ export const metadataBase = siteUrl ? new URL(siteUrl) : undefined;
 
 /** Absolute address of a path on this site (relative path when no address is configured). Full URLs pass through. */
 export const absoluteUrl = (path: string) => (/^https?:\/\//.test(path) ? path : `${siteUrl}${path.startsWith("/") ? "" : "/"}${path}`);
+
+/**
+ * The Lexta site's address for links that must be absolute, such as the unsubscribe link in newsletter emails (P4):
+ * siteUrl, else the main Lexta preview. Never a real Lexta domain until Desmond sets NEXT_PUBLIC_SITE_URL at go-live.
+ */
+export const LEXTA_PREVIEW_URL = "https://lextagh.vercel.app";
+export const lextaSiteUrl = siteUrl || LEXTA_PREVIEW_URL;

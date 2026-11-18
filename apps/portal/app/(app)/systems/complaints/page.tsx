@@ -7,6 +7,7 @@ import {
 import { cleanSearch, formatDate, PAGE_SIZE } from "@/lib/crm";
 import { CASE_NUMBER, getComplaintAccess, NO_COMPLAINT_ACCESS, ownerCandidates, phoneKey, staffName } from "@/lib/complaints";
 import { createClient } from "@/lib/supabase/server";
+import CleanupUploadsForm from "@/components/complaints/CleanupUploadsForm";
 
 export const metadata = { title: "Complaints | Lexta Business System" };
 
@@ -87,7 +88,10 @@ export default async function ComplaintsPage({ searchParams }: { searchParams: P
   else if (status !== "all") list = list.eq("status", status);
   const from = (page - 1) * PAGE_SIZE;
 
-  const [listRes, overdueRes, ...countRes] = await Promise.all([
+  // Admins only: website uploads (0027) no complaint claimed, older than an hour.
+  const unclaimedPromise = access.isAdmin ? supabase.rpc("unclaimed_website_complaint_files") : Promise.resolve(null);
+  const [unclaimedRes, listRes, overdueRes, ...countRes] = await Promise.all([
+    unclaimedPromise,
     list.order("created_at", { ascending: false }).order("id").range(from, from + PAGE_SIZE - 1),
     applyFilters(supabase.from("complaints").select("id", { count: "exact", head: true }), true),
     ...COMPLAINT_STATUSES.map((s) => applyFilters(supabase.from("complaints").select("id", { count: "exact", head: true })).eq("status", s.value)),
@@ -98,6 +102,7 @@ export default async function ComplaintsPage({ searchParams }: { searchParams: P
     .map((r) => ({ ...r, contact: one(r.contact) }));
   const counts = COMPLAINT_STATUSES.map((s, i) => ({ ...s, count: countRes[i]?.count ?? 0, failed: !!countRes[i]?.error }));
   const total = count ?? rows.length;
+  const unclaimed = !unclaimedRes ? null : unclaimedRes.error ? -1 : ((unclaimedRes.data ?? []) as unknown[]).length;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
   const brandName = new Map(access.allBrands.map((b) => [b.id, b.name]));
   const now = new Date();
@@ -255,6 +260,20 @@ export default async function ComplaintsPage({ searchParams }: { searchParams: P
             </nav>
           )}
         </>
+      )}
+
+      {unclaimed !== null && (
+        <section className="panel" style={{ marginTop: 18 }}>
+          <h2>Unclaimed website uploads</h2>
+          <p className="small">
+            {unclaimed < 0
+              ? "We could not check for unclaimed uploads just now."
+              : unclaimed === 0
+                ? "None. A photo or document sent with a website complaint that was never sent (a visitor who gave up, or a refused form) appears here after an hour."
+                : `${unclaimed} ${unclaimed === 1 ? "website upload" : "website uploads"} older than an hour never became a complaint. Nobody can open them; they are safe to remove.`}
+          </p>
+          <CleanupUploadsForm count={Math.max(0, unclaimed)} />
+        </section>
       )}
     </>
   );

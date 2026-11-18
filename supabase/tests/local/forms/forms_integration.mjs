@@ -31,6 +31,9 @@ function fd(fields) {
   return f;
 }
 
+// Partner With Us: Years trading is required on every route (Desmond, 17 November 2026); pfd sends it unless named.
+const pfd = (fields) => fd({ years_trading: "3", ...fields });
+
 const counts = () =>
   q(`select concat_ws(',', (select count(*) from public.crm_leads), (select count(*) from public.crm_contacts),
        (select count(*) from public.crm_organisations), (select count(*) from public.complaints),
@@ -52,7 +55,7 @@ try {
     const s = await core.handleNewsletter(fd({ email: mail("noconfig"), consent: "yes", website: "" }));
     check(s.status === "error" && s.message === "This form is not available right now, please email marketing@lextagh.com", "missing settings: newsletter says email marketing@lextagh.com");
     check(s.values?.email === mail("noconfig"), "typed values are kept on that error");
-    const p = await core.handlePartner(fd({ route: "Retail", contact_name: "A", business_name: "B", email: mail("noconfig") }));
+    const p = await core.handlePartner(pfd({ route: "Retail", contact_name: "A", business_name: "B", email: mail("noconfig") }));
     check(p.message === "This form is not available right now, please email marketing@lextagh.com", "missing settings: partner says email marketing@lextagh.com");
     const expected = { "General enquiry": "marketing", Distribution: "marketing", "Bulk orders": "marketing", "Consumer care": "support", Media: "marketing", Careers: "hr" };
     for (const [reason, box] of Object.entries(expected)) {
@@ -122,7 +125,7 @@ try {
   // Partner With Us: lead + contact + organisation, route Suppliers as partner_type supplier.
   {
     const biz = "Volta Cassava Co " + stamp;
-    const s = await core.handlePartner(fd({
+    const s = await core.handlePartner(pfd({
       route: "Suppliers", contact_name: "Yaw Boateng", business_name: biz, email: mail("yaw"), phone: "",
       trading_location: "Ho, Volta", years_trading: "6", message: "We supply starch.", website: "",
     }));
@@ -136,7 +139,7 @@ try {
   }
   for (const [route, type] of [["Distributor", "Distributor"], ["Retail", "Retail and trade"], ["Institutional", "Institutional and bulk"], ["Private label", "Private label and export"], ["CSR", "CSR and community"]]) {
     const csr = route === "CSR" ? { csr_brand: "Yazz", csr_initiative: "bright-smiles-school-tour" } : {};
-    const s = await core.handlePartner(fd({ route, contact_name: "Route Test", business_name: `${route} Co ${stamp}`, email: mail(route.replace(" ", "")), website: "", ...csr }));
+    const s = await core.handlePartner(pfd({ route, contact_name: "Route Test", business_name: `${route} Co ${stamp}`, email: mail(route.replace(" ", "")), website: "", ...csr }));
     const desc = s.status === "success" ? await q(`select description from public.crm_leads where intake_reference = '${s.reference}'`) : "";
     check(desc.includes(`Partnership: ${type}`), `partner route ${route} maps to "${type}"`);
   }
@@ -152,19 +155,81 @@ try {
       "CSR page: the three Hooch community programmes, UtooCan and Achievers Corner marked proposed");
     check(programmes.proposeHref("lexta-forest-project") === "/partner-with-us?route=CSR&initiative=lexta-forest-project#apply", "CSR cards link to the CSR route with the initiative");
     const biz = "Forest Friends " + stamp;
-    const s = await core.handlePartner(fd({ route: "CSR", contact_name: "Abena Forest", business_name: biz, email: mail("abena"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", message: "We can plant trees in Ho.", website: "" }));
+    const s = await core.handlePartner(pfd({ route: "CSR", contact_name: "Abena Forest", business_name: biz, email: mail("abena"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", message: "We can plant trees in Ho.", website: "" }));
     const desc = s.status === "success" ? await q(`select replace(description, E'\\n', '~') from public.crm_leads where intake_reference = '${s.reference}'`) : "";
     check(s.status === "success" && desc.includes("Partnership: CSR and community") && desc.includes("Brand: Hooch~Initiative: The Lexta Forest Project~~We can plant trees in Ho."),
       `CSR proposal lands as a lead with its brand and initiative (${desc.slice(0, 160)})`);
     const before = await counts();
-    const none = await core.handlePartner(fd({ route: "CSR", contact_name: "No Pick", business_name: "No Pick Ltd", email: mail("nopick"), website: "" }));
+    const none = await core.handlePartner(pfd({ route: "CSR", contact_name: "No Pick", business_name: "No Pick Ltd", email: mail("nopick"), website: "" }));
     check(none.status === "error" && none.fieldErrors?.csr_brand && none.fieldErrors?.csr_initiative, "CSR proposal without brand and initiative is refused on the server");
-    const bad = await core.handlePartner(fd({ route: "CSR", contact_name: "Bad Pick", business_name: "Bad Pick Ltd", email: mail("badpick"), csr_brand: "Acme", csr_initiative: "not-a-programme", website: "" }));
+    const bad = await core.handlePartner(pfd({ route: "CSR", contact_name: "Bad Pick", business_name: "Bad Pick Ltd", email: mail("badpick"), csr_brand: "Acme", csr_initiative: "not-a-programme", website: "" }));
     check(bad.fieldErrors?.csr_brand && bad.fieldErrors?.csr_initiative, "CSR proposal with a brand or initiative not on the lists is refused");
-    const trade = await core.handlePartner(fd({ route: "Retail", contact_name: "Shop", business_name: "Shop " + stamp, email: mail("shopcsr"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", website: "" }));
+    const trade = await core.handlePartner(pfd({ route: "Retail", contact_name: "Shop", business_name: "Shop " + stamp, email: mail("shopcsr"), csr_brand: "Hooch", csr_initiative: "lexta-forest-project", website: "" }));
     const tdesc = trade.status === "success" ? await q(`select description from public.crm_leads where intake_reference = '${trade.reference}'`) : "x";
     check(trade.status === "success" && !tdesc.includes("Initiative:"), "other routes need no brand or initiative and ignore them");
     check((await counts()) !== before && none.status === "error", "only the valid submissions were saved");
+  }
+
+  // Acknowledgement emails (P1): each form hands its acknowledgement to ctx.notify after a real submission, with the
+  // routing inbox of that form; nothing for a refused form or a bot. Then the real sender with a stubbed provider.
+  {
+    const acks = [];
+    const notify = (a) => acks.push(a);
+    const c = await core.handleContact(fd({ reason: "Distribution", name: "Ack Contact", email: mail("ackc"), region: "Volta", message: "Hello", website: "" }), { notify });
+    const cc = await core.handleContact(fd({ reason: "Consumer care", name: "Ack Care", email: mail("ackcc"), phone: "0244555666", detail: "batch 77", message: "Torn", website: "" }), { notify });
+    const p = await core.handlePartner(pfd({ route: "Retail", contact_name: "Ack Partner", business_name: "Ack Ltd " + stamp, email: mail("ackp"), website: "" }), { notify });
+    const n = await core.handleNewsletter(fd({ email: mail("ackn"), consent: "yes", website: "" }), { notify });
+    await core.handleContact(fd({ reason: "Media", name: "", email: mail("ackbad"), message: "x", website: "" }), { notify });
+    await core.handleNewsletter(fd({ email: mail("ackbot"), consent: "yes", website: "bot" }), { notify });
+    const got = acks.map((a) => `${a.kind}|${a.reference}|${a.routeTo}|${a.email ?? ""}`);
+    const want = [
+      `enquiry|${c.reference}|marketing@lextagh.com|${mail("ackc")}`,
+      `complaint|${cc.reference}|support@lextagh.com|${mail("ackcc")}`,
+      `partner|${p.reference}|marketing@lextagh.com|${mail("ackp")}`,
+      `newsletter|${n.reference}|marketing@lextagh.com|${mail("ackn")}`,
+    ];
+    check(JSON.stringify(got) === JSON.stringify(want), "acknowledgements: one per saved submission, with its reference and routing inbox; none for refused forms or bots", got);
+    check(acks[1].phone === "0244555666" && acks[1].details.some(([l, v]) => l === "Product, batch or organisation" && v === "batch 77"), "acknowledgements: the team copy carries what was sent");
+
+    const { acknowledge } = await import("../../../../packages/forms/src/acknowledge.ts");
+    const realFetch = globalThis.fetch;
+    const sent = [];
+    // Off by default: no provider call at all.
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) { sent.push(JSON.parse(init.body)); return new Response("{\"id\":\"x\"}", { status: 200 }); } return realFetch(url, init); };
+    delete process.env.RESEND_API_KEY; delete process.env.MAIL_FROM;
+    await acknowledge(acks[0]);
+    check(sent.length === 0, "acknowledgements: off without RESEND_API_KEY and MAIL_FROM, nothing sent");
+    process.env.RESEND_API_KEY = "re_harness"; process.env.MAIL_FROM = "Lexta Ghana <no-reply@mail.example.com>";
+    await acknowledge(acks[1]);
+    check(sent.length === 2 && sent.every((m) => m.subject === `[${cc.reference}] Lexta Ghana: your report`) && sent.some((m) => m.to[0] === "support@lextagh.com" && m.reply_to === mail("ackcc")),
+      "acknowledgements: on with both set, the sender and the support inbox get the case number in the subject", sent.map((m) => [m.to, m.subject]));
+    // A broken provider never reaches the form: the submission still succeeds and nothing throws.
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) throw new TypeError("network down"); return realFetch(url, init); };
+    const after = [];
+    const s2 = await core.handleContact(fd({ reason: "General enquiry", name: "Ack Down", email: mail("ackdown"), region: "Volta", message: "Hi", website: "" }), { notify: (a) => after.push(acknowledge(a)) });
+    let threw = false;
+    try { await Promise.all(after); } catch { threw = true; }
+    check(s2.status === "success" && !threw, "acknowledgements: a failed send never fails the form");
+    // Newsletter (P4): the acknowledgement carries the subscriber's own unsubscribe link on the Lexta site.
+    const CHAT = "harness-chat-secret-forms-newsletter-0123456789";
+    await q(`delete from private.chat_intake_secret`);
+    await q(`insert into private.chat_intake_secret (secret) values ('${CHAT}')`);
+    process.env.CHAT_INTAKE_SECRET = CHAT;
+    sent.length = 0;
+    globalThis.fetch = async (url, init) => { if (String(url).startsWith("https://api.resend.com")) { sent.push(JSON.parse(init.body)); return new Response("{}", { status: 200 }); } return realFetch(url, init); };
+    const nack = acks.find((a) => a.kind === "newsletter");
+    await acknowledge(nack);
+    const token = await q(`select t.token from public.crm_newsletter_tokens t join public.crm_contacts c on c.id = t.contact_id where c.email = '${mail("ackn")}'`);
+    const toSub = sent.find((m) => m.to[0] === mail("ackn"));
+    check(/^[0-9a-f]{48}$/.test(token) && nack.lextaSiteUrl === "https://lextagh.vercel.app" && toSub?.text.includes(`https://lextagh.vercel.app/unsubscribe?token=${token}`)
+      && toSub?.headers?.["List-Unsubscribe"] === `<https://lextagh.vercel.app/unsubscribe?token=${token}>`,
+      "newsletter acknowledgement: the subscriber's own unsubscribe link on the Lexta site (preview fallback)", toSub);
+    delete process.env.CHAT_INTAKE_SECRET;
+    sent.length = 0;
+    await acknowledge(nack);
+    check(sent.some((m) => m.to[0] === mail("ackn") && m.text.includes("reply with the word unsubscribe")), "newsletter acknowledgement: without the secret it says to reply with unsubscribe");
+    globalThis.fetch = realFetch;
+    delete process.env.RESEND_API_KEY; delete process.env.MAIL_FROM;
   }
 
   // Newsletter: a contact with marketing consent, no lead.
@@ -187,14 +252,22 @@ try {
     check(s.values?.name === "No Reply" && s.values?.message === "Hi", "typed values come back on error");
     const bad = await core.handleContact(fd({ reason: "Careers", name: "X", email: "not-an-email", phone: "abc", region: "Mars", message: "", website: "" }));
     check(bad.fieldErrors?.email && bad.fieldErrors?.phone && bad.fieldErrors?.region && bad.fieldErrors?.message, "bad email, phone, region and empty message each get a field message");
-    const p = await core.handlePartner(fd({ route: "Retail", contact_name: "", business_name: "", email: "a@b.co", website: "" }));
+    const p = await core.handlePartner(pfd({ route: "Retail", contact_name: "", business_name: "", email: "a@b.co", website: "" }));
     check(p.fieldErrors?.contact_name && p.fieldErrors?.business_name, "partner form needs a contact name and business name");
+    for (const route of ["Distributor", "Retail", "CSR"]) {
+      const csr = route === "CSR" ? { csr_brand: "Yazz", csr_initiative: "bright-smiles-school-tour" } : {};
+      const noYears = await core.handlePartner(pfd({ route, contact_name: "No Years", business_name: "No Years Ltd", email: mail(`noyears${route}`), years_trading: "  ", website: "", ...csr }));
+      check(noYears.status === "error" && noYears.fieldErrors?.years_trading === "Please enter how many years you have been trading." && Object.keys(noYears.fieldErrors).length === 1,
+        `partner form (${route}): an empty Years trading is refused with its own message`, noYears.fieldErrors);
+    }
+    const longYears = await core.handlePartner(pfd({ route: "Retail", contact_name: "Long Years", business_name: "Long Years Ltd", email: mail("longyears"), years_trading: "1".repeat(21), website: "" }));
+    check(longYears.fieldErrors?.years_trading === "Years trading can be at most 20 characters.", "partner form: Years trading keeps its 20 character limit", longYears.fieldErrors);
     const noConsent = await core.handleContact(fd({ reason: "General enquiry", name: "No Tick", email: mail("notick"), region: "Volta", message: "Hi", privacy: "", website: "" }));
     check(noConsent.status === "error" && noConsent.fieldErrors?.privacy === "Please tick the box to agree to the privacy notice." && Object.keys(noConsent.fieldErrors).length === 1,
       "contact form without the privacy tick is refused on the server with an inline message", noConsent.fieldErrors);
     const noConsentCare = await core.handleContact(fd({ reason: "Consumer care", name: "No Tick", email: mail("notick2"), region: "Volta", message: "Torn pack", privacy: "no", website: "" }));
     check(noConsentCare.fieldErrors?.privacy, "consumer care without the privacy tick is refused too (any value but yes)");
-    const noConsentP = await core.handlePartner(fd({ route: "Retail", contact_name: "No Tick", business_name: "No Tick Ltd", email: mail("notick3"), privacy: "", website: "" }));
+    const noConsentP = await core.handlePartner(pfd({ route: "Retail", contact_name: "No Tick", business_name: "No Tick Ltd", email: mail("notick3"), privacy: "", website: "" }));
     check(noConsentP.status === "error" && noConsentP.fieldErrors?.privacy && Object.keys(noConsentP.fieldErrors).length === 1, "partner form without the privacy tick is refused on the server");
     check((await counts()) === before, "invalid submissions save nothing");
   }
@@ -207,11 +280,11 @@ try {
     const cases = [
       ["contact", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "General enquiry", name: "Bot", email: mail("bot1"), region: "Volta", message: "spam", website: trap }))],
       ["consumer care", /^LX-\d{4}-\d{4}$/, core.handleContact(fd({ reason: "Consumer care", name: "Bot", email: mail("bot2"), region: "Volta", message: "spam", website: trap }))],
-      ["partner", /^PTN-[0-9A-F]{10}$/, core.handlePartner(fd({ route: "CSR", contact_name: "Bot", business_name: "Bot Ltd", email: mail("bot3"), website: trap }))],
+      ["partner", /^PTN-[0-9A-F]{10}$/, core.handlePartner(pfd({ route: "CSR", contact_name: "Bot", business_name: "Bot Ltd", email: mail("bot3"), website: trap }))],
       ["newsletter", /^NWS-[0-9A-F]{10}$/, core.handleNewsletter(fd({ email: mail("bot4"), consent: "yes", website: trap }))],
       ["contact, 600 character trap", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "Media", name: "Bot", email: mail("bot5"), message: "spam", website: huge }))],
       ["contact, trap and invalid fields", /^ENQ-[0-9A-F]{10}$/, core.handleContact(fd({ reason: "Careers", name: "", email: "nope", message: "", website: trap }))],
-      ["partner, 600 character trap", /^PTN-[0-9A-F]{10}$/, core.handlePartner(fd({ route: "Retail", contact_name: "Bot", business_name: "Bot", email: mail("bot6"), website: huge }))],
+      ["partner, 600 character trap", /^PTN-[0-9A-F]{10}$/, core.handlePartner(pfd({ route: "Retail", contact_name: "Bot", business_name: "Bot", email: mail("bot6"), website: huge }))],
       ["newsletter, 600 character trap", /^NWS-[0-9A-F]{10}$/, core.handleNewsletter(fd({ email: mail("bot7"), website: huge }))],
     ];
     for (const [name, format, promise] of cases) {
@@ -226,7 +299,7 @@ try {
     const before = await counts();
     const s = await core.handleContact(fd({ reason: "General enquiry", name: "Kofi", email: mail("euro"), region: "Volta", message: "€".repeat(2900), website: "" }));
     check(s.status === "error" && s.fieldErrors?.message === "Your message is too long, please shorten it.", "2900 euro signs (8700 bytes) get the friendly 'too long' message on the message field");
-    const p = await core.handlePartner(fd({ route: "Retail", contact_name: "Kofi", business_name: "Kofi Ltd", email: mail("euro2"), message: "€".repeat(2900) }));
+    const p = await core.handlePartner(pfd({ route: "Retail", contact_name: "Kofi", business_name: "Kofi Ltd", email: mail("euro2"), message: "€".repeat(2900) }));
     check(p.fieldErrors?.message === "Your message is too long, please shorten it.", "partner form gets the same 'too long' message");
     check((await counts()) === before, "nothing saved for the oversized messages");
     const ok = await core.handleContact(fd({ reason: "General enquiry", name: "Kofi", email: mail("accents"), region: "Volta", message: "é".repeat(2500), website: "" }));

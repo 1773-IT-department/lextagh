@@ -295,6 +295,7 @@ try {
     await pform.locator("input[name=email]").fill(`qa.partner.${ts}@example.com`);
     await pform.locator("input[name=phone]").fill("0240000998");
     await pform.locator("input[name=trading_location]").fill("Tamale");
+    await pform.locator("input[name=years_trading]").fill("4");
     const ta = pform.locator("textarea[name=message]");
     if (await ta.count()) await ta.fill("QA test: we want to distribute Hooch.");
     await pform.locator("input[name=privacy]").check();

@@ -35,15 +35,20 @@ import {
   tooLarge,
   trapped,
   unavailable,
+  acknowledged,
   type Fields,
+  type FormContext,
   type FormState,
 } from "@lexta/forms/core";
-import { contact } from "../site";
+import { contact, lextaSiteUrl } from "../site";
 import { isTopic, topicLabel, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
 export { isTopic, TOPICS, TRADE_ROUTES, VOLUMES, type Topic } from "./options";
 
-export { initialFormState, type FormState } from "@lexta/forms/core";
+export { initialFormState, type FormContext, type FormState } from "@lexta/forms/core";
+
+/** The site's name in the acknowledgement emails (P1). */
+const SITE = "Hooch";
 
 export const BRAND = "hooch";
 
@@ -139,7 +144,15 @@ export function buildConsumer(fd: FormData, productNames: Record<string, string>
 const consumerThanks = (ref: string) => `Thank you. Your message has reached the Hooch team and your reference is ${ref}.`;
 const complaintThanks = (ref: string) => `Thank you. Your case number is ${ref}. Your report has gone to our consumer care team.`;
 
-export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}): Promise<FormState> {
+/** The acknowledgement (P1) of the consumer form; the copy goes to the support inbox in lib/site.ts. */
+const consumerAck = (kind: "complaint" | "enquiry", v: Fields, routeTo: string) => (reference: string) => ({
+  kind, site: SITE, form: kind === "complaint" ? "product problem report" : "contact form message", reference, routeTo,
+  name: v.name, email: v.email || undefined, phone: v.phone || undefined,
+  details: [["Topic", isTopic(v.topic) ? topicLabel(v.topic) : v.topic], ["Region", v.region], ["Product", v.product], ["Batch code", v.batch],
+    ["Where bought", v.purchase_place], ["Date bought", v.purchase_date], ["Message", v.message]] as [string, string | undefined][],
+});
+
+export async function handleConsumer(fd: FormData, productNames: Record<string, string> = {}, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const problem = fd.get("topic") === "problem";
     const ref = fakeReference(problem ? "complaint" : "contact");
@@ -160,14 +173,14 @@ export async function handleConsumer(fd: FormData, productNames: Record<string, 
       const message = route.productName && !rest.message.startsWith("Product:") ? `Product: ${route.productName}\n${rest.message}` : rest.message;
       result = await safely(() => submitComplaint({ ...rest, message: message.slice(0, LIMITS.message) }));
     }
-    return fromResult(result, values,
+    return acknowledged(fromResult(result, values,
       { name: "name", email: "email", phone: "phone", message: "message", batch_number: "batch", purchase_place: "purchase_place", purchase_date: "purchase_date", product: "product" },
-      CONSUMER_MESSAGES, complaintThanks, email);
+      CONSUMER_MESSAGES, complaintThanks, email), ctx, consumerAck("complaint", values, email));
   }
   const result = await safely(() => submitWebsiteEnquiry({ form: "contact", payload: route.payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "name", email: "email", phone: "phone", message: "message", region: "region", detail: "product" },
-    CONSUMER_MESSAGES, consumerThanks, email);
+    CONSUMER_MESSAGES, consumerThanks, email), ctx, consumerAck("enquiry", values, email));
 }
 
 // Trade and distributor enquiry ----------------------------------------------------------------------------------
@@ -226,7 +239,7 @@ export function buildTrade(fd: FormData, rangeNames: Record<string, string> = {}
 
 const tradeThanks = (ref: string) => `Thank you. Your enquiry has reached the Hooch® team at Lexta Ghana Limited and your reference is ${ref}.`;
 
-export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}): Promise<FormState> {
+export async function handleTrade(fd: FormData, rangeNames: Record<string, string> = {}, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("partner");
     return { status: "success", reference: ref, message: tradeThanks(ref), values: {} };
@@ -236,9 +249,14 @@ export async function handleTrade(fd: FormData, rangeNames: Record<string, strin
   if (!formsConfigured()) return unavailable(values, contact.tradeEmail);
   if (payloadTooLarge(payload)) return tooLarge(values);
   const result = await safely(() => submitWebsiteEnquiry({ form: "partner", payload }));
-  return fromResult(result, values,
+  return acknowledged(fromResult(result, values,
     { name: "contact_name", organisation_name: "business_name", email: "email", phone: "phone", region: "region", location: "trading_location", years_trading: "years_trading", estimated_monthly_volume: "volume", message: "message" },
-    TRADE_MESSAGES, tradeThanks, contact.tradeEmail);
+    TRADE_MESSAGES, tradeThanks, contact.tradeEmail), ctx, (reference) => ({
+    kind: "partner", site: SITE, form: "trade enquiry", reference, routeTo: contact.tradeEmail,
+    name: payload.name, email: payload.email, phone: payload.phone,
+    details: [["Enquiry type", values.route], ["Business name", payload.organisation_name], ["Region", values.region], ["Trading location", payload.location],
+      ["Years trading", payload.years_trading], ["Expected volume", payload.estimated_monthly_volume], ["Message", payload.message]],
+  }));
 }
 
 // Newsletter -----------------------------------------------------------------------------------------------------
@@ -260,7 +278,7 @@ export function buildNewsletter(fd: FormData) {
 
 const newsletterThanks = (ref: string) => `Thank you, you are subscribed to Hooch news. Your reference is ${ref}.`;
 
-export async function handleNewsletter(fd: FormData): Promise<FormState> {
+export async function handleNewsletter(fd: FormData, ctx: FormContext = {}): Promise<FormState> {
   if (trapped(fd)) {
     const ref = fakeReference("newsletter");
     return { status: "success", reference: ref, message: newsletterThanks(ref), values: {} };
@@ -269,5 +287,7 @@ export async function handleNewsletter(fd: FormData): Promise<FormState> {
   if (!payload) return invalid(values, errors);
   if (!formsConfigured()) return unavailable(values, contact.supportEmail);
   const result = await safely(() => submitWebsiteEnquiry({ form: "newsletter", payload }));
-  return fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, contact.supportEmail);
+  return acknowledged(fromResult(result, values, { email: "email", consent_marketing: "consent" }, NEWSLETTER_MESSAGES, newsletterThanks, contact.supportEmail),
+    ctx, (reference) => ({ kind: "newsletter", site: SITE, form: "newsletter sign up", reference, routeTo: contact.partnershipsEmail, email: values.email,
+      lextaSiteUrl }));
 }
