@@ -6,7 +6,7 @@
 //   - the old range pages (/products/feminine-care, /products/baby-care) redirect to their band on /products
 //   - the scroll animations of the design run (reveals, pinned sections), and stand still for reduced motion
 //   - Linzzy data only: the products are the published Linzzy products, the stockists the active Linzzy stockists
-//   - the menu by keyboard (the 6 pages, Products as Feminine Care and Baby Care, Escape), the FAQs, a product window
+//   - the menu by keyboard (the 6 pages in order, Escape), the FAQs, a product window
 //     (open, Escape, focus back, its features, usage row, Read more and Linzzy says), article to product links,
 //     the home Caring Beyond band and About Safe Bottoms link (out to the Lexta CSR page), the baby Tips categories
 //   - the consumer form (question and product problem), the trade enquiry and the newsletter, with JavaScript and
@@ -289,11 +289,11 @@ try {
     await pagesNav.waitFor({ timeout: 5000 });
     const navItems = await pagesNav.getByRole("link").allInnerTexts();
     check(await page.getByRole("button", { name: "Close", exact: true }).getAttribute("aria-expanded") === "true", "menu: Enter on Menu opens it (aria-expanded)");
-    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "Feminine Care", "Baby Care", "About Us", "Tips & Advice", "FAQs", "Contact & Where to Buy", "Community Impact ↗"]), "menu: the 6 pages, Products as Feminine Care and Baby Care, then Community Impact last", navItems);
+    check(JSON.stringify(navItems.map((t) => t.trim())) === JSON.stringify(["Home", "About Us", "Products", "Tips & Advice", "FAQs", "Contact & Where to Buy", "Community Impact ↗"]), "menu: the 6 pages (Home, About Us, Products first), then Community Impact last", navItems);
     const ci = pagesNav.getByRole("link", { name: /Community Impact/ });
     check(await ci.getAttribute("href") === "https://lextagh.vercel.app/corporate-social-responsibility" && await ci.getAttribute("target") === "_blank", "menu: Community Impact links out to the Lexta CSR preview page");
     const navHrefs = await pagesNav.getByRole("link").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
-    check(navHrefs[1] === "/products#fem" && navHrefs[2] === "/products#baby", "menu: Feminine Care and Baby Care open their band on /products", navHrefs);
+    check(navHrefs[1] === "/about" && navHrefs[2] === "/products", "menu: About Us and Products link to their pages", navHrefs);
     check(await pagesNav.locator('[aria-current="page"]').innerText().then((t) => t.trim()) === "Tips & Advice", "menu: the current page is marked");
     await page.keyboard.press("Escape");
     await sleep(200);
@@ -402,13 +402,6 @@ try {
     check(true, "article: its product link opens the product window");
     await page.goto(`${SITE}/tips/know-your-flow`);
     check(await page.locator('a[href^="/products?p="]').count() === 0, "article: Know Your Flow (three towels) gets no product link");
-    // The menu's Baby Care entry on /products closes the menu and goes to the band.
-    await page.goto(`${SITE}/products`);
-    await page.getByRole("button", { name: "Menu", exact: true }).click();
-    await page.getByRole("navigation", { name: "Pages" }).getByRole("link", { name: "Baby Care", exact: true }).click();
-    await sleep(1200);
-    const babyTop = await page.locator("#baby").evaluate((e) => e.getBoundingClientRect().top);
-    check(await page.getByRole("navigation", { name: "Pages" }).count() === 0 && Math.abs(babyTop) < 200, "menu on /products: Baby Care closes the menu and scrolls to the band", babyTop);
     // Caring Beyond Our Products (home) and Safe Bottoms (About) go out to the Lexta CSR page (Z3).
     const CSR = "https://lextagh.vercel.app/corporate-social-responsibility";
     await page.goto(`${SITE}/`);

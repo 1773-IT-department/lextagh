@@ -10,8 +10,8 @@ import type { ProtoProduct, ProtoTip } from "../model";
 const WELCOME = "Welcome to Linzzy, where thoughtful care meets everyday comfort. From the beautiful journey of womanhood to the precious beginnings of motherhood, Linzzy is here to support the moments that matter.";
 const ACCENT: Record<string, string> = { "Linzzy,": "#C2185B", womanhood: "#C2185B", "motherhood,": "#0E7A5B", "matter.": "#C2185B" };
 const CHAPTERS: [string, string, string][] = [["ch-hero", "00", "Gentle Care"], ["ch-welcome", "01", "Welcome"], ["ch-grows", "02", "Care That Grows"], ["ch-fem", "03", "Feminine Care"], ["ch-baby", "04", "Baby Care"], ["ch-products", "05", "Featured Products"], ["ch-why", "06", "Why Linzzy"], ["ch-tips", "07", "Tips & Advice"], ["ch-corner", "08", "Parent Corner"], ["ch-connect", "09", "Connect"]];
-// Lexta's top bar: Feminine Care and Baby Care as separate entries (both on the Products page; chrome.ts PAGES).
-const PAGE_LINKS: [string, string][] = [["fem", "Feminine Care"], ["baby", "Baby Care"], ["about", "About Us"], ["tips", "Tips & Advice"], ["faqs", "FAQs"], ["contact", "Contact & Where to Buy"]];
+// Same order as chrome.ts PAGES (Home is this page): About Us, Products, then the rest.
+const PAGE_LINKS: [string, string][] = [["about", "About Us"], ["products", "Products"], ["tips", "Tips & Advice"], ["faqs", "FAQs"], ["contact", "Contact & Where to Buy"]];
 const HREF: Record<string, string> = {
   products: "/products", about: "/about", tips: "/tips", faqs: "/faqs", contact: "/contact",
   wtb: "/contact#where-to-buy", corner: "/tips#parent-corner", fem: "/products#fem", baby: "/products#baby",
