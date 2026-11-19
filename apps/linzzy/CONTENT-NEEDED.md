@@ -14,10 +14,10 @@ copy 1773 wrote itself is shown; see `docs/content/linzzy/PLACEHOLDERS.md`. Ever
   Routes built: Home, About, Products (Feminine Care and Baby Care), Tips & Advice, Where to Buy and Contact; feminine
   care tips and baby tips as article cards that link to the relevant product range; enquiries into the shared CRM
   (brand Linzzy); complaints into the complaints tracker; footer with the Lexta family, privacy, terms and social links.
-- Separate "Feminine Care" and "Baby Care" menu entries (built 17 November 2026, Desmond's approval, item Z7): the
-  menu lists them in place of the single Products entry, pointing to the two bands of /products (`/products#fem`,
-  `/products#baby`), so the site keeps exactly its 6 pages. The header itself is the design's Where to Buy and Menu
-  buttons at every width, so the split is in the menu, on desktop and phone alike.
+- Separate "Feminine Care" and "Baby Care" menu entries (built 17 November 2026, item Z7) were taken out again on
+  19 November 2026 at Desmond's request: the menu has one Products entry, in the order Home, About Us, Products,
+  Tips & Advice, FAQs, Contact & Where to Buy. Feminine Care and Baby Care stay as the two bands of /products and in
+  the page's "On this page" list and the footer.
 - Not built as the wireframe asks, because it conflicts with the agreed 6 page design or scope:
   - "Community Impact" tab: no CSR page on brand sites. The footer of every page ("Community Impact (CSR)") links to
     the Lexta site's CSR page, and the contact page's CSR card sends proposals to the partnerships email. Since
